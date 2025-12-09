@@ -1,0 +1,627 @@
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { 
+  Check, 
+  Shield, 
+  Clock, 
+  Phone, 
+  ChevronDown, 
+  ChevronUp, 
+  Star, 
+  Menu, 
+  X,
+  MapPin,
+  Calendar,
+  Zap,
+  Leaf
+} from "lucide-react";
+import { 
+  Accordion, 
+  AccordionContent, 
+  AccordionItem, 
+  AccordionTrigger 
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+// Assets
+import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
+import mascotLogo from "@assets/generated_images/lawn_trooper_mascot_logo.png";
+import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
+
+// Schema for the quote form
+const formSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Valid phone number required"),
+  address: z.string().min(5, "Property address is required"),
+  yardSize: z.string().min(1, "Please select a yard size"),
+  plan: z.string().min(1, "Please select a plan interest"),
+  notes: z.string().optional(),
+});
+
+export default function LandingPage() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { toast } = useToast();
+  
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      notes: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+    toast({
+      title: "Mission Received! 🫡",
+      description: "Your quote request has been secured. Stand by for contact from our command center.",
+      duration: 5000,
+    });
+    form.reset();
+  }
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      setIsMenuOpen(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-primary/10" />
+            <span className="font-heading font-bold text-xl tracking-tight text-primary">LAWN TROOPER</span>
+          </div>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
+            <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
+            <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
+            <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+              Get Quote
+            </Button>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-b border-border bg-background"
+            >
+              <div className="flex flex-col p-4 gap-4">
+                <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
+                <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
+                <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
+                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white">Get Quote</Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-20 md:pt-32 md:pb-32 overflow-hidden bg-primary/5">
+        <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/0 via-background/50 to-background"></div>
+        
+        <div className="container mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-left"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 text-accent-foreground text-xs font-bold uppercase tracking-wider mb-6 border border-accent/30">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+              Mission Ready All Year
+            </div>
+            <h1 className="text-4xl md:text-6xl font-heading font-bold leading-tight text-primary mb-6">
+              Set Your Yard to <span className="text-accent-foreground bg-accent/20 px-2 italic">Mission-Ready</span> and Forget About It.
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg">
+              Lawn Trooper keeps your yard trimmed, clean, and sharp all season with simple, predictable subscription plans.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-base h-14 px-8 shadow-lg shadow-primary/20">
+                Get My Custom Yard Quote
+              </Button>
+              <Button onClick={() => scrollToSection('plans')} variant="outline" size="lg" className="border-primary/20 text-primary hover:bg-primary/5 font-bold uppercase tracking-wider text-base h-14 px-8">
+                See Plans & Pricing
+              </Button>
+            </div>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/50 aspect-video md:aspect-auto md:h-[500px]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
+            <img src={heroBg} alt="Perfectly manicured lawn" className="w-full h-full object-cover" />
+            <div className="absolute bottom-6 left-6 z-20 text-white">
+              <div className="flex items-center gap-2 mb-1">
+                <Star className="fill-accent text-accent w-5 h-5" />
+                <Star className="fill-accent text-accent w-5 h-5" />
+                <Star className="fill-accent text-accent w-5 h-5" />
+                <Star className="fill-accent text-accent w-5 h-5" />
+                <Star className="fill-accent text-accent w-5 h-5" />
+              </div>
+              <p className="font-medium text-sm">"My yard has never looked this sharp."</p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section id="how-it-works" className="py-20 bg-background relative border-t border-border">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Your Mission Plan</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Three simple steps to a yard that commands respect.</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { 
+                icon: MapPin, 
+                title: "1. Choose Plan & Size", 
+                desc: "Select your service level and yard size. Pricing is clear and upfront based on acreage." 
+              },
+              { 
+                icon: Zap, 
+                title: "2. We Deploy The Crew", 
+                desc: "Our pro troopers and smart tech mobilize to keep your perimeter secure and tidy." 
+              },
+              { 
+                icon: Leaf, 
+                title: "3. Enjoy The Results", 
+                desc: "Your yard stays always-ready. No scheduling calls, no equipment maintenance." 
+              }
+            ].map((step, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 }}
+                className="relative p-8 bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary">
+                  <step.icon size={28} strokeWidth={2.5} />
+                </div>
+                <h3 className="text-xl font-bold font-heading mb-3">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
+                <div className="absolute -top-4 -right-4 text-6xl font-heading font-bold text-muted/20 select-none">0{i+1}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Plans */}
+      <section id="plans" className="py-24 bg-primary/5 relative">
+        <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Service Deployment Levels</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Transparent pricing based on your yard size. No hidden fees.</p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8 items-start">
+            {/* Basic Plan */}
+            <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+              <div className="p-6 border-b border-border bg-muted/30">
+                <h3 className="text-2xl font-heading font-bold text-primary">Basic Patrol</h3>
+                <p className="text-sm text-muted-foreground mt-2">Solid weekly protection for small to medium yards.</p>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-3xl font-bold">$129</span>
+                  <span className="text-muted-foreground text-sm">/mo (starting)</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
+              </div>
+              <div className="p-6 space-y-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Regular Mowing & Edging</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Clean Uniforms & Pro Techs</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span><span className="font-bold">2 Free</span> Off-Season Add-ons</span>
+                  </li>
+                </ul>
+                <Button onClick={() => scrollToSection('quote')} variant="outline" className="w-full mt-4 border-primary/20 hover:bg-primary/5 hover:text-primary">Request Basic</Button>
+              </div>
+            </div>
+
+            {/* Executive Plan (Highlighted) */}
+            <div className="bg-card rounded-xl shadow-xl border-2 border-primary overflow-hidden relative transform md:-translate-y-4">
+              <div className="bg-primary text-primary-foreground text-center text-xs font-bold uppercase tracking-widest py-2">
+                Most Popular • Best Value
+              </div>
+              <div className="p-6 border-b border-border bg-primary/5">
+                <h3 className="text-2xl font-heading font-bold text-primary flex items-center gap-2">
+                  Executive Deployment <Star className="w-5 h-5 fill-accent text-accent" />
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">For those who never want to think about their yard again.</p>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-3xl font-bold">$249</span>
+                  <span className="text-muted-foreground text-sm">/mo (starting)</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
+              </div>
+              <div className="p-6 space-y-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-accent shrink-0" />
+                    <span className="font-bold text-primary">Everything in Premium +</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Priority Service Status</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Detailed Bed Care & Mulching</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span><span className="font-bold">8 Total</span> Add-ons per year</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-accent-foreground font-medium">No Install Fee on 2-Year Plan</span>
+                  </li>
+                </ul>
+                <Button onClick={() => scrollToSection('quote')} className="w-full mt-4 bg-primary hover:bg-primary/90 text-white font-bold tracking-wide">Select Executive</Button>
+              </div>
+            </div>
+
+            {/* Premium Plan */}
+            <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+              <div className="p-6 border-b border-border bg-muted/30">
+                <h3 className="text-2xl font-heading font-bold text-primary">Premium Command</h3>
+                <p className="text-sm text-muted-foreground mt-2">Enhanced care including weed control and beds.</p>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-3xl font-bold">$179</span>
+                  <span className="text-muted-foreground text-sm">/mo (starting)</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
+              </div>
+              <div className="p-6 space-y-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Everything in Basic +</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Routine Weed Control</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Light Bed Cleanup</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span><span className="font-bold">5 Total</span> Add-ons per year</span>
+                  </li>
+                </ul>
+                <Button onClick={() => scrollToSection('quote')} variant="outline" className="w-full mt-4 border-primary/20 hover:bg-primary/5 hover:text-primary">Request Premium</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-sm text-muted-foreground bg-white/50 inline-block px-4 py-2 rounded-lg border border-border">
+              <strong>Note:</strong> All plans billed monthly. Larger lots receive a fast custom quote. 
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Promos Banner */}
+      <section className="bg-primary text-primary-foreground py-12 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl font-heading font-bold text-accent mb-2">LIMITED TIME ENLISTMENT OFFERS</h3>
+              <ul className="text-sm md:text-base space-y-1 opacity-90">
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 1-year agreement: <strong>1 Month FREE</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 2-year agreement: <strong>3 Months FREE</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay in Full: <strong>Extra 2 Months FREE</strong></li>
+              </ul>
+            </div>
+            <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold whitespace-nowrap px-8">
+              Claim Offer Now
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Lawn Trooper */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-6">Why Enlist Lawn Trooper?</h2>
+              <div className="space-y-6">
+                {[
+                  { title: "Locally Owned Command", desc: "Not a faceless national chain. We live here, we work here." },
+                  { title: "Tech-Forward Tactics", desc: "Smart routing and robotic mowers where appropriate for maximum efficiency." },
+                  { title: "Consistent Personnel", desc: "You'll know who is on your property. Friendly, vetted, and professional." },
+                  { title: "The Mission Mindset", desc: "We treat every yard like an assignment we must complete with excellence." }
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <Shield className="w-5 h-5 text-secondary-foreground" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg">{item.title}</h4>
+                      <p className="text-muted-foreground text-sm">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-muted p-8 rounded-2xl border border-border relative">
+              <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
+              <p className="text-lg italic text-foreground/80 relative z-10 pt-4 mb-6">
+                I used to dread weekends because it meant mowing. Now I don't even think about it. The crew is like clockwork, and the billing is totally predictable. Best decision I made for my home.
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">JD</div>
+                <div>
+                  <div className="font-bold">James D.</div>
+                  <div className="text-xs text-muted-foreground">Premium Command Member since 2023</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-20 bg-secondary/20">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-3xl font-heading font-bold text-primary text-center mb-10">Field Intelligence (FAQ)</h2>
+          <Accordion type="single" collapsible className="w-full space-y-4">
+            {[
+              { q: "How does billing work?", a: "We use simple monthly billing charged to your card on file. Predictable, consistent pricing all year round." },
+              { q: "What if my yard is bigger than 1/4 acre?", a: "No problem. The prices listed are starting points. Select your approximate size in the quote form, and we will give you a custom adjusted rate that is just as competitive." },
+              { q: "Do you use robotic mowers?", a: "Yes! In suitable yards, we deploy advanced robotic mowers for frequent maintenance cuts, supported by our human crew for edging, trimming, and detail work." },
+              { q: "What if I move or need to cancel?", a: "We understand plans change. If you move, we can transfer service. Early cancellation on term agreements may incur a catch-up fee for any free months you've already utilized." }
+            ].map((faq, i) => (
+              <AccordionItem key={i} value={`item-${i}`} className="bg-card px-6 rounded-lg border border-border shadow-sm">
+                <AccordionTrigger className="font-bold text-left hover:text-primary hover:no-underline py-4">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
+      {/* Quote Form Section */}
+      <section id="quote" className="py-24 bg-background relative overflow-hidden">
+        <div className="container mx-auto px-4 max-w-2xl relative z-10">
+          <div className="text-center mb-10">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <Clock className="w-8 h-8" />
+            </div>
+            <h2 className="text-4xl font-heading font-bold text-primary mb-4">Request Your Deployment</h2>
+            <p className="text-muted-foreground">Fill out the intel below. We'll analyze your property satellite data and send your custom plan within 24 hours.</p>
+          </div>
+
+          <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mobile Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="(555) 123-4567" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="john@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Property Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123 Maple Ave, Springfield" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="yardSize"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Approx. Yard Size</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select size" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="up-to-1/4">Up to 1/4 acre</SelectItem>
+                            <SelectItem value="1/4-1/2">1/4 - 1/2 acre</SelectItem>
+                            <SelectItem value="1/2-3/4">1/2 - 3/4 acre</SelectItem>
+                            <SelectItem value="3/4-1">3/4 - 1 acre</SelectItem>
+                            <SelectItem value="1+">1+ acre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="plan"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Interested Plan</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select plan" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="basic">Basic Patrol</SelectItem>
+                            <SelectItem value="premium">Premium Command</SelectItem>
+                            <SelectItem value="executive">Executive Deployment</SelectItem>
+                            <SelectItem value="unsure">Not sure yet</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Special Instructions / Gate Codes</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Fenced backyard, dog on property, specific gate code, etc." 
+                          className="resize-none"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 text-lg shadow-lg">
+                  Request Quote & Lock In Offers
+                </Button>
+                <p className="text-xs text-center text-muted-foreground mt-4">
+                  By submitting, you agree to receive text/email communications about your quote. We never sell your data.
+                </p>
+              </form>
+            </Form>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-primary text-primary-foreground py-12 border-t border-white/10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+            <div className="flex items-center gap-2">
+              <img src={mascotLogo} alt="Lawn Trooper" className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
+              <div className="text-left">
+                <h3 className="font-heading font-bold text-xl tracking-tight">LAWN TROOPER</h3>
+                <p className="text-xs text-primary-foreground/70">Your Yard, Always Mission-Ready.</p>
+              </div>
+            </div>
+            <div className="flex gap-6 text-sm font-medium text-primary-foreground/80">
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-white transition-colors">Contact</a>
+            </div>
+          </div>
+          <div className="text-center text-xs text-primary-foreground/40">
+            &copy; {new Date().getFullYear()} Lawn Trooper Landscape Maintenance. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
