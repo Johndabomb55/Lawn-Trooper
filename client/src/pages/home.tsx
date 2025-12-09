@@ -100,6 +100,8 @@ const basicAddOns = [
   { id: "bed_tidy", label: "Simple bed tidy-up" },
   { id: "extra_mow", label: "One-time extra mow" },
   { id: "blow_off", label: "Simple sidewalk/driveway blow-off" },
+  { id: "spring_flowers", label: "Spring Flowers (Labor Only)" },
+  { id: "fall_flowers", label: "Fall Flowers (Labor Only)" },
 ];
 
 const premiumAddOns = [
@@ -108,6 +110,12 @@ const premiumAddOns = [
   { id: "hedge_shaping", label: "Hedge shaping (front yard)" },
   { id: "heavy_leaf", label: "Heavy leaf removal" },
   { id: "flower_bed", label: "Flower bed detail service" },
+  { id: "driveway_wash", label: "Driveway Pressure Wash" },
+  { id: "gutter_clean", label: "Gutter Cleaning" },
+  { id: "xmas_lights", label: "Christmas Light Package ($500 Value)" },
+  { id: "mulch_1x", label: "Mulch Install (1x/Year)" },
+  { id: "mulch_2x", label: "Mulch Install (2x/Year)" },
+  { id: "seasonal_flowers", label: "Seasonal Flowers (2x/Year, 8 Flats Included)" },
 ];
 
 // Pricing Constants
@@ -130,7 +138,8 @@ export default function LandingPage() {
   const [slotError, setSlotError] = useState<string | null>(null);
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
   const [discounts, setDiscounts] = useState({
-    yearly: false,
+    payFull: false, // Previously 'yearly' payment
+    agreement: "none", // none, 1year, 2year
     veteran: false,
     senior: false
   });
@@ -956,48 +965,78 @@ export default function LandingPage() {
                           <div className="flex items-baseline gap-2">
                              <div className="text-5xl font-heading font-bold text-primary flex items-center">
                               <span className="text-2xl mt-2">$</span>
-                              {(estimatedPrice * (discounts.yearly ? 12 : 1) * (1 - ((discounts.yearly ? 0.2 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0)))).toFixed(0)}
+                              {(estimatedPrice * (discounts.payFull ? 12 : 1) * (1 - ((discounts.payFull ? 0.2 : 0) + (discounts.agreement === "1year" ? 0.1 : discounts.agreement === "2year" ? 0.15 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0)))).toFixed(0)}
                               <span className="text-xl text-muted-foreground font-sans font-normal ml-1 self-end mb-2">
-                                {discounts.yearly ? "/yr" : "/mo"}
+                                {discounts.payFull ? "/yr" : "/mo"}
                               </span>
                             </div>
-                            {(discounts.yearly || discounts.veteran || discounts.senior) && (
+                            {(discounts.payFull || discounts.agreement !== "none" || discounts.veteran || discounts.senior) && (
                               <div className="text-sm font-bold text-muted-foreground line-through">
-                                ${estimatedPrice * (discounts.yearly ? 12 : 1)}
+                                ${estimatedPrice * (discounts.payFull ? 12 : 1)}
                               </div>
                             )}
                           </div>
 
-                          {(discounts.yearly || discounts.veteran || discounts.senior) && (
+                          {(discounts.payFull || discounts.agreement !== "none" || discounts.veteran || discounts.senior) && (
                              <div className="text-sm font-bold text-green-600 mt-2 bg-green-100 dark:bg-green-900/30 inline-block px-2 py-1 rounded">
-                               Total Savings: ${(estimatedPrice * (discounts.yearly ? 12 : 1) * ((discounts.yearly ? 0.2 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0))).toFixed(0)}
+                               Total Savings: ${(estimatedPrice * (discounts.payFull ? 12 : 1) * ((discounts.payFull ? 0.2 : 0) + (discounts.agreement === "1year" ? 0.1 : discounts.agreement === "2year" ? 0.15 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0))).toFixed(0)}
                                <span className="ml-1">
-                                 ({((discounts.yearly ? 20 : 0) + (discounts.veteran ? 5 : 0) + (discounts.senior ? 5 : 0))}%) OFF
+                                 ({((discounts.payFull ? 20 : 0) + (discounts.agreement === "1year" ? 10 : discounts.agreement === "2year" ? 15 : 0) + (discounts.veteran ? 5 : 0) + (discounts.senior ? 5 : 0))}%) OFF
                                </span>
                              </div>
                           )}
                         </div>
 
-                        <div className="bg-background border border-border p-4 rounded-xl w-full md:w-72 shadow-sm">
+                        <div className="bg-background border border-border p-4 rounded-xl w-full md:w-80 shadow-sm">
                            <h5 className="font-bold text-sm mb-3 flex items-center gap-2">
                              <Zap className="w-4 h-4 text-accent fill-accent" />
                              Stackable Discounts
                            </h5>
-                           <div className="space-y-3">
+                           <div className="space-y-4">
+                             {/* Agreement Term */}
+                             <div className="space-y-2 pb-3 border-b border-border/50">
+                               <Label className="text-xs font-bold uppercase text-muted-foreground">Service Agreement</Label>
+                               <RadioGroup 
+                                 value={discounts.agreement} 
+                                 onValueChange={(val) => setDiscounts(prev => ({ ...prev, agreement: val }))}
+                                 className="flex flex-col gap-2"
+                               >
+                                 <div className="flex items-center space-x-2">
+                                   <RadioGroupItem value="none" id="term-none" />
+                                   <Label htmlFor="term-none" className="text-sm font-medium">Month-to-Month (No Discount)</Label>
+                                 </div>
+                                 <div className="flex items-center space-x-2">
+                                   <RadioGroupItem value="1year" id="term-1year" />
+                                   <Label htmlFor="term-1year" className="text-sm font-medium flex-1 flex justify-between">
+                                     <span>1-Year Agreement</span>
+                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">-10%</span>
+                                   </Label>
+                                 </div>
+                                 <div className="flex items-center space-x-2">
+                                   <RadioGroupItem value="2year" id="term-2year" />
+                                   <Label htmlFor="term-2year" className="text-sm font-medium flex-1 flex justify-between">
+                                     <span>2-Year Agreement</span>
+                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">-15%</span>
+                                   </Label>
+                                 </div>
+                               </RadioGroup>
+                             </div>
+
+                             {/* Payment Method */}
                              <div className="flex items-start space-x-3">
                                <Checkbox 
-                                 id="discount-yearly" 
-                                 checked={discounts.yearly}
-                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, yearly: !!c }))}
+                                 id="discount-payFull" 
+                                 checked={discounts.payFull}
+                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, payFull: !!c }))}
                                />
                                <div className="grid gap-1.5 leading-none">
                                  <label
-                                   htmlFor="discount-yearly"
+                                   htmlFor="discount-payFull"
                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                                  >
-                                   Annual Pre-Pay
+                                   Pay Full Year Upfront
                                  </label>
-                                 <p className="text-xs text-muted-foreground">Save 20% instantly</p>
+                                 <p className="text-xs text-muted-foreground">Save additional 20%</p>
                                </div>
                              </div>
 
@@ -1014,7 +1053,7 @@ export default function LandingPage() {
                                  >
                                    Veteran / Active Duty
                                  </label>
-                                 <p className="text-xs text-muted-foreground">Save an extra 5%</p>
+                                 <p className="text-xs text-muted-foreground">Save extra 5%</p>
                                </div>
                              </div>
 
@@ -1031,7 +1070,7 @@ export default function LandingPage() {
                                  >
                                    Senior / Responder
                                  </label>
-                                 <p className="text-xs text-muted-foreground">Save an extra 5%</p>
+                                 <p className="text-xs text-muted-foreground">Save extra 5%</p>
                                </div>
                              </div>
                            </div>
