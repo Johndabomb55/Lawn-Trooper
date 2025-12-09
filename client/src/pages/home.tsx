@@ -852,13 +852,11 @@ export default function LandingPage() {
                   <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">4. Recon Data (Optional)</h3>
                   
                   <div className="grid gap-6">
-                    <FormItem>
-                      <FormLabel>Yard Photos</FormLabel>
-                      <FormControl>
-                        <Input type="file" accept="image/*" multiple className="cursor-pointer" />
-                      </FormControl>
-                      <FormDescription>Upload photos of your yard to help us quote faster.</FormDescription>
-                    </FormItem>
+                    <div className="space-y-2">
+                      <Label htmlFor="photos">Yard Photos</Label>
+                      <Input id="photos" type="file" accept="image/*" multiple className="cursor-pointer" />
+                      <p className="text-[0.8rem] text-muted-foreground">Upload photos of your yard to help us quote faster.</p>
+                    </div>
 
                     <FormField
                       control={form.control}
