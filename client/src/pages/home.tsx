@@ -979,7 +979,16 @@ export default function LandingPage() {
                                 
                                 // 4. Apply Stackable Percentage Discounts
                                 let percentOff = 0;
-                                if (discounts.payFull) percentOff += 0.15; // Updated to 15%
+                                
+                                // Pay Full Discount Logic (Updated)
+                                if (discounts.payFull) {
+                                  if (discounts.agreement === "2year") {
+                                    percentOff += 0.15; // 15% for 2-Year Paid Upfront
+                                  } else {
+                                    percentOff += 0.10; // 10% for 1-Year Paid Upfront (default)
+                                  }
+                                }
+                                
                                 if (discounts.veteran) percentOff += 0.05;
                                 if (discounts.senior) percentOff += 0.05;
                                 
@@ -1023,7 +1032,16 @@ export default function LandingPage() {
                                   const billableBaseCost = basePrice * billableMonths;
                                   
                                   let percentOff = 0;
-                                  if (discounts.payFull) percentOff += 0.15;
+                                  
+                                  // Pay Full Discount Logic (Updated for Savings Badge)
+                                  if (discounts.payFull) {
+                                    if (discounts.agreement === "2year") {
+                                      percentOff += 0.15;
+                                    } else {
+                                      percentOff += 0.10;
+                                    }
+                                  }
+                                  
                                   if (discounts.veteran) percentOff += 0.05;
                                   if (discounts.senior) percentOff += 0.05;
                                   
@@ -1103,7 +1121,9 @@ export default function LandingPage() {
                                  >
                                    Pay Full Term Upfront
                                  </label>
-                                 <p className="text-xs text-muted-foreground">Save additional 15%</p>
+                                 <p className="text-xs text-muted-foreground">
+                                   {discounts.agreement === "2year" ? "Save additional 15%" : "Save additional 10%"}
+                                 </p>
                                </div>
                              </div>
 
