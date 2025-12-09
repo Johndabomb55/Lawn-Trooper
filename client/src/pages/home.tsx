@@ -177,22 +177,23 @@ export default function LandingPage() {
     }
   }, [selectedPlan, selectedYardSize]);
 
-  // Calculate slots
-  const calculateSlots = (currentAddOns: string[]) => {
-    let slots = 0;
+  // Calculate counts
+  const calculateCounts = (currentAddOns: string[]) => {
+    let basicCount = 0;
+    let premiumCount = 0;
     currentAddOns.forEach(id => {
-      if (basicAddOns.find(a => a.id === id)) slots += 1;
-      if (premiumAddOns.find(a => a.id === id)) slots += 2;
+      if (basicAddOns.find(a => a.id === id)) basicCount += 1;
+      if (premiumAddOns.find(a => a.id === id)) premiumCount += 1;
     });
-    return slots;
+    return { basicCount, premiumCount };
   };
 
   const getPlanLimits = (plan: string) => {
     switch(plan) {
-      case "basic": return { maxSlots: 2, allowPremium: false, label: "Basic Patrol includes up to 2 Basic add-ons." };
-      case "premium": return { maxSlots: 8, allowPremium: true, label: "You can choose up to 8 slots worth of add-ons (Basic = 1, Premium = 2)." };
-      case "executive": return { maxSlots: 14, allowPremium: true, label: "You can choose up to 14 slots worth of add-ons (Basic = 1, Premium = 2)." };
-      default: return { maxSlots: 0, allowPremium: false, label: "" };
+      case "basic": return { basic: 2, premium: 0, label: "Basic Patrol includes 2 Basic add-ons." };
+      case "premium": return { basic: 2, premium: 3, label: "Premium includes 2 Basic and 3 Premium add-ons." };
+      case "executive": return { basic: 2, premium: 6, label: "Executive includes 2 Basic and 6 Premium add-ons." };
+      default: return { basic: 0, premium: 0, label: "" };
     }
   };
 
@@ -208,37 +209,45 @@ export default function LandingPage() {
       form.setValue("addOns", currentAddOns.filter(item => item !== id));
     } else {
       // Adding requires check
-      if (isPremium && !limits.allowPremium) {
-        return; // Should be disabled anyway
-      }
-
-      const cost = isPremium ? 2 : 1;
-      const currentSlots = calculateSlots(currentAddOns);
+      const { basicCount, premiumCount } = calculateCounts(currentAddOns);
       
-      if (currentSlots + cost > limits.maxSlots) {
-        setSlotError(`You’ve selected the maximum add-ons included with your plan.`);
-        // Clear error after 3 seconds
-        setTimeout(() => setSlotError(null), 3000);
-        return;
+      if (isPremium) {
+        if (premiumCount >= limits.premium) {
+           setSlotError(`You’ve reached the limit of ${limits.premium} Premium add-ons for this plan.`);
+           setTimeout(() => setSlotError(null), 3000);
+           return;
+        }
+      } else {
+        if (basicCount >= limits.basic) {
+           setSlotError(`You’ve reached the limit of ${limits.basic} Basic add-ons for this plan.`);
+           setTimeout(() => setSlotError(null), 3000);
+           return;
+        }
       }
 
       form.setValue("addOns", [...currentAddOns, id]);
     }
   };
 
-  // Reset add-ons when plan changes to strictly incompatible ones (like premium add-ons on basic plan)
+  // Reset add-ons when plan changes
   useEffect(() => {
     const currentAddOns = form.getValues("addOns");
-    if (selectedPlan === "basic") {
-      // Remove any premium add-ons if switching to basic
-      const validAddOns = currentAddOns.filter(id => basicAddOns.find(b => b.id === id));
-      // Also check if we exceed 2 slots (2 basics)
-      if (validAddOns.length > 2) {
-        // Keep only first 2
-        form.setValue("addOns", validAddOns.slice(0, 2));
-      } else if (validAddOns.length !== currentAddOns.length) {
-        form.setValue("addOns", validAddOns);
-      }
+    const limits = getPlanLimits(selectedPlan);
+    
+    // Separate current add-ons
+    const currentBasic = currentAddOns.filter(id => basicAddOns.find(b => b.id === id));
+    const currentPremium = currentAddOns.filter(id => premiumAddOns.find(p => p.id === id));
+    
+    let newAddOns: string[] = [];
+    
+    // Trim to fit new limits
+    newAddOns = [
+      ...currentBasic.slice(0, limits.basic),
+      ...currentPremium.slice(0, limits.premium)
+    ];
+    
+    if (newAddOns.length !== currentAddOns.length) {
+      form.setValue("addOns", newAddOns);
     }
   }, [selectedPlan, form]);
 
@@ -810,7 +819,7 @@ export default function LandingPage() {
                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
                               >
                                 <span className="mb-2 text-lg font-bold">Basic Patrol</span>
-                                <span className="text-sm text-center text-muted-foreground">Weekly mowing & edging. 2 Free add-ons.</span>
+                                <span className="text-sm text-center text-muted-foreground">Weekly mowing & edging. 2 Basic add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">Base: $129/mo</span>
                               </Label>
                             </div>
@@ -822,7 +831,7 @@ export default function LandingPage() {
                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
                               >
                                 <span className="mb-2 text-lg font-bold">Premium Command</span>
-                                <span className="text-sm text-center text-muted-foreground">Plus weed control & beds. 5 Total add-ons.</span>
+                                <span className="text-sm text-center text-muted-foreground">Plus weed control & beds. 2 Basic + 3 Premium Add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">Base: $199/mo</span>
                               </Label>
                             </div>
@@ -834,7 +843,7 @@ export default function LandingPage() {
                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
                               >
                                 <span className="mb-2 text-lg font-bold flex items-center gap-1">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
-                                <span className="text-sm text-center text-muted-foreground">Full service. Priority status. 8 Total add-ons.</span>
+                                <span className="text-sm text-center text-muted-foreground">Full service. Priority status. 2 Basic + 6 Premium Add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">Base: $299/mo</span>
                               </Label>
                             </div>
@@ -857,28 +866,19 @@ export default function LandingPage() {
                   <div className="bg-muted/30 p-4 rounded-lg border border-border">
                     <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
                       <Info className="w-4 h-4 mt-0.5" />
-                      {getPlanLimits(selectedPlan).label}
+                      <span>{getPlanLimits(selectedPlan).label}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground ml-6">
-                      Basic add-ons cost 1 slot. Premium add-ons cost 2 slots. Your plan includes a certain number of slots you can use on Basic or Premium add-ons.
-                    </p>
+                    {slotError && (
+                      <div className="flex items-center gap-2 mt-2 text-destructive text-sm font-bold bg-destructive/10 p-2 rounded animate-pulse">
+                        <AlertCircle className="w-4 h-4" />
+                        {slotError}
+                      </div>
+                    )}
                   </div>
 
-                  {slotError && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-red-50 text-red-600 p-3 rounded-md border border-red-200 text-sm flex items-center gap-2"
-                    >
-                      <AlertCircle className="w-4 h-4" />
-                      {slotError}
-                    </motion.div>
-                  )}
-
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {/* Basic Add-ons */}
+                  <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-Ons (1 Slot)</h4>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-Ons</h4>
                       {basicAddOns.map((addon) => (
                         <div key={addon.id} className="flex items-center space-x-2">
                           <Checkbox 
@@ -886,21 +886,15 @@ export default function LandingPage() {
                             checked={selectedAddOns.includes(addon.id)}
                             onCheckedChange={() => handleAddOnToggle(addon.id, false)}
                           />
-                          <Label 
-                            htmlFor={addon.id} 
-                            className="text-sm font-normal cursor-pointer"
-                          >
-                            {addon.label}
-                          </Label>
+                          <Label htmlFor={addon.id} className="text-sm font-normal cursor-pointer">{addon.label}</Label>
                         </div>
                       ))}
                     </div>
 
-                    {/* Premium Add-ons */}
                     <div className="space-y-3">
-                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Premium Add-Ons (2 Slots)</h4>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Premium Add-Ons</h4>
                       {premiumAddOns.map((addon) => {
-                        const isDisabled = !getPlanLimits(selectedPlan).allowPremium;
+                        const isDisabled = getPlanLimits(selectedPlan).premium === 0;
                         return (
                           <div key={addon.id} className={`flex items-center space-x-2 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
                             <Checkbox 
