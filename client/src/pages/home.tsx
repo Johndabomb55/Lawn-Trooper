@@ -245,11 +245,14 @@ export default function LandingPage() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    // In a real app, this would be an API call to the backend
+    
     toast({
-      title: "Mission Received! 🫡",
-      description: "Your quote request has been secured. Stand by for contact from our command center.",
+      title: "Simulation Successful! 🫡",
+      description: "This is a prototype. In the live version, this data will be emailed to jclaxtonlandscapes@gmail.com and saved to the database.",
       duration: 5000,
     });
+    
     form.reset({
       name: "",
       email: "",
