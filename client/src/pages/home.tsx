@@ -364,6 +364,15 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col pt-24 pb-20 overflow-hidden bg-primary/5">
+        
+        {/* Urgency Top Bar */}
+        <div className="absolute top-16 left-0 right-0 z-20 bg-destructive/90 text-white py-2 px-4 shadow-lg text-center transform -rotate-1">
+          <div className="flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-xs md:text-sm animate-pulse">
+            <AlertCircle className="w-4 h-4" />
+            Prices have never been better — Many promotions ending Dec 31st — Enlist Now!
+          </div>
+        </div>
+
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
            <img src={heroLuxury} alt="Luxury Lawn" className="w-full h-full object-cover" />
@@ -371,7 +380,7 @@ export default function LandingPage() {
            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         </div>
         
-        <div className="container mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center items-center text-center">
+        <div className="container mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center items-center text-center mt-12">
           
           {/* Logo Centerpiece */}
           <motion.div 
@@ -382,43 +391,83 @@ export default function LandingPage() {
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
             <img src={mascotLogo} alt="Lawn Trooper" className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-2xl" />
+            
+            <div className="mt-4 relative z-20">
+              <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-0 leading-none" 
+                  style={{ 
+                    backgroundImage: `url(${camoPattern})`, 
+                    backgroundSize: '200px',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))'
+                  }}>
+                Lawn Trooper
+              </h1>
+              <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#8B7355] uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-1 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30">
+                Landscape Maintenance
+              </h2>
+            </div>
           </motion.div>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="max-w-4xl mx-auto"
+            className="max-w-5xl mx-auto"
           >
-            {/* Promotions Banner */}
-            <div className="mb-8 inline-flex flex-col md:flex-row items-center gap-4 bg-black/60 backdrop-blur-md border border-accent/30 p-4 rounded-xl shadow-2xl">
-               <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-sm md:text-base border-b md:border-b-0 md:border-r border-accent/30 pb-2 md:pb-0 md:pr-4">
-                 <Star className="fill-accent w-4 h-4" /> 
-                 Mission Briefing
+            {/* Mission Briefing / Promotions Banner */}
+            <div className="mb-10 bg-black/70 backdrop-blur-md border border-accent/30 p-6 rounded-xl shadow-2xl">
+               <div className="flex items-center justify-center gap-2 text-accent font-bold uppercase tracking-widest text-lg border-b border-accent/30 pb-4 mb-4">
+                 <Star className="fill-accent w-5 h-5" /> 
+                 Mission Briefing: Active Promotions
+                 <Star className="fill-accent w-5 h-5" /> 
                </div>
-               <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-white text-sm font-medium">
-                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 2 Months Free (2-Year Plan)</span>
-                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 15% Off Pay-In-Full</span>
-                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 5% Veteran Discount</span>
-                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 5% Senior Discount</span>
-                 <span className="bg-accent text-accent-foreground px-2 py-0.5 rounded text-xs font-bold uppercase">All Stackable</span>
+               
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+                 {/* Deal 1 */}
+                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
+                   <div className="flex items-center gap-2 mb-1">
+                     <Calendar className="w-4 h-4 text-accent" />
+                     <span className="text-accent font-bold uppercase text-xs">Agreement Terms</span>
+                   </div>
+                   <div className="text-white text-sm font-medium">
+                     <div className="flex justify-between"><span>2-Year Pact:</span> <span className="text-green-400 font-bold">3 Months Free</span></div>
+                     <div className="flex justify-between"><span>1-Year Pact:</span> <span className="text-green-400 font-bold">1 Month Free</span></div>
+                   </div>
+                 </div>
+
+                 {/* Deal 2 */}
+                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
+                   <div className="flex items-center gap-2 mb-1">
+                     <Zap className="w-4 h-4 text-accent" />
+                     <span className="text-accent font-bold uppercase text-xs">Pay Upfront</span>
+                   </div>
+                   <div className="text-white text-sm font-medium">
+                     <div className="flex justify-between"><span>2-Year Term:</span> <span className="text-green-400 font-bold">15% OFF</span></div>
+                     <div className="flex justify-between"><span>1-Year Term:</span> <span className="text-green-400 font-bold">10% OFF</span></div>
+                   </div>
+                 </div>
+
+                 {/* Deal 3 */}
+                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
+                   <div className="flex items-center gap-2 mb-1">
+                     <Shield className="w-4 h-4 text-accent" />
+                     <span className="text-accent font-bold uppercase text-xs">Service Honors</span>
+                   </div>
+                   <div className="text-white text-sm font-medium">
+                     <div className="flex justify-between"><span>Veterans:</span> <span className="text-green-400 font-bold">5% OFF</span></div>
+                     <div className="flex justify-between"><span>Seniors:</span> <span className="text-green-400 font-bold">5% OFF</span></div>
+                   </div>
+                 </div>
+
+                 {/* Deal 4 */}
+                 <div className="bg-accent/10 p-3 rounded border border-accent/30 flex flex-col justify-center items-center text-center">
+                   <div className="text-accent font-black text-2xl mb-1">STACKABLE</div>
+                   <div className="text-white/80 text-xs leading-tight">
+                     Combine all discounts for maximum mission savings.
+                   </div>
+                 </div>
                </div>
-            </div>
-
-            <h1 className="text-5xl md:text-7xl font-heading font-bold leading-tight text-white mb-6 drop-shadow-lg">
-              Deployment Ready.<br />
-              <span className="text-accent">Mission Accomplished.</span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto font-light leading-relaxed">
-              Premium lawn care subscriptions with military precision. <br className="hidden md:block"/>
-              Instant quotes for our best value ever.
-            </p>
-
-            {/* Urgency Box */}
-            <div className="bg-destructive/90 text-white px-6 py-3 rounded-lg inline-block mb-10 animate-pulse font-bold tracking-wide shadow-lg border border-white/10">
-              <AlertCircle className="w-5 h-5 inline-block mr-2 -mt-1" />
-              PRICES INCREASE JAN 1ST • ENLIST BY DEC 31 FOR LOCKED-IN RATES
             </div>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
