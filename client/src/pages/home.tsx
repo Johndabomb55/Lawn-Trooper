@@ -129,7 +129,11 @@ export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [slotError, setSlotError] = useState<string | null>(null);
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
-  const [isYearly, setIsYearly] = useState(false);
+  const [discounts, setDiscounts] = useState({
+    yearly: false,
+    veteran: false,
+    senior: false
+  });
   const { toast } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -325,13 +329,24 @@ export default function LandingPage() {
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg">
               Lawn Trooper keeps your yard trimmed, clean, and sharp all season with simple, predictable subscription plans.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-base h-14 px-8 shadow-lg shadow-primary/20">
                 Get My Custom Yard Quote
               </Button>
               <Button onClick={() => scrollToSection('plans')} variant="outline" size="lg" className="border-primary/20 text-primary hover:bg-primary/5 font-bold uppercase tracking-wider text-base h-14 px-8">
                 See Plans & Pricing
               </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-4 text-sm font-medium text-muted-foreground">
+              <div className="flex items-center gap-2 bg-background/50 px-3 py-1.5 rounded-full border border-border">
+                <Shield className="w-4 h-4 text-primary" />
+                <span>Over 25 Years of Service</span>
+              </div>
+              <div className="flex items-center gap-2 bg-background/50 px-3 py-1.5 rounded-full border border-border">
+                <Star className="w-4 h-4 text-accent fill-accent" />
+                <span>100+ Beautification Awards</span>
+              </div>
             </div>
           </motion.div>
           
@@ -934,39 +949,92 @@ export default function LandingPage() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       className="bg-primary/5 border-2 border-primary/20 rounded-xl p-6 shadow-lg"
                     >
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
-                        <div className="text-center md:text-left">
-                          <h4 className="text-muted-foreground uppercase tracking-widest text-xs font-bold mb-1">Estimated Deployment Cost</h4>
-                          <div className="text-5xl font-heading font-bold text-primary flex items-center justify-center md:justify-start gap-1">
-                            <span className="text-2xl mt-2">$</span>
-                            {isYearly ? (estimatedPrice * 12 * 0.8).toFixed(0) : estimatedPrice}
-                            <span className="text-xl text-muted-foreground font-sans font-normal mt-4">
-                              {isYearly ? "/yr" : "/mo"}
-                            </span>
+                      <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-6">
+                        <div className="flex-1">
+                          <h4 className="text-muted-foreground uppercase tracking-widest text-xs font-bold mb-2">Estimated Deployment Cost</h4>
+                          
+                          <div className="flex items-baseline gap-2">
+                             <div className="text-5xl font-heading font-bold text-primary flex items-center">
+                              <span className="text-2xl mt-2">$</span>
+                              {(estimatedPrice * (discounts.yearly ? 12 : 1) * (1 - ((discounts.yearly ? 0.2 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0)))).toFixed(0)}
+                              <span className="text-xl text-muted-foreground font-sans font-normal ml-1 self-end mb-2">
+                                {discounts.yearly ? "/yr" : "/mo"}
+                              </span>
+                            </div>
+                            {(discounts.yearly || discounts.veteran || discounts.senior) && (
+                              <div className="text-sm font-bold text-muted-foreground line-through">
+                                ${estimatedPrice * (discounts.yearly ? 12 : 1)}
+                              </div>
+                            )}
                           </div>
-                          {isYearly && (
-                             <div className="text-sm font-bold text-green-600 mt-1">
-                               <span className="line-through text-muted-foreground mr-2">${estimatedPrice * 12}</span>
-                               Save ${(estimatedPrice * 12 * 0.2).toFixed(0)} (20% OFF)
+
+                          {(discounts.yearly || discounts.veteran || discounts.senior) && (
+                             <div className="text-sm font-bold text-green-600 mt-2 bg-green-100 dark:bg-green-900/30 inline-block px-2 py-1 rounded">
+                               Total Savings: ${(estimatedPrice * (discounts.yearly ? 12 : 1) * ((discounts.yearly ? 0.2 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0))).toFixed(0)}
+                               <span className="ml-1">
+                                 ({((discounts.yearly ? 20 : 0) + (discounts.veteran ? 5 : 0) + (discounts.senior ? 5 : 0))}%) OFF
+                               </span>
                              </div>
                           )}
                         </div>
 
-                        <div className="bg-background border-2 border-primary/10 p-1 rounded-lg flex items-center">
-                           <button
-                             type="button"
-                             onClick={() => setIsYearly(false)}
-                             className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${!isYearly ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:bg-muted'}`}
-                           >
-                             Monthly
-                           </button>
-                           <button
-                             type="button"
-                             onClick={() => setIsYearly(true)}
-                             className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-1 ${isYearly ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:bg-muted'}`}
-                           >
-                             Yearly <span className="bg-accent text-accent-foreground text-[10px] px-1.5 py-0.5 rounded-full ml-1">SAVE 20%</span>
-                           </button>
+                        <div className="bg-background border border-border p-4 rounded-xl w-full md:w-72 shadow-sm">
+                           <h5 className="font-bold text-sm mb-3 flex items-center gap-2">
+                             <Zap className="w-4 h-4 text-accent fill-accent" />
+                             Stackable Discounts
+                           </h5>
+                           <div className="space-y-3">
+                             <div className="flex items-start space-x-3">
+                               <Checkbox 
+                                 id="discount-yearly" 
+                                 checked={discounts.yearly}
+                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, yearly: !!c }))}
+                               />
+                               <div className="grid gap-1.5 leading-none">
+                                 <label
+                                   htmlFor="discount-yearly"
+                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                 >
+                                   Annual Pre-Pay
+                                 </label>
+                                 <p className="text-xs text-muted-foreground">Save 20% instantly</p>
+                               </div>
+                             </div>
+
+                             <div className="flex items-start space-x-3">
+                               <Checkbox 
+                                 id="discount-veteran" 
+                                 checked={discounts.veteran}
+                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, veteran: !!c }))}
+                               />
+                               <div className="grid gap-1.5 leading-none">
+                                 <label
+                                   htmlFor="discount-veteran"
+                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                 >
+                                   Veteran / Active Duty
+                                 </label>
+                                 <p className="text-xs text-muted-foreground">Save an extra 5%</p>
+                               </div>
+                             </div>
+
+                             <div className="flex items-start space-x-3">
+                               <Checkbox 
+                                 id="discount-senior" 
+                                 checked={discounts.senior}
+                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, senior: !!c }))}
+                               />
+                               <div className="grid gap-1.5 leading-none">
+                                 <label
+                                   htmlFor="discount-senior"
+                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                 >
+                                   Senior / Responder
+                                 </label>
+                                 <p className="text-xs text-muted-foreground">Save an extra 5%</p>
+                               </div>
+                             </div>
+                           </div>
                         </div>
                       </div>
 
