@@ -289,6 +289,33 @@ export default function LandingPage() {
     }
   };
 
+
+  const mascotLogo = heroMascot;
+
+  // Calculation Logic for variables used in JSX
+  const termMonths = discounts.agreement === "2year" ? 24 : 12;
+  let freeMonths = 0;
+  if (discounts.agreement === "1year") freeMonths = 1;
+  if (discounts.agreement === "2year") freeMonths = 3;
+  
+  const billableMonths = termMonths - freeMonths;
+  const basePrice = estimatedPrice || 0;
+  const billableBaseCost = basePrice * billableMonths;
+  
+  let percentOff = 0;
+  if (discounts.payFull) {
+    if (discounts.agreement === "2year") {
+        percentOff += 0.15;
+    } else {
+        percentOff += 0.10;
+    }
+  }
+  if (discounts.veteran) percentOff += 0.05;
+  if (discounts.senior) percentOff += 0.05;
+  
+  const finalTotalCost = billableBaseCost * (1 - percentOff);
+  const discountedMonthlyPayment = finalTotalCost / termMonths;
+
   return (
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Navigation */}
@@ -1111,19 +1138,18 @@ export default function LandingPage() {
                                 </div>
                             )}
                         </div>
-                    </div>
-                  </motion.div>
-                  )}
-                </AnimatePresence>
 
-                <Button type="submit" size="lg" className="w-full text-lg font-bold uppercase tracking-wider h-14 bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20">
-                  Deploy My Service
-                </Button>
-              </form>
-            </Form>
-          </div>
-        </div>
-      </section> 
+                        {/* Right Column: Stackable Discounts Controls */}
+                        <div className="bg-background border border-border p-4 rounded-xl w-full md:w-80 shadow-sm">
+                           <h5 className="font-bold text-sm mb-3 flex items-center gap-2">
+                             <Zap className="w-4 h-4 text-accent fill-accent" />
+                             Stackable Discounts
+                           </h5>
+                           <div className="space-y-4">
+                             {/* Agreement Term */}
+                             <div className="space-y-2 pb-3 border-b border-border/50">
+                               <Label className="text-xs font-bold uppercase text-muted-foreground">Service Agreement</Label>
+                               <RadioGroup 
                                  value={discounts.agreement} 
                                  onValueChange={(val) => setDiscounts(prev => ({ ...prev, agreement: val }))}
                                  className="flex flex-col gap-2"
@@ -1216,8 +1242,8 @@ export default function LandingPage() {
                   )}
                 </AnimatePresence>
 
-                <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-16 text-xl shadow-lg shadow-primary/25">
-                  Request Quote & Lock In Offers
+                <Button type="submit" size="lg" className="w-full text-lg font-bold uppercase tracking-wider h-14 bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20">
+                  Deploy My Service
                 </Button>
                 <p className="text-xs text-center text-muted-foreground mt-4">
                   By submitting, you agree to receive text/email communications about your quote. We never sell your data.
