@@ -16,7 +16,9 @@ import {
   MapPin,
   Calendar,
   Zap,
-  Leaf
+  Leaf,
+  Info,
+  AlertCircle
 } from "lucide-react";
 import { 
   Accordion, 
@@ -31,7 +33,8 @@ import {
   FormField, 
   FormItem, 
   FormLabel, 
-  FormMessage 
+  FormMessage,
+  FormDescription
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { 
@@ -42,7 +45,10 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -52,16 +58,61 @@ import camoPattern from "@assets/generated_images/subtle_camo_texture_background
 // Schema for the quote form
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Valid phone number required"),
-  address: z.string().min(5, "Property address is required"),
+  address: z.string().min(5, "Full street address is required"),
+  contactMethod: z.enum(["text", "phone", "email", "either"], {
+    required_error: "Please select a contact method",
+  }),
+  phone: z.string().optional(),
+  email: z.string().optional(),
   yardSize: z.string().min(1, "Please select a yard size"),
-  plan: z.string().min(1, "Please select a plan interest"),
+  plan: z.enum(["basic", "premium", "executive"], {
+    required_error: "Please select a plan",
+  }),
+  addOns: z.array(z.string()).default([]),
   notes: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Phone number is required for this contact method",
+      path: ["phone"],
+    });
+  }
+  if (data.contactMethod === "email" && !data.email) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Email is required for this contact method",
+      path: ["email"],
+    });
+  }
+  if (data.contactMethod === "either" && !data.phone && !data.email) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Please provide either phone or email",
+      path: ["phone"],
+    });
+  }
 });
+
+const basicAddOns = [
+  { id: "leaf_cleanup", label: "Leaf cleanup (basic)" },
+  { id: "shrub_trim", label: "Light shrub trim" },
+  { id: "bed_tidy", label: "Simple bed tidy-up" },
+  { id: "extra_mow", label: "One-time extra mow" },
+  { id: "blow_off", label: "Simple sidewalk/driveway blow-off" },
+];
+
+const premiumAddOns = [
+  { id: "deep_cleanup", label: "Deep seasonal cleanup" },
+  { id: "mulch_refresh", label: "Mulch refresh (beds only)" },
+  { id: "hedge_shaping", label: "Hedge shaping (front yard)" },
+  { id: "heavy_leaf", label: "Heavy leaf removal" },
+  { id: "flower_bed", label: "Flower bed detail service" },
+];
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [slotError, setSlotError] = useState<string | null>(null);
   const { toast } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -71,9 +122,81 @@ export default function LandingPage() {
       email: "",
       phone: "",
       address: "",
+      contactMethod: "email",
+      plan: "basic", // Default to basic
+      addOns: [],
       notes: "",
     },
   });
+
+  const selectedPlan = form.watch("plan");
+  const selectedAddOns = form.watch("addOns");
+
+  // Calculate slots
+  const calculateSlots = (currentAddOns: string[]) => {
+    let slots = 0;
+    currentAddOns.forEach(id => {
+      if (basicAddOns.find(a => a.id === id)) slots += 1;
+      if (premiumAddOns.find(a => a.id === id)) slots += 2;
+    });
+    return slots;
+  };
+
+  const getPlanLimits = (plan: string) => {
+    switch(plan) {
+      case "basic": return { maxSlots: 2, allowPremium: false, label: "Basic Patrol includes up to 2 Basic add-ons." };
+      case "premium": return { maxSlots: 8, allowPremium: true, label: "You can choose up to 8 slots worth of add-ons (Basic = 1, Premium = 2)." };
+      case "executive": return { maxSlots: 14, allowPremium: true, label: "You can choose up to 14 slots worth of add-ons (Basic = 1, Premium = 2)." };
+      default: return { maxSlots: 0, allowPremium: false, label: "" };
+    }
+  };
+
+  const handleAddOnToggle = (id: string, isPremium: boolean) => {
+    const limits = getPlanLimits(selectedPlan);
+    const currentAddOns = form.getValues("addOns");
+    const isCurrentlySelected = currentAddOns.includes(id);
+    
+    setSlotError(null);
+
+    if (isCurrentlySelected) {
+      // Removing is always allowed
+      form.setValue("addOns", currentAddOns.filter(item => item !== id));
+    } else {
+      // Adding requires check
+      if (isPremium && !limits.allowPremium) {
+        return; // Should be disabled anyway
+      }
+
+      const cost = isPremium ? 2 : 1;
+      const currentSlots = calculateSlots(currentAddOns);
+      
+      if (currentSlots + cost > limits.maxSlots) {
+        setSlotError(`You’ve selected the maximum add-ons included with your plan.`);
+        // Clear error after 3 seconds
+        setTimeout(() => setSlotError(null), 3000);
+        return;
+      }
+
+      form.setValue("addOns", [...currentAddOns, id]);
+    }
+  };
+
+  // Reset add-ons when plan changes to strictly incompatible ones (like premium add-ons on basic plan)
+  useEffect(() => {
+    const currentAddOns = form.getValues("addOns");
+    if (selectedPlan === "basic") {
+      // Remove any premium add-ons if switching to basic
+      const validAddOns = currentAddOns.filter(id => basicAddOns.find(b => b.id === id));
+      // Also check if we exceed 2 slots (2 basics)
+      if (validAddOns.length > 2) {
+        // Keep only first 2
+        form.setValue("addOns", validAddOns.slice(0, 2));
+      } else if (validAddOns.length !== currentAddOns.length) {
+        form.setValue("addOns", validAddOns);
+      }
+    }
+  }, [selectedPlan, form]);
+
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -82,7 +205,16 @@ export default function LandingPage() {
       description: "Your quote request has been secured. Stand by for contact from our command center.",
       duration: 5000,
     });
-    form.reset();
+    form.reset({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      contactMethod: "email",
+      plan: "basic",
+      addOns: [],
+      notes: "",
+    });
   }
 
   const scrollToSection = (id: string) => {
@@ -291,7 +423,7 @@ export default function LandingPage() {
                 </h3>
                 <p className="text-sm text-muted-foreground mt-2">For those who never want to think about their yard again.</p>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">$249</span>
+                  <span className="text-3xl font-bold">$299</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
@@ -329,7 +461,7 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-heading font-bold text-primary">Premium Command</h3>
                 <p className="text-sm text-muted-foreground mt-2">Enhanced care including weed control and beds.</p>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">$179</span>
+                  <span className="text-3xl font-bold">$199</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
@@ -360,7 +492,7 @@ export default function LandingPage() {
 
           <div className="mt-12 text-center">
             <p className="text-sm text-muted-foreground bg-white/50 inline-block px-4 py-2 rounded-lg border border-border">
-              <strong>Note:</strong> All plans billed monthly. Larger lots receive a fast custom quote. 
+              <strong>Note:</strong> Prices shown are for up to 1/4 acre. Larger lots are no problem — we’ll measure and send a fast custom quote.
             </p>
           </div>
         </div>
@@ -437,7 +569,7 @@ export default function LandingPage() {
               { q: "How does billing work?", a: "We use simple monthly billing charged to your card on file. Predictable, consistent pricing all year round." },
               { q: "What if my yard is bigger than 1/4 acre?", a: "No problem. The prices listed are starting points. Select your approximate size in the quote form, and we will give you a custom adjusted rate that is just as competitive." },
               { q: "Do you use robotic mowers?", a: "Yes! In suitable yards, we deploy advanced robotic mowers for frequent maintenance cuts, supported by our human crew for edging, trimming, and detail work." },
-              { q: "What if I move or need to cancel?", a: "We understand plans change. If you move, we can transfer service. Early cancellation on term agreements may incur a catch-up fee for any free months you've already utilized." }
+              { q: "What if I move or need to cancel?", a: "You can cancel any time. You’ll just forfeit the free months that were scheduled at the end of your agreement." }
             ].map((faq, i) => (
               <AccordionItem key={i} value={`item-${i}`} className="bg-card px-6 rounded-lg border border-border shadow-sm">
                 <AccordionTrigger className="font-bold text-left hover:text-primary hover:no-underline py-4">{faq.q}</AccordionTrigger>
@@ -450,7 +582,7 @@ export default function LandingPage() {
 
       {/* Quote Form Section */}
       <section id="quote" className="py-24 bg-background relative overflow-hidden">
-        <div className="container mx-auto px-4 max-w-2xl relative z-10">
+        <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <div className="text-center mb-10">
             <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
               <Clock className="w-8 h-8" />
@@ -461,14 +593,17 @@ export default function LandingPage() {
 
           <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                {/* 1. Contact Info */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">1. Contact Intel</h3>
+                  
                   <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full Name</FormLabel>
+                        <FormLabel>Full Name <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input placeholder="John Doe" {...field} />
                         </FormControl>
@@ -476,14 +611,166 @@ export default function LandingPage() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
-                    name="phone"
+                    name="address"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mobile Phone</FormLabel>
+                        <FormLabel>Full Street Address <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
-                          <Input placeholder="(555) 123-4567" {...field} />
+                          <Input placeholder="123 Maple Ave, Springfield, IL 62704" {...field} />
+                        </FormControl>
+                        <FormDescription>Include City and Zip Code</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="contactMethod"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preferred Contact Method <span className="text-red-500">*</span></FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select method" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="text">Text Message</SelectItem>
+                              <SelectItem value="phone">Phone Call</SelectItem>
+                              <SelectItem value="email">Email</SelectItem>
+                              <SelectItem value="either">Either (Phone or Email)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="yardSize"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Approx. Yard Size <span className="text-red-500">*</span></FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select size" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="up-to-1/4">Up to 1/4 acre</SelectItem>
+                              <SelectItem value="1/4-1/2">1/4 - 1/2 acre</SelectItem>
+                              <SelectItem value="1/2-3/4">1/2 - 3/4 acre</SelectItem>
+                              <SelectItem value="3/4-1">3/4 - 1 acre</SelectItem>
+                              <SelectItem value="1+">1+ acre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mobile Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="(555) 123-4567" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="john@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
+                    <Info className="w-3 h-3 inline mr-1" />
+                    To give you a quote, all we really need is your address and a way to reach you. Photos are helpful but optional.
+                  </div>
+                </div>
+
+                {/* 2. Plan Selection */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Choose Your Plan</h3>
+                  
+                  <FormField
+                    control={form.control}
+                    name="plan"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="grid md:grid-cols-3 gap-4"
+                          >
+                            <FormItem>
+                              <FormControl>
+                                <RadioGroupItem value="basic" className="peer sr-only" />
+                              </FormControl>
+                              <Label
+                                htmlFor="basic"
+                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
+                              >
+                                <span className="mb-2 text-lg font-bold">Basic Patrol</span>
+                                <span className="text-sm text-center text-muted-foreground">Weekly mowing & edging. 2 Free add-ons.</span>
+                                <span className="mt-2 text-sm font-bold text-primary">From $129/mo</span>
+                              </Label>
+                            </FormItem>
+                            
+                            <FormItem>
+                              <FormControl>
+                                <RadioGroupItem value="premium" className="peer sr-only" />
+                              </FormControl>
+                              <Label
+                                htmlFor="premium"
+                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
+                              >
+                                <span className="mb-2 text-lg font-bold">Premium Command</span>
+                                <span className="text-sm text-center text-muted-foreground">Plus weed control & beds. 5 Total add-ons.</span>
+                                <span className="mt-2 text-sm font-bold text-primary">From $199/mo</span>
+                              </Label>
+                            </FormItem>
+                            
+                            <FormItem>
+                              <FormControl>
+                                <RadioGroupItem value="executive" className="peer sr-only" />
+                              </FormControl>
+                              <Label
+                                htmlFor="executive"
+                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
+                              >
+                                <span className="mb-2 text-lg font-bold flex items-center gap-1">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
+                                <span className="text-sm text-center text-muted-foreground">Full service. Priority status. 8 Total add-ons.</span>
+                                <span className="mt-2 text-sm font-bold text-primary">From $299/mo</span>
+                              </Label>
+                            </FormItem>
+                          </RadioGroup>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -491,102 +778,113 @@ export default function LandingPage() {
                   />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="john@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                {/* 3. Add-ons Selection */}
+                <div className="space-y-6">
+                  <div className="flex flex-col gap-1 border-b border-border pb-2">
+                    <h3 className="text-lg font-bold font-heading uppercase text-primary">3. Choose Your Add-Ons</h3>
+                    <p className="text-sm text-muted-foreground">Included in your plan.</p>
+                  </div>
+
+                  <div className="bg-muted/30 p-4 rounded-lg border border-border">
+                    <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
+                      <Info className="w-4 h-4 mt-0.5" />
+                      {getPlanLimits(selectedPlan).label}
+                    </div>
+                    <p className="text-xs text-muted-foreground ml-6">
+                      Basic add-ons cost 1 slot. Premium add-ons cost 2 slots. Your plan includes a certain number of slots you can use on Basic or Premium add-ons.
+                    </p>
+                  </div>
+
+                  {slotError && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-red-50 text-red-600 p-3 rounded-md border border-red-200 text-sm flex items-center gap-2"
+                    >
+                      <AlertCircle className="w-4 h-4" />
+                      {slotError}
+                    </motion.div>
                   )}
-                />
 
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Property Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="123 Maple Ave, Springfield" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {/* Basic Add-ons */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-Ons (1 Slot)</h4>
+                      {basicAddOns.map((addon) => (
+                        <div key={addon.id} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={addon.id} 
+                            checked={selectedAddOns.includes(addon.id)}
+                            onCheckedChange={() => handleAddOnToggle(addon.id, false)}
+                          />
+                          <Label 
+                            htmlFor={addon.id} 
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {addon.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="yardSize"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Approx. Yard Size</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select size" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="up-to-1/4">Up to 1/4 acre</SelectItem>
-                            <SelectItem value="1/4-1/2">1/4 - 1/2 acre</SelectItem>
-                            <SelectItem value="1/2-3/4">1/2 - 3/4 acre</SelectItem>
-                            <SelectItem value="3/4-1">3/4 - 1 acre</SelectItem>
-                            <SelectItem value="1+">1+ acre</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="plan"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Interested Plan</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select plan" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="basic">Basic Patrol</SelectItem>
-                            <SelectItem value="premium">Premium Command</SelectItem>
-                            <SelectItem value="executive">Executive Deployment</SelectItem>
-                            <SelectItem value="unsure">Not sure yet</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    {/* Premium Add-ons */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Premium Add-Ons (2 Slots)</h4>
+                      {premiumAddOns.map((addon) => {
+                        const isDisabled = !getPlanLimits(selectedPlan).allowPremium;
+                        return (
+                          <div key={addon.id} className={`flex items-center space-x-2 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                            <Checkbox 
+                              id={addon.id} 
+                              checked={selectedAddOns.includes(addon.id)}
+                              onCheckedChange={() => handleAddOnToggle(addon.id, true)}
+                              disabled={isDisabled}
+                            />
+                            <Label 
+                              htmlFor={addon.id} 
+                              className={`text-sm font-normal ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                            >
+                              {addon.label}
+                            </Label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
+                {/* 4. Optional Info */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">4. Recon Data (Optional)</h3>
+                  
+                  <div className="grid gap-6">
                     <FormItem>
-                      <FormLabel>Special Instructions / Gate Codes</FormLabel>
+                      <FormLabel>Yard Photos</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="Fenced backyard, dog on property, specific gate code, etc." 
-                          className="resize-none"
-                          {...field} 
-                        />
+                        <Input type="file" accept="image/*" multiple className="cursor-pointer" />
                       </FormControl>
-                      <FormMessage />
+                      <FormDescription>Upload photos of your yard to help us quote faster.</FormDescription>
                     </FormItem>
-                  )}
-                />
+
+                    <FormField
+                      control={form.control}
+                      name="notes"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Special Instructions / Gate Codes</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Fenced backyard, dog on property, specific gate code, etc." 
+                              className="resize-none"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
 
                 <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 text-lg shadow-lg">
                   Request Quote & Lock In Offers

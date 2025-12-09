@@ -1,0 +1,177 @@
+You already created a Lawn Trooper landing page. 
+
+Now MODIFY the EXISTING PAGE (do not rebuild from scratch) with the following updates and rules. Keep the general layout, copy style, colors, hero section, pricing, and contact-method validation you already implemented, but adjust and extend it as described below.
+
+────────────────
+1) CONTACT + ADDRESS LOGIC (KEEP / CONFIRM)
+────────────────
+Keep or enforce this behavior in the quote form:
+
+- REQUIRED:
+  - Name
+  - Full Street Address (include city & ZIP in one field)
+  - Preferred contact method (Text, Phone call, Email, Either)
+- CONDITIONAL REQUIRED:
+  - If “Text” or “Phone call” is selected → Phone number is required.
+  - If “Email” is selected → Email is required.
+  - If “Either” is selected → at least **one** of phone OR email is required.
+- OPTIONAL:
+  - Yard photos (file input, accept="image/*", multiple).
+  - Comments textarea.
+
+Add a short helper line under the form saying:
+“To give you a quote, all we really need is your address and a way to reach you. Photos are helpful but optional.”
+
+Use simple vanilla JavaScript for validation and show friendly inline error messages if they try to submit without required fields.
+
+────────────────
+2) FAQ – CANCELLATION ANSWER (UPDATE)
+────────────────
+In the FAQ section, for the question:
+
+“What happens if I move or need to cancel early?”
+
+Make the answer say, clearly and simply:
+
+“You can cancel any time. You’ll just forfeit the free months that were scheduled at the end of your agreement.”
+
+Do NOT add extra legal language; keep it friendly and concise.
+
+────────────────
+3) PRICING REMINDER (KEEP / CONFIRM)
+────────────────
+Ensure pricing is clearly shown as starting prices for **up to 1/4 acre**:
+
+- Basic Patrol: starting at **$129/mo** (up to 1/4 acre)
+- Premium Command: starting at **$199/mo** (up to 1/4 acre)
+- Executive Deployment: starting at **$299/mo** (up to 1/4 acre)
+
+Below the pricing cards, keep a small note like:
+“Prices shown are for up to 1/4 acre. Larger lots are no problem — we’ll measure and send a fast custom quote.”
+
+────────────────
+4) ADD AN EXPLICIT “PLAN SELECTION” CONTROL IN THE FORM
+────────────────
+Add a **required** “Choose Your Plan” section inside the quote form (not just as display in the pricing table).
+
+Use **radio buttons** so the customer can only pick ONE plan:
+
+- Basic Patrol
+- Premium Command
+- Executive Deployment
+
+One of them must be selected before submitting the form.
+
+This plan choice will control how many add-ons they can select in the next step.
+
+────────────────
+5) ADD-ONS LIST (BASIC & PREMIUM) WITH RULES
+────────────────
+Add a new section in the quote form labeled:
+
+“Choose Your Add-Ons (Included in Your Plan)”
+
+Under that, create two groups of checkboxes:
+
+A) Basic Add-Ons (each Basic add-on costs 1 “slot”)
+   Example items (you can format as a nice list):
+   - Leaf cleanup (basic)
+   - Light shrub trim
+   - Simple bed tidy-up
+   - One-time extra mow
+   - Simple sidewalk/driveway blow-off
+
+B) Premium Add-Ons (each Premium add-on costs 2 “slots”)
+   Example items:
+   - Deep seasonal cleanup
+   - Mulch refresh (beds only)
+   - Hedge shaping (front yard)
+   - Heavy leaf removal
+   - Flower bed detail service
+
+You may adjust labels slightly for clarity, but keep a clear “Basic” vs “Premium” grouping with headings.
+
+Add a short explanatory line above the lists, like:
+“Basic add-ons cost 1 slot. Premium add-ons cost 2 slots. Your plan includes a certain number of slots you can use on Basic or Premium add-ons.”
+
+────────────────
+6) PLAN → ADD-ON LIMITS & TRADE RULES (IMPORTANT)
+────────────────
+Use JavaScript to enforce how many add-ons they can pick based on the selected plan.
+
+Slot system:
+- Each Basic add-on = 1 slot.
+- Each Premium add-on = 2 slots.
+
+Plan entitlements (in slots):
+
+- Basic Patrol:
+  - Includes **2 Basic add-ons**.
+  - NO trading and NO Premium add-ons.
+  - Implementation:
+    - Allow up to **2 Basic** add-ons (2 slots).
+    - Disable Premium add-on checkboxes (greyed out / not clickable).
+    - Show a note under the Basic plan selection like:
+      “Basic Patrol includes up to 2 Basic add-ons.”
+
+- Premium Command:
+  - Default entitlement: 2 Basic + 3 Premium.
+  - That equals **8 slots total** (2×1 + 3×2 = 2 + 6 = 8).
+  - They ARE allowed to trade 2 Basics for 1 Premium or vice versa.
+  - Implementation:
+    - For Premium Command, allow Basic and Premium checkboxes.
+    - Enforce rule: `basicCount * 1 + premiumCount * 2 <= 8` slots.
+    - If the user tries to check an add-on that would exceed 8 slots, prevent that checkbox from being checked and show a small message like “You’ve selected the maximum add-ons included with your plan.”
+
+- Executive Deployment:
+  - Default entitlement: 2 Basic + 6 Premium.
+  - That equals **14 slots total** (2×1 + 6×2 = 2 + 12 = 14).
+  - They ARE allowed to trade 2 Basics for 1 Premium or vice versa.
+  - Implementation:
+    - For Executive Deployment, allow Basic and Premium checkboxes.
+    - Enforce rule: `basicCount * 1 + premiumCount * 2 <= 14` slots.
+    - Same behavior: block/check prevention if they exceed 14 slots with a friendly message.
+
+This “slot” system automatically allows trading:
+- 2 Basics (2 slots) ↔ 1 Premium (2 slots) for PREMIUM and EXECUTIVE only.
+- BASIC plan has no trading and Premium checkboxes disabled, as required.
+
+UI details:
+- When a plan is selected, show a small text line under the add-ons area indicating:
+  - “You can choose up to 2 Basic add-ons” (for Basic Patrol)
+  - “You can choose up to 8 slots worth of add-ons (Basic = 1, Premium = 2)” (for Premium Command)
+  - “You can choose up to 14 slots worth of add-ons (Basic = 1, Premium = 2)” (for Executive Deployment)
+- Update this text dynamically when the user changes the plan selection.
+
+Technical detail:
+- Use vanilla JS to:
+  - Listen for changes on the plan radio buttons.
+  - Enable/disable Premium checkboxes when switching between Basic vs Premium/Executive.
+  - On each checkbox change, recalculate:
+    - `basicCount = number of checked Basic add-ons`
+    - `premiumCount = number of checked Premium add-ons`
+    - `totalSlots = basicCount + 2 * premiumCount`
+  - If `totalSlots > allowedSlotsForPlan`, immediately undo that last checkbox change and display a small notice near the add-ons list (e.g., a span with error text).
+
+────────────────
+7) STYLE / DESIGN NOTES (KEEP / CONFIRM)
+────────────────
+- Keep the earth-tone color palette: deep army green, forest green, olive, tan, warm brown, off-white, with small accents of muted gold or brick red.
+- Keep the large hero/logo concept:
+  - Big “Lawn Trooper” title.
+  - Placeholder hero area describing:
+    - Cartoon Lawn Trooper character holding a weed eater like a rifle (not a weapon).
+    - Realistic yard/home background with flowers, mulch, turf, and a robot mower.
+- Make sure the logo/hero area remains visually prominent at the top.
+
+────────────────
+DELIVERABLE
+────────────────
+- Update the existing HTML/CSS/JS to include:
+  - The required contact + address logic.
+  - The updated FAQ cancellation answer.
+  - The explicit plan selection radio buttons in the form.
+  - The Add-ons section with Basic & Premium groups.
+  - The JavaScript enforcement of add-on slot limits and trading rules based on plan.
+
+Return the complete, updated HTML file (with inline CSS and JS) that implements all of the above changes while preserving the high-conversion, clean layout of the current page.
