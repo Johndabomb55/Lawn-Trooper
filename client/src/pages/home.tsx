@@ -729,10 +729,8 @@ export default function LandingPage() {
                             defaultValue={field.value}
                             className="grid md:grid-cols-3 gap-4"
                           >
-                            <FormItem>
-                              <FormControl>
-                                <RadioGroupItem value="basic" className="peer sr-only" />
-                              </FormControl>
+                            <div className="relative">
+                              <RadioGroupItem value="basic" id="basic" className="peer sr-only" />
                               <Label
                                 htmlFor="basic"
                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
@@ -741,12 +739,10 @@ export default function LandingPage() {
                                 <span className="text-sm text-center text-muted-foreground">Weekly mowing & edging. 2 Free add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">From $129/mo</span>
                               </Label>
-                            </FormItem>
+                            </div>
                             
-                            <FormItem>
-                              <FormControl>
-                                <RadioGroupItem value="premium" className="peer sr-only" />
-                              </FormControl>
+                            <div className="relative">
+                              <RadioGroupItem value="premium" id="premium" className="peer sr-only" />
                               <Label
                                 htmlFor="premium"
                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
@@ -755,12 +751,10 @@ export default function LandingPage() {
                                 <span className="text-sm text-center text-muted-foreground">Plus weed control & beds. 5 Total add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">From $199/mo</span>
                               </Label>
-                            </FormItem>
+                            </div>
                             
-                            <FormItem>
-                              <FormControl>
-                                <RadioGroupItem value="executive" className="peer sr-only" />
-                              </FormControl>
+                            <div className="relative">
+                              <RadioGroupItem value="executive" id="executive" className="peer sr-only" />
                               <Label
                                 htmlFor="executive"
                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
@@ -769,7 +763,7 @@ export default function LandingPage() {
                                 <span className="text-sm text-center text-muted-foreground">Full service. Priority status. 8 Total add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">From $299/mo</span>
                               </Label>
-                            </FormItem>
+                            </div>
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
