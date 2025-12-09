@@ -129,6 +129,7 @@ export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [slotError, setSlotError] = useState<string | null>(null);
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
+  const [isYearly, setIsYearly] = useState(false);
   const { toast } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -931,15 +932,45 @@ export default function LandingPage() {
                     <motion.div 
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      className="bg-primary/5 border-2 border-primary/20 rounded-xl p-6 text-center shadow-lg"
+                      className="bg-primary/5 border-2 border-primary/20 rounded-xl p-6 shadow-lg"
                     >
-                      <h4 className="text-muted-foreground uppercase tracking-widest text-xs font-bold mb-1">Estimated Deployment Cost</h4>
-                      <div className="text-5xl font-heading font-bold text-primary flex items-center justify-center gap-1">
-                        <span className="text-2xl mt-2">$</span>
-                        {estimatedPrice}
-                        <span className="text-xl text-muted-foreground font-sans font-normal mt-4">/mo</span>
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
+                        <div className="text-center md:text-left">
+                          <h4 className="text-muted-foreground uppercase tracking-widest text-xs font-bold mb-1">Estimated Deployment Cost</h4>
+                          <div className="text-5xl font-heading font-bold text-primary flex items-center justify-center md:justify-start gap-1">
+                            <span className="text-2xl mt-2">$</span>
+                            {isYearly ? (estimatedPrice * 12 * 0.8).toFixed(0) : estimatedPrice}
+                            <span className="text-xl text-muted-foreground font-sans font-normal mt-4">
+                              {isYearly ? "/yr" : "/mo"}
+                            </span>
+                          </div>
+                          {isYearly && (
+                             <div className="text-sm font-bold text-green-600 mt-1">
+                               <span className="line-through text-muted-foreground mr-2">${estimatedPrice * 12}</span>
+                               Save ${(estimatedPrice * 12 * 0.2).toFixed(0)} (20% OFF)
+                             </div>
+                          )}
+                        </div>
+
+                        <div className="bg-background border-2 border-primary/10 p-1 rounded-lg flex items-center">
+                           <button
+                             type="button"
+                             onClick={() => setIsYearly(false)}
+                             className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${!isYearly ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:bg-muted'}`}
+                           >
+                             Monthly
+                           </button>
+                           <button
+                             type="button"
+                             onClick={() => setIsYearly(true)}
+                             className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-1 ${isYearly ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:bg-muted'}`}
+                           >
+                             Yearly <span className="bg-accent text-accent-foreground text-[10px] px-1.5 py-0.5 rounded-full ml-1">SAVE 20%</span>
+                           </button>
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+
+                      <p className="text-sm text-muted-foreground mt-2 text-center md:text-left border-t border-primary/10 pt-4">
                         Best value pricing for 2025. Savings passed directly to you through AI-driven efficiency.
                       </p>
                     </motion.div>
