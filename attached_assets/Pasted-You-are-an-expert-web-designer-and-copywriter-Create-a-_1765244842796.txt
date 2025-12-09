@@ -1,0 +1,143 @@
+You are an expert web designer and copywriter. 
+
+Create a SINGLE, RESPONSIVE landing page for a company called **Lawn Trooper**.
+
+Goal: Convert visitors from online ads into paying **yard subscription** customers as fast and simply as possible.
+
+Tech requirements:
+- Use plain HTML, CSS, and a tiny bit of vanilla JavaScript if needed.
+- No external frameworks.
+- Clean, modern, fast-loading, mobile-first.
+- Everything in one file (index.html style).
+
+Brand & vibe:
+- Residential lawn care with a **disciplined, military-inspired** theme.
+- Colors: earth tones and patriotic accents: deep army green, dark forest green, tan, off-white, and small touches of gold or muted red.
+- Mascot vibe: confident but friendly “Lawn Trooper” – think soldier with a weed eater like a rifle (no weapons imagery, just the playful metaphor).
+- Tone: **reliable, professional, tech-savvy, subscription-based, no-stress yard care**.
+
+Business concept:
+Lawn Trooper is a **subscription lawn service** that keeps your yard looking perfect all season with predictable monthly pricing. We use a mix of **smart robotic mowers and pro technicians** in clean uniforms, driving modern, efficient vehicles. The customer never has to worry about calling, scheduling, or remembering yard care again.
+
+Core promise:
+> “Set it once. Your yard stays mission-ready all year.”
+
+Key benefits (turn into icons or bullet features near the top):
+- Weekly or regular mowing included
+- Clear subscription plans (no surprise charges)
+- Priority scheduling & reliable show-up
+- Tech-driven efficiency = better value
+- Friendly, background-checked lawn techs
+- Easy communication by text/email
+
+Subscription structure (IMPORTANT):
+Price is based on **yard size by quarter acre**, not just the plan.
+Show a **simple pricing table** with sample prices the customer can edit later.
+
+Three plans:
+1. **Basic Patrol**
+   - For small to medium yards.
+   - Includes regular mowing and edging.
+   - Includes **2 free off-season add-ons** per year (examples: leaf pickup, light shrub trim, spring cleanup, etc.).
+   - Billed monthly with a 1-year or 2-year agreement.
+
+2. **Premium Command**
+   - Everything in Basic.
+   - Plus: routine weed control along edges, light bed cleanup, and a more polished “always-ready” look.
+   - Includes **2 Basic add-ons + 3 Premium add-ons** per year (Premium examples: deeper seasonal cleanups, light mulching, minor hedging).
+   - Better per-cut effective rate than Basic for the same yard size.
+   - Billed monthly with 1-year or 2-year agreement.
+
+3. **Executive Deployment**
+   - For customers who want **“I never think about my yard again”**.
+   - Includes everything in Premium plus priority service, more detailed bed care, and extra seasonal attention.
+   - Includes **2 Basic add-ons + 6 Premium add-ons** per year.
+   - **No install/setup fee** (waived) on 2-year agreements.
+   - **Best value per visit**.
+   - Designed to be irresistible for people who value time and curb appeal.
+
+Contracts & promos (explain clearly and simply):
+- **Month-to-month billing**, but with a commitment:
+  - 1-year agreement: **1 free month** built in.
+  - 2-year agreement: **3 free months total** built in.
+- If they **pay in full up front**, they get an **extra 2 months free** on top of those offers.
+- Executive plan: often recommended with the 2-year pay-in-full option as the **absolute best value**.
+- A short note that early cancellations may incur a catch-up fee for free months already used (don’t get too legalistic, just mention it simply).
+
+Layout & sections (in this order):
+
+1. **Hero section (above the fold)**  
+   - Bold headline:  
+     “Set Your Yard to Mission-Ready and Forget About It.”  
+   - Subheadline:  
+     “Lawn Trooper keeps your yard trimmed, clean, and sharp all season with simple, predictable subscription plans.”  
+   - Big CTA button: “Get My Custom Yard Quote” (scrolls to form).  
+   - Secondary CTA: “See Plans & Pricing” (scrolls to pricing section).  
+   - Background: clean hero illustration or gradient using brand colors (no stock image URLs, just placeholder section styling).
+
+2. **How It Works (3 simple steps)**  
+   Example steps:
+   - Step 1: “Choose your plan & yard size”  
+   - Step 2: “We ‘deploy’ your Lawn Trooper crew”  
+   - Step 3: “Enjoy an always-ready yard with auto-scheduled visits”
+
+3. **Plans & Pricing Section**  
+   - Three cards: Basic Patrol, Premium Command, Executive Deployment.  
+   - Each card:
+     - Short tagline (e.g., “Solid weekly protection for your yard”).
+     - List features.
+     - Note that price shows **“Starting at $X/mo for up to 1/4 acre”** with a line beneath like “Larger lots: we’ll give you a fast custom quote.”
+     - Highlight Executive card visually as “Most Popular” or “Best Value”.
+   - Under the cards, a small text note:  
+     “All plans billed monthly. 1-year and 2-year options with up to 3 free months + 2 extra months free when you pay in full. Executive plan waives the install fee on 2-year agreements.”
+
+4. **Why Lawn Trooper? (Trust & proof)**  
+   Short bullets such as:
+   - “Locally owned, not a faceless national chain.”
+   - “Tech-forward: smart routing, robotic mowers where appropriate.”
+   - “Consistent crews so you know who’s in your yard.”
+   - “Mission mindset: we treat every yard like an assignment we have to complete with excellence.”
+   You can include a small “testimonial-style” quote placeholder, like:  
+   “My yard has never looked this consistently good. I don’t even think about mowing anymore.” — Happy Customer
+
+5. **Promotions Banner**  
+   A visually distinct band across the page, summarizing the promos:
+   - “Sign a 1-year agreement: 1 month free.”
+   - “Sign a 2-year agreement: 3 months free + waived install on Executive.”
+   - “Pay in full: extra 2 months free.”
+   Make it feel urgent but not pushy: e.g., “Founding Customer Offer – Available for a Limited Time.”
+
+6. **FAQ Section**  
+   A few simple questions:
+   - “How do you bill me?”  
+   - “What if my yard is bigger than 1/4 acre?”  
+   - “What happens if I move or need to cancel early?”  
+   - “Do you use robotic mowers?”  
+   Keep each answer 1–3 sentences, clear and reassuring.
+
+7. **Lead Capture / Quote Form (the main conversion point)**  
+   Simple, clean form with:
+   - Name
+   - Address
+   - Email
+   - Mobile phone
+   - Yard size dropdown: “Up to 1/4 acre, 1/4–1/2 acre, 1/2–3/4 acre, 3/4–1 acre, 1+ acre”
+   - Plan interest dropdown: “Basic Patrol, Premium Command, Executive Deployment, Not sure—recommend one”
+   - Short text box: “Anything special about your property we should know?”
+   - Big submit button: “Request My Quote & Lock In Offers”
+   After submission, use JavaScript to show a simple success message like:
+   “Thanks! Your Lawn Trooper quote request has been received. We’ll contact you soon to finalize your plan.”
+
+8. **Footer**  
+   - Company name, city/region.
+   - Simple links: “Privacy Policy”, “Terms”, “Contact”.
+   - Small tagline: “Lawn Trooper – Your Yard, Always Mission-Ready.”
+
+Copy style:
+- Short, punchy, high-conversion language.
+- Avoid long paragraphs; use short lines and bullets.
+- Make the offer feel **irresistible** for busy homeowners who want a permanently good-looking yard and hate thinking about lawn care.
+
+Deliverable:
+- Output the complete HTML file with inline CSS and any minimal JS required.
+- Make the design visually appealing but simple enough for a non-coder to tweak text and numbers later.
