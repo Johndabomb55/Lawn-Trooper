@@ -55,6 +55,13 @@ import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.p
 import mascotLogo from "@assets/generated_images/lawn_trooper_mascot_logo.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 
+// Stock Assets
+import heroLuxury from "@assets/stock_images/luxury_manicured_law_62092365.jpg";
+import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
+import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
+import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
+import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
+
 // Schema for the quote form
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -95,27 +102,27 @@ const formSchema = z.object({
 });
 
 const basicAddOns = [
-  { id: "leaf_cleanup", label: "Leaf cleanup (basic)" },
-  { id: "shrub_trim", label: "Light shrub trim" },
-  { id: "bed_tidy", label: "Simple bed tidy-up" },
-  { id: "extra_mow", label: "One-time extra mow" },
-  { id: "blow_off", label: "Simple sidewalk/driveway blow-off" },
-  { id: "spring_flowers", label: "Spring Flowers (Labor Only)" },
-  { id: "fall_flowers", label: "Fall Flowers (Labor Only)" },
+  { id: "leaf_cleanup", label: "Leaf cleanup (basic)", img: imgLeaf },
+  { id: "shrub_trim", label: "Light shrub trim", img: null },
+  { id: "bed_tidy", label: "Simple bed tidy-up", img: null },
+  { id: "extra_mow", label: "One-time extra mow", img: null },
+  { id: "blow_off", label: "Simple sidewalk/driveway blow-off", img: null },
+  { id: "spring_flowers", label: "Spring Flowers (Labor Only)", img: null },
+  { id: "fall_flowers", label: "Fall Flowers (Labor Only)", img: null },
 ];
 
 const premiumAddOns = [
-  { id: "deep_cleanup", label: "Deep seasonal cleanup" },
-  { id: "mulch_refresh", label: "Mulch refresh (beds only)" },
-  { id: "hedge_shaping", label: "Hedge shaping (front yard)" },
-  { id: "heavy_leaf", label: "Heavy leaf removal" },
-  { id: "flower_bed", label: "Flower bed detail service" },
-  { id: "driveway_wash", label: "Driveway Pressure Wash" },
-  { id: "gutter_clean", label: "Gutter Cleaning" },
-  { id: "xmas_lights", label: "Christmas Light Package ($500 Value)" },
-  { id: "mulch_1x", label: "Mulch Install (1x/Year)" },
-  { id: "mulch_2x", label: "Mulch Install (2x/Year)" },
-  { id: "seasonal_flowers", label: "Seasonal Flowers (2x/Year, 8 Flats Included)" },
+  { id: "deep_cleanup", label: "Deep seasonal cleanup", img: imgLeaf },
+  { id: "mulch_refresh", label: "Mulch refresh (beds only)", img: imgMulch },
+  { id: "hedge_shaping", label: "Hedge shaping (front yard)", img: null },
+  { id: "heavy_leaf", label: "Heavy leaf removal", img: imgLeaf },
+  { id: "flower_bed", label: "Flower bed detail service", img: null },
+  { id: "driveway_wash", label: "Driveway Pressure Wash", img: imgWash },
+  { id: "gutter_clean", label: "Gutter Cleaning", img: null },
+  { id: "xmas_lights", label: "Christmas Light Package ($500 Value)", img: imgXmas },
+  { id: "mulch_1x", label: "Mulch Install (1x/Year)", img: imgMulch },
+  { id: "mulch_2x", label: "Mulch Install (2x/Year)", img: imgMulch },
+  { id: "seasonal_flowers", label: "Seasonal Flowers (2x/Year, 8 Flats Included)", img: null },
 ];
 
 // Pricing Constants
@@ -329,66 +336,76 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-20 md:pt-32 md:pb-32 overflow-hidden bg-primary/5">
-        <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/0 via-background/50 to-background"></div>
+      <section className="relative min-h-screen flex flex-col pt-24 pb-20 overflow-hidden bg-primary/5">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+           <img src={heroLuxury} alt="Luxury Lawn" className="w-full h-full object-cover" />
+           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background"></div>
+           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
+        </div>
         
-        <div className="container mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center items-center text-center">
+          
+          {/* Logo Centerpiece */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-left"
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, type: "spring" }}
+            className="mb-8 relative"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 text-accent-foreground text-xs font-bold uppercase tracking-wider mb-6 border border-accent/30">
-              <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-              Mission Ready All Year
-            </div>
-            <h1 className="text-4xl md:text-6xl font-heading font-bold leading-tight text-primary mb-6">
-              Set Your Yard to <span className="text-accent-foreground bg-accent/20 px-2 italic">Mission-Ready</span> and Forget About It.
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg">
-              Lawn Trooper keeps your yard trimmed, clean, and sharp all season with simple, predictable subscription plans.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-base h-14 px-8 shadow-lg shadow-primary/20">
-                Get My Custom Yard Quote
-              </Button>
-              <Button onClick={() => scrollToSection('plans')} variant="outline" size="lg" className="border-primary/20 text-primary hover:bg-primary/5 font-bold uppercase tracking-wider text-base h-14 px-8">
-                See Plans & Pricing
-              </Button>
+            <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
+            <img src={mascotLogo} alt="Lawn Trooper" className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-2xl" />
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="max-w-4xl mx-auto"
+          >
+            {/* Promotions Banner */}
+            <div className="mb-8 inline-flex flex-col md:flex-row items-center gap-4 bg-black/60 backdrop-blur-md border border-accent/30 p-4 rounded-xl shadow-2xl">
+               <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-sm md:text-base border-b md:border-b-0 md:border-r border-accent/30 pb-2 md:pb-0 md:pr-4">
+                 <Star className="fill-accent w-4 h-4" /> 
+                 Mission Briefing
+               </div>
+               <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-white text-sm font-medium">
+                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 2 Months Free (2-Year Plan)</span>
+                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 15% Off Pay-In-Full</span>
+                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 5% Veteran Discount</span>
+                 <span className="flex items-center gap-1"><Check className="w-3 h-3 text-accent" /> 5% Senior Discount</span>
+                 <span className="bg-accent text-accent-foreground px-2 py-0.5 rounded text-xs font-bold uppercase">All Stackable</span>
+               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-sm font-medium text-muted-foreground">
-              <div className="flex items-center gap-2 bg-background/50 px-3 py-1.5 rounded-full border border-border">
-                <Shield className="w-4 h-4 text-primary" />
-                <span>Over 25 Years of Service</span>
-              </div>
-              <div className="flex items-center gap-2 bg-background/50 px-3 py-1.5 rounded-full border border-border">
-                <Star className="w-4 h-4 text-accent fill-accent" />
-                <span>100+ Beautification Awards</span>
-              </div>
+            <h1 className="text-5xl md:text-7xl font-heading font-bold leading-tight text-white mb-6 drop-shadow-lg">
+              Deployment Ready.<br />
+              <span className="text-accent">Mission Accomplished.</span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto font-light leading-relaxed">
+              Premium lawn care subscriptions with military precision. <br className="hidden md:block"/>
+              Instant quotes for our best value ever.
+            </p>
+
+            {/* Urgency Box */}
+            <div className="bg-destructive/90 text-white px-6 py-3 rounded-lg inline-block mb-10 animate-pulse font-bold tracking-wide shadow-lg border border-white/10">
+              <AlertCircle className="w-5 h-5 inline-block mr-2 -mt-1" />
+              PRICES INCREASE JAN 1ST • ENLIST BY DEC 31 FOR LOCKED-IN RATES
             </div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/50 aspect-video md:aspect-auto md:h-[500px]"
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
-            <img src={heroBg} alt="Perfectly manicured lawn" className="w-full h-full object-cover" />
-            <div className="absolute bottom-6 left-6 z-20 text-white">
-              <div className="flex items-center gap-2 mb-1">
-                <Star className="fill-accent text-accent w-5 h-5" />
-                <Star className="fill-accent text-accent w-5 h-5" />
-                <Star className="fill-accent text-accent w-5 h-5" />
-                <Star className="fill-accent text-accent w-5 h-5" />
-                <Star className="fill-accent text-accent w-5 h-5" />
-              </div>
-              <p className="font-medium text-sm">"My yard has never looked this sharp."</p>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold uppercase tracking-wider text-lg h-16 px-10 shadow-xl shadow-accent/20 transform hover:-translate-y-1 transition-all">
+                Get Instant Quote
+              </Button>
+              <Button onClick={() => scrollToSection('plans')} variant="outline" size="lg" className="border-white/30 bg-black/30 backdrop-blur-sm text-white hover:bg-white/10 font-bold uppercase tracking-wider text-lg h-16 px-10">
+                View Service Tiers
+              </Button>
             </div>
+            
+            <p className="mt-6 text-white/60 text-sm font-medium">
+              Save up to <span className="text-accent font-bold">$2,000+</span>/year with stacked promotions on Executive plans.
+            </p>
           </motion.div>
         </div>
       </section>
@@ -877,41 +894,67 @@ export default function LandingPage() {
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-Ons</h4>
+                      <div className="grid gap-3">
                       {basicAddOns.map((addon) => (
-                        <div key={addon.id} className="flex items-center space-x-2">
+                        <div key={addon.id} className={`
+                          relative flex items-center space-x-3 p-3 rounded-lg border transition-all
+                          ${selectedAddOns.includes(addon.id) ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
+                        `}>
                           <Checkbox 
                             id={addon.id} 
                             checked={selectedAddOns.includes(addon.id)}
                             onCheckedChange={() => handleAddOnToggle(addon.id, false)}
+                            className="z-10"
                           />
-                          <Label htmlFor={addon.id} className="text-sm font-normal cursor-pointer">{addon.label}</Label>
+                          <Label htmlFor={addon.id} className="text-sm font-medium cursor-pointer flex-1 z-10 flex items-center justify-between">
+                            {addon.label}
+                            {addon.img && (
+                              <div className="w-12 h-12 rounded overflow-hidden border border-border ml-2 shrink-0">
+                                <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
+                              </div>
+                            )}
+                          </Label>
                         </div>
                       ))}
+                      </div>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Premium Add-Ons</h4>
+                      <div className="grid gap-3">
                       {premiumAddOns.map((addon) => {
                         const isDisabled = getPlanLimits(selectedPlan).premium === 0;
+                        const isChecked = selectedAddOns.includes(addon.id);
                         return (
-                          <div key={addon.id} className={`flex items-center space-x-2 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          <div key={addon.id} className={`
+                            relative flex items-center space-x-3 p-3 rounded-lg border transition-all
+                            ${isChecked ? 'border-accent bg-accent/5' : 'border-border'}
+                            ${isDisabled ? 'opacity-50 cursor-not-allowed bg-muted/20' : 'hover:border-accent/50'}
+                          `}>
                             <Checkbox 
                               id={addon.id} 
-                              checked={selectedAddOns.includes(addon.id)}
+                              checked={isChecked}
                               onCheckedChange={() => handleAddOnToggle(addon.id, true)}
                               disabled={isDisabled}
+                              className="z-10"
                             />
                             <Label 
                               htmlFor={addon.id} 
-                              className={`text-sm font-normal ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                              className={`text-sm font-medium flex-1 z-10 flex items-center justify-between ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                             >
                               {addon.label}
+                              {addon.img && (
+                                <div className="w-12 h-12 rounded overflow-hidden border border-border ml-2 shrink-0">
+                                  <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
+                                </div>
+                              )}
                             </Label>
                           </div>
                         );
                       })}
+                      </div>
                     </div>
                   </div>
                 </div>
