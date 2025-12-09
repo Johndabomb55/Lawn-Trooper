@@ -739,17 +739,15 @@ export default function LandingPage() {
                             className="grid grid-cols-2 md:grid-cols-5 gap-2"
                           >
                             {YARD_SIZES.map((size) => (
-                              <FormItem key={size.value}>
-                                <FormControl>
-                                  <RadioGroupItem value={size.value} className="peer sr-only" />
-                                </FormControl>
+                              <div key={size.value} className="relative">
+                                <RadioGroupItem value={size.value} id={`size-${size.value}`} className="peer sr-only" />
                                 <Label
-                                  htmlFor={size.value}
+                                  htmlFor={`size-${size.value}`}
                                   className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:text-primary cursor-pointer h-full text-center transition-all"
                                 >
                                   <span className="text-sm font-bold">{size.label}</span>
                                 </Label>
-                              </FormItem>
+                              </div>
                             ))}
                           </RadioGroup>
                         </FormControl>
