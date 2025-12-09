@@ -71,7 +71,7 @@ const formSchema = z.object({
   }),
   phone: z.string().optional(),
   email: z.string().optional(),
-  yardSize: z.string().min(1, "Please select a yard size"),
+  yardSize: z.coerce.number().min(0.01, "Please enter a valid lot size"),
   plan: z.enum(["basic", "premium", "executive"], {
     required_error: "Please select a plan",
   }),
@@ -132,13 +132,7 @@ const PRICING = {
   executive: { base: 299, increment: 60 },
 };
 
-const YARD_SIZES = [
-  { value: "up-to-1/4", label: "Up to 1/4 Acre", incrementMultiplier: 0 },
-  { value: "1/4-1/2", label: "1/4 - 1/2 Acre", incrementMultiplier: 1 },
-  { value: "1/2-3/4", label: "1/2 - 3/4 Acre", incrementMultiplier: 2 },
-  { value: "3/4-1", label: "3/4 - 1 Acre", incrementMultiplier: 3 },
-  { value: "1+", label: "1+ Acre", incrementMultiplier: 4 }, // Base + 4x for starting estimate
-];
+// YARD_SIZES constant removed - using dynamic calculation
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -161,7 +155,7 @@ export default function LandingPage() {
       address: "",
       contactMethod: "email",
       plan: "basic", // Default to basic
-      yardSize: "up-to-1/4", // Default size
+      yardSize: 0.25, // Default size (Acres)
       addOns: [],
       notes: "",
     },
@@ -175,10 +169,14 @@ export default function LandingPage() {
   useEffect(() => {
     if (selectedPlan && selectedYardSize) {
       const planData = PRICING[selectedPlan as keyof typeof PRICING];
-      const sizeData = YARD_SIZES.find(s => s.value === selectedYardSize);
       
-      if (planData && sizeData) {
-        const price = planData.base + (planData.increment * sizeData.incrementMultiplier);
+      const acres = Number(selectedYardSize);
+      
+      if (planData && !isNaN(acres) && acres > 0) {
+        // Logic: Base price covers up to 0.25 acres.
+        // Every additional 0.25 acres (or fraction thereof) adds one increment.
+        const incrementMultiplier = Math.max(0, Math.ceil(acres / 0.25) - 1);
+        const price = planData.base + (planData.increment * incrementMultiplier);
         setEstimatedPrice(price);
       }
     }
@@ -876,33 +874,32 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* 2. Yard Size Selection (New Button Group) */}
+                {/* 2. Yard Size Selection (Input) */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Confirm Yard Size</h3>
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Confirm Lot Size</h3>
                    <FormField
                     control={form.control}
                     name="yardSize"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
+                        <FormLabel className="text-base font-bold text-foreground">Area to be maintained + House (Acres)</FormLabel>
                         <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="grid grid-cols-2 md:grid-cols-5 gap-2"
-                          >
-                            {YARD_SIZES.map((size) => (
-                              <div key={size.value} className="relative">
-                                <RadioGroupItem value={size.value} id={`size-${size.value}`} className="peer sr-only" />
-                                <Label
-                                  htmlFor={`size-${size.value}`}
-                                  className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:text-primary cursor-pointer h-full text-center transition-all"
-                                >
-                                  <span className="text-sm font-bold">{size.label}</span>
-                                </Label>
-                              </div>
-                            ))}
-                          </RadioGroup>
+                          <div className="flex items-center gap-2">
+                             <Input 
+                               type="number" 
+                               placeholder="e.g. 0.25" 
+                               step="0.01" 
+                               min="0.01"
+                               className="text-lg h-12"
+                               {...field}
+                               onChange={(e) => field.onChange(e.target.value)}
+                             />
+                             <span className="text-muted-foreground font-bold">Acres</span>
+                          </div>
                         </FormControl>
+                        <FormDescription>
+                           Enter total lot size including house. Price adjusts every 1/4 acre (0.25).
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
