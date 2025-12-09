@@ -969,57 +969,46 @@ export default function LandingPage() {
                              <div className="text-5xl font-heading font-bold text-primary flex items-center">
                               <span className="text-2xl mt-2">$</span>
                               {(() => {
-                                // Base Monthly Price
                                 const basePrice = estimatedPrice || 0;
                                 
-                                // Agreement Free Months (Savings Value)
+                                // 1. Determine Term Length (for comparison)
+                                const termMonths = discounts.agreement === "2year" ? 24 : 12;
+                                
+                                // 2. Calculate Free Months
                                 let freeMonths = 0;
                                 if (discounts.agreement === "1year") freeMonths = 1;
-                                if (discounts.agreement === "2year") freeMonths = 1.5; // 3 months over 2 years = 1.5/yr avg for display? 
-                                // User said "3 months free for 2 year agreement". 
-                                // If display is per month, we need to amortize? 
-                                // Or if display is per year?
+                                if (discounts.agreement === "2year") freeMonths = 3;
                                 
-                                // Let's calculate Annual Billable Amount
-                                // 1-Year: 11 months billable
-                                // 2-Year: 21 months billable (10.5 months/year)
+                                // 3. Calculate Billable Base Amount
+                                const billableMonths = termMonths - freeMonths;
+                                const billableBaseCost = basePrice * billableMonths;
                                 
-                                let billableMonthsPerYear = 12;
-                                if (discounts.agreement === "1year") billableMonthsPerYear = 11;
-                                if (discounts.agreement === "2year") billableMonthsPerYear = 10.5; // 21 / 2
-                                
-                                const annualBaseCost = basePrice * billableMonthsPerYear;
-                                
-                                // Stackable Discounts (Percent)
+                                // 4. Apply Stackable Percentage Discounts
                                 let percentOff = 0;
-                                if (discounts.payFull) percentOff += 0.20;
+                                if (discounts.payFull) percentOff += 0.15; // Updated to 15%
                                 if (discounts.veteran) percentOff += 0.05;
                                 if (discounts.senior) percentOff += 0.05;
                                 
-                                const finalAnnualCost = annualBaseCost * (1 - percentOff);
+                                const finalTotalCost = billableBaseCost * (1 - percentOff);
                                 
-                                // Display Logic
+                                // 5. Display Logic
                                 if (discounts.payFull) {
-                                  // Show Annual Price
-                                  return finalAnnualCost.toFixed(0);
+                                  // Show Total Cost for the full term (1 or 2 years)
+                                  return finalTotalCost.toFixed(0);
                                 } else {
-                                  // Show Monthly Average? Or Base Price?
-                                  // "the number of months should reflect in the payments"
-                                  // Usually subscription shows "$X/mo". 
-                                  // If I get 1 month free, I typically pay $X for 11 months.
-                                  // So displayed monthly price is Base Price.
-                                  return basePrice;
+                                  // Show Effective Monthly Rate (averaged)
+                                  return (finalTotalCost / termMonths).toFixed(0);
                                 }
                               })()}
                               <span className="text-xl text-muted-foreground font-sans font-normal ml-1 self-end mb-2">
-                                {discounts.payFull ? "/yr" : "/mo"}
+                                {discounts.payFull ? (discounts.agreement === "2year" ? "/2yr" : "/yr") : "/mo"}
                               </span>
                             </div>
                             
                             {/* Strikethrough Price */}
                             {(discounts.payFull || discounts.agreement !== "none" || discounts.veteran || discounts.senior) && (
                               <div className="text-sm font-bold text-muted-foreground line-through">
-                                ${estimatedPrice * (discounts.payFull ? 12 : 1)}
+                                ${discounts.payFull ? (estimatedPrice * (discounts.agreement === "2year" ? 24 : 12)) : estimatedPrice}
                               </div>
                             )}
                           </div>
@@ -1029,25 +1018,30 @@ export default function LandingPage() {
                              <div className="text-sm font-bold text-green-600 mt-2 bg-green-100 dark:bg-green-900/30 inline-block px-2 py-1 rounded">
                                {(() => {
                                   const basePrice = estimatedPrice || 0;
-                                  const standardAnnual = basePrice * 12;
+                                  const termMonths = discounts.agreement === "2year" ? 24 : 12;
+                                  const standardTotalCost = basePrice * termMonths;
                                   
-                                  let billableMonthsPerYear = 12;
-                                  if (discounts.agreement === "1year") billableMonthsPerYear = 11;
-                                  if (discounts.agreement === "2year") billableMonthsPerYear = 10.5;
+                                  let freeMonths = 0;
+                                  if (discounts.agreement === "1year") freeMonths = 1;
+                                  if (discounts.agreement === "2year") freeMonths = 3;
+                                  
+                                  const billableMonths = termMonths - freeMonths;
+                                  const billableBaseCost = basePrice * billableMonths;
                                   
                                   let percentOff = 0;
-                                  if (discounts.payFull) percentOff += 0.20;
+                                  if (discounts.payFull) percentOff += 0.15;
                                   if (discounts.veteran) percentOff += 0.05;
                                   if (discounts.senior) percentOff += 0.05;
                                   
-                                  const finalAnnual = (basePrice * billableMonthsPerYear) * (1 - percentOff);
-                                  const totalSavings = standardAnnual - finalAnnual;
+                                  const finalTotalCost = billableBaseCost * (1 - percentOff);
+                                  const totalSavings = standardTotalCost - finalTotalCost;
+                                  const savingsPercent = (totalSavings / standardTotalCost) * 100;
                                   
                                   return (
                                     <>
                                       Total Savings: ${totalSavings.toFixed(0)}
                                       <span className="ml-1">
-                                         ({((totalSavings / standardAnnual) * 100).toFixed(0)}% OFF)
+                                         ({savingsPercent.toFixed(0)}% OFF)
                                       </span>
                                     </>
                                   );
@@ -1058,8 +1052,7 @@ export default function LandingPage() {
                           {/* Payment Explanation */}
                           {discounts.agreement !== "none" && !discounts.payFull && (
                             <div className="text-xs text-muted-foreground mt-2 italic">
-                              * You pay for {discounts.agreement === "1year" ? "11" : "21"} months. 
-                              {discounts.agreement === "1year" ? " 1 Month Free." : " 3 Months Free."}
+                              * Effective monthly rate. You pay ${estimatedPrice} for {discounts.agreement === "1year" ? "11" : "21"} months, then $0 for {discounts.agreement === "1year" ? "1" : "3"} months.
                             </div>
                           )}
                         </div>
@@ -1114,9 +1107,9 @@ export default function LandingPage() {
                                    htmlFor="discount-payFull"
                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                                  >
-                                   Pay Full Year Upfront
+                                   Pay Full Term Upfront
                                  </label>
-                                 <p className="text-xs text-muted-foreground">Save additional 20%</p>
+                                 <p className="text-xs text-muted-foreground">Save additional 15%</p>
                                </div>
                              </div>
 
