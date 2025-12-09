@@ -52,7 +52,7 @@ import { Label } from "@/components/ui/label";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import mascotLogo from "@assets/generated_images/lawn_trooper_mascot_logo.png";
+import heroMascot from "@assets/generated_images/lawn_trooper_mascot_in_front_of_beautiful_home.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 
 // Stock Assets
@@ -1104,24 +1104,26 @@ export default function LandingPage() {
                              </div>
                           )}
                           
-                          {/* Payment Explanation */}
-                          {discounts.agreement !== "none" && !discounts.payFull && (
-                            <div className="text-xs text-muted-foreground mt-2 italic">
-                              * Effective monthly rate. You pay ${estimatedPrice} for {discounts.agreement === "1year" ? "11" : "21"} months, then $0 for {discounts.agreement === "1year" ? "1" : "3"} months.
-                            </div>
-                          )}
+                            {/* Payment Explanation */}
+                            {discounts.agreement !== "none" && !discounts.payFull && (
+                                <div className="text-xs text-muted-foreground mt-2 italic">
+                                * Monthly payment reflects the discounted rate. You pay ${discountedMonthlyPayment.toFixed(0)} for {termMonths} months. The last {freeMonths} months are $0.
+                                </div>
+                            )}
                         </div>
+                    </div>
+                  </motion.div>
+                  )}
+                </AnimatePresence>
 
-                        <div className="bg-background border border-border p-4 rounded-xl w-full md:w-80 shadow-sm">
-                           <h5 className="font-bold text-sm mb-3 flex items-center gap-2">
-                             <Zap className="w-4 h-4 text-accent fill-accent" />
-                             Stackable Discounts
-                           </h5>
-                           <div className="space-y-4">
-                             {/* Agreement Term */}
-                             <div className="space-y-2 pb-3 border-b border-border/50">
-                               <Label className="text-xs font-bold uppercase text-muted-foreground">Service Agreement</Label>
-                               <RadioGroup 
+                <Button type="submit" size="lg" className="w-full text-lg font-bold uppercase tracking-wider h-14 bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20">
+                  Deploy My Service
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </div>
+      </section> 
                                  value={discounts.agreement} 
                                  onValueChange={(val) => setDiscounts(prev => ({ ...prev, agreement: val }))}
                                  className="flex flex-col gap-2"
