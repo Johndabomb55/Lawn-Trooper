@@ -369,7 +369,7 @@ export default function LandingPage() {
         <div className="absolute top-16 left-0 right-0 z-20 bg-destructive/90 text-white py-2 px-4 shadow-lg text-center transform -rotate-1">
           <div className="flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-xs md:text-sm animate-pulse">
             <AlertCircle className="w-4 h-4" />
-            Prices have never been better — Many promotions ending Dec 31st — Enlist Now!
+            3 Weeks of Early Bird Savings — Lock in prices before Jan 1st increase — Enlist Now!
           </div>
         </div>
 
@@ -409,38 +409,96 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
+          
+          {/* Mission Plan (Moved Up) */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            id="how-it-works" className="w-full max-w-6xl mx-auto mb-12 scroll-mt-24"
+          >
+            <div className="text-center mb-8">
+               <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2 drop-shadow-md">Your Mission Plan</h3>
+               <p className="text-white/80 max-w-2xl mx-auto text-sm">Three simple steps to a yard that commands respect.</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { 
+                  icon: MapPin, 
+                  title: "1. Choose Plan & Size", 
+                  desc: "Select your service level and yard size. Pricing is clear and upfront based on acreage." 
+                },
+                { 
+                  icon: Zap, 
+                  title: "2. We Deploy The Crew", 
+                  desc: "Our pro troopers and smart tech mobilize to keep your perimeter secure and tidy." 
+                },
+                { 
+                  icon: Leaf, 
+                  title: "3. Enjoy The Results", 
+                  desc: "Your yard stays always-ready. No scheduling calls, no equipment maintenance." 
+                }
+              ].map((step, i) => (
+                <div 
+                  key={i}
+                  className="relative p-6 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-black/60 transition-colors text-left"
+                >
+                  <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center mb-4 text-accent">
+                    <step.icon size={20} strokeWidth={2.5} />
+                  </div>
+                  <h3 className="text-lg font-bold font-heading text-white mb-2">{step.title}</h3>
+                  <p className="text-white/70 text-sm leading-relaxed">{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+    
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
             className="max-w-5xl mx-auto"
           >
             {/* Mission Briefing / Promotions Banner */}
-            <div className="mb-10 bg-black/70 backdrop-blur-md border border-accent/30 p-6 rounded-xl shadow-2xl">
-               <div className="flex items-center justify-center gap-2 text-accent font-bold uppercase tracking-widest text-lg border-b border-accent/30 pb-4 mb-4">
-                 <Star className="fill-accent w-5 h-5" /> 
-                 Mission Briefing: Active Promotions
-                 <Star className="fill-accent w-5 h-5" /> 
+            <div className="mb-10 bg-black/70 backdrop-blur-md border-2 border-accent/50 p-6 rounded-xl shadow-2xl relative overflow-hidden">
+               {/* Diagonal "Ending Soon" Banner */}
+               <div className="absolute top-0 right-0 bg-destructive text-white text-[10px] font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm">
+                 ENDS DEC 31
+               </div>
+
+               <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
+                 <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl">
+                   <Star className="fill-accent w-5 h-5" /> 
+                   3 Weeks of Early Bird Savings
+                   <Star className="fill-accent w-5 h-5" /> 
+                 </div>
+                 <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
+                   ⚠️ Prices Increase Jan 1st • Lock in your price now for 2 years!
+                 </p>
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
-                 {/* Deal 1 */}
-                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
+                 {/* Deal 1: Early Bird Special */}
+                 <div className="bg-accent/10 p-3 rounded border border-accent/50 hover:bg-accent/20 transition-colors relative">
+                   <div className="absolute -top-2 -right-2">
+                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">EARLY BIRD ONLY</span>
+                   </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Agreement Terms</span>
+                     <span className="text-accent font-bold uppercase text-xs">Sign Up By Dec 31</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between"><span>2-Year Pact:</span> <span className="text-green-400 font-bold">3 Months Free</span></div>
-                     <div className="flex justify-between"><span>1-Year Pact:</span> <span className="text-green-400 font-bold">1 Month Free</span></div>
+                     <div className="flex justify-between items-center mb-1"><span>2-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">3 Months Free</span></div>
+                     <div className="flex justify-between items-center"><span>1-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">1 Month Free</span></div>
                    </div>
                  </div>
 
-                 {/* Deal 2 */}
+                 {/* Deal 2: Pay Upfront */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Zap className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Pay Upfront</span>
+                     <span className="text-accent font-bold uppercase text-xs">Pay Upfront (Full Term)</span>
                    </div>
                    <div className="text-white text-sm font-medium">
                      <div className="flex justify-between"><span>2-Year Term:</span> <span className="text-green-400 font-bold">15% OFF</span></div>
@@ -448,7 +506,7 @@ export default function LandingPage() {
                    </div>
                  </div>
 
-                 {/* Deal 3 */}
+                 {/* Deal 3: Honors */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Shield className="w-4 h-4 text-accent" />
@@ -460,13 +518,20 @@ export default function LandingPage() {
                    </div>
                  </div>
 
-                 {/* Deal 4 */}
-                 <div className="bg-accent/10 p-3 rounded border border-accent/30 flex flex-col justify-center items-center text-center">
-                   <div className="text-accent font-black text-2xl mb-1">STACKABLE</div>
+                 {/* Deal 4: Stackable */}
+                 <div className="bg-white/5 p-3 rounded border border-white/10 flex flex-col justify-center items-center text-center">
+                   <div className="text-accent font-black text-xl mb-1">STACKABLE</div>
                    <div className="text-white/80 text-xs leading-tight">
-                     Combine all discounts for maximum mission savings.
+                     Combine ALL discounts for maximum savings.
+                   </div>
+                   <div className="mt-2 text-[10px] text-white/50 italic">
+                     *Subject to change
                    </div>
                  </div>
+               </div>
+               
+               <div className="mt-4 text-xs text-white/50 text-center italic border-t border-white/10 pt-2 px-4">
+                 * Subscription price is subject to change so lock your price in for up to 2 years with an agreement. You can always downgrade plans or upgrade at anytime but there is no guarantee the prices will stay this low for the maintenance packages.
                </div>
             </div>
 
@@ -487,50 +552,7 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-background relative border-t border-border">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Your Mission Plan</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Three simple steps to a yard that commands respect.</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { 
-                icon: MapPin, 
-                title: "1. Choose Plan & Size", 
-                desc: "Select your service level and yard size. Pricing is clear and upfront based on acreage." 
-              },
-              { 
-                icon: Zap, 
-                title: "2. We Deploy The Crew", 
-                desc: "Our pro troopers and smart tech mobilize to keep your perimeter secure and tidy." 
-              },
-              { 
-                icon: Leaf, 
-                title: "3. Enjoy The Results", 
-                desc: "Your yard stays always-ready. No scheduling calls, no equipment maintenance." 
-              }
-            ].map((step, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.2 }}
-                className="relative p-8 bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary">
-                  <step.icon size={28} strokeWidth={2.5} />
-                </div>
-                <h3 className="text-xl font-bold font-heading mb-3">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
-                <div className="absolute -top-4 -right-4 text-6xl font-heading font-bold text-muted/20 select-none">0{i+1}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* Pricing Plans */}
       <section id="plans" className="py-24 bg-primary/5 relative">
