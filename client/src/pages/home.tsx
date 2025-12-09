@@ -110,9 +110,25 @@ const premiumAddOns = [
   { id: "flower_bed", label: "Flower bed detail service" },
 ];
 
+// Pricing Constants
+const PRICING = {
+  basic: { base: 129, increment: 25 },
+  premium: { base: 199, increment: 40 },
+  executive: { base: 299, increment: 60 },
+};
+
+const YARD_SIZES = [
+  { value: "up-to-1/4", label: "Up to 1/4 Acre", incrementMultiplier: 0 },
+  { value: "1/4-1/2", label: "1/4 - 1/2 Acre", incrementMultiplier: 1 },
+  { value: "1/2-3/4", label: "1/2 - 3/4 Acre", incrementMultiplier: 2 },
+  { value: "3/4-1", label: "3/4 - 1 Acre", incrementMultiplier: 3 },
+  { value: "1+", label: "1+ Acre", incrementMultiplier: 4 }, // Base + 4x for starting estimate
+];
+
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [slotError, setSlotError] = useState<string | null>(null);
+  const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
   const { toast } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -124,13 +140,28 @@ export default function LandingPage() {
       address: "",
       contactMethod: "email",
       plan: "basic", // Default to basic
+      yardSize: "up-to-1/4", // Default size
       addOns: [],
       notes: "",
     },
   });
 
   const selectedPlan = form.watch("plan");
+  const selectedYardSize = form.watch("yardSize");
   const selectedAddOns = form.watch("addOns");
+
+  // Calculate Price Effect
+  useEffect(() => {
+    if (selectedPlan && selectedYardSize) {
+      const planData = PRICING[selectedPlan as keyof typeof PRICING];
+      const sizeData = YARD_SIZES.find(s => s.value === selectedYardSize);
+      
+      if (planData && sizeData) {
+        const price = planData.base + (planData.increment * sizeData.incrementMultiplier);
+        setEstimatedPrice(price);
+      }
+    }
+  }, [selectedPlan, selectedYardSize]);
 
   // Calculate slots
   const calculateSlots = (currentAddOns: string[]) => {
@@ -594,7 +625,7 @@ export default function LandingPage() {
           <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                {/* 1. Contact Info */}
+                {/* 1. Contact Intel */}
                 <div className="space-y-6">
                   <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">1. Contact Intel</h3>
                   
@@ -652,60 +683,39 @@ export default function LandingPage() {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="yardSize"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Approx. Yard Size <span className="text-red-500">*</span></FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <div className="flex flex-col space-y-2">
+                       <Label>Mobile Phone</Label>
+                       <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select size" />
-                              </SelectTrigger>
+                              <Input placeholder="(555) 123-4567" {...field} />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="up-to-1/4">Up to 1/4 acre</SelectItem>
-                              <SelectItem value="1/4-1/2">1/4 - 1/2 acre</SelectItem>
-                              <SelectItem value="1/2-3/4">1/2 - 3/4 acre</SelectItem>
-                              <SelectItem value="3/4-1">3/4 - 1 acre</SelectItem>
-                              <SelectItem value="1+">1+ acre</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Mobile Phone</FormLabel>
-                          <FormControl>
-                            <Input placeholder="(555) 123-4567" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                            <Input placeholder="john@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     <div className="flex flex-col space-y-2">
+                       <Label>Email Address</Label>
+                       <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input placeholder="john@example.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                   
                   <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
@@ -714,9 +724,47 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* 2. Plan Selection */}
+                {/* 2. Yard Size Selection (New Button Group) */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Choose Your Plan</h3>
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Confirm Yard Size</h3>
+                   <FormField
+                    control={form.control}
+                    name="yardSize"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="grid grid-cols-2 md:grid-cols-5 gap-2"
+                          >
+                            {YARD_SIZES.map((size) => (
+                              <FormItem key={size.value}>
+                                <FormControl>
+                                  <RadioGroupItem value={size.value} className="peer sr-only" />
+                                </FormControl>
+                                <Label
+                                  htmlFor={size.value}
+                                  className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:text-primary cursor-pointer h-full text-center transition-all"
+                                >
+                                  <span className="text-sm font-bold">{size.label}</span>
+                                </Label>
+                              </FormItem>
+                            ))}
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    *Double-checked during consultation. We can do a video walk-through to finalize custom details!
+                  </p>
+                </div>
+
+                {/* 3. Plan Selection */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Choose Your Plan</h3>
                   
                   <FormField
                     control={form.control}
@@ -737,7 +785,7 @@ export default function LandingPage() {
                               >
                                 <span className="mb-2 text-lg font-bold">Basic Patrol</span>
                                 <span className="text-sm text-center text-muted-foreground">Weekly mowing & edging. 2 Free add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">From $129/mo</span>
+                                <span className="mt-2 text-sm font-bold text-primary">Base: $129/mo</span>
                               </Label>
                             </div>
                             
@@ -749,7 +797,7 @@ export default function LandingPage() {
                               >
                                 <span className="mb-2 text-lg font-bold">Premium Command</span>
                                 <span className="text-sm text-center text-muted-foreground">Plus weed control & beds. 5 Total add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">From $199/mo</span>
+                                <span className="mt-2 text-sm font-bold text-primary">Base: $199/mo</span>
                               </Label>
                             </div>
                             
@@ -761,7 +809,7 @@ export default function LandingPage() {
                               >
                                 <span className="mb-2 text-lg font-bold flex items-center gap-1">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
                                 <span className="text-sm text-center text-muted-foreground">Full service. Priority status. 8 Total add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">From $299/mo</span>
+                                <span className="mt-2 text-sm font-bold text-primary">Base: $299/mo</span>
                               </Label>
                             </div>
                           </RadioGroup>
@@ -772,12 +820,13 @@ export default function LandingPage() {
                   />
                 </div>
 
-                {/* 3. Add-ons Selection */}
+                {/* 4. Add-ons Selection */}
                 <div className="space-y-6">
                   <div className="flex flex-col gap-1 border-b border-border pb-2">
-                    <h3 className="text-lg font-bold font-heading uppercase text-primary">3. Choose Your Add-Ons</h3>
+                    <h3 className="text-lg font-bold font-heading uppercase text-primary">4. Choose Your Add-Ons</h3>
                     <p className="text-sm text-muted-foreground">Included in your plan.</p>
                   </div>
+
 
                   <div className="bg-muted/30 p-4 rounded-lg border border-border">
                     <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
@@ -847,9 +896,9 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* 4. Optional Info */}
+                {/* 5. Optional Info */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">4. Recon Data (Optional)</h3>
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">5. Recon Data (Optional)</h3>
                   
                   <div className="grid gap-6">
                     <div className="space-y-2">
@@ -878,7 +927,28 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 text-lg shadow-lg">
+                {/* Price Display */}
+                <AnimatePresence>
+                  {estimatedPrice && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      className="bg-primary/5 border-2 border-primary/20 rounded-xl p-6 text-center shadow-lg"
+                    >
+                      <h4 className="text-muted-foreground uppercase tracking-widest text-xs font-bold mb-1">Estimated Deployment Cost</h4>
+                      <div className="text-5xl font-heading font-bold text-primary flex items-center justify-center gap-1">
+                        <span className="text-2xl mt-2">$</span>
+                        {estimatedPrice}
+                        <span className="text-xl text-muted-foreground font-sans font-normal mt-4">/mo</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                        Best value pricing for 2025. Savings passed directly to you through AI-driven efficiency.
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-16 text-xl shadow-lg shadow-primary/25">
                   Request Quote & Lock In Offers
                 </Button>
                 <p className="text-xs text-center text-muted-foreground mt-4">
