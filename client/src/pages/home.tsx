@@ -968,11 +968,55 @@ export default function LandingPage() {
                           <div className="flex items-baseline gap-2">
                              <div className="text-5xl font-heading font-bold text-primary flex items-center">
                               <span className="text-2xl mt-2">$</span>
-                              {(estimatedPrice * (discounts.payFull ? 12 : 1) * (1 - ((discounts.payFull ? 0.2 : 0) + (discounts.agreement === "1year" ? 0.1 : discounts.agreement === "2year" ? 0.15 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0)))).toFixed(0)}
+                              {(() => {
+                                // Base Monthly Price
+                                const basePrice = estimatedPrice || 0;
+                                
+                                // Agreement Free Months (Savings Value)
+                                let freeMonths = 0;
+                                if (discounts.agreement === "1year") freeMonths = 1;
+                                if (discounts.agreement === "2year") freeMonths = 1.5; // 3 months over 2 years = 1.5/yr avg for display? 
+                                // User said "3 months free for 2 year agreement". 
+                                // If display is per month, we need to amortize? 
+                                // Or if display is per year?
+                                
+                                // Let's calculate Annual Billable Amount
+                                // 1-Year: 11 months billable
+                                // 2-Year: 21 months billable (10.5 months/year)
+                                
+                                let billableMonthsPerYear = 12;
+                                if (discounts.agreement === "1year") billableMonthsPerYear = 11;
+                                if (discounts.agreement === "2year") billableMonthsPerYear = 10.5; // 21 / 2
+                                
+                                const annualBaseCost = basePrice * billableMonthsPerYear;
+                                
+                                // Stackable Discounts (Percent)
+                                let percentOff = 0;
+                                if (discounts.payFull) percentOff += 0.20;
+                                if (discounts.veteran) percentOff += 0.05;
+                                if (discounts.senior) percentOff += 0.05;
+                                
+                                const finalAnnualCost = annualBaseCost * (1 - percentOff);
+                                
+                                // Display Logic
+                                if (discounts.payFull) {
+                                  // Show Annual Price
+                                  return finalAnnualCost.toFixed(0);
+                                } else {
+                                  // Show Monthly Average? Or Base Price?
+                                  // "the number of months should reflect in the payments"
+                                  // Usually subscription shows "$X/mo". 
+                                  // If I get 1 month free, I typically pay $X for 11 months.
+                                  // So displayed monthly price is Base Price.
+                                  return basePrice;
+                                }
+                              })()}
                               <span className="text-xl text-muted-foreground font-sans font-normal ml-1 self-end mb-2">
                                 {discounts.payFull ? "/yr" : "/mo"}
                               </span>
                             </div>
+                            
+                            {/* Strikethrough Price */}
                             {(discounts.payFull || discounts.agreement !== "none" || discounts.veteran || discounts.senior) && (
                               <div className="text-sm font-bold text-muted-foreground line-through">
                                 ${estimatedPrice * (discounts.payFull ? 12 : 1)}
@@ -980,13 +1024,43 @@ export default function LandingPage() {
                             )}
                           </div>
 
+                          {/* Savings Badge */}
                           {(discounts.payFull || discounts.agreement !== "none" || discounts.veteran || discounts.senior) && (
                              <div className="text-sm font-bold text-green-600 mt-2 bg-green-100 dark:bg-green-900/30 inline-block px-2 py-1 rounded">
-                               Total Savings: ${(estimatedPrice * (discounts.payFull ? 12 : 1) * ((discounts.payFull ? 0.2 : 0) + (discounts.agreement === "1year" ? 0.1 : discounts.agreement === "2year" ? 0.15 : 0) + (discounts.veteran ? 0.05 : 0) + (discounts.senior ? 0.05 : 0))).toFixed(0)}
-                               <span className="ml-1">
-                                 ({((discounts.payFull ? 20 : 0) + (discounts.agreement === "1year" ? 10 : discounts.agreement === "2year" ? 15 : 0) + (discounts.veteran ? 5 : 0) + (discounts.senior ? 5 : 0))}%) OFF
-                               </span>
+                               {(() => {
+                                  const basePrice = estimatedPrice || 0;
+                                  const standardAnnual = basePrice * 12;
+                                  
+                                  let billableMonthsPerYear = 12;
+                                  if (discounts.agreement === "1year") billableMonthsPerYear = 11;
+                                  if (discounts.agreement === "2year") billableMonthsPerYear = 10.5;
+                                  
+                                  let percentOff = 0;
+                                  if (discounts.payFull) percentOff += 0.20;
+                                  if (discounts.veteran) percentOff += 0.05;
+                                  if (discounts.senior) percentOff += 0.05;
+                                  
+                                  const finalAnnual = (basePrice * billableMonthsPerYear) * (1 - percentOff);
+                                  const totalSavings = standardAnnual - finalAnnual;
+                                  
+                                  return (
+                                    <>
+                                      Total Savings: ${totalSavings.toFixed(0)}
+                                      <span className="ml-1">
+                                         ({((totalSavings / standardAnnual) * 100).toFixed(0)}% OFF)
+                                      </span>
+                                    </>
+                                  );
+                               })()}
                              </div>
+                          )}
+                          
+                          {/* Payment Explanation */}
+                          {discounts.agreement !== "none" && !discounts.payFull && (
+                            <div className="text-xs text-muted-foreground mt-2 italic">
+                              * You pay for {discounts.agreement === "1year" ? "11" : "21"} months. 
+                              {discounts.agreement === "1year" ? " 1 Month Free." : " 3 Months Free."}
+                            </div>
                           )}
                         </div>
 
@@ -1006,20 +1080,23 @@ export default function LandingPage() {
                                >
                                  <div className="flex items-center space-x-2">
                                    <RadioGroupItem value="none" id="term-none" />
-                                   <Label htmlFor="term-none" className="text-sm font-medium">Month-to-Month (No Discount)</Label>
+                                   <Label htmlFor="term-none" className="text-sm font-medium">Month-to-Month (Standard)</Label>
                                  </div>
                                  <div className="flex items-center space-x-2">
                                    <RadioGroupItem value="1year" id="term-1year" />
                                    <Label htmlFor="term-1year" className="text-sm font-medium flex-1 flex justify-between">
                                      <span>1-Year Agreement</span>
-                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">-10%</span>
+                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">1 Mo. Free</span>
                                    </Label>
+                                 </div>
+                                 <div className="text-[10px] text-muted-foreground ml-6 -mt-1 mb-1">
+                                   *If signed by December
                                  </div>
                                  <div className="flex items-center space-x-2">
                                    <RadioGroupItem value="2year" id="term-2year" />
                                    <Label htmlFor="term-2year" className="text-sm font-medium flex-1 flex justify-between">
                                      <span>2-Year Agreement</span>
-                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">-15%</span>
+                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">3 Mo. Free</span>
                                    </Label>
                                  </div>
                                </RadioGroup>
