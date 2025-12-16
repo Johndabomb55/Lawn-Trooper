@@ -52,11 +52,14 @@ import { Label } from "@/components/ui/label";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import heroMascot from "@assets/generated_images/lawn_trooper_mascot_in_front_of_beautiful_home.png";
+import heroMascot from "@assets/generated_images/tactical_landscape_logo_badge.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 
 // Stock Assets
-import heroLuxury from "@assets/stock_images/luxury_manicured_law_62092365.jpg";
+import heroLuxury from "@assets/generated_images/luxury_home_lawn_athens.png";
+import imgEstateMadison from "@assets/generated_images/estate_home_lawn_madison.png";
+import imgGardenHuntsville from "@assets/generated_images/manicured_garden_huntsville.png";
+
 import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
@@ -742,6 +745,108 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ */}
+      
+      {/* Testimonials - Field Reports */}
+      <section className="py-20 bg-background relative border-t border-border">
+        <div className="container mx-auto px-4">
+           <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Field Reports</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Debriefings from homeowners across the sector.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Report 1 */}
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
+            >
+              <div className="h-48 overflow-hidden relative">
+                 <img src={heroLuxury} alt="Athens Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
+                   Sector: Athens, AL
+                 </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                 <div className="flex gap-1 text-accent mb-3">
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                 </div>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"The tactical approach is no joke. My yard has never looked this sharp. The pricing is transparent and the crew is incredibly disciplined."</p>
+                 <div>
+                   <div className="font-bold font-heading text-primary">Lt. Col. James R. (Ret)</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Plan Member</div>
+                 </div>
+              </div>
+            </motion.div>
+
+            {/* Report 2 */}
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: 0.1 }}
+               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
+            >
+              <div className="h-48 overflow-hidden relative">
+                 <img src={imgEstateMadison} alt="Madison Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
+                   Sector: Madison, AL
+                 </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                 <div className="flex gap-1 text-accent mb-3">
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                 </div>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"Finally, a service that just handles it. I signed the 2-year agreement to lock in the rate, and the 3 free months was a huge bonus."</p>
+                 <div>
+                   <div className="font-bold font-heading text-primary">Sarah & Mike T.</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Premium Plan Members</div>
+                 </div>
+              </div>
+            </motion.div>
+
+            {/* Report 3 */}
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: 0.2 }}
+               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
+            >
+              <div className="h-48 overflow-hidden relative">
+                 <img src={imgGardenHuntsville} alt="Huntsville Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
+                   Sector: Huntsville, AL
+                 </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                 <div className="flex gap-1 text-accent mb-3">
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                 </div>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Early Bird deal. Getting signed up before January saved us a ton. The yard looks amazing even in winter."</p>
+                 <div>
+                   <div className="font-bold font-heading text-primary">The Davidson Family</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Basic Patrol Members</div>
+                 </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       <section id="faq" className="py-20 bg-secondary/20">
         <div className="container mx-auto px-4 max-w-3xl">
           <h2 className="text-3xl font-heading font-bold text-primary text-center mb-10">Field Intelligence (FAQ)</h2>

@@ -35,32 +35,32 @@
 }
 
 :root {
-  /* Army Green Palette */
+  /* Army Green Palette - Earth Tones Update */
   /* Deep Army Green - Primary */
-  --primary: 85 45% 25%;  /* #2F4F2F approx */
-  --primary-foreground: 60 30% 96%;
+  --primary: 85 45% 25%;  /* #2F4F2F */
+  --primary-foreground: 45 30% 96%;
 
-  /* Tan / Sand - Secondary */
-  --secondary: 40 30% 85%;
+  /* Coyote Brown / Tan - Secondary */
+  --secondary: 35 40% 80%;
   --secondary-foreground: 85 45% 20%;
 
   /* Gold/Mustard - Accent */
-  --accent: 45 80% 55%;
+  --accent: 42 70% 50%;
   --accent-foreground: 85 45% 15%;
 
-  /* Off-White / Paper */
-  --background: 60 15% 97%;
-  --foreground: 85 20% 15%;
+  /* Warm Earthy Beige / Tan - Background */
+  --background: 40 25% 94%; /* Warmer, earthier than before */
+  --foreground: 85 30% 15%;
 
-  /* Muted Green/Grey */
-  --muted: 85 15% 90%;
-  --muted-foreground: 85 20% 40%;
+  /* Muted Green/Brown */
+  --muted: 40 20% 88%;
+  --muted-foreground: 85 25% 35%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 85 20% 15%;
+  --card: 40 25% 97%;
+  --card-foreground: 85 30% 15%;
 
-  --border: 85 15% 85%;
-  --input: 85 15% 85%;
+  --border: 40 20% 82%;
+  --input: 40 20% 82%;
   --ring: 85 45% 25%;
 
   --radius: 0.25rem;
