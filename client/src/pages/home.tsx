@@ -52,7 +52,7 @@ import { Label } from "@/components/ui/label";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import heroMascot from "@assets/generated_images/tactical_landscape_logo_badge.png";
+import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 
 // Stock Assets
