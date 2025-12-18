@@ -105,27 +105,22 @@ const formSchema = z.object({
 });
 
 const basicAddOns = [
-  { id: "leaf_cleanup", label: "Leaf cleanup (basic)", img: imgLeaf },
-  { id: "shrub_trim", label: "Light shrub trim", img: null },
-  { id: "bed_tidy", label: "Simple bed tidy-up", img: null },
-  { id: "extra_mow", label: "One-time extra mow", img: null },
-  { id: "blow_off", label: "Simple sidewalk/driveway blow-off", img: null },
-  { id: "spring_flowers", label: "Spring Flowers (Labor Only)", img: null },
-  { id: "fall_flowers", label: "Fall Flowers (Labor Only)", img: null },
+  { id: "leaf_cleanup_1x", label: "One-time leaf job", img: imgLeaf },
+  { id: "bush_trim_1x", label: "One-time bush trimming", img: null },
+  { id: "seasonal_flowers_1x", label: "One-time seasonal flowers (Spring or Fall)", img: null },
+  { id: "trash_can_2x", label: "Trash can cleaning (2× per year)", img: null },
 ];
 
 const premiumAddOns = [
-  { id: "deep_cleanup", label: "Deep seasonal cleanup", img: imgLeaf },
-  { id: "mulch_refresh", label: "Mulch refresh (beds only)", img: imgMulch },
-  { id: "hedge_shaping", label: "Hedge shaping (front yard)", img: null },
-  { id: "heavy_leaf", label: "Heavy leaf removal", img: imgLeaf },
-  { id: "flower_bed", label: "Flower bed detail service", img: null },
-  { id: "driveway_wash", label: "Driveway Pressure Wash", img: imgWash },
-  { id: "gutter_clean", label: "Gutter Cleaning", img: null },
-  { id: "xmas_lights", label: "Christmas Light Package ($500 Value)", img: imgXmas },
-  { id: "mulch_1x", label: "Mulch Install (1x/Year)", img: imgMulch },
-  { id: "mulch_2x", label: "Mulch Install (2x/Year)", img: imgMulch },
-  { id: "seasonal_flowers", label: "Seasonal Flowers (2x/Year, 8 Flats Included)", img: null },
+  { id: "bush_trim_3x", label: "Bush trimming (3× per year)", img: null },
+  { id: "leaf_removal_biweekly", label: "Bi-weekly leaf removal", img: imgLeaf },
+  { id: "mulching", label: "Mulching", img: imgMulch },
+  { id: "seasonal_flowers_2x", label: "Seasonal flowers (2× per year)", img: null },
+  { id: "mulch_install_1x", label: "Mulch install (1× per year)", img: imgMulch },
+  { id: "pine_straw_1x", label: "Pine straw install (1× per year)", img: null },
+  { id: "gutter_cleaning", label: "Gutter cleaning", img: null },
+  { id: "driveway_wash", label: "Driveway pressure washing", img: imgWash },
+  { id: "trash_can_monthly", label: "Trash can cleaning (monthly)", img: null },
 ];
 
 // Pricing Constants
@@ -370,7 +365,7 @@ export default function LandingPage() {
         <div className="absolute top-16 left-0 right-0 z-20 bg-destructive/90 text-white py-2 px-4 shadow-lg text-center transform -rotate-1">
           <div className="flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-xs md:text-sm animate-pulse">
             <AlertCircle className="w-4 h-4" />
-            3 Weeks of Early Bird Savings — Lock in prices before Jan 1st increase — Enlist Now!
+            Early Bird Savings — Lock in prices before the January 1st increase. Enlist now.
           </div>
         </div>
 
@@ -556,6 +551,21 @@ export default function LandingPage() {
       
 
       {/* Pricing Plans */}
+      
+      {/* Credibility Section */}
+      <section className="bg-background py-8 border-b border-border">
+        <div className="container mx-auto px-4 text-center">
+          <div className="inline-block bg-primary/5 border border-primary/10 rounded-lg px-8 py-4">
+            <h2 className="text-xl md:text-2xl font-heading font-bold text-primary mb-1">
+              Lawn Trooper — 25+ years serving North Alabama. 100+ beautification awards.
+            </h2>
+            <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest">
+              Military-level reliability. Premium results.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section id="plans" className="py-24 bg-primary/5 relative">
         <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         
