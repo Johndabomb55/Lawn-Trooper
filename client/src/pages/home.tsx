@@ -64,6 +64,10 @@ import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
+import imgSmallYard1 from "@assets/generated_images/small_yard_seasonal_color.png";
+import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
+import imgSmallYard3 from "@assets/generated_images/tidy_front_yard_landscaping.png";
+
 
 // Schema for the quote form
 const formSchema = z.object({
@@ -173,7 +177,8 @@ export default function LandingPage() {
       if (planData && !isNaN(acres) && acres > 0) {
         // Logic: Base price covers up to 0.25 acres.
         // Every additional 0.25 acres (or fraction thereof) adds one increment.
-        const incrementMultiplier = Math.max(0, Math.ceil(acres / 0.25) - 1);
+        // Logic: Price increases every 1/3 acre
+        const incrementMultiplier = Math.max(0, Math.ceil(acres / (1/3)) - 1);
         const price = planData.base + (planData.increment * incrementMultiplier);
         setEstimatedPrice(price);
       }
@@ -773,7 +778,7 @@ export default function LandingPage() {
                className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
             >
               <div className="h-48 overflow-hidden relative">
-                 <img src={heroLuxury} alt="Athens Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <img src={imgSmallYard1} alt="Athens Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                  <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
                    Sector: Athens, AL
                  </div>
@@ -803,7 +808,7 @@ export default function LandingPage() {
                className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
             >
               <div className="h-48 overflow-hidden relative">
-                 <img src={imgEstateMadison} alt="Madison Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <img src={imgSmallYard2} alt="Madison Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                  <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
                    Sector: Madison, AL
                  </div>
@@ -833,7 +838,7 @@ export default function LandingPage() {
                className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
             >
               <div className="h-48 overflow-hidden relative">
-                 <img src={imgGardenHuntsville} alt="Huntsville Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <img src={imgSmallYard3} alt="Huntsville Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                  <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
                    Sector: Huntsville, AL
                  </div>
@@ -1013,7 +1018,7 @@ export default function LandingPage() {
                           </div>
                         </FormControl>
                         <FormDescription>
-                           Enter total lot size including house. Price adjusts every 1/4 acre (0.25).
+                           Enter total lot size including house (in acres) to generate your custom quote.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
