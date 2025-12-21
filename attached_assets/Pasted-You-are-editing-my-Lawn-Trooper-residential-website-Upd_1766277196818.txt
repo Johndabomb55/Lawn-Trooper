@@ -1,0 +1,124 @@
+You are editing my Lawn Trooper residential website. Update the “Plans & Pricing” and “Add-Ons” sections to match the exact plan structure below. Do NOT invent extra inclusions. Do NOT include any add-on inside a plan unless it is explicitly listed as “Included.”
+
+GOALS:
+- Make the plans easy to understand and premium.
+- Prevent scope creep with clear “Included vs Add-Ons vs Not Included” language.
+- Pricing is for up to 1/3 acre.
+- Yard size increases are in 1/3 acre steps (not 1/4).
+- Mention robotics/technology selection is decided by Lawn Trooper.
+
+ADD/UPDATE PAGE SECTION: “Residential Plans & Pricing”
+Add a clean 3-tier comparison block with headings, price, and bullet lists:
+
+PLAN 1: BASIC — $129/mo (Up to 1/3 acre)
+Included:
+- Bi-weekly mowing (seasonal schedule)
+- Edging
+- Trimming / weed eating
+- Blowing
+- Flower bed weed control (light maintenance)
+- 2 bush trimmings per year
+- 3 lawn treatments total per year:
+  - Pre-emergent applications
+  - 1 weed killer application (timing determined by Lawn Trooper)
+- 1 one-time fall leaf cleanup (mulch leaves on-site or remove; Lawn Trooper decides method)
+
+Not included (must be presented as add-ons or quotes):
+- Weekly mowing
+- Mulch installation
+- Bi-weekly fall leaf service
+- Tree trimming
+- Pressure washing
+- Trash can cleaning
+- Winter visits
+- Storm priority response
+- Flowers (unless purchased as add-on)
+- Christmas lights
+- Gutter cleaning
+
+PLAN 2: MID-TIER — $199/mo (Up to 1/3 acre)
+Included:
+- Everything in BASIC, plus:
+- Weekly mowing (seasonal schedule)
+- Bi-weekly leaf cleanups during fall season
+- Mulch included (defined bed areas once per year; Lawn Trooper determines bed coverage limits in quote)
+- Free detailed landscaping quote + yard assessment (consultation)
+
+Keep these the SAME as Basic (do not upgrade them):
+- 2 bush trimmings per year
+- 3 lawn treatments total per year (pre-emergent + 1 weed killer application)
+
+Not included:
+- Bush trimming “as needed”
+- 6 lawn treatments
+- Annual tree trimming
+- Winter bi-weekly visits
+- Monthly trash can cleaning
+- Storm priority response
+- Pressure washing
+- Christmas lights
+- Gutter cleaning
+- Seasonal flowers (unless add-on)
+
+PLAN 3: PREMIUM / ELITE — $299/mo (Up to 1/3 acre)
+Included:
+- Everything in MID-TIER, plus:
+- Bush trimming as needed (reasonable frequency determined by Lawn Trooper)
+- 6 lawn treatments total per year
+- Annual tree trimming (lower limbs only) up to approx. 15 ft height for pathway clearance and tree health (no removals)
+- Bi-weekly winter yard visits (stick pickup + trash/debris pickup)
+- Storm response: 1 included “light cleanup” visit per storm event (small limb/stick pickup; major storm damage is quoted)
+- Monthly trash can cleaning (inside & out; up to 3 cans standard, additional cans as add-on)
+- Priority scheduling after storms/heavy rain (“front-of-line scheduling”)
+
+Add a short “Premium promise” line:
+- “We manage the details so you don’t have to think about your yard.”
+
+YARD SIZE PRICING SECTION (applies to all plans)
+Add a small block titled “Yard Size Pricing”
+- “Prices above apply to yards up to 1/3 acre.”
+- “For larger yards, pricing increases in 1/3 acre steps.”
+Provide example tiers (no exact dollar amounts required if you prefer):
+- Up to 1/3 acre: base plan price
+- 1/3–2/3 acre: increased
+- 2/3–1 acre: increased
+- 1–1 1/3 acre: increased
+- Over 1 1/3 acre: custom quote
+
+ADD/UPDATE PAGE SECTION: “Add-Ons”
+Create two lists and clearly state: “Add-ons are not included unless explicitly stated in your plan.”
+
+BASIC ADD-ONS (examples):
+- Trash can cleaning (2x/year)
+- One-season flower install (Spring OR Fall)
+- Extra leaf cleanup outside included visits
+- Extra bush trimming beyond plan scope
+- One-time bed tidy / refresh (light)
+- Small debris haul-off
+- Pathway clearing / blow-off
+
+PREMIUM ADD-ONS (examples):
+- Christmas lights install & takedown
+- Driveway pressure wash
+- House pressure wash
+- Gutter cleaning
+- Additional mulching
+- Pine straw installation
+- Seasonal flowers (Spring + Fall package)
+- Window cleaning (exterior)
+- Fence / patio washing
+- Bug / mosquito spraying (only if licensed; otherwise “coming soon”)
+
+ADD/UPDATE PAGE SECTION: “Technology & Robotics”
+Add a paragraph with this meaning (keep it professional, not salesy):
+- “We use a wide range of technology—including robotic equipment when appropriate—to lower costs and improve consistency. The selection of equipment and service method is determined by Lawn Trooper based on yard layout and service needs.”
+
+ADD/UPDATE PAGE SECTION: “Service Limits / Exclusions”
+Add a clear disclaimer:
+- “Tree removals, stump grinding, heavy storm damage, and construction landscaping are not included and require a separate quote.”
+- “Only services listed as Included are included.”
+
+STYLE REQUIREMENTS
+- Use short headings, clean bullet lists, no giant paragraphs.
+- Make the plan comparison easy to scan.
+- Add a prominent CTA button under each plan: “Get My Quote” linking to the quote/contact form.
