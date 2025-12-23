@@ -851,7 +851,7 @@ export default function LandingPage() {
                    <Star className="w-4 h-4 fill-accent" />
                    <Star className="w-4 h-4 fill-accent" />
                  </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Early Bird deal. Getting signed up before January saved us a ton. The yard looks amazing even in winter."</p>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Early Bird deal. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">The Davidson Family</div>
                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Basic Patrol Members</div>
