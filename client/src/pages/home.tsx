@@ -54,6 +54,7 @@ import { Label } from "@/components/ui/label";
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
+import heroDiverseCrew from "@assets/generated_images/lawn_trooper_diverse_crew_with_smart_glasses_and_camo_mower.png";
 
 // Stock Assets
 import heroLuxury from "@assets/generated_images/luxury_home_lawn_athens.png";
@@ -109,29 +110,94 @@ const formSchema = z.object({
 });
 
 const basicAddOns = [
-  { id: "leaf_cleanup_1x", label: "One-time leaf job", img: imgLeaf },
-  { id: "bush_trim_1x", label: "One-time bush trimming", img: null },
-  { id: "seasonal_flowers_1x", label: "One-time seasonal flowers (Spring or Fall)", img: null },
-  { id: "trash_can_2x", label: "Trash can cleaning (2× per year)", img: null },
+  { 
+    id: "leaf_cleanup_1x", 
+    label: "One-time leaf job", 
+    description: "Thorough removal of all fallen leaves from lawn and beds.",
+    img: imgLeaf 
+  },
+  { 
+    id: "bush_trim_1x", 
+    label: "One-time bush trimming", 
+    description: "Shaping and pruning of all hedges and shrubs.",
+    img: null 
+  },
+  { 
+    id: "seasonal_flowers_1x", 
+    label: "One-time seasonal flowers", 
+    description: "Installation of fresh seasonal color (Spring or Fall) in key beds.",
+    img: null 
+  },
+  { 
+    id: "trash_can_2x", 
+    label: "Trash can cleaning (2×/yr)", 
+    description: "High-pressure sanitization and deodorizing of waste bins.",
+    img: null 
+  },
 ];
 
 const premiumAddOns = [
-  { id: "bush_trim_3x", label: "Bush trimming (3× per year)", img: null },
-  { id: "leaf_removal_biweekly", label: "Bi-weekly leaf removal", img: imgLeaf },
-  { id: "mulching", label: "Mulching", img: imgMulch },
-  { id: "seasonal_flowers_2x", label: "Seasonal flowers (2× per year)", img: null },
-  { id: "mulch_install_1x", label: "Mulch install (1× per year)", img: imgMulch },
-  { id: "pine_straw_1x", label: "Pine straw install (1× per year)", img: null },
-  { id: "gutter_cleaning", label: "Gutter cleaning", img: null },
-  { id: "driveway_wash", label: "Driveway pressure washing", img: imgWash },
-  { id: "trash_can_monthly", label: "Trash can cleaning (monthly)", img: null },
+  { 
+    id: "bush_trim_3x", 
+    label: "Bush trimming (3×/yr)", 
+    description: "Trimming scheduled seasonally to keep growth in check.",
+    img: null 
+  },
+  { 
+    id: "leaf_removal_biweekly", 
+    label: "Bi-weekly leaf removal", 
+    description: "Routine clearing of leaves during peak fall season.",
+    img: imgLeaf 
+  },
+  { 
+    id: "mulching", 
+    label: "Mulching", 
+    description: "Premium hardwood mulch refresh for all landscape beds.",
+    img: imgMulch 
+  },
+  { 
+    id: "seasonal_flowers_2x", 
+    label: "Seasonal flowers (2×/yr)", 
+    description: "Spring and Fall color rotation for year-round curb appeal.",
+    img: null 
+  },
+  { 
+    id: "mulch_install_1x", 
+    label: "Mulch install (1×/yr)", 
+    description: "Annual mulch replenishment.",
+    img: imgMulch 
+  },
+  { 
+    id: "pine_straw_1x", 
+    label: "Pine straw install (1×/yr)", 
+    description: "Fresh pine straw application for natural areas.",
+    img: null 
+  },
+  { 
+    id: "gutter_cleaning", 
+    label: "Gutter cleaning", 
+    description: "Removal of debris from gutters and downspouts.",
+    img: null 
+  },
+  { 
+    id: "driveway_wash", 
+    label: "Driveway pressure washing", 
+    description: "Surface cleaning to remove grime and stains.",
+    img: imgWash 
+  },
+  { 
+    id: "trash_can_monthly", 
+    label: "Trash can cleaning (monthly)", 
+    description: "Monthly sanitization to keep bins fresh and clean.",
+    img: null 
+  },
 ];
 
 // Pricing Constants
 const PRICING = {
-  basic: { base: 129, increment: 25 },
-  premium: { base: 199, increment: 40 },
-  executive: { base: 299, increment: 60 },
+  basic: { base: 129 },
+  premium: { base: 199 },
+  executive: { base: 299 },
 };
 
 // YARD_SIZES constant removed - using dynamic calculation
@@ -157,7 +223,7 @@ export default function LandingPage() {
       address: "",
       contactMethod: "email",
       plan: "basic", // Default to basic
-      yardSize: 0.25, // Default size (Acres)
+      yardSize: 0.33, // Default size (Acres) - Adjusted default
       addOns: [],
       notes: "",
     },
@@ -175,11 +241,10 @@ export default function LandingPage() {
       const acres = Number(selectedYardSize);
       
       if (planData && !isNaN(acres) && acres > 0) {
-        // Logic: Base price covers up to 0.25 acres.
-        // Every additional 0.25 acres (or fraction thereof) adds one increment.
-        // Logic: Price increases every 1/3 acre
+        // Logic: Base price covers up to 1/3 acre.
+        // Apply a 25% price increase for each additional 1/3 acre.
         const incrementMultiplier = Math.max(0, Math.ceil(acres / (1/3)) - 1);
-        const price = planData.base + (planData.increment * incrementMultiplier);
+        const price = planData.base * (1 + (0.25 * incrementMultiplier));
         setEstimatedPrice(price);
       }
     }
@@ -376,7 +441,7 @@ export default function LandingPage() {
 
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
-           <img src={heroLuxury} alt="Luxury Lawn" className="w-full h-full object-cover" />
+           <img src={heroDiverseCrew} alt="Lawn Trooper Team" className="w-full h-full object-cover" />
            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background"></div>
            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         </div>
@@ -388,10 +453,10 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.8, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, type: "spring" }}
-            className="mb-8 relative"
+            className="mb-8 relative w-full max-w-4xl"
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
-            <img src={mascotLogo} alt="Lawn Trooper" className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-2xl" />
+            <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[400px]" />
             
             <div className="mt-4 relative z-20">
               <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-0 leading-none" 
@@ -577,7 +642,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Service Deployment Levels</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Transparent pricing based on your yard size. No hidden fees.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Transparent pricing based on your yard size. <span className="text-accent font-bold">Base price covers up to 1/3 acre.</span> +25% for each additional 1/3 acre.</p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 items-start">
@@ -590,7 +655,7 @@ export default function LandingPage() {
                   <span className="text-3xl font-bold">$129</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
+                <p className="text-xs text-muted-foreground mt-1">For up to 1/3 acre</p>
               </div>
               <div className="p-6 space-y-4">
                 <ul className="space-y-3">
@@ -601,6 +666,14 @@ export default function LandingPage() {
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
                     <span>Clean Uniforms & Pro Techs</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span><span className="font-bold">Winter Bi-weekly</span> Visits</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Yard Pickup & Storm Stick Pickup</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
@@ -625,7 +698,7 @@ export default function LandingPage() {
                   <span className="text-3xl font-bold">$299</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
+                <p className="text-xs text-muted-foreground mt-1">For up to 1/3 acre</p>
               </div>
               <div className="p-6 space-y-4">
                 <ul className="space-y-3">
@@ -649,6 +722,10 @@ export default function LandingPage() {
                     <Check className="w-5 h-5 text-primary shrink-0" />
                     <span className="text-accent-foreground font-medium">No Install Fee on 2-Year Plan</span>
                   </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Optional Special Visits Included</span>
+                  </li>
                 </ul>
                 <Button onClick={() => scrollToSection('quote')} className="w-full mt-4 bg-primary hover:bg-primary/90 text-white font-bold tracking-wide">Select Executive</Button>
               </div>
@@ -663,7 +740,7 @@ export default function LandingPage() {
                   <span className="text-3xl font-bold">$199</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">For up to 1/4 acre</p>
+                <p className="text-xs text-muted-foreground mt-1">For up to 1/3 acre</p>
               </div>
               <div className="p-6 space-y-4">
                 <ul className="space-y-3">
@@ -679,6 +756,10 @@ export default function LandingPage() {
                     <Check className="w-5 h-5 text-primary shrink-0" />
                     <span>Light Bed Cleanup</span>
                   </li>
+                   <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span>Optional Special Visits</span>
+                  </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
                     <span><span className="font-bold">5 Total</span> Add-ons per year</span>
@@ -691,7 +772,7 @@ export default function LandingPage() {
 
           <div className="mt-12 text-center">
             <p className="text-sm text-muted-foreground bg-white/50 inline-block px-4 py-2 rounded-lg border border-border">
-              <strong>Note:</strong> Prices shown are for up to 1/4 acre. Larger lots are no problem — we’ll measure and send a fast custom quote.
+              <strong>Note:</strong> Prices shown are for up to 1/3 acre. Larger lots are no problem — we’ll measure and send a fast custom quote.
             </p>
           </div>
         </div>
@@ -1114,23 +1195,31 @@ export default function LandingPage() {
                       <div className="grid gap-3">
                       {basicAddOns.map((addon) => (
                         <div key={addon.id} className={`
-                          relative flex items-center space-x-3 p-3 rounded-lg border transition-all
+                          relative flex flex-col p-3 rounded-lg border transition-all
                           ${selectedAddOns.includes(addon.id) ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
                         `}>
-                          <Checkbox 
-                            id={addon.id} 
-                            checked={selectedAddOns.includes(addon.id)}
-                            onCheckedChange={() => handleAddOnToggle(addon.id, false)}
-                            className="z-10"
-                          />
-                          <Label htmlFor={addon.id} className="text-sm font-medium cursor-pointer flex-1 z-10 flex items-center justify-between">
-                            {addon.label}
+                          <div className="flex items-center space-x-3 mb-2">
+                            <Checkbox 
+                              id={addon.id} 
+                              checked={selectedAddOns.includes(addon.id)}
+                              onCheckedChange={() => handleAddOnToggle(addon.id, false)}
+                              className="z-10"
+                            />
+                            <Label htmlFor={addon.id} className="text-base font-bold cursor-pointer flex-1 z-10 flex items-center justify-between">
+                              {addon.label}
+                            </Label>
+                          </div>
+                          
+                          <div className="flex gap-3 pl-7">
+                            <div className="text-xs text-muted-foreground leading-relaxed flex-1">
+                              {addon.description}
+                            </div>
                             {addon.img && (
-                              <div className="w-12 h-12 rounded overflow-hidden border border-border ml-2 shrink-0">
+                              <div className="w-12 h-12 rounded overflow-hidden border border-border shrink-0">
                                 <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
                               </div>
                             )}
-                          </Label>
+                          </div>
                         </div>
                       ))}
                       </div>
@@ -1144,28 +1233,36 @@ export default function LandingPage() {
                         const isChecked = selectedAddOns.includes(addon.id);
                         return (
                           <div key={addon.id} className={`
-                            relative flex items-center space-x-3 p-3 rounded-lg border transition-all
+                            relative flex flex-col p-3 rounded-lg border transition-all
                             ${isChecked ? 'border-accent bg-accent/5' : 'border-border'}
                             ${isDisabled ? 'opacity-50 cursor-not-allowed bg-muted/20' : 'hover:border-accent/50'}
                           `}>
-                            <Checkbox 
-                              id={addon.id} 
-                              checked={isChecked}
-                              onCheckedChange={() => handleAddOnToggle(addon.id, true)}
-                              disabled={isDisabled}
-                              className="z-10"
-                            />
-                            <Label 
-                              htmlFor={addon.id} 
-                              className={`text-sm font-medium flex-1 z-10 flex items-center justify-between ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                            >
-                              {addon.label}
+                            <div className="flex items-center space-x-3 mb-2">
+                              <Checkbox 
+                                id={addon.id} 
+                                checked={isChecked}
+                                onCheckedChange={() => handleAddOnToggle(addon.id, true)}
+                                disabled={isDisabled}
+                                className="z-10"
+                              />
+                              <Label 
+                                htmlFor={addon.id} 
+                                className={`text-base font-bold flex-1 z-10 flex items-center justify-between ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                              >
+                                {addon.label}
+                              </Label>
+                            </div>
+                            
+                            <div className="flex gap-3 pl-7">
+                              <div className="text-xs text-muted-foreground leading-relaxed flex-1">
+                                {addon.description}
+                              </div>
                               {addon.img && (
-                                <div className="w-12 h-12 rounded overflow-hidden border border-border ml-2 shrink-0">
+                                <div className="w-12 h-12 rounded overflow-hidden border border-border shrink-0">
                                   <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
                                 </div>
                               )}
-                            </Label>
+                            </div>
                           </div>
                         );
                       })}

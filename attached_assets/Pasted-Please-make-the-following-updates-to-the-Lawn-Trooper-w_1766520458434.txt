@@ -1,0 +1,28 @@
+Please make the following updates to the Lawn Trooper website. Apply all changes in one pass and do not modify anything not explicitly listed.
+Hero Image / Logo / Visuals
+Make the top image/logo area larger so the image width visually matches the width of the “Lawn Trooper” text.
+Keep the existing man and yard exactly the same.
+Add two additional crew members working on the same property to create a total of three crew members.
+The added crew members should be of different races to reflect diversity.
+All crew members should wear professional, military-inspired landscaping uniforms (earth tones, tactical but clean, no weapons).
+Add Meta-style smart glasses (Ray-Ban Meta look) to all three crew members to emphasize a tech-centered landscaping company.
+Add a large commercial mower in the background. Do NOT reference or label any brand. The mower should be camo or earth-tone colored and look modern and professional.
+Extend the background image instead of fading it out. Increase color consistency and richness so the image looks vibrant but still realistic and professional.
+Pricing Structure Update
+Change all acreage pricing increments from 1/4 acre to 1/3 acre.
+Apply a 25% price increase for each additional 1/3 acre across all plans.
+Ensure this rule is clearly stated and consistently applied everywhere pricing appears.
+Service Plans
+Update the plan descriptions to include the previously discussed additions (winter bi-weekly visits, yard pickup, storm stick pickup, optional special visits).
+Keep the structure simple and easy to understand.
+Make sure each plan clearly shows what is included versus what is optional.
+Add-On Services
+Add a detailed add-on list that clearly explains each service in plain language.
+The add-on list should feel premium, flexible, and customizable.
+Do not duplicate services already included in plans.
+Keep formatting clean and readable.
+General Rules
+Do not remove any existing content unless required by the changes above.
+Do not change the site layout beyond what is necessary to implement these updates.
+Maintain the Lawn Trooper brand tone: professional, tech-forward, trustworthy, efficient.
+After completing these changes, stop. Do not suggest additional edits or features.
