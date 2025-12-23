@@ -66,7 +66,7 @@ import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
 import imgSmallYard1 from "@assets/generated_images/small_yard_seasonal_color.png";
 import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
-import imgSmallYard3 from "@assets/generated_images/tidy_front_yard_landscaping.png";
+import imgSmallYard3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
 
 // Schema for the quote form
