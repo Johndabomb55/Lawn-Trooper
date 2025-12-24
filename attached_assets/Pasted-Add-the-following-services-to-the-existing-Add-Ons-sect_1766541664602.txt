@@ -1,0 +1,48 @@
+Add the following services to the existing Add-Ons section, grouped under Basic Add-Ons and Premium Add-Ons.
+
+Each add-on should include a short hover or tap ⓘ tooltip explaining the service.
+If any existing add-ons do not already have tooltip text, add a brief, professional description consistent with the tone below.
+
+Tooltips should work on hover (desktop) and tap (mobile).
+
+⸻
+
+Basic Add-Ons
+
+🍂 Fall Clean-Up
+Tooltip: Complete leaf cleanup across the entire property, regardless of number of trees or leaves. Includes blowing, gathering, consolidation, and seasonal bed refresh with mulch where needed. Bagging and off-site leaf removal available for an additional charge.
+
+🌱 Weed Prevention & Control (Annual)
+Tooltip: Three pre-emergent and weed control applications per year, typically applied early season (January–May) to help prevent and control common weeds.
+
+✂️ Bush Trim & Clipping Removal
+Tooltip: One professional bush trim per year with full cleanup and removal of clippings from landscaped areas.
+
+🗑️ Trash Bin Cleaning — Basic (Bi-Monthly)
+Tooltip: Professional cleaning and sanitizing of one trash bin, scheduled every other month.
+
+🎄 Christmas Lighting — Basic
+Tooltip: Holiday lighting package with professional design and installation using commercial-grade lights. Covers up to 8 landscape or yard lighting features.
+
+⸻
+
+Premium Add-Ons
+
+🗑️ Trash Bin Cleaning — Premium (Monthly)
+Tooltip: Monthly professional cleaning and sanitizing of one trash bin.
+
+✨ Christmas Lighting — Premium
+Tooltip: Enhanced holiday lighting display with expanded coverage and customization. Covers up to 14 landscape or yard lighting features.
+
+⸻
+
+Executive Plan Benefit
+
+⭐ Second Trash Bin Included
+Tooltip: Second trash bin cleaning included at no additional cost for customers on the Executive Plan.
+
+⸻
+
+Additional Instruction
+
+For any existing add-ons without tooltip text, add a short, professional description explaining what the service includes. Keep wording high-level and flexible, without listing measurements, counts, or technical limitations.

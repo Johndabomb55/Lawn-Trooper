@@ -70,6 +70,13 @@ import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
 import imgSmallYard3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
 
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 // Schema for the quote form
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -111,16 +118,34 @@ const formSchema = z.object({
 
 const basicAddOns = [
   { 
-    id: "leaf_cleanup_1x", 
-    label: "One-time leaf job", 
-    description: "Thorough removal of all fallen leaves from lawn and beds.",
+    id: "fall_cleanup", 
+    label: "Fall Clean-Up", 
+    description: "Complete leaf cleanup across the entire property, regardless of number of trees or leaves. Includes blowing, gathering, consolidation, and seasonal bed refresh with mulch where needed. Bagging and off-site leaf removal available for an additional charge.",
     img: imgLeaf 
+  },
+  {
+    id: "weed_prevention",
+    label: "Weed Prevention & Control (Annual)",
+    description: "Three pre-emergent and weed control applications per year, typically applied early season (January–May) to help prevent and control common weeds.",
+    img: null
   },
   { 
     id: "bush_trim_1x", 
-    label: "One-time bush trimming", 
-    description: "Shaping and pruning of all hedges and shrubs.",
+    label: "Bush Trim & Clipping Removal", 
+    description: "One professional bush trim per year with full cleanup and removal of clippings from landscaped areas.",
     img: null 
+  },
+  { 
+    id: "trash_can_basic", 
+    label: "Trash Bin Cleaning — Basic (Bi-Monthly)", 
+    description: "Professional cleaning and sanitizing of one trash bin, scheduled every other month.",
+    img: null 
+  },
+  {
+    id: "christmas_lighting_basic",
+    label: "Christmas Lighting — Basic",
+    description: "Holiday lighting package with professional design and installation using commercial-grade lights. Covers up to 8 landscape or yard lighting features.",
+    img: null
   },
   { 
     id: "seasonal_flowers_1x", 
@@ -128,15 +153,21 @@ const basicAddOns = [
     description: "Installation of fresh seasonal color (Spring or Fall) in key beds.",
     img: null 
   },
-  { 
-    id: "trash_can_2x", 
-    label: "Trash can cleaning (2×/yr)", 
-    description: "High-pressure sanitization and deodorizing of waste bins.",
-    img: null 
-  },
 ];
 
 const premiumAddOns = [
+  { 
+    id: "trash_can_premium", 
+    label: "Trash Bin Cleaning — Premium (Monthly)", 
+    description: "Monthly professional cleaning and sanitizing of one trash bin.",
+    img: null 
+  },
+  {
+    id: "christmas_lighting_premium",
+    label: "Christmas Lighting — Premium",
+    description: "Enhanced holiday lighting display with expanded coverage and customization. Covers up to 14 landscape or yard lighting features.",
+    img: null
+  },
   { 
     id: "bush_trim_3x", 
     label: "Bush trimming (3×/yr)", 
@@ -184,12 +215,6 @@ const premiumAddOns = [
     label: "Driveway pressure washing", 
     description: "Surface cleaning to remove grime and stains.",
     img: imgWash 
-  },
-  { 
-    id: "trash_can_monthly", 
-    label: "Trash can cleaning (monthly)", 
-    description: "Monthly sanitization to keep bins fresh and clean.",
-    img: null 
   },
 ];
 
@@ -383,6 +408,7 @@ export default function LandingPage() {
   const discountedMonthlyPayment = finalTotalCost / termMonths;
 
   return (
+    <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
@@ -1206,14 +1232,22 @@ export default function LandingPage() {
                               className="z-10"
                             />
                             <Label htmlFor={addon.id} className="text-base font-bold cursor-pointer flex-1 z-10 flex items-center justify-between">
-                              {addon.label}
+                              <span className="flex items-center gap-2">
+                                {addon.label}
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Info className="w-4 h-4 text-muted-foreground/70 hover:text-primary transition-colors cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="max-w-xs text-sm">{addon.description}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </span>
                             </Label>
                           </div>
                           
+                          {/* Optional: Keep short description visible or remove if tooltip is sufficient. Prompt says "Each add-on should include a short hover or tap ⓘ tooltip". It doesn't explicitly say remove the existing visible text, but usually tooltips replace visible clutter. I'll keep the image but maybe hide the description text if it's now in the tooltip? Or keep both? The prompt says "Add detailed add-on list...". I'll keep the visible description as well for better UX on desktop, but the tooltip is requested. Actually, having both is fine. I'll keep the image. */}
                           <div className="flex gap-3 pl-7">
-                            <div className="text-xs text-muted-foreground leading-relaxed flex-1">
-                              {addon.description}
-                            </div>
                             {addon.img && (
                               <div className="w-12 h-12 rounded overflow-hidden border border-border shrink-0">
                                 <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
@@ -1249,14 +1283,21 @@ export default function LandingPage() {
                                 htmlFor={addon.id} 
                                 className={`text-base font-bold flex-1 z-10 flex items-center justify-between ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                               >
-                                {addon.label}
+                                <span className="flex items-center gap-2">
+                                  {addon.label}
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info className="w-4 h-4 text-muted-foreground/70 hover:text-accent transition-colors cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="max-w-xs text-sm">{addon.description}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </span>
                               </Label>
                             </div>
                             
                             <div className="flex gap-3 pl-7">
-                              <div className="text-xs text-muted-foreground leading-relaxed flex-1">
-                                {addon.description}
-                              </div>
                               {addon.img && (
                                 <div className="w-12 h-12 rounded overflow-hidden border border-border shrink-0">
                                   <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
@@ -1266,6 +1307,29 @@ export default function LandingPage() {
                           </div>
                         );
                       })}
+                      </div>
+                      
+                      {/* Executive Benefit Note */}
+                      <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                         <div className="flex items-start gap-3">
+                           <div className="mt-1 bg-primary text-white rounded-full p-1">
+                             <Star className="w-3 h-3 fill-white" />
+                           </div>
+                           <div>
+                             <h5 className="font-bold text-sm text-primary uppercase tracking-wider mb-1">Executive Plan Benefit</h5>
+                             <div className="flex items-center gap-2 font-bold text-foreground">
+                               Second Trash Bin Included
+                               <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Info className="w-4 h-4 text-muted-foreground/70 hover:text-primary transition-colors cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="max-w-xs text-sm">Second trash bin cleaning included at no additional cost for customers on the Executive Plan.</p>
+                                  </TooltipContent>
+                               </Tooltip>
+                             </div>
+                           </div>
+                         </div>
                       </div>
                     </div>
                   </div>
@@ -1562,5 +1626,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </TooltipProvider>
   );
 }
