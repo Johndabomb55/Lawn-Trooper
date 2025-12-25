@@ -53,6 +53,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
+import { 
+  PLANS, 
+  BASIC_ADDONS, 
+  PREMIUM_ADDONS, 
+  GLOBAL_CONSTANTS, 
+  getPlanAllowance,
+  PROMO_CONFIG 
+} from "@/data/plans";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -120,80 +128,6 @@ const formSchema = z.object({
   }
 });
 
-// Pricing Constants
-const PRICING = {
-  basic: { base: 129 },
-  premium: { base: 199 },
-  executive: { base: 299 },
-};
-
-// Add-Ons Configuration
-const basicAddOns = [
-  { 
-    id: "fall_cleanup", 
-    label: "Fall Clean-Up", 
-    description: "Cleanup of leaves, sticks, and debris to create clean curb appeal.",
-    img: null 
-  },
-  {
-    id: "spring_cleanup",
-    label: "Spring Cleanup",
-    description: "Cleanup of leaves, sticks, and debris to refresh the yard and prepare for spring growth.",
-    img: null
-  },
-  {
-    id: "weed_prevention_upgrade",
-    label: "Weed Prevention & Control Upgrade",
-    description: "Add three additional weed killer applications per year for total weed prevention.",
-    img: null
-  },
-  {
-    id: "trash_can_basic",
-    label: "Trash Can Cleaning (Biannually)",
-    description: "Professional cleaning of your trash cans twice a year.",
-    img: null
-  },
-];
-
-const premiumAddOns = [
-  { 
-    id: "mulch_install", 
-    label: "Mulch Installation", 
-    description: "Mulch installation in flowerbeds.",
-    img: null 
-  },
-  { 
-    id: "pine_straw_install", 
-    label: "Pine Straw Installation", 
-    description: "Pine straw installation in flowerbeds.",
-    img: null 
-  },
-  { 
-    id: "gutter_cleaning", 
-    label: "Gutter Cleaning", 
-    description: "First-level gutters only.",
-    img: null 
-  },
-  { 
-    id: "driveway_wash", 
-    label: "Driveway Pressure Washing", 
-    description: "Neighborhood yards only.",
-    img: null 
-  },
-  { 
-    id: "trash_can_premium", 
-    label: "Trash Can Cleaning (Bi-Monthly)", 
-    description: "Professional cleaning of your trash cans every other month.",
-    img: null 
-  },
-  { 
-    id: "lawn_aeration", 
-    label: "Lawn Aeration", 
-    description: "Professional core aeration to improve soil health.",
-    img: null 
-  },
-];
-
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [slotError, setSlotError] = useState<string | null>(null);
@@ -233,12 +167,12 @@ export default function LandingPage() {
   // Calculate Price Effect
   useEffect(() => {
     if (selectedPlan) {
-      const planData = PRICING[selectedPlan as keyof typeof PRICING];
+      const planData = PLANS.find(p => p.id === selectedPlan);
       
       // If user says "Yes" (Under 1 Acre), we show the base price.
       // We removed the acreage math as requested.
       if (planData && isUnderOneAcre === "yes") {
-         setEstimatedPrice(planData.base);
+         setEstimatedPrice(planData.price);
       } else {
          // If not under 1 acre or not sure, we might hide price or show "Starting at"
          // For now, if they say 'no' or 'not sure', we can reset or keep showing base with a disclaimer
@@ -247,7 +181,7 @@ export default function LandingPage() {
          if (isUnderOneAcre === "no" || isUnderOneAcre === "unsure") {
              setEstimatedPrice(null); // Custom quote needed
          } else {
-             setEstimatedPrice(planData.base);
+             setEstimatedPrice(planData?.price || 0);
          }
       }
     }
@@ -258,23 +192,14 @@ export default function LandingPage() {
     let basicCount = 0;
     let premiumCount = 0;
     currentAddOns.forEach(id => {
-      if (basicAddOns.find(a => a.id === id)) basicCount += 1;
-      if (premiumAddOns.find(a => a.id === id)) premiumCount += 1;
+      if (BASIC_ADDONS.find(a => a.id === id)) basicCount += 1;
+      if (PREMIUM_ADDONS.find(a => a.id === id)) premiumCount += 1;
     });
     return { basicCount, premiumCount };
   };
 
-  const getPlanLimits = (plan: string) => {
-    switch(plan) {
-      case "basic": return { basic: 1, premium: 0, label: "Basic Patrol includes 1 Basic add-on." };
-      case "premium": return { basic: 1, premium: 2, label: "Premium includes 1 Basic and 2 Premium add-ons." };
-      case "executive": return { basic: 1, premium: 5, label: "Executive includes 1 Basic and 5 Premium add-ons." };
-      default: return { basic: 0, premium: 0, label: "" };
-    }
-  };
-
   const handleAddOnToggle = (id: string, isPremium: boolean) => {
-    const limits = getPlanLimits(selectedPlan);
+    const limits = getPlanAllowance(selectedPlan);
     const currentAddOns = form.getValues("addOns");
     const isCurrentlySelected = currentAddOns.includes(id);
     
@@ -308,11 +233,11 @@ export default function LandingPage() {
   // Reset add-ons when plan changes
   useEffect(() => {
     const currentAddOns = form.getValues("addOns");
-    const limits = getPlanLimits(selectedPlan);
+    const limits = getPlanAllowance(selectedPlan);
     
     // Separate current add-ons
-    const currentBasic = currentAddOns.filter(id => basicAddOns.find(b => b.id === id));
-    const currentPremium = currentAddOns.filter(id => premiumAddOns.find(p => p.id === id));
+    const currentBasic = currentAddOns.filter(id => BASIC_ADDONS.find(b => b.id === id));
+    const currentPremium = currentAddOns.filter(id => PREMIUM_ADDONS.find(p => p.id === id));
     
     let newAddOns: string[] = [];
     
@@ -604,19 +529,20 @@ export default function LandingPage() {
                  </div>
 
                  {/* Deal 4: Stackable */}
-                 <div className="bg-white/5 p-3 rounded border border-white/10 flex flex-col justify-center items-center text-center">
-                   <div className="text-accent font-black text-xl mb-1">STACKABLE</div>
-                   <div className="text-white/80 text-xs leading-tight">
-                     Combine ALL discounts for maximum savings.
+                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
+                   <div className="flex items-center gap-2 mb-1">
+                     <Star className="w-4 h-4 text-accent" />
+                     <span className="text-accent font-bold uppercase text-xs">Total Savings</span>
                    </div>
-                   <div className="mt-2 text-[10px] text-white/50 italic">
-                     *Subject to change
+                   <div className="text-white text-sm font-medium leading-relaxed">
+                     Stack incentives for up to <span className="text-green-400 font-bold">35% OFF</span> + free months at the end of your term.
                    </div>
                  </div>
                </div>
                
-               <div className="mt-4 text-xs text-white/50 text-center italic border-t border-white/10 pt-2 px-4">
-                 * Subscription price is subject to change so lock your price in for up to 2 years with an agreement. You can always downgrade plans or upgrade at anytime but there is no guarantee the prices will stay this low for the maintenance packages.
+               {/* Existing Customer Message */}
+               <div className="mt-4 text-center">
+                  <p className="text-xs text-white/60 italic">{GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY}</p>
                </div>
             </div>
 
@@ -661,133 +587,71 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Service Deployment Levels</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Transparent pricing based on your yard size. <span className="text-accent font-bold">Base price covers up to 1/3 acre.</span> +25% for each additional 1/3 acre.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Transparent pricing. Simple annual plans. No hidden fees.</p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 items-start">
-            {/* Basic Plan */}
-            <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
-              <div className="p-6 border-b border-border bg-muted/30">
-                <h3 className="text-2xl font-heading font-bold text-primary">Basic Patrol</h3>
-                <p className="text-sm text-muted-foreground mt-2">Solid biweekly protection for low-maintenance yards.</p>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">$129</span>
-                  <span className="text-muted-foreground text-sm">/mo (starting)</span>
+            {PLANS.map((plan) => (
+              <div 
+                key={plan.id}
+                className={`bg-card rounded-xl shadow-lg border border-border overflow-hidden ${plan.id === 'executive' ? 'border-2 border-primary relative transform md:-translate-y-4 shadow-xl' : ''}`}
+              >
+                {plan.id === 'executive' && (
+                  <div className="bg-primary text-primary-foreground text-center text-xs font-bold uppercase tracking-widest py-2">
+                    Most Popular • Best Value
+                  </div>
+                )}
+                <div className={`p-6 border-b border-border ${plan.id === 'executive' ? 'bg-primary/5' : 'bg-muted/30'}`}>
+                  <h3 className="text-2xl font-heading font-bold text-primary flex items-center gap-2">
+                    {plan.name} {plan.id === 'executive' && <Star className="w-5 h-5 fill-accent text-accent" />}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-3xl font-bold">${plan.price}</span>
+                    <span className="text-muted-foreground text-sm">/mo (starting)</span>
+                  </div>
+                  {plan.oldPrice && (
+                    <p className="text-xs text-muted-foreground mt-1 line-through opacity-70">Was ${plan.oldPrice}/mo</p>
+                  )}
+                  {plan.oldPrice && (
+                    <p className="text-[10px] text-accent font-medium mt-0.5">25th Anniversary + AI Savings</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2">For up to 1 acre</p>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">For up to 1/3 acre</p>
-              </div>
-              <div className="p-6 space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">Biweekly</span> Mowing (Year-Round)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">Biweekly</span> Leaf Control (Fall)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">3</span> Weed Killer Apps (w/ Pre-emergent)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Bush Trimming (2x/year)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">1</span> Basic Add-on Included</span>
-                  </li>
-                </ul>
-                <Button onClick={() => scrollToSection('quote')} variant="outline" className="w-full mt-4 border-primary/20 hover:bg-primary/5 hover:text-primary">Request Basic</Button>
-              </div>
-            </div>
-
-            {/* Executive Plan (Highlighted) */}
-            <div className="bg-card rounded-xl shadow-xl border-2 border-primary overflow-hidden relative transform md:-translate-y-4">
-              <div className="bg-primary text-primary-foreground text-center text-xs font-bold uppercase tracking-widest py-2">
-                Most Popular • Best Value
-              </div>
-              <div className="p-6 border-b border-border bg-primary/5">
-                <h3 className="text-2xl font-heading font-bold text-primary flex items-center gap-2">
-                  Executive Plan <Star className="w-5 h-5 fill-accent text-accent" />
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">Maximum firepower. Weekly maintenance year-round.</p>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">$299</span>
-                  <span className="text-muted-foreground text-sm">/mo (starting)</span>
+                <div className="p-6 space-y-4">
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm">
+                        <Check className={`w-5 h-5 shrink-0 ${plan.id === 'executive' && i === 0 ? 'text-accent' : 'text-primary'}`} />
+                        <span dangerouslySetInnerHTML={{ __html: feature.replace("Weekly", "<strong>Weekly</strong>").replace("Bi-weekly", "<strong>Bi-weekly</strong>").replace("Biweekly", "<strong>Biweekly</strong>") }} />
+                      </li>
+                    ))}
+                    <li className="flex items-start gap-3 text-sm">
+                      <Check className="w-5 h-5 text-primary shrink-0" />
+                      <span className="font-bold">{plan.allowanceLabel}</span>
+                    </li>
+                    {plan.id === 'executive' && PROMO_CONFIG.executiveBonusEnabled && new Date() < new Date(PROMO_CONFIG.cutoffDate) && (
+                       <li className="flex items-start gap-3 text-sm text-accent font-bold">
+                         <Star className="w-5 h-5 fill-accent text-accent shrink-0" />
+                         <span>Jan Promo: +1 Free Premium Add-on</span>
+                       </li>
+                    )}
+                  </ul>
+                  <Button 
+                    onClick={() => scrollToSection('quote')} 
+                    variant={plan.id === 'executive' ? 'default' : 'outline'}
+                    className={`w-full mt-4 ${plan.id === 'executive' ? 'bg-primary hover:bg-primary/90 text-white font-bold tracking-wide' : 'border-primary/20 hover:bg-primary/5 hover:text-primary'}`}
+                  >
+                    {plan.id === 'executive' ? 'Select Executive' : `Request ${plan.name.replace(' Patrol', '')}`}
+                  </Button>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">For up to 1/3 acre</p>
               </div>
-              <div className="p-6 space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-accent shrink-0" />
-                    <span className="font-bold text-primary">Weekly Maintenance (Year-Round)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">6</span> Weed Killer & Fertilizer Apps</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Bush Trimming (2x/year)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">1 Basic + 5 Premium</span> Add-ons</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Customized Yard Plan</span>
-                  </li>
-                </ul>
-                <Button onClick={() => scrollToSection('quote')} className="w-full mt-4 bg-primary hover:bg-primary/90 text-white font-bold tracking-wide">Select Executive</Button>
-              </div>
-            </div>
-
-            {/* Premium Plan */}
-            <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
-              <div className="p-6 border-b border-border bg-muted/30">
-                <h3 className="text-2xl font-heading font-bold text-primary">Premium Command</h3>
-                <p className="text-sm text-muted-foreground mt-2">Weekly attention for a consistently sharp look.</p>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">$199</span>
-                  <span className="text-muted-foreground text-sm">/mo (starting)</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">For up to 1/3 acre</p>
-              </div>
-              <div className="p-6 space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">Weekly</span> Mowing</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">3</span> Weed Killer Apps</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Bush Trimming (2x/year)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">1 Basic + 2 Premium</span> Add-ons</span>
-                  </li>
-                   <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Customized Yard Plan</span>
-                  </li>
-                </ul>
-                <Button onClick={() => scrollToSection('quote')} variant="outline" className="w-full mt-4 border-primary/20 hover:bg-primary/5 hover:text-primary">Request Premium</Button>
-              </div>
-            </div>
+            ))}
           </div>
 
           <div className="mt-12 text-center">
             <p className="text-sm text-muted-foreground bg-white/50 inline-block px-4 py-2 rounded-lg border border-border">
-              <strong>Note:</strong> Prices shown are for up to 1/3 acre. Larger lots are no problem — we’ll measure and send a fast custom quote.
+              <strong>Note:</strong> {GLOBAL_CONSTANTS.YARD_ELIGIBILITY}
             </p>
           </div>
         </div>
@@ -1145,44 +1009,38 @@ export default function LandingPage() {
                             defaultValue={field.value}
                             className="grid md:grid-cols-3 gap-4"
                           >
-                            <div className="relative">
-                              <RadioGroupItem value="basic" id="basic" className="peer sr-only" />
-                              <Label
-                                htmlFor="basic"
-                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
-                              >
-                                <span className="mb-2 text-lg font-bold">Basic Patrol</span>
-                                <span className="text-sm text-center text-muted-foreground">Weekly mowing & edging. 2 Basic add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">Starts at $129/mo</span>
-                              </Label>
-                            </div>
-                            
-                            <div className="relative">
-                              <RadioGroupItem value="premium" id="premium" className="peer sr-only" />
-                              <Label
-                                htmlFor="premium"
-                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
-                              >
-                                <span className="mb-2 text-lg font-bold">Premium Command</span>
-                                <span className="text-sm text-center text-muted-foreground">Plus weed control & beds. 2 Basic + 3 Premium Add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">Starts at $199/mo</span>
-                              </Label>
-                            </div>
-                            
-                            <div className="relative">
-                              <RadioGroupItem value="executive" id="executive" className="peer sr-only" />
-                              <Label
-                                htmlFor="executive"
-                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full relative overflow-hidden"
-                              >
-                                <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl shadow-sm">
-                                  Jan Promo: +1 Free Premium Add-on
-                                </div>
-                                <span className="mb-2 text-lg font-bold flex items-center gap-1 mt-2">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
-                                <span className="text-sm text-center text-muted-foreground">Weekly Main. 6 Weed Apps. 1 Basic + 5 Premium Add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">Starts at $299/mo</span>
-                              </Label>
-                            </div>
+                            {PLANS.map((plan) => (
+                              <div key={plan.id} className="relative">
+                                <RadioGroupItem value={plan.id} id={plan.id} className="peer sr-only" />
+                                <Label
+                                  htmlFor={plan.id}
+                                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full relative overflow-hidden"
+                                >
+                                  {plan.promoLabel && PROMO_CONFIG.executiveBonusEnabled && new Date() < new Date(PROMO_CONFIG.cutoffDate) && (
+                                    <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl shadow-sm">
+                                      {plan.promoLabel}
+                                    </div>
+                                  )}
+                                  
+                                  <span className="mb-2 text-lg font-bold flex items-center gap-1 mt-2">
+                                    {plan.name} 
+                                    {plan.id === 'executive' && <Star className="w-3 h-3 fill-accent text-accent" />}
+                                  </span>
+                                  <span className="text-sm text-center text-muted-foreground">{plan.description}</span>
+                                  <div className="mt-2 flex flex-col items-center">
+                                     <span className="text-sm font-bold text-primary">{plan.priceLabel}</span>
+                                     {plan.oldPrice && (
+                                       <span className="text-xs text-muted-foreground line-through opacity-70">
+                                         Was ${plan.oldPrice}/mo
+                                       </span>
+                                     )}
+                                     {plan.oldPrice && (
+                                        <span className="text-[10px] text-accent font-medium mt-1">25th Anniversary + AI Savings</span>
+                                     )}
+                                  </div>
+                                </Label>
+                              </div>
+                            ))}
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -1202,7 +1060,7 @@ export default function LandingPage() {
                   <div className="bg-muted/30 p-4 rounded-lg border border-border">
                     <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
                       <Info className="w-4 h-4 mt-0.5" />
-                      <span>{getPlanLimits(selectedPlan).label}</span>
+                      <span>{PLANS.find(p => p.id === selectedPlan)?.allowanceLabel}</span>
                     </div>
                     {slotError && (
                       <div className="flex items-center gap-2 mt-2 text-destructive text-sm font-bold bg-destructive/10 p-2 rounded animate-pulse">
@@ -1216,7 +1074,7 @@ export default function LandingPage() {
                     <div className="space-y-4">
                       <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-Ons</h4>
                       <div className="grid gap-3">
-                      {basicAddOns.map((addon) => (
+                      {BASIC_ADDONS.map((addon) => (
                         <div key={addon.id} className={`
                           relative flex flex-col p-3 rounded-lg border transition-all
                           ${selectedAddOns.includes(addon.id) ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
@@ -1255,8 +1113,9 @@ export default function LandingPage() {
                     <div className="space-y-4">
                       <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Premium Add-Ons</h4>
                       <div className="grid gap-3">
-                      {premiumAddOns.map((addon) => {
-                        const isDisabled = getPlanLimits(selectedPlan).premium === 0;
+                      {PREMIUM_ADDONS.map((addon) => {
+                        const allowance = getPlanAllowance(selectedPlan);
+                        const isDisabled = allowance.premium === 0;
                         const isChecked = selectedAddOns.includes(addon.id);
                         return (
                           <div key={addon.id} className={`
@@ -1299,9 +1158,6 @@ export default function LandingPage() {
                         );
                       })}
                       </div>
-                      
-                      {/* Executive Benefit Note - REMOVED per user request for updated add-ons list */}
-                      {/* But "No One Left Behind" Referral is needed elsewhere. */}
                     </div>
                   </div>
                 </div>
@@ -1634,11 +1490,11 @@ export default function LandingPage() {
             {[
               {
                 q: "Why are you lowering prices after 25+ years?",
-                a: "Short answer: AI. We use AI to cut wasted time, improve routing and scheduling, and reduce overhead. Most companies keep the savings — we pass them to you. Same quality. Smarter systems. Better prices."
+                a: GLOBAL_CONSTANTS.AI_SAVINGS_MESSAGE
               },
               {
                 q: "Do I have to sign a contract?",
-                a: "We offer an annual subscription service designed to keep your property pristine year-round. As a thank you for your loyalty, you receive your free months after completing the full year term. Month-to-month options are also available."
+                a: `We offer an annual subscription service designed to keep your property pristine year-round. ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY} Month-to-month options are also available.`
               },
               {
                 q: "How does billing work?",
@@ -1655,6 +1511,10 @@ export default function LandingPage() {
               {
                 q: "Can I switch plans later?",
                 a: "Absolutely. You can switch plans at any time, but please note that any plan change will start a new one-year subscription term at the new plan’s rate."
+              },
+              {
+                q: "Existing Customers",
+                a: GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY
               }
             ].map((faq, i) => (
               <AccordionItem key={i} value={`item-${i}`}>
@@ -1672,7 +1532,7 @@ export default function LandingPage() {
       <section className="py-16 bg-accent text-accent-foreground text-center">
         <div className="container mx-auto px-4">
            <div className="max-w-2xl mx-auto">
-             <h2 className="text-3xl font-heading font-bold mb-4">Excellent Referral Program</h2>
+             <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
              <p className="text-lg mb-8 opacity-90">Refer a neighbor and get rewarded. Help us build a stronger perimeter.</p>
              <Button variant="secondary" className="bg-background text-foreground hover:bg-background/90 font-bold px-8 py-6 rounded-full shadow-lg transition-transform hover:scale-105">
                See Referral Rewards

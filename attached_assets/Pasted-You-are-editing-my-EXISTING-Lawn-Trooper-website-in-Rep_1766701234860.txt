@@ -1,0 +1,175 @@
+You are editing my EXISTING Lawn Trooper website in Replit. Do NOT redesign the site. Do NOT change the overall layout, branding, or flow. Your job is to update plan + add-on content site-wide so it matches the SOURCE OF TRUTH below, and remove/replace anything that conflicts. Be thorough, professional, and consistent across the entire website.
+
+SCOPE (must update everywhere this appears):
+- Pricing page / plan cards / comparison table
+- Any “Plans” sections on home page and subpages
+- FAQs, tooltips, popups, marketing blurbs, and checkout/quote flow text
+- Any plan summaries used in forms, emails, confirmation screens, or modals
+- Any duplicated plan text in multiple components
+- Any “Add-ons” page/section, add-on selectors, and add-on descriptions
+- Any images/captions or UI labels that mention plan features (update text only)
+
+CRITICAL REQUIREMENT:
+Centralize ALL plan and add-on content into a single shared data source (one config/object/module) and render the plan cards, comparisons, and add-on lists from that source. This prevents the site from drifting again.
+
+========================
+SOURCE OF TRUTH (FINAL)
+========================
+
+PLAN NAMES (use exactly):
+- Basic Patrol
+- Premium Patrol
+- Executive Patrol
+
+GLOBAL PLAN PROMISE (all plans):
+- Every visit includes: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces for clean curb appeal.
+
+YARD ELIGIBILITY (must be stated clearly on pricing/plan area):
+- These neighborhood plan prices are for yards UNDER 1 acre.
+- For country properties or yards OVER 1 acre: request a custom estimate (send pictures) and we will provide a detailed custom quote.
+
+LEAF SERVICE WORDING (replace “full/unlimited leaves” everywhere):
+- Leaf Service (Fall & Winter months):
+  - Basic Patrol: Monthly leaf cleanup — Leaf blowing / Mulching / Removal
+  - Premium Patrol: Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal
+  - Executive Patrol: Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal
+Use slashes. Do NOT use “Unlimited” or “Full leaf cleanup” anywhere.
+
+BUSH TRIMMING RULE (IMPORTANT: add this disposal line EVERY time bush trimming is mentioned):
+- Whenever bush trimming is listed (plan or add-on), include:
+  “All clippings removed and disposed for clean curb appeal and pristine flower beds.”
+This must appear in plan bullets AND in the add-on description for Extra Bush Trimming.
+
+PRICING (marketing markdown for anniversary sale; show on pricing cards):
+- Basic Patrol: $129/month (was $169/month)
+- Premium Patrol: $199/month (was $279/month)
+- Executive Patrol: $299/month (was $399/month)
+Add a small note: “25+ Year Anniversary Pricing + AI Savings” (professional tone).
+
+AI SAVINGS MESSAGE (keep tasteful; do not overclaim):
+- We are lowering costs with new AI + 2026 technology and passing savings on to customers.
+
+COMMITMENT MESSAGE (military-style but professional):
+- “If you commit to us, we commit to you.”
+
+SIGN-UP / CONSULTATION / REFUND (must be explained clearly near checkout or FAQ):
+- After the first month is paid, schedule a consultation + walkthrough (virtual or in-person).
+- At the time of the consultation, if the customer decides it’s not the right fit, provide a full refund.
+Keep language professional and clear.
+
+FREE MONTHS + INCENTIVES (must be included in promo area; do not say “first month free”):
+- 1-year term: 1 free month at the END of the term
+- 2-year term: 3 free months at the END of the term
+- “Visit our discounts page to stack incentives for up to 35% off + free months at the end of your term.”
+Do NOT mention paying upfront specifically; keep it as “stack incentives” as written.
+
+EXISTING CUSTOMER LOYALTY (must be included in promo/FAQ):
+- “Existing customers: Happy Holidays — log in, select your 2026 plan, and apply your loyalty discount.”
+
+EXECUTIVE BONUS ADD-ON PROMO:
+- Executive includes 2 Basic Add-Ons + 3 Premium Add-Ons.
+- Limited-time: enroll before January 1, 2026 to receive +1 Premium Add-On at no additional cost (total Premium add-ons becomes 4).
+Implement this with a single promo flag/date check that is easy to turn off later.
+
+========================
+PLAN DETAILS (FINAL)
+========================
+
+BASIC PATROL
+- Mowing: Regular (bi-weekly) mowing
+- Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces
+- Weed Control: 2 pre-emergent weed control treatments per year
+- Bush Trimming: 2 bush trimmings per year + “All clippings removed and disposed for clean curb appeal and pristine flower beds.”
+- Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal
+- Add-On Allowance: 1 Basic Add-On
+
+PREMIUM PATROL
+- Mowing: Weekly mowing
+- Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces
+- Weed Control: 4 weed treatments per year
+- Bush Trimming: 3 bush trimmings per year + “All clippings removed and disposed for clean curb appeal and pristine flower beds.”
+- Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal
+- Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property
+- Add-On Allowance: 2 Basic Add-Ons + 1 Premium Add-On
+
+EXECUTIVE PATROL
+- Mowing: Weekly mowing (top priority)
+- Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces
+- Weed Control: 6 weed treatments per year
+- Bush Trimming: 4 bush trimmings per year (scheduled by plant type and growth cycle) + “All clippings removed and disposed for clean curb appeal and pristine flower beds.”
+- Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal
+- Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property
+- Weed-Free Guarantee (Executive only): After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round. Do not claim “zero weeds forever.”
+- Add-On Allowance: 2 Basic Add-Ons + 3 Premium Add-Ons (promo can make Premium add-ons = 4 before Jan 1, 2026)
+
+========================
+ADD-ONS (FINAL)
+========================
+Show add-ons in two tiers: Basic Add-Ons and Premium Add-Ons.
+
+BASIC ADD-ONS
+1) Extra Weed Treatments
+   - Adds 2 additional weed applications
+2) Quarterly Trash Can Cleaning
+   - Quarterly trash can cleaning (do NOT list number of cleanings per year)
+3) Small Tree & Low-Hanging Branch Trimming (Annual)
+   - Once per year + debris removed from property
+4) Christmas Lights – Basic Package
+   - Install / maintenance / removal (simple, clean holiday lighting)
+
+PREMIUM ADD-ONS
+1) Every-Other-Month Trash Can Cleaning
+   - Every-other-month trash can cleaning (do NOT list number of cleanings per year)
+2) Mulch Installation
+   - Fresh mulch install + light bed cleanup
+3) Pine Straw Installation
+   - Fresh pine straw installed neatly in beds
+4) Driveway Pressure Washing
+   - Professional pressure washing for driveways (and similar flat hard surfaces if applicable)
+5) Aeration
+   - Relieves soil compaction / improves nutrient flow
+6) Overseeding
+   - Thickens turf / best paired with aeration
+7) Extra Bush Trimming
+   - Additional trimming beyond plan limits
+   - REQUIRED: “All clippings removed and disposed for clean curb appeal and pristine flower beds.”
+8) Hedge Shaping
+   - Precision shaping for formal hedges
+9) Flower Bed Cleanup
+   - Weed removal / edging / debris clearing
+10) Leaf Bagging & Haul-Off
+   - Removal of collected leaves from the property
+11) Property Cleanup
+   - Removal of sticks, debris, and storm material
+12) Gutter Cleaning (First Floor Only)
+   - First-floor / single-story gutters only (no multi-story work)
+13) Christmas Lights – Premium Package
+   - Larger or more detailed lighting layouts
+   - Install / maintenance / removal
+
+REMOVE FROM SITE:
+- Any trash-cleaning “X times per year” wording
+- Any “unlimited leaves” or “full leaf cleanup” wording
+- Any outdated add-on allowances (old counts)
+- Any outdated weed/bush trimming counts
+
+========================
+IMPLEMENTATION DETAILS
+========================
+- Create/modify a single source file (e.g., src/config/plans.ts or src/data/plans.js) that contains:
+  - plans array with all fields above (including pricing markdown fields)
+  - addons array with tier/basic-premium and short descriptions
+  - promo config: { executiveBonusEnabled: true, cutoffDate: "2026-01-01" }
+- Update all UI components to use this config:
+  - plan cards, plan comparison, FAQs snippets, add-on selectors
+- Ensure the Executive promo (+1 Premium add-on) appears only when promo is active, and is hidden automatically after Jan 1, 2026 (or via a single toggle).
+- Ensure the bush trimming disposal line appears anywhere bush trimming is mentioned (plan bullet + Extra Bush Trimming add-on).
+
+FINAL QA CHECKLIST (must confirm in your work):
+- All pages show consistent plan details and counts
+- No conflicting/old language remains
+- Add-on tiers and allowances match exactly
+- Promo is implemented and easy to disable
+- Yard eligibility (under 1 acre) is stated and custom quote path is clear
+- Consultation + refund terms are included and clear
+- Tone is professional, concise, and sales-ready without overpromising
