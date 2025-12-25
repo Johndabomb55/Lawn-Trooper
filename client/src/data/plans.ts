@@ -19,7 +19,7 @@ export const PLANS = [
     name: "Basic Patrol",
     price: 129,
     oldPrice: 169,
-    priceLabel: "Anniversary Sale Price",
+    priceLabel: "Starts at $129/mo",
     description: "Includes: 1 Basic Add-on • 0 Premium Add-ons",
     features: [
       "Mowing: Regular (bi-weekly) mowing",
@@ -39,7 +39,7 @@ export const PLANS = [
     name: "Premium Patrol",
     price: 199,
     oldPrice: 279,
-    priceLabel: "Anniversary Sale Price",
+    priceLabel: "Starts at $199/mo",
     description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 1 Premium Add-on",
     features: [
       "Mowing: Weekly mowing",

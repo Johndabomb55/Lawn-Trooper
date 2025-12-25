@@ -423,10 +423,9 @@ export default function LandingPage() {
       <section className="relative min-h-screen flex flex-col pt-24 pb-20 overflow-hidden bg-primary/5">
         
         {/* Urgency Top Bar */}
-        <div className="absolute top-16 left-0 right-0 z-20 bg-destructive/90 text-white py-2 px-4 shadow-lg text-center transform -rotate-1">
-          <div className="flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-xs md:text-sm animate-pulse">
-            <AlertCircle className="w-4 h-4" />
-            Early Bird Savings — Lock in prices before the January 1st increase. Enlist now.
+        <div className="absolute top-16 left-0 right-0 z-20 transform -rotate-1 pointer-events-none">
+          <div className="pointer-events-auto inline-block w-full">
+             <CountdownTimer />
           </div>
         </div>
 
@@ -542,7 +541,7 @@ export default function LandingPage() {
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
                  <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl">
                    <Star className="fill-accent w-5 h-5" /> 
-                   3 Weeks of Early Bird Savings
+                   1 Week of Early Bird Savings
                    <Star className="fill-accent w-5 h-5" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
@@ -562,7 +561,8 @@ export default function LandingPage() {
                    </div>
                    <div className="text-white text-sm font-medium">
                      <div className="flex justify-between items-center mb-1"><span>2-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">3 Months Free</span></div>
-                     <div className="flex justify-between items-center"><span>1-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">1 Month Free</span></div>
+                     <div className="flex justify-between items-center mb-1"><span>1-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">1 Month Free</span></div>
+                     <div className="flex justify-between items-center"><span>Renters:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">5% OFF</span></div>
                    </div>
                  </div>
 
@@ -597,7 +597,7 @@ export default function LandingPage() {
                      <span className="text-accent font-bold uppercase text-xs">Total Savings</span>
                    </div>
                    <div className="text-white text-sm font-medium leading-relaxed">
-                     Stack incentives for up to <span className="text-green-400 font-bold">35% OFF</span> + free months at the end of your term.
+                     Stack incentives for up to <span className="text-green-400 font-bold">30% OFF</span> and 3 free months.
                    </div>
                  </div>
                </div>
