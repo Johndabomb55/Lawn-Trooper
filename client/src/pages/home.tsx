@@ -226,30 +226,32 @@ export default function LandingPage() {
   const selectedYardSize = form.watch("yardSize");
   const selectedAddOns = form.watch("addOns");
 
+  // State for new questions
+  const [isUnderOneAcre, setIsUnderOneAcre] = useState<string>("yes");
+  const [maintenanceFreq, setMaintenanceFreq] = useState<string>("weekly");
+
   // Calculate Price Effect
   useEffect(() => {
-    if (selectedPlan && selectedYardSize) {
+    if (selectedPlan) {
       const planData = PRICING[selectedPlan as keyof typeof PRICING];
       
-      const acres = Number(selectedYardSize);
-      
-      if (planData && !isNaN(acres) && acres > 0) {
-        // Logic: Base price covers up to 1 acre.
-        // Above 1 acre requires custom quote.
-        if (acres > 1.0) {
-          setEstimatedPrice(null); // Indicates custom quote needed
-        } else {
-           // Logic: Base price covers up to 1/3 acre.
-           // Apply a 25% price increase for each additional 1/3 acre.
-           // NOTE: Prompt says "Transparent pricing based on your yard size" but keeps the base logic undefined?
-           // I'll keep the existing logic but cap instant quote at 1 acre.
-           const incrementMultiplier = Math.max(0, Math.ceil(acres / (1/3)) - 1);
-           const price = planData.base * (1 + (0.25 * incrementMultiplier));
-           setEstimatedPrice(price);
-        }
+      // If user says "Yes" (Under 1 Acre), we show the base price.
+      // We removed the acreage math as requested.
+      if (planData && isUnderOneAcre === "yes") {
+         setEstimatedPrice(planData.base);
+      } else {
+         // If not under 1 acre or not sure, we might hide price or show "Starting at"
+         // For now, if they say 'no' or 'not sure', we can reset or keep showing base with a disclaimer
+         // But prompt says "Total landscape maintenance plans for under-1-acre neighborhood yards starting at $129/month"
+         // Let's assume standard pricing for standard yards.
+         if (isUnderOneAcre === "no" || isUnderOneAcre === "unsure") {
+             setEstimatedPrice(null); // Custom quote needed
+         } else {
+             setEstimatedPrice(planData.base);
+         }
       }
     }
-  }, [selectedPlan, selectedYardSize]);
+  }, [selectedPlan, isUnderOneAcre]);
 
   // Calculate counts
   const calculateCounts = (currentAddOns: string[]) => {
@@ -458,10 +460,10 @@ export default function LandingPage() {
             className="mb-8 relative w-full max-w-4xl"
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
-            <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[400px]" />
+            <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4" />
             
             <div className="mt-4 relative z-20">
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-0 leading-none" 
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-2 leading-none" 
                   style={{ 
                     backgroundImage: `url(${camoPattern})`, 
                     backgroundSize: '200px',
@@ -469,11 +471,26 @@ export default function LandingPage() {
                     WebkitTextFillColor: 'transparent',
                     filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))'
                   }}>
-                Lawn Trooper
+                Instant Pricing in 30 Seconds
               </h1>
-              <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#8B7355] uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-1 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30">
-                Landscape Maintenance
+              <h2 className="text-xl md:text-2xl font-serif font-bold text-white/90 uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-2 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30 max-w-3xl leading-relaxed">
+                Total landscape maintenance plans for under-1-acre neighborhood yards starting at $129/month
               </h2>
+            </div>
+            
+            <div className="mt-6 flex flex-col items-center gap-4">
+               <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
+                 Next 5 days only: get up to 3 months FREE
+               </div>
+               
+               <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md mx-auto">
+                 <Button onClick={() => scrollToSection('quote')} className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 text-lg shadow-xl border-2 border-white/10">
+                   Get My Instant Quote
+                 </Button>
+                 <Button onClick={() => scrollToSection('plans')} variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10 font-bold uppercase tracking-wider py-6 text-lg bg-black/40 backdrop-blur-sm">
+                   See What’s Included
+                 </Button>
+               </div>
             </div>
           </motion.div>
 
@@ -1055,44 +1072,67 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* 2. Yard Size Selection (Input) */}
+                {/* 2. Instant Quote Questions */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Confirm Lot Size</h3>
-                   <FormField
-                    control={form.control}
-                    name="yardSize"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel className="text-base font-bold text-foreground">Approximate Lot Size (Acres)</FormLabel>
-                        <FormControl>
-                          <div className="flex items-center gap-2">
-                             <Input 
-                               type="number" 
-                               placeholder="e.g. 0.25" 
-                               step="0.01" 
-                               min="0.01"
-                               className="text-lg h-12"
-                               {...field}
-                               onChange={(e) => field.onChange(e.target.value)}
-                             />
-                             <span className="text-muted-foreground font-bold">Acres</span>
-                          </div>
-                        </FormControl>
-                        <FormDescription>
-                           Please enter your approximate lot size. The exact lot size will be measured in person at the consultation.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    *Double-checked during consultation. We can do a video walk-through to finalize custom details!
-                  </p>
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Property Details</h3>
+                   
+                   {/* Question 1: Under 1 Acre? */}
+                   <div className="space-y-3">
+                     <Label className="text-base font-bold text-foreground">Is your property under 1 acre?</Label>
+                     <RadioGroup 
+                        value={isUnderOneAcre} 
+                        onValueChange={(val) => {
+                            setIsUnderOneAcre(val);
+                            // If they confirm yes, we can set a valid dummy yardSize for form validation if needed
+                            if (val === 'yes') form.setValue('yardSize', 0.5); 
+                        }}
+                        className="flex gap-4"
+                     >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="yes" id="acre-yes" />
+                          <Label htmlFor="acre-yes" className="font-medium cursor-pointer">Yes</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="unsure" id="acre-unsure" />
+                          <Label htmlFor="acre-unsure" className="font-medium cursor-pointer">Not sure (we can help)</Label>
+                        </div>
+                     </RadioGroup>
+                   </div>
+
+                   {/* Question 2: Maintenance Frequency */}
+                   <div className="space-y-3">
+                     <Label className="text-base font-bold text-foreground">Maintenance Frequency</Label>
+                     <RadioGroup 
+                        value={maintenanceFreq} 
+                        onValueChange={setMaintenanceFreq}
+                        className="flex gap-4"
+                     >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="weekly" id="freq-weekly" />
+                          <Label htmlFor="freq-weekly" className="font-medium cursor-pointer">Weekly</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="biweekly" id="freq-biweekly" />
+                          <Label htmlFor="freq-biweekly" className="font-medium cursor-pointer">Bi-Weekly</Label>
+                        </div>
+                     </RadioGroup>
+                   </div>
+
+                   {/* Hidden numeric input to satisfy schema if needed, or we just rely on default */}
+                   <div className="hidden">
+                     <FormField
+                      control={form.control}
+                      name="yardSize"
+                      render={({ field }) => (
+                        <Input type="number" {...field} />
+                      )}
+                    />
+                   </div>
                 </div>
 
                 {/* 3. Plan Selection */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Choose Your Plan</h3>
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Pick Your Style</h3>
                   
                   <FormField
                     control={form.control}
@@ -1113,7 +1153,7 @@ export default function LandingPage() {
                               >
                                 <span className="mb-2 text-lg font-bold">Basic Patrol</span>
                                 <span className="text-sm text-center text-muted-foreground">Weekly mowing & edging. 2 Basic add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">Base: $129/mo</span>
+                                <span className="mt-2 text-sm font-bold text-primary">Starts at $129/mo</span>
                               </Label>
                             </div>
                             
@@ -1125,7 +1165,7 @@ export default function LandingPage() {
                               >
                                 <span className="mb-2 text-lg font-bold">Premium Command</span>
                                 <span className="text-sm text-center text-muted-foreground">Plus weed control & beds. 2 Basic + 3 Premium Add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">Base: $199/mo</span>
+                                <span className="mt-2 text-sm font-bold text-primary">Starts at $199/mo</span>
                               </Label>
                             </div>
                             
@@ -1140,7 +1180,7 @@ export default function LandingPage() {
                                 </div>
                                 <span className="mb-2 text-lg font-bold flex items-center gap-1 mt-2">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
                                 <span className="text-sm text-center text-muted-foreground">Weekly Main. 6 Weed Apps. 1 Basic + 5 Premium Add-ons.</span>
-                                <span className="mt-2 text-sm font-bold text-primary">Base: $299/mo</span>
+                                <span className="mt-2 text-sm font-bold text-primary">Starts at $299/mo</span>
                               </Label>
                             </div>
                           </RadioGroup>
@@ -1593,6 +1633,10 @@ export default function LandingPage() {
           <Accordion type="single" collapsible className="w-full">
             {[
               {
+                q: "Why are you lowering prices after 25+ years?",
+                a: "Short answer: AI. We use AI to cut wasted time, improve routing and scheduling, and reduce overhead. Most companies keep the savings — we pass them to you. Same quality. Smarter systems. Better prices."
+              },
+              {
                 q: "Do I have to sign a contract?",
                 a: "We offer an annual subscription service designed to keep your property pristine year-round. As a thank you for your loyalty, you receive your free months after completing the full year term. Month-to-month options are also available."
               },
@@ -1621,6 +1665,19 @@ export default function LandingPage() {
               </AccordionItem>
             ))}
           </Accordion>
+        </div>
+      </section>
+
+      {/* Referral Program */}
+      <section className="py-16 bg-accent text-accent-foreground text-center">
+        <div className="container mx-auto px-4">
+           <div className="max-w-2xl mx-auto">
+             <h2 className="text-3xl font-heading font-bold mb-4">Excellent Referral Program</h2>
+             <p className="text-lg mb-8 opacity-90">Refer a neighbor and get rewarded. Help us build a stronger perimeter.</p>
+             <Button variant="secondary" className="bg-background text-foreground hover:bg-background/90 font-bold px-8 py-6 rounded-full shadow-lg transition-transform hover:scale-105">
+               See Referral Rewards
+             </Button>
+           </div>
         </div>
       </section>
 

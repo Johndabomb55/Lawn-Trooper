@@ -1,0 +1,63 @@
+You are editing my existing Lawn Trooper website. DO NOT redesign from scratch. Keep the current theme, colors, layout style, and sections unless explicitly instructed. Goal: improve conversion by leading with a simple “Instant Quote” hook, reduce confusion, and remove all acreage math language.
+
+HIGH PRIORITY CHANGES (Conversion + Clarity)
+
+1) HERO / TOP SECTION (above the fold)
+- Make the primary headline focused on instant pricing:
+  Headline: “Instant Pricing in 30 Seconds”
+  Subheadline: “Total landscape maintenance plans for under-1-acre neighborhood yards starting at $129/month”
+- Add a limited-time promo badge/callout near the CTA:
+  “Next 5 days only: get up to 3 months FREE”
+- Primary CTA button text should be:
+  “Get My Instant Quote”
+- Secondary CTA (smaller) can be:
+  “See What’s Included”
+
+2) REMOVE ALL ACREAGE MATH / INTERNAL PRICING LANGUAGE
+- Remove ANY mention of:
+  - “1/3 acre”
+  - “1/4 acre”
+  - “25% increase”
+  - “per additional third”
+  - any “25%” pricing rule language anywhere on the site
+This is private internal logic and should not appear on the website.
+
+3) INSTANT QUOTE FLOW (Lightweight, not a new page unless needed)
+- Keep the existing quote/pricing area, but improve the first-step questions so it feels fast and impressive.
+- Present the quote as “instant” with just a few simple questions before showing price.
+- The very first and most important question should be:
+  “Is your property under 1 acre?”
+  Options: “Yes” and “Not sure (we can help)”
+- Next question:
+  “Maintenance frequency”
+  Options: “Weekly” and “Bi-weekly”
+- Optional third question (if you already have plan tiers):
+  “Pick your style”
+  Options: “Basic” “Best Value” “Premium”
+- After these, show the pricing/result area immediately.
+
+4) PRICING COPY (Simple, clean, non-technical)
+- Everywhere pricing is discussed, keep it simple:
+  “Plans start at $129/month for under-1-acre neighborhood yards.”
+- If there is a “starting at” label, make it prominent near the instant quote result.
+
+5) “WHY ARE YOU LOWERING PRICES?” TRUST SECTION
+- Add a short FAQ or section (where FAQs/testimonials fit best) with this question:
+  Q: “Why are you lowering prices after 25+ years?”
+  A: “Short answer: AI. We use AI to cut wasted time, improve routing and scheduling, and reduce overhead. Most companies keep the savings — we pass them to you. Same quality. Smarter systems. Better prices.”
+- Keep it friendly, confident, and not overly technical.
+
+6) REFERRAL PROGRAM HIGHLIGHT
+- Add a small but noticeable section or callout near pricing or near the footer:
+  Headline: “Excellent Referral Program”
+  Text: “Refer a neighbor and get rewarded.”
+  Button: “See Referral Rewards” (link to existing referral details section/page if it exists; if not, create a simple modal/section with placeholder text that I can fill in later.)
+
+7) KEEP CURRENT DESIGN + CLEAN UP
+- Keep the site’s current design and structure overall.
+- Do not add clutter.
+- Ensure mobile looks clean: hero headline, promo badge, and “Get My Instant Quote” button should be visible without excessive scrolling.
+
+DELIVERABLE
+- Implement these changes in the existing codebase.
+- Confirm there are ZERO occurrences of “25%”, “1/3”, “1/4”, or “additional third” anywhere in the site content after edits.
