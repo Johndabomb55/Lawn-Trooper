@@ -1074,6 +1074,10 @@ export default function LandingPage() {
                         </FormControl>
                         <FormDescription>
                            Enter total lot size including house (in acres) to generate your custom quote.
+                           <br />
+                           <span className="text-xs text-muted-foreground italic">
+                             *Larger yards ({">"} 0.33 acres) incur a 25% price increase per additional 1/3 acre to keep pricing fair and transparent.
+                           </span>
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -1127,9 +1131,12 @@ export default function LandingPage() {
                               <RadioGroupItem value="executive" id="executive" className="peer sr-only" />
                               <Label
                                 htmlFor="executive"
-                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
+                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full relative overflow-hidden"
                               >
-                                <span className="mb-2 text-lg font-bold flex items-center gap-1">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
+                                <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl shadow-sm">
+                                  Jan Promo: +1 Free Premium Add-on
+                                </div>
+                                <span className="mb-2 text-lg font-bold flex items-center gap-1 mt-2">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
                                 <span className="text-sm text-center text-muted-foreground">Weekly Main. 6 Weed Apps. 1 Basic + 5 Premium Add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">Base: $299/mo</span>
                               </Label>
@@ -1547,17 +1554,17 @@ export default function LandingPage() {
             {[
               {
                 text: "My yard has never looked this good. The crew is incredibly professional and the camo mowers are awesome!",
-                author: "James Wilson",
+                author: "James W.",
                 loc: "Huntsville, AL"
               },
               {
                 text: "I love the automated billing and text updates. Total set-it-and-forget-it service. Highly recommend the Executive plan.",
-                author: "Sarah Thompson",
+                author: "Sarah T.",
                 loc: "Madison, AL"
               },
               {
                 text: "Finally a lawn service that actually shows up when they say they will. The weed control works wonders.",
-                author: "Michael Rodriguez",
+                author: "Michael R.",
                 loc: "Harvest, AL"
               }
             ].map((review, i) => (
@@ -1585,15 +1592,15 @@ export default function LandingPage() {
             {[
               {
                 q: "Do I have to sign a contract?",
-                a: "No! We offer a standard month-to-month service with no long-term commitment. However, if you choose to sign a 1-year or 2-year agreement, we offer significant discounts and price locks."
+                a: "We offer an annual subscription service designed to keep your property pristine year-round. As a thank you for your loyalty, you receive your free months after completing the full year term. Month-to-month options are also available."
               },
               {
                 q: "How does billing work?",
-                a: "We keep it simple with automated monthly billing. A credit card is required on file. We bill on the 1st of each month for that month's service."
+                a: "We keep it simple with automated monthly billing through Jobber Payments. You'll receive an account number via email for your customer login, allowing you to view and manage your account at any time."
               },
               {
                 q: "What if it rains?",
-                a: "Our troopers monitor weather conditions daily. If rain prevents service on your scheduled day, we'll deploy as soon as conditions allow, typically the next day."
+                a: "Our team closely monitors weather conditions daily. If rain prevents service on your scheduled day, we’ll reschedule as soon as conditions allow, typically within one to two days, to prevent yard damage. Schedules may adjust based on weather conditions."
               },
               {
                 q: "Is the price guaranteed?",
@@ -1601,7 +1608,7 @@ export default function LandingPage() {
               },
               {
                 q: "Can I switch plans later?",
-                a: "Absolutely. You can upgrade or downgrade your mission plan at any time. Changes will be reflected in the next billing cycle."
+                a: "Absolutely. You can switch plans at any time, but please note that any plan change will start a new one-year subscription term at the new plan’s rate."
               }
             ].map((faq, i) => (
               <AccordionItem key={i} value={`item-${i}`}>
