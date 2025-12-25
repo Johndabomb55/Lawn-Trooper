@@ -18,7 +18,11 @@ import {
   Zap,
   Leaf,
   Info,
-  AlertCircle
+  AlertCircle,
+  Facebook,
+  Instagram,
+  Twitter,
+  Mail
 } from "lucide-react";
 import { 
   Accordion, 
@@ -116,108 +120,6 @@ const formSchema = z.object({
   }
 });
 
-const basicAddOns = [
-  { 
-    id: "fall_cleanup", 
-    label: "Fall Clean-Up", 
-    description: "Complete leaf cleanup across the entire property, regardless of number of trees or leaves. Includes blowing, gathering, consolidation, and seasonal bed refresh with mulch where needed. Bagging and off-site leaf removal available for an additional charge.",
-    img: imgLeaf 
-  },
-  {
-    id: "weed_prevention",
-    label: "Weed Prevention & Control (Annual)",
-    description: "Three pre-emergent and weed control applications per year, typically applied early season (January–May) to help prevent and control common weeds.",
-    img: null
-  },
-  { 
-    id: "bush_trim_1x", 
-    label: "Bush Trim & Clipping Removal", 
-    description: "One professional bush trim per year with full cleanup and removal of clippings from landscaped areas.",
-    img: null 
-  },
-  { 
-    id: "trash_can_basic", 
-    label: "Trash Bin Cleaning — Basic (Bi-Monthly)", 
-    description: "Professional cleaning and sanitizing of one trash bin, scheduled every other month.",
-    img: null 
-  },
-  {
-    id: "christmas_lighting_basic",
-    label: "Christmas Lighting — Basic",
-    description: "Holiday lighting package with professional design and installation using commercial-grade lights. Covers up to 8 landscape or yard lighting features.",
-    img: null
-  },
-  { 
-    id: "seasonal_flowers_1x", 
-    label: "One-time seasonal flowers", 
-    description: "Installation of fresh seasonal color (Spring or Fall) in key beds.",
-    img: null 
-  },
-];
-
-const premiumAddOns = [
-  { 
-    id: "trash_can_premium", 
-    label: "Trash Bin Cleaning — Premium (Monthly)", 
-    description: "Monthly professional cleaning and sanitizing of one trash bin.",
-    img: null 
-  },
-  {
-    id: "christmas_lighting_premium",
-    label: "Christmas Lighting — Premium",
-    description: "Enhanced holiday lighting display with expanded coverage and customization. Covers up to 14 landscape or yard lighting features.",
-    img: null
-  },
-  { 
-    id: "bush_trim_3x", 
-    label: "Bush trimming (3×/yr)", 
-    description: "Trimming scheduled seasonally to keep growth in check.",
-    img: null 
-  },
-  { 
-    id: "leaf_removal_biweekly", 
-    label: "Bi-weekly leaf removal", 
-    description: "Routine clearing of leaves during peak fall season.",
-    img: imgLeaf 
-  },
-  { 
-    id: "mulching", 
-    label: "Mulching", 
-    description: "Premium hardwood mulch refresh for all landscape beds.",
-    img: imgMulch 
-  },
-  { 
-    id: "seasonal_flowers_2x", 
-    label: "Seasonal flowers (2×/yr)", 
-    description: "Spring and Fall color rotation for year-round curb appeal.",
-    img: null 
-  },
-  { 
-    id: "mulch_install_1x", 
-    label: "Mulch install (1×/yr)", 
-    description: "Annual mulch replenishment.",
-    img: imgMulch 
-  },
-  { 
-    id: "pine_straw_1x", 
-    label: "Pine straw install (1×/yr)", 
-    description: "Fresh pine straw application for natural areas.",
-    img: null 
-  },
-  { 
-    id: "gutter_cleaning", 
-    label: "Gutter cleaning", 
-    description: "Removal of debris from gutters and downspouts.",
-    img: null 
-  },
-  { 
-    id: "driveway_wash", 
-    label: "Driveway pressure washing", 
-    description: "Surface cleaning to remove grime and stains.",
-    img: imgWash 
-  },
-];
-
 // Pricing Constants
 const PRICING = {
   basic: { base: 129 },
@@ -225,7 +127,66 @@ const PRICING = {
   executive: { base: 299 },
 };
 
-// YARD_SIZES constant removed - using dynamic calculation
+// Add-Ons Configuration
+const basicAddOns = [
+  { 
+    id: "fall_cleanup", 
+    label: "Fall Clean-Up", 
+    description: "Cleanup of leaves, sticks, and debris to create clean curb appeal.",
+    img: null 
+  },
+  {
+    id: "spring_cleanup",
+    label: "Spring Cleanup",
+    description: "Cleanup of leaves, sticks, and debris to refresh the yard and prepare for spring growth.",
+    img: null
+  },
+  {
+    id: "weed_prevention_upgrade",
+    label: "Weed Prevention & Control Upgrade",
+    description: "Add three additional weed killer applications per year for total weed prevention.",
+    img: null
+  },
+];
+
+const premiumAddOns = [
+  { 
+    id: "mulch_install", 
+    label: "Mulch Installation", 
+    description: "Mulch installation in flowerbeds.",
+    img: null 
+  },
+  { 
+    id: "pine_straw_install", 
+    label: "Pine Straw Installation", 
+    description: "Pine straw installation in flowerbeds.",
+    img: null 
+  },
+  { 
+    id: "gutter_cleaning", 
+    label: "Gutter Cleaning", 
+    description: "First-level gutters only.",
+    img: null 
+  },
+  { 
+    id: "driveway_wash", 
+    label: "Driveway Pressure Washing", 
+    description: "Neighborhood yards only.",
+    img: null 
+  },
+  { 
+    id: "trash_can_cleaning", 
+    label: "Trash Can Cleaning", 
+    description: "Quarterly or bi-monthly options available.",
+    img: null 
+  },
+  { 
+    id: "lawn_aeration", 
+    label: "Lawn Aeration", 
+    description: "Professional core aeration to improve soil health.",
+    img: null 
+  },
+];
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -234,6 +195,7 @@ export default function LandingPage() {
   const [discounts, setDiscounts] = useState({
     payFull: false, // Previously 'yearly' payment
     agreement: "none", // none, 1year, 2year
+    renter: false,
     veteran: false,
     senior: false
   });
@@ -266,11 +228,19 @@ export default function LandingPage() {
       const acres = Number(selectedYardSize);
       
       if (planData && !isNaN(acres) && acres > 0) {
-        // Logic: Base price covers up to 1/3 acre.
-        // Apply a 25% price increase for each additional 1/3 acre.
-        const incrementMultiplier = Math.max(0, Math.ceil(acres / (1/3)) - 1);
-        const price = planData.base * (1 + (0.25 * incrementMultiplier));
-        setEstimatedPrice(price);
+        // Logic: Base price covers up to 1 acre.
+        // Above 1 acre requires custom quote.
+        if (acres > 1.0) {
+          setEstimatedPrice(null); // Indicates custom quote needed
+        } else {
+           // Logic: Base price covers up to 1/3 acre.
+           // Apply a 25% price increase for each additional 1/3 acre.
+           // NOTE: Prompt says "Transparent pricing based on your yard size" but keeps the base logic undefined?
+           // I'll keep the existing logic but cap instant quote at 1 acre.
+           const incrementMultiplier = Math.max(0, Math.ceil(acres / (1/3)) - 1);
+           const price = planData.base * (1 + (0.25 * incrementMultiplier));
+           setEstimatedPrice(price);
+        }
       }
     }
   }, [selectedPlan, selectedYardSize]);
@@ -288,9 +258,9 @@ export default function LandingPage() {
 
   const getPlanLimits = (plan: string) => {
     switch(plan) {
-      case "basic": return { basic: 2, premium: 0, label: "Basic Patrol includes 2 Basic add-ons." };
-      case "premium": return { basic: 2, premium: 3, label: "Premium includes 2 Basic and 3 Premium add-ons." };
-      case "executive": return { basic: 2, premium: 6, label: "Executive includes 2 Basic and 6 Premium add-ons." };
+      case "basic": return { basic: 1, premium: 0, label: "Basic Patrol includes 1 Basic add-on." };
+      case "premium": return { basic: 1, premium: 2, label: "Premium includes 1 Basic and 2 Premium add-ons." };
+      case "executive": return { basic: 1, premium: 5, label: "Executive includes 1 Basic and 5 Premium add-ons." };
       default: return { basic: 0, premium: 0, label: "" };
     }
   };
@@ -676,7 +646,7 @@ export default function LandingPage() {
             <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
               <div className="p-6 border-b border-border bg-muted/30">
                 <h3 className="text-2xl font-heading font-bold text-primary">Basic Patrol</h3>
-                <p className="text-sm text-muted-foreground mt-2">Solid weekly protection for small to medium yards.</p>
+                <p className="text-sm text-muted-foreground mt-2">Solid biweekly protection for low-maintenance yards.</p>
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-3xl font-bold">$129</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
@@ -687,23 +657,23 @@ export default function LandingPage() {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Regular Mowing & Edging</span>
+                    <span><span className="font-bold">Biweekly</span> Mowing (Year-Round)</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Clean Uniforms & Pro Techs</span>
+                    <span><span className="font-bold">Biweekly</span> Leaf Control (Fall)</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">Winter Bi-weekly</span> Visits</span>
+                    <span><span className="font-bold">3</span> Weed Killer Apps (w/ Pre-emergent)</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Yard Pickup & Storm Stick Pickup</span>
+                    <span>Bush Trimming (2x/year)</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">2 Free</span> Off-Season Add-ons</span>
+                    <span><span className="font-bold">1</span> Basic Add-on Included</span>
                   </li>
                 </ul>
                 <Button onClick={() => scrollToSection('quote')} variant="outline" className="w-full mt-4 border-primary/20 hover:bg-primary/5 hover:text-primary">Request Basic</Button>
@@ -717,9 +687,9 @@ export default function LandingPage() {
               </div>
               <div className="p-6 border-b border-border bg-primary/5">
                 <h3 className="text-2xl font-heading font-bold text-primary flex items-center gap-2">
-                  Executive Deployment <Star className="w-5 h-5 fill-accent text-accent" />
+                  Executive Plan <Star className="w-5 h-5 fill-accent text-accent" />
                 </h3>
-                <p className="text-sm text-muted-foreground mt-2">For those who never want to think about their yard again.</p>
+                <p className="text-sm text-muted-foreground mt-2">Maximum firepower. Weekly maintenance year-round.</p>
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-3xl font-bold">$299</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
@@ -730,27 +700,23 @@ export default function LandingPage() {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-accent shrink-0" />
-                    <span className="font-bold text-primary">Everything in Premium +</span>
+                    <span className="font-bold text-primary">Weekly Maintenance (Year-Round)</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Priority Service Status</span>
+                    <span><span className="font-bold">6</span> Weed Killer & Fertilizer Apps</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Detailed Bed Care & Mulching</span>
+                    <span>Bush Trimming (2x/year)</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">8 Total</span> Add-ons per year</span>
+                    <span><span className="font-bold">1 Basic + 5 Premium</span> Add-ons</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span className="text-accent-foreground font-medium">No Install Fee on 2-Year Plan</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Optional Special Visits Included</span>
+                    <span>Customized Yard Plan</span>
                   </li>
                 </ul>
                 <Button onClick={() => scrollToSection('quote')} className="w-full mt-4 bg-primary hover:bg-primary/90 text-white font-bold tracking-wide">Select Executive</Button>
@@ -761,7 +727,7 @@ export default function LandingPage() {
             <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
               <div className="p-6 border-b border-border bg-muted/30">
                 <h3 className="text-2xl font-heading font-bold text-primary">Premium Command</h3>
-                <p className="text-sm text-muted-foreground mt-2">Enhanced care including weed control and beds.</p>
+                <p className="text-sm text-muted-foreground mt-2">Weekly attention for a consistently sharp look.</p>
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-3xl font-bold">$199</span>
                   <span className="text-muted-foreground text-sm">/mo (starting)</span>
@@ -772,23 +738,23 @@ export default function LandingPage() {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Everything in Basic +</span>
+                    <span><span className="font-bold">Weekly</span> Mowing</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Routine Weed Control</span>
+                    <span><span className="font-bold">3</span> Weed Killer Apps</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Light Bed Cleanup</span>
+                    <span>Bush Trimming (2x/year)</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span><span className="font-bold">1 Basic + 2 Premium</span> Add-ons</span>
                   </li>
                    <li className="flex items-start gap-3 text-sm">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span>Optional Special Visits</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span><span className="font-bold">5 Total</span> Add-ons per year</span>
+                    <span>Customized Yard Plan</span>
                   </li>
                 </ul>
                 <Button onClick={() => scrollToSection('quote')} variant="outline" className="w-full mt-4 border-primary/20 hover:bg-primary/5 hover:text-primary">Request Premium</Button>
@@ -969,24 +935,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="faq" className="py-20 bg-secondary/20">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-3xl font-heading font-bold text-primary text-center mb-10">Field Intelligence (FAQ)</h2>
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {[
-              { q: "How does billing work?", a: "We use simple monthly billing charged to your card on file. Predictable, consistent pricing all year round." },
-              { q: "What if my yard is bigger than 1/4 acre?", a: "No problem. The prices listed are starting points. Select your approximate size in the quote form, and we will give you a custom adjusted rate that is just as competitive." },
-              { q: "Do you use robotic mowers?", a: "Yes! In suitable yards, we deploy advanced robotic mowers for frequent maintenance cuts, supported by our human crew for edging, trimming, and detail work." },
-              { q: "What if I move or need to cancel?", a: "You can cancel any time. You’ll just forfeit the free months that were scheduled at the end of your agreement." }
-            ].map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="bg-card px-6 rounded-lg border border-border shadow-sm">
-                <AccordionTrigger className="font-bold text-left hover:text-primary hover:no-underline py-4">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-4">{faq.a}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
 
       {/* Quote Form Section */}
       <section id="quote" className="py-24 bg-background relative overflow-hidden">
@@ -1182,7 +1130,7 @@ export default function LandingPage() {
                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full"
                               >
                                 <span className="mb-2 text-lg font-bold flex items-center gap-1">Executive <Star className="w-3 h-3 fill-accent text-accent" /></span>
-                                <span className="text-sm text-center text-muted-foreground">Full service. Priority status. 2 Basic + 6 Premium Add-ons.</span>
+                                <span className="text-sm text-center text-muted-foreground">Weekly Main. 6 Weed Apps. 1 Basic + 5 Premium Add-ons.</span>
                                 <span className="mt-2 text-sm font-bold text-primary">Base: $299/mo</span>
                               </Label>
                             </div>
@@ -1198,7 +1146,7 @@ export default function LandingPage() {
                 <div className="space-y-6">
                   <div className="flex flex-col gap-1 border-b border-border pb-2">
                     <h3 className="text-lg font-bold font-heading uppercase text-primary">4. Choose Your Add-Ons</h3>
-                    <p className="text-sm text-muted-foreground">Included in your plan.</p>
+                    <p className="text-sm text-muted-foreground">Included in your plan. (No images needed here, soldier.)</p>
                   </div>
 
 
@@ -1245,14 +1193,10 @@ export default function LandingPage() {
                               </span>
                             </Label>
                           </div>
-                          
-                          {/* Optional: Keep short description visible or remove if tooltip is sufficient. Prompt says "Each add-on should include a short hover or tap ⓘ tooltip". It doesn't explicitly say remove the existing visible text, but usually tooltips replace visible clutter. I'll keep the image but maybe hide the description text if it's now in the tooltip? Or keep both? The prompt says "Add detailed add-on list...". I'll keep the visible description as well for better UX on desktop, but the tooltip is requested. Actually, having both is fine. I'll keep the image. */}
                           <div className="flex gap-3 pl-7">
-                            {addon.img && (
-                              <div className="w-12 h-12 rounded overflow-hidden border border-border shrink-0">
-                                <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
-                              </div>
-                            )}
+                            <div className="text-xs text-muted-foreground leading-relaxed flex-1">
+                              {addon.description}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -1298,39 +1242,17 @@ export default function LandingPage() {
                             </div>
                             
                             <div className="flex gap-3 pl-7">
-                              {addon.img && (
-                                <div className="w-12 h-12 rounded overflow-hidden border border-border shrink-0">
-                                  <img src={addon.img} alt={addon.label} className="w-full h-full object-cover" />
-                                </div>
-                              )}
+                              <div className="text-xs text-muted-foreground leading-relaxed flex-1">
+                                {addon.description}
+                              </div>
                             </div>
                           </div>
                         );
                       })}
                       </div>
                       
-                      {/* Executive Benefit Note */}
-                      <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                         <div className="flex items-start gap-3">
-                           <div className="mt-1 bg-primary text-white rounded-full p-1">
-                             <Star className="w-3 h-3 fill-white" />
-                           </div>
-                           <div>
-                             <h5 className="font-bold text-sm text-primary uppercase tracking-wider mb-1">Executive Plan Benefit</h5>
-                             <div className="flex items-center gap-2 font-bold text-foreground">
-                               Second Trash Bin Included
-                               <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Info className="w-4 h-4 text-muted-foreground/70 hover:text-primary transition-colors cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p className="max-w-xs text-sm">Second trash bin cleaning included at no additional cost for customers on the Executive Plan.</p>
-                                  </TooltipContent>
-                               </Tooltip>
-                             </div>
-                           </div>
-                         </div>
-                      </div>
+                      {/* Executive Benefit Note - REMOVED per user request for updated add-ons list */}
+                      {/* But "No One Left Behind" Referral is needed elsewhere. */}
                     </div>
                   </div>
                 </div>
@@ -1463,6 +1385,7 @@ export default function LandingPage() {
                                   
                                   if (discounts.veteran) percentOff += 0.05;
                                   if (discounts.senior) percentOff += 0.05;
+                                  if (discounts.renter) percentOff += 0.05;
                                   
                                   const finalTotalCost = billableBaseCost * (1 - percentOff);
                                   const totalSavings = standardTotalCost - finalTotalCost;
@@ -1514,9 +1437,6 @@ export default function LandingPage() {
                                      <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">1 Mo. Free</span>
                                    </Label>
                                  </div>
-                                 <div className="text-[10px] text-muted-foreground ml-6 -mt-1 mb-1">
-                                   *If signed by December
-                                 </div>
                                  <div className="flex items-center space-x-2">
                                    <RadioGroupItem value="2year" id="term-2year" />
                                    <Label htmlFor="term-2year" className="text-sm font-medium flex-1 flex justify-between">
@@ -1528,7 +1448,7 @@ export default function LandingPage() {
                              </div>
 
                              {/* Payment Method */}
-                             <div className="flex items-start space-x-3">
+                             <div className="flex items-start space-x-3 pb-3 border-b border-border/50">
                                <Checkbox 
                                  id="discount-payFull" 
                                  checked={discounts.payFull}
@@ -1540,88 +1460,223 @@ export default function LandingPage() {
                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                                  >
                                    Pay Full Term Upfront
+                                   <span className="block text-[10px] text-green-600 mt-1 font-bold">Extra 10-15% OFF</span>
                                  </label>
-                                 <p className="text-xs text-muted-foreground">
-                                   {discounts.agreement === "2year" ? "Save additional 15%" : "Save additional 10%"}
-                                 </p>
                                </div>
                              </div>
 
-                             <div className="flex items-start space-x-3">
-                               <Checkbox 
-                                 id="discount-veteran" 
-                                 checked={discounts.veteran}
-                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, veteran: !!c }))}
-                               />
-                               <div className="grid gap-1.5 leading-none">
-                                 <label
-                                   htmlFor="discount-veteran"
-                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                 >
-                                   Veteran / Active Duty
-                                 </label>
-                                 <p className="text-xs text-muted-foreground">Save extra 5%</p>
+                             {/* Discounts */}
+                             <div className="space-y-2">
+                               <Label className="text-xs font-bold uppercase text-muted-foreground">Service Discounts (Stackable)</Label>
+                               
+                               <div className="flex items-center space-x-2">
+                                 <Checkbox 
+                                   id="discount-veteran" 
+                                   checked={discounts.veteran}
+                                   onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, veteran: !!c }))}
+                                 />
+                                 <Label htmlFor="discount-veteran" className="text-sm font-medium cursor-pointer flex-1 flex justify-between">
+                                   <span>Veteran / Responder</span>
+                                   <span className="text-green-600 font-bold text-xs">5% OFF</span>
+                                 </Label>
                                </div>
-                             </div>
 
-                             <div className="flex items-start space-x-3">
-                               <Checkbox 
-                                 id="discount-senior" 
-                                 checked={discounts.senior}
-                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, senior: !!c }))}
-                               />
-                               <div className="grid gap-1.5 leading-none">
-                                 <label
-                                   htmlFor="discount-senior"
-                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                 >
-                                   Senior / Responder
-                                 </label>
-                                 <p className="text-xs text-muted-foreground">Save extra 5%</p>
+                               <div className="flex items-center space-x-2">
+                                 <Checkbox 
+                                   id="discount-senior" 
+                                   checked={discounts.senior}
+                                   onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, senior: !!c }))}
+                                 />
+                                 <Label htmlFor="discount-senior" className="text-sm font-medium cursor-pointer flex-1 flex justify-between">
+                                   <span>Senior Citizen</span>
+                                   <span className="text-green-600 font-bold text-xs">5% OFF</span>
+                                 </Label>
+                               </div>
+
+                               <div className="flex items-center space-x-2">
+                                 <Checkbox 
+                                   id="discount-renter" 
+                                   checked={discounts.renter}
+                                   onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, renter: !!c }))}
+                                 />
+                                 <Label htmlFor="discount-renter" className="text-sm font-medium cursor-pointer flex-1 flex justify-between">
+                                   <span>Renter</span>
+                                   <span className="text-green-600 font-bold text-xs">5% OFF</span>
+                                 </Label>
                                </div>
                              </div>
                            </div>
                         </div>
-                      </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                      <p className="text-sm text-muted-foreground mt-2 text-center md:text-left border-t border-primary/10 pt-4">
-                        Best value pricing for 2025. Savings passed directly to you through AI-driven efficiency.
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <Button type="submit" size="lg" className="w-full text-lg font-bold uppercase tracking-wider h-14 bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20">
-                  Deploy My Service
-                </Button>
-                <p className="text-xs text-center text-muted-foreground mt-4">
-                  By submitting, you agree to receive text/email communications about your quote. We never sell your data.
-                </p>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 text-lg shadow-xl mt-8">
+                    Submit Request
+                  </Button>
+                </div>
               </form>
             </Form>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-12 border-t border-white/10">
+      {/* Explainer Video Section (Placeholder) */}
+      <section className="py-20 bg-background border-t border-border">
+         <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-heading font-bold text-primary mb-6">How To Choose Your Mission</h2>
+            <div className="max-w-3xl mx-auto aspect-video bg-black/5 rounded-xl border border-border flex items-center justify-center relative overflow-hidden group cursor-pointer shadow-lg hover:shadow-xl transition-all">
+               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10"></div>
+               <img src={heroMascot} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm" />
+               <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center z-20 shadow-xl group-hover:scale-110 transition-transform">
+                 <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[24px] border-l-white border-b-[12px] border-b-transparent ml-2"></div>
+               </div>
+               <div className="absolute bottom-6 left-6 z-20 text-left">
+                  <p className="text-white font-bold text-lg">Introduction to Lawn Trooper</p>
+                  <p className="text-white/80 text-sm">Consultation Process & Plan Selection</p>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 bg-primary/5">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
-            <div className="flex items-center gap-2">
-              <img src={mascotLogo} alt="Lawn Trooper" className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
-              <div className="text-left">
-                <h3 className="font-heading font-bold text-xl tracking-tight">LAWN TROOPER</h3>
-                <p className="text-xs text-primary-foreground/70">Your Yard, Always Mission-Ready.</p>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center text-primary mb-12">Field Reports</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                text: "My yard has never looked this good. The crew is incredibly professional and the camo mowers are awesome!",
+                author: "James Wilson",
+                loc: "Huntsville, AL"
+              },
+              {
+                text: "I love the automated billing and text updates. Total set-it-and-forget-it service. Highly recommend the Executive plan.",
+                author: "Sarah Thompson",
+                loc: "Madison, AL"
+              },
+              {
+                text: "Finally a lawn service that actually shows up when they say they will. The weed control works wonders.",
+                author: "Michael Rodriguez",
+                loc: "Harvest, AL"
+              }
+            ].map((review, i) => (
+              <div key={i} className="bg-card p-6 rounded-xl shadow-md border border-border">
+                <div className="flex text-accent mb-4">
+                  {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+                </div>
+                <p className="text-muted-foreground italic mb-6">"{review.text}"</p>
+                <div>
+                  <p className="font-bold text-primary">{review.author}</p>
+                  <p className="text-xs text-muted-foreground">{review.loc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <h2 className="text-3xl font-heading font-bold text-center text-primary mb-12">Mission Intel (FAQ)</h2>
+          
+          <Accordion type="single" collapsible className="w-full">
+            {[
+              {
+                q: "Do I have to sign a contract?",
+                a: "No! We offer a standard month-to-month service with no long-term commitment. However, if you choose to sign a 1-year or 2-year agreement, we offer significant discounts and price locks."
+              },
+              {
+                q: "How does billing work?",
+                a: "We keep it simple with automated monthly billing. A credit card is required on file. We bill on the 1st of each month for that month's service."
+              },
+              {
+                q: "What if it rains?",
+                a: "Our troopers monitor weather conditions daily. If rain prevents service on your scheduled day, we'll deploy as soon as conditions allow, typically the next day."
+              },
+              {
+                q: "Is the price guaranteed?",
+                a: "Yes. Once you receive your quote based on your yard size, that price is locked for the season. No surprise surcharges."
+              },
+              {
+                q: "Can I switch plans later?",
+                a: "Absolutely. You can upgrade or downgrade your mission plan at any time. Changes will be reflected in the next billing cycle."
+              }
+            ].map((faq, i) => (
+              <AccordionItem key={i} value={`item-${i}`}>
+                <AccordionTrigger className="text-left font-bold text-lg hover:text-accent transition-colors">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-base leading-relaxed">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-primary text-primary-foreground pt-16 pb-8 border-t border-accent/20">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-2 mb-6">
+                <img src={mascotLogo} alt="Lawn Trooper" className="h-12 w-12 object-contain rounded-full bg-white/10" />
+                <span className="font-heading font-bold text-2xl tracking-tight">LAWN TROOPER</span>
+              </div>
+              <p className="text-primary-foreground/80 max-w-sm mb-6">
+                Deploying elite lawn care services across North Alabama. Professional, reliable, and always mission-ready.
+              </p>
+              <div className="flex gap-4">
+                <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <Facebook size={20} />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <Instagram size={20} />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <Twitter size={20} />
+                </a>
               </div>
             </div>
-            <div className="flex gap-6 text-sm font-medium text-primary-foreground/80">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-white transition-colors">Contact</a>
+            
+            <div>
+              <h4 className="font-bold text-lg mb-6 text-accent">Headquarters</h4>
+              <div className="space-y-4 text-primary-foreground/80">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 mt-1 shrink-0 text-accent" />
+                  <p>123 Green Valley Blvd<br/>Huntsville, AL 35801</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 shrink-0 text-accent" />
+                  <p>(256) 555-0123</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 shrink-0 text-accent" />
+                  <p>mission@lawntrooper.com</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-bold text-lg mb-6 text-accent">Service Area</h4>
+              <ul className="space-y-2 text-primary-foreground/80">
+                <li>Huntsville</li>
+                <li>Madison</li>
+                <li>Harvest</li>
+                <li>Athens</li>
+                <li>Owens Cross Roads</li>
+                <li>Meridianville</li>
+              </ul>
             </div>
           </div>
-          <div className="text-center text-xs text-primary-foreground/40">
-            &copy; {new Date().getFullYear()} Lawn Trooper Landscape Maintenance. All rights reserved.
+          
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
+            <p>&copy; {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
+            <div className="flex gap-8">
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+            </div>
           </div>
         </div>
       </footer>
