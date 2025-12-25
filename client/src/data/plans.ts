@@ -5,7 +5,7 @@ export const PROMO_CONFIG = {
 };
 
 export const GLOBAL_CONSTANTS = {
-  YARD_ELIGIBILITY: "Anniversary Sale pricing applies to typical neighborhood yards. Larger or more complex lots may require price adjustment.",
+  YARD_ELIGIBILITY: "Anniversary Sale pricing applies to typical neighborhood yards. Larger yards require pics and custom quotes.",
   BUSH_TRIMMING_DISPOSAL: "All clippings removed and disposed for clean curb appeal and pristine flower beds.",
   AI_SAVINGS_MESSAGE: "We are lowering costs with new AI + 2026 technology and passing savings on to customers.",
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",

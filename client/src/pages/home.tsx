@@ -232,22 +232,14 @@ export default function LandingPage() {
     }
   }, [selectedPlan, selectedYardSize]);
 
-  // Maintenance Frequency Logic
+  // Maintenance Frequency Logic - Enforce based on plan
   useEffect(() => {
-     if (maintenanceFreq === "weekly") {
-        // If Weekly, Basic is not allowed. Auto-select Premium if Basic was selected.
-        if (selectedPlan === "basic") {
-           form.setValue("plan", "premium");
-        }
+     if (selectedPlan === "basic") {
+        setMaintenanceFreq("biweekly");
+     } else {
+        setMaintenanceFreq("weekly");
      }
-  }, [maintenanceFreq, selectedPlan, form]);
-  
-  // If plan changes to Basic, force Bi-weekly
-  useEffect(() => {
-    if (selectedPlan === "basic" && maintenanceFreq === "weekly") {
-       setMaintenanceFreq("biweekly");
-    }
-  }, [selectedPlan]); // Removed maintenanceFreq dependency to avoid loop
+  }, [selectedPlan]);
 
   // Calculate counts
   const calculateCounts = (currentAddOns: string[]) => {
@@ -545,7 +537,7 @@ export default function LandingPage() {
                    <Star className="fill-accent w-5 h-5" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                   ⚠️ Prices Increase Jan 1st • Lock in your price now for 2 years!
+                   ⚠️ Lock in the lowest price for up to 2 years
                  </p>
                </div>
                
@@ -1569,6 +1561,10 @@ export default function LandingPage() {
               {
                 q: "Existing Customers",
                 a: GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY
+              },
+              {
+                q: "What if I need to cancel early?",
+                a: "You forfeit all promotions but can cancel anytime after taking care of final monthly bill."
               }
             ].map((faq, i) => (
               <AccordionItem key={i} value={`item-${i}`}>
@@ -1587,10 +1583,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
            <div className="max-w-2xl mx-auto">
              <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
-             <p className="text-lg mb-8 opacity-90">Refer a neighbor and get rewarded. Help us build a stronger perimeter.</p>
-             <Button variant="secondary" className="bg-background text-foreground hover:bg-background/90 font-bold px-8 py-6 rounded-full shadow-lg transition-transform hover:scale-105">
-               See Referral Rewards
-             </Button>
+             <p className="text-lg mb-8 opacity-90">Refer a customer and you both get 1 month free!</p>
            </div>
         </div>
       </section>
@@ -1623,9 +1616,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-bold text-lg mb-6 text-accent">Headquarters</h4>
               <div className="space-y-4 text-primary-foreground/80">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 overflow-hidden">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />
-                  <p>lawntrooperllc@gmail.com</p>
+                  <p className="break-all md:break-normal">lawntrooperllc@gmail.com</p>
                 </div>
               </div>
             </div>
