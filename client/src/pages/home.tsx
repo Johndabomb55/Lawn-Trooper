@@ -1507,14 +1507,14 @@ export default function LandingPage() {
                              </div>
                            </div>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 text-lg shadow-xl mt-8">
-                    Submit Request
-                  </Button>
-                </div>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 text-lg shadow-xl mt-8">
+                  Submit Request
+                </Button>
               </form>
             </Form>
           </div>
