@@ -147,6 +147,12 @@ const basicAddOns = [
     description: "Add three additional weed killer applications per year for total weed prevention.",
     img: null
   },
+  {
+    id: "trash_can_basic",
+    label: "Trash Can Cleaning (Biannually)",
+    description: "Professional cleaning of your trash cans twice a year.",
+    img: null
+  },
 ];
 
 const premiumAddOns = [
@@ -175,9 +181,9 @@ const premiumAddOns = [
     img: null 
   },
   { 
-    id: "trash_can_cleaning", 
-    label: "Trash Can Cleaning", 
-    description: "Quarterly or bi-monthly options available.",
+    id: "trash_can_premium", 
+    label: "Trash Can Cleaning (Bi-Monthly)", 
+    description: "Professional cleaning of your trash cans every other month.",
     img: null 
   },
   { 
@@ -1057,7 +1063,7 @@ export default function LandingPage() {
                     name="yardSize"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="text-base font-bold text-foreground">Area to be maintained + House (Acres)</FormLabel>
+                        <FormLabel className="text-base font-bold text-foreground">Approximate Lot Size (Acres)</FormLabel>
                         <FormControl>
                           <div className="flex items-center gap-2">
                              <Input 
@@ -1073,11 +1079,7 @@ export default function LandingPage() {
                           </div>
                         </FormControl>
                         <FormDescription>
-                           Enter total lot size including house (in acres) to generate your custom quote.
-                           <br />
-                           <span className="text-xs text-muted-foreground italic">
-                             *Larger yards ({">"} 0.33 acres) incur a 25% price increase per additional 1/3 acre to keep pricing fair and transparent.
-                           </span>
+                           Please enter your approximate lot size. The exact lot size will be measured in person at the consultation.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
