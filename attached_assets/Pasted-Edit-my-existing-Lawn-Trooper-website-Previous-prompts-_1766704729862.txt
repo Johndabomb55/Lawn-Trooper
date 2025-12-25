@@ -1,0 +1,88 @@
+Edit my existing Lawn Trooper website. Previous prompts are already applied.
+DO NOT redesign or repeat prior work. Apply ONLY the updates below.
+
+1) AUTOMATIC PRICING (INTERNAL ONLY)
+- Pricing must auto-calculate from customer-entered lot size.
+- Internal rule (never shown): +25% per additional 1/3 acre.
+- Applies to ALL plans.
+- Customer sees final price only (no math, no acreage logic).
+
+2) LOT SIZE INPUT (REQUIRED)
+- Add required field: “Approximate Lot Size (acres)”
+- Allow decimals (ex: 0.25, 0.5, 0.75).
+- Price must update when this value changes.
+- Final pricing cannot be confirmed without this input.
+
+3) CUSTOMER PRICING DISCLOSURE
+- Near pricing or lot size input:
+  “Pricing adjusts based on lot size and is verified during the consultation and walkthrough.”
+- Add once more elsewhere (pricing/FAQ/footer):
+  “Anniversary Sale pricing applies to typical neighborhood yards. Larger or more complex lots may require price adjustment.”
+- Do NOT mention percentages, acreage fractions, or formulas anywhere.
+
+4) ANNIVERSARY SALE + LIVE COUNTDOWN
+- Show “Anniversary Sale Price” everywhere pricing appears.
+- Starting price must always read: “$129/month”.
+- Remove ALL “up to 1 acre” language.
+- Add a LIVE countdown timer at the top of the page (updates in real time).
+- Countdown label:
+  “Anniversary Sale Ends January 1st”
+- Countdown must reflect a sale end time of:
+  January 1st at 11:59 PM (end of day), local time.
+- Use one configurable end-date variable.
+- When the countdown reaches zero:
+  - Stop the timer
+  - Replace sale messaging with “Anniversary Sale Ended”
+  - Hide or disable sale-specific pricing callouts
+- Must work on mobile and desktop without page refresh.
+- Ensure ALL sale messaging references January 1st (no Dec 31 language anywhere).
+
+5) PLANS & COPY CLEANUP
+- Plans must be named ONLY:
+  Basic Patrol
+  Premium Patrol
+  Executive Patrol
+- Remove “weekly mowing and edging” from Basic Patrol.
+- Remove any incorrect text such as “two basic add-ons”.
+- Under each plan name show:
+  “Includes: X Basic Add-ons • Y Premium Add-ons”
+- Use existing plan data if dynamic (do not hardcode unless required).
+
+6) MAINTENANCE FREQUENCY LOGIC (IF PRESENT)
+- Bi-weekly → ONLY Basic Patrol selectable.
+- Weekly → Basic Patrol disabled, auto-select Premium Patrol (Executive still allowed).
+
+7) ADD-ONS (LABELS ONLY)
+Basic Add-ons:
+- Extra Bush Trimming
+- Gutter Cleaning Box
+- Gutter Cleaning (First Floor Only)
+- Mulch Delivery + Installation (Up to 2 Yards)
+- Pine Straw Delivery + Installation (Up to 3 Yards)
+
+Premium Add-ons:
+- Aeration + Overseeding
+- Spring Cleanup
+- Fall Cleanup
+- Mulch Delivery + Installation (Over 2 Yards)
+- Pine Straw Delivery + Installation (Over 3 Yards)
+- Christmas Light Premium Package (unchanged)
+
+Remove completely:
+- Hedge Shaping
+- Any “Property Cleanup” add-on
+
+8) EXECUTIVE BONUS RULE
+- If Executive Patrol + pay full term upfront → allow ONE additional Premium add-on.
+
+9) CONTACT INFO PRIVACY
+- Remove any business street address from the site (footer, contact section, metadata, schema).
+- Display ONLY this contact email:
+  lawntrooperllc@gmail.com
+- Do not show a physical address anywhere.
+
+10) FINAL CHECK
+- Price changes with lot size.
+- Lot size required before final price.
+- Countdown is live, accurate, and aligned to January 1st.
+- No visible references to: “1/3”, “25%”, “up to 1 acre”, or pricing formulas.

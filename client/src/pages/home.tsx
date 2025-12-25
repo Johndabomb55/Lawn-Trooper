@@ -59,7 +59,8 @@ import {
   PREMIUM_ADDONS, 
   GLOBAL_CONSTANTS, 
   getPlanAllowance,
-  PROMO_CONFIG 
+  PROMO_CONFIG,
+  calculatePlanPrice
 } from "@/data/plans";
 
 // Assets
@@ -88,6 +89,64 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+// Countdown Timer Component
+function CountdownTimer() {
+  const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, minutes: number, seconds: number} | null>(null);
+  const [hasEnded, setHasEnded] = useState(false);
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = +new Date(PROMO_CONFIG.cutoffDate) - +new Date();
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        });
+        setHasEnded(false);
+      } else {
+        setTimeLeft(null);
+        setHasEnded(true);
+      }
+    };
+
+    const timer = setInterval(calculateTimeLeft, 1000);
+    calculateTimeLeft(); // Initial call
+
+    return () => clearInterval(timer);
+  }, []);
+
+  if (hasEnded) {
+    return (
+      <div className="bg-destructive/90 text-white py-2 px-4 shadow-lg text-center">
+        <div className="font-bold uppercase tracking-widest text-xs md:text-sm">
+          Anniversary Sale Ended
+        </div>
+      </div>
+    );
+  }
+
+  if (!timeLeft) return null;
+
+  return (
+    <div className="bg-destructive/90 text-white py-2 px-4 shadow-lg text-center relative z-50">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 font-bold uppercase tracking-widest text-xs md:text-sm">
+        <div className="flex items-center gap-2 animate-pulse">
+          <AlertCircle className="w-4 h-4" />
+          <span>{PROMO_CONFIG.saleLabel}</span>
+        </div>
+        <div className="bg-black/20 px-3 py-1 rounded font-mono text-base flex gap-2 items-center">
+           <span>{String(timeLeft.days).padStart(2, '0')}d</span>:
+           <span>{String(timeLeft.hours).padStart(2, '0')}h</span>:
+           <span>{String(timeLeft.minutes).padStart(2, '0')}m</span>:
+           <span>{String(timeLeft.seconds).padStart(2, '0')}s</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Schema for the quote form
 const formSchema = z.object({
@@ -150,7 +209,7 @@ export default function LandingPage() {
       address: "",
       contactMethod: "email",
       plan: "basic", // Default to basic
-      yardSize: 0.33, // Default size (Acres) - Adjusted default
+      yardSize: 0.33, // Default size (Acres)
       addOns: [],
       notes: "",
     },
@@ -161,31 +220,34 @@ export default function LandingPage() {
   const selectedAddOns = form.watch("addOns");
 
   // State for new questions
-  const [isUnderOneAcre, setIsUnderOneAcre] = useState<string>("yes");
-  const [maintenanceFreq, setMaintenanceFreq] = useState<string>("weekly");
+  const [maintenanceFreq, setMaintenanceFreq] = useState<string>("biweekly"); // Default to biweekly for Basic
 
   // Calculate Price Effect
   useEffect(() => {
-    if (selectedPlan) {
-      const planData = PLANS.find(p => p.id === selectedPlan);
-      
-      // If user says "Yes" (Under 1 Acre), we show the base price.
-      // We removed the acreage math as requested.
-      if (planData && isUnderOneAcre === "yes") {
-         setEstimatedPrice(planData.price);
-      } else {
-         // If not under 1 acre or not sure, we might hide price or show "Starting at"
-         // For now, if they say 'no' or 'not sure', we can reset or keep showing base with a disclaimer
-         // But prompt says "Total landscape maintenance plans for under-1-acre neighborhood yards starting at $129/month"
-         // Let's assume standard pricing for standard yards.
-         if (isUnderOneAcre === "no" || isUnderOneAcre === "unsure") {
-             setEstimatedPrice(null); // Custom quote needed
-         } else {
-             setEstimatedPrice(planData?.price || 0);
-         }
-      }
+    if (selectedPlan && selectedYardSize) {
+      const price = calculatePlanPrice(selectedPlan, selectedYardSize);
+      setEstimatedPrice(price);
+    } else {
+      setEstimatedPrice(null);
     }
-  }, [selectedPlan, isUnderOneAcre]);
+  }, [selectedPlan, selectedYardSize]);
+
+  // Maintenance Frequency Logic
+  useEffect(() => {
+     if (maintenanceFreq === "weekly") {
+        // If Weekly, Basic is not allowed. Auto-select Premium if Basic was selected.
+        if (selectedPlan === "basic") {
+           form.setValue("plan", "premium");
+        }
+     }
+  }, [maintenanceFreq, selectedPlan, form]);
+  
+  // If plan changes to Basic, force Bi-weekly
+  useEffect(() => {
+    if (selectedPlan === "basic" && maintenanceFreq === "weekly") {
+       setMaintenanceFreq("biweekly");
+    }
+  }, [selectedPlan]); // Removed maintenanceFreq dependency to avoid loop
 
   // Calculate counts
   const calculateCounts = (currentAddOns: string[]) => {
@@ -199,7 +261,7 @@ export default function LandingPage() {
   };
 
   const handleAddOnToggle = (id: string, isPremium: boolean) => {
-    const limits = getPlanAllowance(selectedPlan);
+    const limits = getPlanAllowance(selectedPlan, discounts.payFull);
     const currentAddOns = form.getValues("addOns");
     const isCurrentlySelected = currentAddOns.includes(id);
     
@@ -230,10 +292,10 @@ export default function LandingPage() {
     }
   };
 
-  // Reset add-ons when plan changes
+  // Reset add-ons when plan changes or payFull changes (as it affects allowance)
   useEffect(() => {
     const currentAddOns = form.getValues("addOns");
-    const limits = getPlanAllowance(selectedPlan);
+    const limits = getPlanAllowance(selectedPlan, discounts.payFull);
     
     // Separate current add-ons
     const currentBasic = currentAddOns.filter(id => BASIC_ADDONS.find(b => b.id === id));
@@ -250,7 +312,7 @@ export default function LandingPage() {
     if (newAddOns.length !== currentAddOns.length) {
       form.setValue("addOns", newAddOns);
     }
-  }, [selectedPlan, form]);
+  }, [selectedPlan, form, discounts.payFull]);
 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -474,7 +536,7 @@ export default function LandingPage() {
             <div className="mb-10 bg-black/70 backdrop-blur-md border-2 border-accent/50 p-6 rounded-xl shadow-2xl relative overflow-hidden">
                {/* Diagonal "Ending Soon" Banner */}
                <div className="absolute top-0 right-0 bg-destructive text-white text-[10px] font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm">
-                 ENDS DEC 31
+                 ENDS JAN 1ST
                </div>
 
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
@@ -496,7 +558,7 @@ export default function LandingPage() {
                    </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Sign Up By Dec 31</span>
+                     <span className="text-accent font-bold uppercase text-xs">Sign Up By Jan 1st</span>
                    </div>
                    <div className="text-white text-sm font-medium">
                      <div className="flex justify-between items-center mb-1"><span>2-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">3 Months Free</span></div>
@@ -616,7 +678,6 @@ export default function LandingPage() {
                   {plan.oldPrice && (
                     <p className="text-[10px] text-accent font-medium mt-0.5">25th Anniversary + AI Savings</p>
                   )}
-                  <p className="text-xs text-muted-foreground mt-2">For up to 1 acre</p>
                 </div>
                 <div className="p-6 space-y-4">
                   <ul className="space-y-3">
@@ -936,31 +997,33 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* 2. Instant Quote Questions */}
+                  {/* 2. Instant Quote Questions */}
                 <div className="space-y-6">
                   <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Property Details</h3>
                    
-                   {/* Question 1: Under 1 Acre? */}
+                   {/* Question 1: Lot Size */}
                    <div className="space-y-3">
-                     <Label className="text-base font-bold text-foreground">Is your property under 1 acre?</Label>
-                     <RadioGroup 
-                        value={isUnderOneAcre} 
-                        onValueChange={(val) => {
-                            setIsUnderOneAcre(val);
-                            // If they confirm yes, we can set a valid dummy yardSize for form validation if needed
-                            if (val === 'yes') form.setValue('yardSize', 0.5); 
-                        }}
-                        className="flex gap-4"
-                     >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="yes" id="acre-yes" />
-                          <Label htmlFor="acre-yes" className="font-medium cursor-pointer">Yes</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="unsure" id="acre-unsure" />
-                          <Label htmlFor="acre-unsure" className="font-medium cursor-pointer">Not sure (we can help)</Label>
-                        </div>
-                     </RadioGroup>
+                     <Label className="text-base font-bold text-foreground">Approximate Lot Size (Acres) <span className="text-red-500">*</span></Label>
+                     <FormField
+                      control={form.control}
+                      name="yardSize"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              step="0.01" 
+                              min="0" 
+                              placeholder="e.g. 0.25, 0.5, 0.75" 
+                              {...field} 
+                              className="max-w-[200px]"
+                            />
+                          </FormControl>
+                          <FormDescription>Pricing adjusts based on lot size and is verified during the consultation and walkthrough.</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                    </div>
 
                    {/* Question 2: Maintenance Frequency */}
@@ -971,26 +1034,17 @@ export default function LandingPage() {
                         onValueChange={setMaintenanceFreq}
                         className="flex gap-4"
                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="weekly" id="freq-weekly" />
-                          <Label htmlFor="freq-weekly" className="font-medium cursor-pointer">Weekly</Label>
+                        <div className={`flex items-center space-x-2 ${selectedPlan === 'basic' ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          <RadioGroupItem value="weekly" id="freq-weekly" disabled={selectedPlan === 'basic'} />
+                          <Label htmlFor="freq-weekly" className={`font-medium ${selectedPlan === 'basic' ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                            Weekly {selectedPlan === 'basic' && <span className="text-xs text-destructive ml-1">(Not avail. with Basic)</span>}
+                          </Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="biweekly" id="freq-biweekly" />
                           <Label htmlFor="freq-biweekly" className="font-medium cursor-pointer">Bi-Weekly</Label>
                         </div>
                      </RadioGroup>
-                   </div>
-
-                   {/* Hidden numeric input to satisfy schema if needed, or we just rely on default */}
-                   <div className="hidden">
-                     <FormField
-                      control={form.control}
-                      name="yardSize"
-                      render={({ field }) => (
-                        <Input type="number" {...field} />
-                      )}
-                    />
                    </div>
                 </div>
 
@@ -1569,17 +1623,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-bold text-lg mb-6 text-accent">Headquarters</h4>
               <div className="space-y-4 text-primary-foreground/80">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 mt-1 shrink-0 text-accent" />
-                  <p>123 Green Valley Blvd<br/>Huntsville, AL 35801</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 shrink-0 text-accent" />
-                  <p>(256) 555-0123</p>
-                </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />
-                  <p>mission@lawntrooper.com</p>
+                  <p>lawntrooperllc@gmail.com</p>
                 </div>
               </div>
             </div>
