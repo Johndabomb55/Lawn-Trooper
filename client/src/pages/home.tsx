@@ -67,7 +67,7 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/lawn_trooper_crew_professional.png";
+import heroDiverseCrew from "@assets/generated_images/lawn_trooper_team_southern_home.png";
 
 // Stock Assets
 import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
@@ -376,7 +376,7 @@ export default function LandingPage() {
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Top Announcement Banner */}
-      <div className="bg-destructive text-white py-3 px-4 text-center font-bold relative z-[60]">
+      <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
            <span className="uppercase tracking-wide">🎉 Celebrating 25 years of service with our biggest sale on maintenance plans ever! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>

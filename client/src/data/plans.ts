@@ -11,7 +11,7 @@ export const GLOBAL_CONSTANTS = {
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
   EXISTING_CUSTOMER_LOYALTY: "Our Loyalty Club Customers: Are you shocked after all these years that your prices are dropping?! Sign into your account with your customer login for your loyalty discount based on your years of service. (Must complete 12 months to get a loyalty discount).",
   CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it’s not the right fit, provide a full refund.",
-  AI_TECH_EXPLANATION: "Yes if your yard allows safe usage of robot mowers lawn trooper reserves the right to choose which mowers to use based on size, obstructions, grass type, and incline."
+  AI_TECH_EXPLANATION: "We sometimes will deploy robotic AI vision, LiDAR sensor, satellite-linked mowing units to achieve the best cut quality and highest efficiency at no additional expense to the customer. Lawn Trooper reserves the right to choose which robot will be best for each property, although customer can weigh in of course."
 };
 
 export const PLANS = [
@@ -28,14 +28,13 @@ export const PLANS = [
       { label: "Add-ons", value: "1 Included" }
     ],
     features: [
-      "Mowing: Regular (bi-weekly) mowing",
-      "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
+      "Mowing: Regular (bi-weekly) mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 2 pre-emergent weed control treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
+      "Weed-Free Guarantee: Not Included",
       `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
-      "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Small Tree & Low-Hanging Branch Trimming: Not Included",
-      "Weed-Free Guarantee: Not Included"
+      "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal"
     ],
     allowance: {
       basic: 1,
@@ -56,15 +55,15 @@ export const PLANS = [
       { label: "Add-ons", value: "3 Included" }
     ],
     features: [
-      "Mowing: Weekly mowing",
-      "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
+      "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 3 weed control applications per year",
       "Weed Control (Beds): Weed control in all flower beds included",
+      "Weed-Free Guarantee: Not Included",
       `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
-      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
-      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs",
+      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included. Includes trimming of overgrown shrubs.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
-      "Weed-Free Guarantee: Not Included"
+      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
     ],
     allowance: {
       basic: 2,
@@ -85,15 +84,15 @@ export const PLANS = [
       { label: "Add-ons", value: "5 Included" }
     ],
     features: [
-      "Mowing: Weekly mowing (top priority)",
-      "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
+      "Mowing: Weekly mowing (top priority)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 6 weed treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
-      `Bush Trimming: 3 bush trimmings per year (scheduled by plant type and growth cycle) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
-      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
-      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs",
-      "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
+      `Bush Trimming: 3 bush trimmings per year (scheduled by plant type and growth cycle) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included. Includes trimming of overgrown shrubs.</span>",
+      "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
+      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
     ],
     allowance: {
       basic: 2,
@@ -109,6 +108,21 @@ export const BASIC_ADDONS = [
     id: "extra_bush_trimming",
     label: "Extra Bush Trimming",
     description: `Additional trimming beyond plan limits. ${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}`
+  },
+  {
+    id: "shrub_fertilization",
+    label: "Shrub Fertilization / Diseased Plant Application",
+    description: "Targeted nutrient boost and disease control for healthier shrubs."
+  },
+  {
+    id: "irrigation_check",
+    label: "Full Irrigation Check/Diagnosis + Seasonal Activation & Winterization",
+    description: "System diagnostics and seasonal preparation."
+  },
+  {
+    id: "fire_ant_app",
+    label: "Quarterly Fire Ant Applications",
+    description: "Quarterly treatments to control fire ant mounds."
   },
   {
     id: "quarterly_trash_bin_cleaning",
@@ -143,6 +157,11 @@ export const BASIC_ADDONS = [
 ];
 
 export const PREMIUM_ADDONS = [
+  {
+    id: "pest_control",
+    label: "Quarterly Pest Control Applications",
+    description: "Exterior pest barrier treatments."
+  },
   {
     id: "aeration_overseeding",
     label: "Aeration + Overseeding",
