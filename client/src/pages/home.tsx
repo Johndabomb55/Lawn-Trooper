@@ -1479,24 +1479,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Explainer Video Section (Placeholder) */}
-      <section className="py-20 bg-background border-t border-border">
-         <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-heading font-bold text-primary mb-6">Request Deployment</h2>
-            <div className="max-w-3xl mx-auto aspect-video bg-black/5 rounded-xl border border-border flex items-center justify-center relative overflow-hidden group cursor-pointer shadow-lg hover:shadow-xl transition-all">
-               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10"></div>
-               <img src={heroMascot} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm" />
-               <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center z-20 shadow-xl group-hover:scale-110 transition-transform">
-                 <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[24px] border-l-white border-b-[12px] border-b-transparent ml-2"></div>
-               </div>
-               <div className="absolute bottom-6 left-6 z-20 text-left">
-                  <p className="text-white font-bold text-lg">Introduction to Lawn Trooper</p>
-                  <p className="text-white/80 text-sm">Consultation Process & Plan Selection</p>
-               </div>
-            </div>
-         </div>
-      </section>
-
       {/* Testimonials */}
       <section className="py-20 bg-primary/5">
         <div className="container mx-auto px-4">
@@ -1574,7 +1556,7 @@ export default function LandingPage() {
                 a: "You forfeit all promotions but can cancel anytime after taking care of final monthly bill."
               },
               {
-                q: "What AI technology do you use?",
+                q: "Do you use robots?",
                 a: GLOBAL_CONSTANTS.AI_TECH_EXPLANATION
               }
             ].map((faq, i) => (

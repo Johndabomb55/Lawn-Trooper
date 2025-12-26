@@ -11,7 +11,7 @@ export const GLOBAL_CONSTANTS = {
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
   EXISTING_CUSTOMER_LOYALTY: "Are you shocked after all these years that your prices are dropping?! Sign into your account with your customer login for your loyalty discount based on your years of service.",
   CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it’s not the right fit, provide a full refund.",
-  AI_TECH_EXPLANATION: "We leverage a wide variety of AI technologies daily to lower costs and provide the best service possible. We also employ numerous custom robotic mowing solutions tailored to each property's specific demands. Lawn Trooper reserves the right to utilize any technology that will better serve the yard's needs."
+  AI_TECH_EXPLANATION: "Yes if your yard allows safe usage of robot mowers lawn trooper reserves the right to choose which mowers to use based on size, obstructions, grass type, and incline."
 };
 
 export const PLANS = [
@@ -118,7 +118,7 @@ export const BASIC_ADDONS = [
   {
     id: "basic_christmas_lights",
     label: "Basic Christmas Light Package",
-    description: "Standard roofline lighting package. Install / maintenance / removal"
+    description: "Ask about our christmas lighting options."
   }
 ];
 
@@ -161,7 +161,7 @@ export const PREMIUM_ADDONS = [
   {
     id: "christmas_lights_premium",
     label: "Christmas Light Premium Package",
-    description: "Larger or more detailed lighting layouts. Install / maintenance / removal"
+    description: "Ask about our christmas lighting options."
   }
 ];
 
