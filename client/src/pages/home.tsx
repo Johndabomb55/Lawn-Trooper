@@ -67,7 +67,7 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/landscaping_crew_of_3_with_lush_lawn_and_waving_customer.png";
+import heroDiverseCrew from "@assets/generated_images/landscaping_crew_with_older_woman_waving_from_porch.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 
 // Stock Assets
