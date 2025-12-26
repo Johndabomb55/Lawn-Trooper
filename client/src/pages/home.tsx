@@ -461,10 +461,7 @@ export default function LandingPage() {
                  25 year anniversary sale: get up to 3 months free
                </div>
                
-               <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md mx-auto">
-                 <Button onClick={() => scrollToSection('quote')} className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 text-lg shadow-xl border-2 border-white/10">
-                   Get My Instant Quote
-                 </Button>
+               <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md mx-auto justify-center">
                  <Button onClick={() => scrollToSection('plans')} variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10 font-bold uppercase tracking-wider py-6 text-lg bg-black/40 backdrop-blur-sm">
                    See What’s Included
                  </Button>
@@ -670,6 +667,17 @@ export default function LandingPage() {
                   {plan.oldPrice && (
                     <p className="text-[10px] text-accent font-medium mt-0.5">25th Anniversary + AI Savings</p>
                   )}
+                  
+                  {/* Key Stats Grid */}
+                  <div className="grid grid-cols-3 gap-2 mt-4 text-center">
+                    {plan.keyStats?.map((stat, idx) => (
+                      <div key={idx} className="bg-background/50 rounded p-2 border border-border/50">
+                        <div className="text-[10px] uppercase text-muted-foreground font-bold">{stat.label}</div>
+                        <div className="text-xs font-bold text-primary mt-0.5">{stat.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
                 </div>
                 <div className="p-6 space-y-4">
                   <ul className="space-y-3">
@@ -1018,7 +1026,7 @@ export default function LandingPage() {
                               className="max-w-[200px]"
                             />
                           </FormControl>
-                          <FormDescription>Pricing adjusts based on lot size and is verified during the consultation and walkthrough.</FormDescription>
+                          <FormDescription>Pricing adjusts based on lot size (increases for lots over 1/3 acre) and is verified during the consultation and walkthrough.</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}

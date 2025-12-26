@@ -22,6 +22,11 @@ export const PLANS = [
     oldPrice: 169,
     priceLabel: "Starts at $129/mo",
     description: "Includes: 1 Basic Add-on • 0 Premium Add-ons",
+    keyStats: [
+      { label: "Mowing", value: "Bi-Weekly" },
+      { label: "Weed Control", value: "2 Treatments" },
+      { label: "Add-ons", value: "1 Included" }
+    ],
     features: [
       "Mowing: Regular (bi-weekly) mowing",
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
@@ -44,6 +49,11 @@ export const PLANS = [
     oldPrice: 279,
     priceLabel: "Starts at $199/mo",
     description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 1 Premium Add-on",
+    keyStats: [
+      { label: "Mowing", value: "Weekly" },
+      { label: "Weed Control", value: "3 Treatments" },
+      { label: "Add-ons", value: "3 Included" }
+    ],
     features: [
       "Mowing: Weekly mowing",
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
@@ -66,6 +76,11 @@ export const PLANS = [
     oldPrice: 399,
     priceLabel: "Starts at $299/mo",
     description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons • 3 Premium Add-ons",
+    keyStats: [
+      { label: "Mowing", value: "Weekly" },
+      { label: "Weed Control", value: "6 Treatments" },
+      { label: "Add-ons", value: "5 Included" }
+    ],
     features: [
       "Mowing: Weekly mowing (top priority)",
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
