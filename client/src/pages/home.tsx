@@ -1079,7 +1079,7 @@ export default function LandingPage() {
                                     {plan.name} 
                                     {plan.id === 'executive' && <Star className="w-3 h-3 fill-accent text-accent" />}
                                   </span>
-                                  <span className="text-sm text-center text-muted-foreground">{plan.description}</span>
+                                  <span className="text-sm text-center text-muted-foreground">{plan.allowanceLabel}</span>
                                   <div className="mt-2 flex flex-col items-center">
                                      <span className="text-sm font-bold text-primary">{plan.priceLabel}</span>
                                      {plan.oldPrice && (
