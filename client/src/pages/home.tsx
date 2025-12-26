@@ -67,7 +67,7 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/landscaping_crew_working_in_earth_tone_uniforms_on_beautiful_lawn.png";
+import heroDiverseCrew from "@assets/generated_images/landscaping_crew_working_at_southern_home_with_customer_interaction.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 
 // Stock Assets
@@ -632,7 +632,7 @@ export default function LandingPage() {
             </div>
             
             <p className="mt-6 text-white/60 text-sm font-medium">
-              Save up to <span className="text-accent font-bold">$2,000+</span>/year with stacked promotions on Executive plans.
+              Save up to <span className="text-green-400 font-bold">$2,000+</span>/year with stacked promotions on Executive plans.
             </p>
           </motion.div>
         </div>
