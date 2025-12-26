@@ -67,7 +67,7 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/landscaping_crew_working_at_southern_home_with_customer_interaction.png";
+import heroDiverseCrew from "@assets/generated_images/landscaping_crew_of_3_with_lush_lawn_and_waving_customer.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 
 // Stock Assets
@@ -776,6 +776,7 @@ export default function LandingPage() {
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 1-year agreement: <strong>1 Month FREE</strong></li>
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 2-year agreement: <strong>3 Months FREE</strong></li>
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay in Full: <strong>Extra 2 Months FREE</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH get 1 Month FREE!</strong></li>
               </ul>
             </div>
             <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold whitespace-nowrap px-8">
@@ -1617,7 +1618,6 @@ export default function LandingPage() {
                     <p className="font-bold">If you cancel early:</p>
                     <ul className="list-disc list-inside space-y-1 ml-2">
                       <li>You’re only responsible for services already performed</li>
-                      <li>Any discounts or free services included with the annual plan are prorated</li>
                       <li>Any remaining balance is settled at standard per-visit pricing</li>
                     </ul>
                   </div>
@@ -1644,7 +1644,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
            <div className="max-w-2xl mx-auto">
              <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
-             <p className="text-lg mb-8 opacity-90">Refer a customer and you both get 1 month free!</p>
+             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both get 1 month free!</p>
            </div>
         </div>
       </section>
