@@ -1534,7 +1534,7 @@ export default function LandingPage() {
 
                 <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-4 gap-2">
                   <span>DEPLOY THE TROOPS</span>
-                  <span className="text-xs font-bold normal-case text-yellow-400 max-w-md text-center">your account commander will reach out asap to schedule a custom yard plan consultation with you.</span>
+                  <span className="text-xs font-bold normal-case text-yellow-400 max-w-md text-center leading-tight">your account commander will reach out asap<br/>to schedule a custom yard plan consultation with you.</span>
                 </Button>
               </form>
             </Form>
