@@ -67,7 +67,7 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/lawn_trooper_team_southern_home.png";
+import heroDiverseCrew from "@assets/generated_images/diverse_landscaping_crew_with_tall_team_leader.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 
 // Stock Assets
@@ -379,10 +379,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Top Announcement Banner */}
       <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
-        <div className="absolute top-0 left-4 h-full py-1 hidden md:block">
-           <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
-        </div>
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
+           <div className="hidden md:block h-6 mr-2">
+              <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
+           </div>
            <span className="uppercase tracking-wide">🎉 Celebrating 25 years of service with our biggest sale on maintenance plans ever! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
            <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 1, 2026</span> to lock in your pricing for up to 2 years!</span>
@@ -1532,8 +1532,8 @@ export default function LandingPage() {
                   )}
                 </AnimatePresence>
 
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 text-lg shadow-xl mt-8">
-                  Submit Request
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-lg shadow-xl mt-8 whitespace-normal h-auto leading-tight px-4">
+                  Deploy the troops and your account commander will reach out shortly to schedule your yard plan consultation
                 </Button>
               </form>
             </Form>
@@ -1615,7 +1615,17 @@ export default function LandingPage() {
               },
               {
                 q: "What if I need to cancel early?",
-                a: "You forfeit all promotions but can cancel anytime after taking care of final monthly bill."
+                a: (
+                  <div className="space-y-2">
+                    <p>We keep it fair. Lawn Trooper plans are annual, but we understand things change.</p>
+                    <p className="font-bold">If you cancel early:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-2">
+                      <li>You’re only responsible for services already performed</li>
+                      <li>Any discounts or free services included with the annual plan are prorated</li>
+                      <li>Any remaining balance is settled at standard per-visit pricing</li>
+                    </ul>
+                  </div>
+                )
               },
               {
                 q: "Do you use robots?",
