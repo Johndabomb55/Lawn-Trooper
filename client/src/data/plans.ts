@@ -9,8 +9,9 @@ export const GLOBAL_CONSTANTS = {
   BUSH_TRIMMING_DISPOSAL: "All clippings removed and disposed for clean curb appeal and pristine flower beds.",
   AI_SAVINGS_MESSAGE: "We are lowering costs with new AI + 2026 technology and passing savings on to customers.",
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
-  EXISTING_CUSTOMER_LOYALTY: "Existing customers: Happy Holidays — log in, select your 2026 plan, and apply your loyalty discount.",
+  EXISTING_CUSTOMER_LOYALTY: "Are you shocked after all these years that your prices are dropping?! Sign into your account with your customer login for your loyalty discount based on your years of service.",
   CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it’s not the right fit, provide a full refund.",
+  AI_TECH_EXPLANATION: "We leverage a wide variety of AI technologies daily to lower costs and provide the best service possible. We also employ numerous custom robotic mowing solutions tailored to each property's specific demands. Lawn Trooper reserves the right to utilize any technology that will better serve the yard's needs."
 };
 
 export const PLANS = [
@@ -44,7 +45,7 @@ export const PLANS = [
     features: [
       "Mowing: Weekly mowing",
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
-      "Weed Control: 4 weed treatments per year",
+      "Weed Control: 3 weed control applications per year",
       `Bush Trimming: 3 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
@@ -87,9 +88,9 @@ export const BASIC_ADDONS = [
     description: `Additional trimming beyond plan limits. ${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}`
   },
   {
-    id: "gutter_cleaning_box",
-    label: "Gutter Cleaning Box",
-    description: "Cleaning of gutter boxes"
+    id: "quarterly_trash_bin_cleaning",
+    label: "Quarterly Trash Bin Cleaning",
+    description: "Cleaning and sanitizing of trash bins once every quarter"
   },
   {
     id: "gutter_cleaning_first_floor",
@@ -105,6 +106,16 @@ export const BASIC_ADDONS = [
     id: "pine_straw_delivery_install_3yards",
     label: "Pine Straw Delivery + Installation (Up to 3 Yards)",
     description: "Fresh pine straw installed neatly in beds (Up to 3 Yards)"
+  },
+  {
+    id: "basic_flower_install",
+    label: "Basic Flower Install (1 Season)",
+    description: "Up to 4 flats of flowers (Spring OR Fall - pick one)"
+  },
+  {
+    id: "basic_christmas_lights",
+    label: "Basic Christmas Light Package",
+    description: "Standard roofline lighting package. Install / maintenance / removal"
   }
 ];
 
@@ -133,6 +144,16 @@ export const PREMIUM_ADDONS = [
     id: "pine_straw_delivery_install_over3yards",
     label: "Pine Straw Delivery + Installation (Over 3 Yards)",
     description: "Fresh pine straw installed neatly in beds (Over 3 Yards)"
+  },
+  {
+    id: "premium_flower_install",
+    label: "Premium Flower Install (2 Seasons)",
+    description: "Spring AND Fall flower installation (Up to 4 flats each season)"
+  },
+  {
+    id: "bimonthly_trash_bin_cleaning",
+    label: "Bi-Monthly Trash Bin Cleaning",
+    description: "Cleaning and sanitizing of trash bins every other month"
   },
   {
     id: "christmas_lights_premium",

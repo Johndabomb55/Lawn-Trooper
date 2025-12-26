@@ -70,9 +70,9 @@ import camoPattern from "@assets/generated_images/subtle_camo_texture_background
 import heroDiverseCrew from "@assets/generated_images/lawn_trooper_diverse_crew_with_smart_glasses_and_camo_mower.png";
 
 // Stock Assets
-import heroLuxury from "@assets/generated_images/luxury_home_lawn_athens.png";
-import imgEstateMadison from "@assets/generated_images/estate_home_lawn_madison.png";
-import imgGardenHuntsville from "@assets/generated_images/manicured_garden_huntsville.png";
+import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
+import imgEstateMadison from "@assets/generated_images/manicured_lawn_with_summer_flowers.png";
+import imgGardenHuntsville from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
 import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
@@ -438,9 +438,9 @@ export default function LandingPage() {
             className="mb-8 relative w-full max-w-4xl"
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
-            <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4" />
+            <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
             
-            <div className="mt-4 relative z-20">
+            <div className="mt-8 relative z-20">
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-2 leading-none" 
                   style={{ 
                     backgroundImage: `url(${camoPattern})`, 
@@ -458,7 +458,7 @@ export default function LandingPage() {
             
             <div className="mt-6 flex flex-col items-center gap-4">
                <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
-                 Next 5 days only: get up to 3 months FREE
+                 25 year anniversary sale: get up to 3 months free
                </div>
                
                <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md mx-auto">
@@ -1475,7 +1475,7 @@ export default function LandingPage() {
       {/* Explainer Video Section (Placeholder) */}
       <section className="py-20 bg-background border-t border-border">
          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-heading font-bold text-primary mb-6">How To Choose Your Mission</h2>
+            <h2 className="text-3xl font-heading font-bold text-primary mb-6">Request Deployment</h2>
             <div className="max-w-3xl mx-auto aspect-video bg-black/5 rounded-xl border border-border flex items-center justify-center relative overflow-hidden group cursor-pointer shadow-lg hover:shadow-xl transition-all">
                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10"></div>
                <img src={heroMascot} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm" />
@@ -1565,6 +1565,10 @@ export default function LandingPage() {
               {
                 q: "What if I need to cancel early?",
                 a: "You forfeit all promotions but can cancel anytime after taking care of final monthly bill."
+              },
+              {
+                q: "What AI technology do you use?",
+                a: GLOBAL_CONSTANTS.AI_TECH_EXPLANATION
               }
             ].map((faq, i) => (
               <AccordionItem key={i} value={`item-${i}`}>
