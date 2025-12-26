@@ -617,8 +617,11 @@ export default function LandingPage() {
                </div>
                
                {/* Existing Customer Message */}
-               <div className="mt-4 text-center">
-                  <p className="text-xs text-white/60 italic">{GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY}</p>
+               <div className="mt-4 text-center space-y-2">
+                  <p className="text-green-400 font-bold text-base md:text-lg bg-green-900/30 inline-block px-4 py-1 rounded-full border border-green-500/30 shadow-lg">
+                    Save up to $2,000+/year with stacked promotions on Executive plans.
+                  </p>
+                  <p className="text-xs text-white/60 italic block">{GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY}</p>
                </div>
             </div>
 
@@ -630,10 +633,6 @@ export default function LandingPage() {
                 View Service Tiers
               </Button>
             </div>
-            
-            <p className="mt-6 text-white/60 text-sm font-medium">
-              Save up to <span className="text-green-400 font-bold">$2,000+</span>/year with stacked promotions on Executive plans.
-            </p>
           </motion.div>
         </div>
       </section>
@@ -764,8 +763,8 @@ export default function LandingPage() {
       <section className="relative py-12 overflow-hidden text-primary-foreground">
         {/* Background Image Matching Hero */}
         <div className="absolute inset-0 z-0">
-           <img src={bgLandscape} alt="Background" className="w-full h-full object-cover brightness-[0.4]" />
-           <div className="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
+           <img src={bgLandscape} alt="Background" className="w-full h-full object-cover brightness-[0.6]" />
+           <div className="absolute inset-0 bg-primary/70 mix-blend-multiply"></div>
         </div>
 
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 z-0"></div>
@@ -1587,10 +1586,6 @@ export default function LandingPage() {
           <Accordion type="single" collapsible className="w-full">
             {[
               {
-                q: "Why are you lowering prices after 25+ years?",
-                a: GLOBAL_CONSTANTS.AI_SAVINGS_MESSAGE
-              },
-              {
                 q: "Do I have to sign a contract?",
                 a: `We offer an annual subscription service designed to keep your property pristine year-round. ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY} Month-to-month options are also available.`
               },
@@ -1683,7 +1678,7 @@ export default function LandingPage() {
               <h4 className="font-bold text-lg mb-6 text-accent">Headquarters</h4>
               <p className="text-primary-foreground/80 mb-4">Athens, AL</p>
               <div className="space-y-4 text-primary-foreground/80">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 mt-6">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />
                   <a href="mailto:lawntrooperllc@gmail.com" className="hover:text-white transition-colors">lawntrooperllc@gmail.com</a>
                 </div>
