@@ -60,7 +60,7 @@ export const PLANS = [
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
       `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
-      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included. Includes trimming of overgrown shrubs.</span>",
+      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
@@ -89,7 +89,7 @@ export const PLANS = [
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
       `Bush Trimming: 3 bush trimmings per year (scheduled by plant type and growth cycle) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
-      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included. Includes trimming of overgrown shrubs.</span>",
+      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"

@@ -71,7 +71,7 @@ import heroDiverseCrew from "@assets/generated_images/lawn_trooper_team_southern
 
 // Stock Assets
 import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
-import imgEstateMadison from "@assets/generated_images/madison_al_home_with_trimmed_shrubs.png";
+import imgEstateMadison from "@assets/generated_images/madison_al_home_with_fewer_flowers.png";
 import imgGardenHuntsville from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
 import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
@@ -81,6 +81,7 @@ import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
 import imgSmallYard1 from "@assets/generated_images/athens_al_home_with_pansies.png";
 import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
 import imgSmallYard3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
+import bgLandscape from "@assets/generated_images/beautiful_landscaped_yard_background.png";
 
 
 import { 
@@ -697,7 +698,13 @@ export default function LandingPage() {
                     {plan.keyStats?.map((stat, idx) => (
                       <div key={idx} className="bg-background/50 rounded p-2 border border-border/50">
                         <div className="text-[10px] uppercase text-muted-foreground font-bold">{stat.label}</div>
-                        <div className="text-xs font-bold text-primary mt-0.5">{stat.value}</div>
+                        <div className="text-xs font-bold text-primary mt-0.5">
+                          {stat.value === 'Weekly' || stat.value === 'Bi-Weekly' ? (
+                            <span className="bg-yellow-100 text-yellow-800 px-1 py-0.5 rounded">{stat.value}</span>
+                          ) : (
+                            stat.value
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -860,7 +867,7 @@ export default function LandingPage() {
                className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
             >
               <div className="h-48 overflow-hidden relative">
-                 <img src={imgSmallYard2} alt="Madison Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <img src={imgEstateMadison} alt="Madison Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                  <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
                    Sector: Madison, AL
                  </div>
@@ -873,7 +880,7 @@ export default function LandingPage() {
                    <Star className="w-4 h-4 fill-accent" />
                    <Star className="w-4 h-4 fill-accent" />
                  </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"Finally, a service that just handles it. I signed the 2-year agreement to lock in the rate, and the 3 free months was a huge bonus."</p>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"I signed a 2 year pact, paid in full, and saved well over $2,000. Lawn Trooper really does deliver and the jobber app makes customer requests and bill pay easy as pie."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">Sarah & Mike T.</div>
                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Premium Plan Members</div>
@@ -1523,7 +1530,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                text: "My yard has never looked this good. The crew is incredibly professional and the camo mowers are awesome!",
+                text: "My yard has never looked this good. The crew is incredibly professional!",
                 author: "James W.",
                 loc: "Huntsville, AL"
               },
@@ -1676,6 +1683,10 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      <div className="w-full h-[400px] relative">
+         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10"></div>
+         <img src={bgLandscape} alt="Beautiful Landscaped Yard" className="w-full h-full object-cover opacity-80" />
+      </div>
     </div>
     </TooltipProvider>
   );
