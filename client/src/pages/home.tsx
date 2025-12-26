@@ -440,7 +440,7 @@ export default function LandingPage() {
       <section className="relative min-h-screen flex flex-col pt-32 pb-20 overflow-hidden bg-primary/5">
         
         {/* Urgency Top Bar */}
-        <div className="absolute top-28 left-0 right-0 z-20 transform -rotate-1 pointer-events-none">
+        <div className="absolute top-24 left-0 right-0 z-20 transform -rotate-1 pointer-events-none">
           <div className="pointer-events-auto inline-block w-full">
              <CountdownTimer />
           </div>
@@ -1293,7 +1293,7 @@ export default function LandingPage() {
                       name="notes"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Special Instructions / Gate Codes</FormLabel>
+                          <FormLabel>Special Instructions / Gate Codes / Customer Names You're Referring</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Fenced backyard, dog on property, specific gate code, etc." 
