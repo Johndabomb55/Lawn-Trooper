@@ -375,8 +375,20 @@ export default function LandingPage() {
   return (
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
+      {/* Top Announcement Banner */}
+      <div className="bg-destructive text-white py-3 px-4 text-center font-bold relative z-[60]">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
+           <span className="uppercase tracking-wide">🎉 Celebrating 25 years of service with our biggest sale on maintenance plans ever! 🎉</span>
+           <span className="hidden md:inline mx-2 text-white/50">|</span>
+           <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 1, 2026</span> to lock in your pricing for up to 2 years!</span>
+           <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
+             + Up to 3 Months Free
+           </span>
+        </div>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+      <nav className="fixed top-[calc(3rem)] md:top-[3rem] w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-primary/10" />
@@ -420,10 +432,10 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col pt-24 pb-20 overflow-hidden bg-primary/5">
+      <section className="relative min-h-screen flex flex-col pt-32 pb-20 overflow-hidden bg-primary/5">
         
         {/* Urgency Top Bar */}
-        <div className="absolute top-16 left-0 right-0 z-20 transform -rotate-1 pointer-events-none">
+        <div className="absolute top-28 left-0 right-0 z-20 transform -rotate-1 pointer-events-none">
           <div className="pointer-events-auto inline-block w-full">
              <CountdownTimer />
           </div>

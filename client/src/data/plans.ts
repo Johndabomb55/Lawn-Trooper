@@ -34,7 +34,6 @@ export const PLANS = [
       "Weed Control (Beds): Weed control in all flower beds included",
       `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal",
-      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs or small trees",
       "Small Tree & Low-Hanging Branch Trimming: Not Included",
       "Weed-Free Guarantee: Not Included"
     ],
@@ -61,9 +60,9 @@ export const PLANS = [
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
       "Weed Control: 3 weed control applications per year",
       "Weed Control (Beds): Weed control in all flower beds included",
-      `Bush Trimming: 3 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
-      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs or small trees",
+      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Weed-Free Guarantee: Not Included"
     ],
@@ -90,9 +89,9 @@ export const PLANS = [
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
       "Weed Control: 6 weed treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
-      `Bush Trimming: 4 bush trimmings per year (scheduled by plant type and growth cycle) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `Bush Trimming: 3 bush trimmings per year (scheduled by plant type and growth cycle) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
-      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs or small trees",
+      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
     ],
@@ -151,13 +150,13 @@ export const PREMIUM_ADDONS = [
   },
   {
     id: "spring_cleanup",
-    label: "Spring Cleanup",
-    description: "Removal of winter debris, trimming overgrown shrubs/trees."
+    label: "Heavy Spring Cleanup",
+    description: "Removal of winter debris, trimming overgrown shrubs."
   },
   {
     id: "fall_cleanup",
-    label: "Fall Cleanup",
-    description: "Removal of fall leaves/debris, trimming overgrown shrubs/trees."
+    label: "Heavy Fall Cleanup",
+    description: "Removal of fall leaves/debris, trimming overgrown shrubs."
   },
   {
     id: "mulch_delivery_install_over2yards",
@@ -172,7 +171,7 @@ export const PREMIUM_ADDONS = [
   {
     id: "premium_flower_install",
     label: "Premium Flower Install (Spring or 2 Seasons)",
-    description: "Spring flowers (or Spring AND Fall). Up to 4 flats per season."
+    description: "Spring flowers (or Spring AND Fall). Up to 5 flats per season."
   },
   {
     id: "bimonthly_trash_bin_cleaning",
