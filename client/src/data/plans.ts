@@ -9,7 +9,7 @@ export const GLOBAL_CONSTANTS = {
   BUSH_TRIMMING_DISPOSAL: "All clippings removed and disposed for clean curb appeal and pristine flower beds.",
   AI_SAVINGS_MESSAGE: "We are lowering costs with new AI + 2026 technology and passing savings on to customers.",
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
-  EXISTING_CUSTOMER_LOYALTY: "Are you shocked after all these years that your prices are dropping?! Sign into your account with your customer login for your loyalty discount based on your years of service.",
+  EXISTING_CUSTOMER_LOYALTY: "Our Loyalty Club Customers: Are you shocked after all these years that your prices are dropping?! Sign into your account with your customer login for your loyalty discount based on your years of service. (Must complete 12 months to get a loyalty discount).",
   CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it’s not the right fit, provide a full refund.",
   AI_TECH_EXPLANATION: "Yes if your yard allows safe usage of robot mowers lawn trooper reserves the right to choose which mowers to use based on size, obstructions, grass type, and incline."
 };
@@ -19,7 +19,7 @@ export const PLANS = [
     id: "basic",
     name: "Basic Patrol",
     price: 129,
-    oldPrice: 169,
+    oldPrice: 149,
     priceLabel: "Starts at $129/mo",
     description: "Includes: 1 Basic Add-on • 0 Premium Add-ons",
     keyStats: [
@@ -31,8 +31,10 @@ export const PLANS = [
       "Mowing: Regular (bi-weekly) mowing",
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
       "Weed Control: 2 pre-emergent weed control treatments per year",
+      "Weed Control (Beds): Weed control in all flower beds included",
       `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs or small trees",
       "Small Tree & Low-Hanging Branch Trimming: Not Included",
       "Weed-Free Guarantee: Not Included"
     ],
@@ -46,7 +48,7 @@ export const PLANS = [
     id: "premium",
     name: "Premium Patrol",
     price: 199,
-    oldPrice: 279,
+    oldPrice: 249,
     priceLabel: "Starts at $199/mo",
     description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 1 Premium Add-on",
     keyStats: [
@@ -58,8 +60,10 @@ export const PLANS = [
       "Mowing: Weekly mowing",
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
       "Weed Control: 3 weed control applications per year",
+      "Weed Control (Beds): Weed control in all flower beds included",
       `Bush Trimming: 3 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs or small trees",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Weed-Free Guarantee: Not Included"
     ],
@@ -73,7 +77,7 @@ export const PLANS = [
     id: "executive",
     name: "Executive Patrol",
     price: 299,
-    oldPrice: 399,
+    oldPrice: 369,
     priceLabel: "Starts at $299/mo",
     description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons • 3 Premium Add-ons",
     keyStats: [
@@ -85,8 +89,10 @@ export const PLANS = [
       "Mowing: Weekly mowing (top priority)",
       "Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces",
       "Weed Control: 6 weed treatments per year",
+      "Weed Control (Beds): Weed control in all flower beds included",
       `Bush Trimming: 4 bush trimmings per year (scheduled by plant type and growth cycle) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Spring & Fall Cleanup: Includes trimming of overgrown shrubs or small trees",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
     ],
@@ -127,13 +133,13 @@ export const BASIC_ADDONS = [
   },
   {
     id: "basic_flower_install",
-    label: "Basic Flower Install (1 Season)",
-    description: "Up to 4 flats of flowers (Spring OR Fall - pick one)"
+    label: "Basic Flower Install (Fall Only)",
+    description: "Up to 4 flats of flowers (Fall Only). Upgrade to Premium for Spring."
   },
   {
     id: "basic_christmas_lights",
     label: "Basic Christmas Light Package",
-    description: "Ask about our christmas lighting options."
+    description: "Basic shrub and small tree decorations only. (No roofline lights)."
   }
 ];
 
@@ -146,27 +152,27 @@ export const PREMIUM_ADDONS = [
   {
     id: "spring_cleanup",
     label: "Spring Cleanup",
-    description: "Removal of winter debris and preparation for the growing season"
+    description: "Removal of winter debris, trimming overgrown shrubs/trees."
   },
   {
     id: "fall_cleanup",
     label: "Fall Cleanup",
-    description: "Removal of fall leaves and debris to prepare for winter"
+    description: "Removal of fall leaves/debris, trimming overgrown shrubs/trees."
   },
   {
     id: "mulch_delivery_install_over2yards",
-    label: "Mulch Delivery + Installation (Over 2 Yards)",
-    description: "Fresh mulch install + light bed cleanup (Over 2 Yards)"
+    label: "Mulch Delivery + Installation (Up to 8 Yards)",
+    description: "Fresh mulch install + light bed cleanup. 4 colors avail (Brown Hardwood recommended)."
   },
   {
     id: "pine_straw_delivery_install_over3yards",
-    label: "Pine Straw Delivery + Installation (Over 3 Yards)",
-    description: "Fresh pine straw installed neatly in beds (Over 3 Yards)"
+    label: "Pine Straw Delivery + Installation (Up to 10 Yards)",
+    description: "Fresh pine straw installed neatly in beds (Up to 10 Yards)."
   },
   {
     id: "premium_flower_install",
-    label: "Premium Flower Install (2 Seasons)",
-    description: "Spring AND Fall flower installation (Up to 4 flats each season)"
+    label: "Premium Flower Install (Spring or 2 Seasons)",
+    description: "Spring flowers (or Spring AND Fall). Up to 4 flats per season."
   },
   {
     id: "bimonthly_trash_bin_cleaning",
@@ -176,7 +182,7 @@ export const PREMIUM_ADDONS = [
   {
     id: "christmas_lights_premium",
     label: "Christmas Light Premium Package",
-    description: "Ask about our christmas lighting options."
+    description: "First floor roofline lighting + yard decorations."
   }
 ];
 

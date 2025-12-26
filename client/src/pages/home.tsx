@@ -67,18 +67,18 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/lawn_trooper_diverse_crew_with_smart_glasses_and_camo_mower.png";
+import heroDiverseCrew from "@assets/generated_images/lawn_trooper_crew_professional.png";
 
 // Stock Assets
 import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
-import imgEstateMadison from "@assets/generated_images/manicured_lawn_with_summer_flowers.png";
+import imgEstateMadison from "@assets/generated_images/madison_al_home_with_trimmed_shrubs.png";
 import imgGardenHuntsville from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
 import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
-import imgSmallYard1 from "@assets/generated_images/small_yard_seasonal_color.png";
+import imgSmallYard1 from "@assets/generated_images/athens_al_home_with_pansies.png";
 import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
 import imgSmallYard3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
@@ -266,18 +266,26 @@ export default function LandingPage() {
       // Adding requires check
       const { basicCount, premiumCount } = calculateCounts(currentAddOns);
       
-      if (isPremium) {
-        if (premiumCount >= limits.premium) {
-           setSlotError(`You’ve reached the limit of ${limits.premium} Premium add-ons for this plan.`);
+      // Points System: Basic = 1, Premium = 2
+      // Allowance: Plan Basic + (Plan Premium * 2)
+      // Current Usage: Current Basic + (Current Premium * 2)
+      // New Item Cost: isPremium ? 2 : 1
+      
+      const totalAllowancePoints = limits.basic + (limits.premium * 2);
+      const currentUsagePoints = basicCount + (premiumCount * 2);
+      const newItemCost = isPremium ? 2 : 1;
+      
+      if (currentUsagePoints + newItemCost > totalAllowancePoints) {
+          // Construct specific error message based on what they tried to add
+          let msg = "";
+          if (isPremium) {
+             msg = `Not enough allowance for this Premium add-on. (Cost: 2 Basic slots or 1 Premium slot).`;
+          } else {
+             msg = `Not enough allowance for this Basic add-on.`;
+          }
+           setSlotError(msg);
            setTimeout(() => setSlotError(null), 3000);
            return;
-        }
-      } else {
-        if (basicCount >= limits.basic) {
-           setSlotError(`You’ve reached the limit of ${limits.basic} Basic add-ons for this plan.`);
-           setTimeout(() => setSlotError(null), 3000);
-           return;
-        }
       }
 
       form.setValue("addOns", [...currentAddOns, id]);
@@ -289,20 +297,20 @@ export default function LandingPage() {
     const currentAddOns = form.getValues("addOns");
     const limits = getPlanAllowance(selectedPlan, discounts.payFull);
     
-    // Separate current add-ons
-    const currentBasic = currentAddOns.filter(id => BASIC_ADDONS.find(b => b.id === id));
-    const currentPremium = currentAddOns.filter(id => PREMIUM_ADDONS.find(p => p.id === id));
+    // Recalculate based on points to be safe, or just clear if over limit?
+    // Let's simple check: if total points used > total allowance, trim.
+    // Trimming logic: Remove Premiums first? Or just clear?
+    // Simple approach: Clear if over limit to avoid confusion.
     
-    let newAddOns: string[] = [];
+    const { basicCount, premiumCount } = calculateCounts(currentAddOns);
+    const totalUsage = basicCount + (premiumCount * 2);
+    const totalAllowance = limits.basic + (limits.premium * 2);
     
-    // Trim to fit new limits
-    newAddOns = [
-      ...currentBasic.slice(0, limits.basic),
-      ...currentPremium.slice(0, limits.premium)
-    ];
-    
-    if (newAddOns.length !== currentAddOns.length) {
-      form.setValue("addOns", newAddOns);
+    if (totalUsage > totalAllowance) {
+      // Try to save some? Na, just reset for simplicity or trim from end
+      // Let's try to keep what fits.
+      // Actually, simple reset is safer.
+      form.setValue("addOns", []);
     }
   }, [selectedPlan, form, discounts.payFull]);
 
@@ -528,13 +536,13 @@ export default function LandingPage() {
                </div>
 
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
-                 <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl">
-                   <Star className="fill-accent w-5 h-5" /> 
-                   1 Week of Early Bird Savings
-                   <Star className="fill-accent w-5 h-5" /> 
+                 <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl text-center">
+                   <Star className="fill-accent w-6 h-6 animate-pulse" /> 
+                   🎉 25th Anniversary Celebration Event 🎉
+                   <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                   ⚠️ Lock in the lowest price for up to 2 years
+                   ⚠️ Lock in lowest pricing for up to 2 years - Ends Jan 1st!
                  </p>
                </div>
                
@@ -625,8 +633,12 @@ export default function LandingPage() {
             <h2 className="text-xl md:text-2xl font-heading font-bold text-primary mb-1">
               Lawn Trooper — 25+ years serving North Alabama. 100+ beautification awards.
             </h2>
-            <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest">
+            <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest mb-2">
               Military-level reliability. Premium results.
+            </p>
+            <p className="text-xs text-muted-foreground/80 flex items-center justify-center gap-1">
+               <Shield className="w-3 h-3" />
+               Lawn Trooper LLC is licensed and insured. We take full responsibility for any liability or damage to people or your property while performing services.
             </p>
           </div>
         </div>
@@ -662,10 +674,10 @@ export default function LandingPage() {
                     <span className="text-muted-foreground text-sm">/mo (starting)</span>
                   </div>
                   {plan.oldPrice && (
-                    <p className="text-xs text-muted-foreground mt-1 line-through opacity-70">Was ${plan.oldPrice}/mo</p>
-                  )}
-                  {plan.oldPrice && (
-                    <p className="text-[10px] text-accent font-medium mt-0.5">25th Anniversary + AI Savings</p>
+                    <div className="flex flex-col">
+                       <p className="text-xs text-muted-foreground mt-1 line-through opacity-70">Was ${plan.oldPrice}/mo</p>
+                       <p className="text-[10px] text-accent font-medium mt-0.5">25th Anniversary + AI Savings</p>
+                    </div>
                   )}
                   
                   {/* Key Stats Grid */}
@@ -1176,8 +1188,13 @@ export default function LandingPage() {
                       <div className="grid gap-3">
                       {PREMIUM_ADDONS.map((addon) => {
                         const allowance = getPlanAllowance(selectedPlan);
-                        const isDisabled = allowance.premium === 0;
+                        // Points Logic
+                        const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
+                        const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
+                        const currentUsagePoints = basicCount + (premiumCount * 2);
                         const isChecked = selectedAddOns.includes(addon.id);
+                        const isDisabled = !isChecked && (currentUsagePoints + 2 > totalAllowancePoints);
+
                         return (
                           <div key={addon.id} className={`
                             relative flex flex-col p-3 rounded-lg border transition-all
