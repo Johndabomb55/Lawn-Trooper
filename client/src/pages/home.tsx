@@ -673,12 +673,19 @@ export default function LandingPage() {
                 </div>
                 <div className="p-6 space-y-4">
                   <ul className="space-y-3">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm">
-                        <Check className={`w-5 h-5 shrink-0 ${plan.id === 'executive' && i === 0 ? 'text-accent' : 'text-primary'}`} />
-                        <span dangerouslySetInnerHTML={{ __html: feature.replace("Weekly", "<strong>Weekly</strong>").replace("Bi-weekly", "<strong>Bi-weekly</strong>").replace("Biweekly", "<strong>Biweekly</strong>") }} />
-                      </li>
-                    ))}
+                    {plan.features.map((feature, i) => {
+                      const isNotIncluded = feature.includes("Not Included");
+                      return (
+                        <li key={i} className={`flex items-start gap-3 text-sm ${isNotIncluded ? 'opacity-50' : ''}`}>
+                          {isNotIncluded ? (
+                            <X className="w-5 h-5 shrink-0 text-muted-foreground" />
+                          ) : (
+                            <Check className={`w-5 h-5 shrink-0 ${plan.id === 'executive' && i === 0 ? 'text-accent' : 'text-primary'}`} />
+                          )}
+                          <span dangerouslySetInnerHTML={{ __html: feature.replace("Weekly", "<strong>Weekly</strong>").replace("Bi-weekly", "<strong>Bi-weekly</strong>").replace("Biweekly", "<strong>Biweekly</strong>") }} />
+                        </li>
+                      );
+                    })}
                     <li className="flex items-start gap-3 text-sm">
                       <Check className="w-5 h-5 text-primary shrink-0" />
                       <span className="font-bold">{plan.allowanceLabel}</span>
@@ -1619,10 +1626,11 @@ export default function LandingPage() {
             
             <div>
               <h4 className="font-bold text-lg mb-6 text-accent">Headquarters</h4>
+              <p className="text-primary-foreground/80 mb-4">Athens, AL</p>
               <div className="space-y-4 text-primary-foreground/80">
-                <div className="flex items-center gap-3 overflow-hidden">
+                <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />
-                  <p className="break-all md:break-normal">lawntrooperllc@gmail.com</p>
+                  <a href="mailto:lawntrooperllc@gmail.com" className="hover:text-white transition-colors">lawntrooperllc@gmail.com</a>
                 </div>
               </div>
             </div>

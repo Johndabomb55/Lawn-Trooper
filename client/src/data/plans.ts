@@ -28,6 +28,8 @@ export const PLANS = [
       "Weed Control: 2 pre-emergent weed control treatments per year",
       `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Small Tree & Low-Hanging Branch Trimming: Not Included",
+      "Weed-Free Guarantee: Not Included"
     ],
     allowance: {
       basic: 1,
@@ -49,6 +51,7 @@ export const PLANS = [
       `Bush Trimming: 3 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
+      "Weed-Free Guarantee: Not Included"
     ],
     allowance: {
       basic: 2,
