@@ -67,7 +67,7 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/diverse_landscaping_crew_with_tall_team_leader.png";
+import heroDiverseCrew from "@assets/generated_images/landscaping_crew_working_in_earth_tone_uniforms_on_beautiful_lawn.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 
 // Stock Assets
@@ -379,11 +379,11 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Top Announcement Banner */}
       <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
-           <div className="hidden md:block h-6 mr-2">
+        <div className="container mx-auto relative flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
+           <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 h-10">
               <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
            </div>
-           <span className="uppercase tracking-wide">🎉 Celebrating 25 years of service with our biggest sale on maintenance plans ever! 🎉</span>
+           <span className="uppercase tracking-wide md:pl-16">🎉 Celebrating 25 years of service with our biggest sale on maintenance plans ever! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
            <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 1, 2026</span> to lock in your pricing for up to 2 years!</span>
            <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
@@ -655,7 +655,7 @@ export default function LandingPage() {
             </p>
             <p className="text-xs text-muted-foreground/80 flex items-center justify-center gap-1">
                <Shield className="w-3 h-3" />
-               Lawn Trooper LLC is licensed and insured. We take full responsibility for any liability or damage to people or your property while performing services.
+               Lawn Trooper LLC is licensed and insured. We take full responsibility for any liability or damage to property while performing services.
             </p>
           </div>
         </div>
@@ -1532,8 +1532,9 @@ export default function LandingPage() {
                   )}
                 </AnimatePresence>
 
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-lg shadow-xl mt-8 whitespace-normal h-auto leading-tight px-4">
-                  Deploy the troops and your account commander will reach out shortly to schedule your yard plan consultation
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-4 gap-2">
+                  <span>DEPLOY THE TROOPS</span>
+                  <span className="text-xs font-normal normal-case opacity-80 max-w-md text-center">and your account commander will reach out shortly to schedule your yard plan consultation</span>
                 </Button>
               </form>
             </Form>
