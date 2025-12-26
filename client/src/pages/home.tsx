@@ -68,10 +68,11 @@ import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.p
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 import heroDiverseCrew from "@assets/generated_images/lawn_trooper_team_southern_home.png";
+import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 
 // Stock Assets
 import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
-import imgEstateMadison from "@assets/generated_images/madison_al_home_with_fewer_flowers.png";
+import imgEstateMadison from "@assets/generated_images/madison_al_home_dark_red_brick.png";
 import imgGardenHuntsville from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
 import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
@@ -378,6 +379,9 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Top Announcement Banner */}
       <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
+        <div className="absolute top-0 left-4 h-full py-1 hidden md:block">
+           <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
+        </div>
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
            <span className="uppercase tracking-wide">🎉 Celebrating 25 years of service with our biggest sale on maintenance plans ever! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
@@ -444,7 +448,7 @@ export default function LandingPage() {
 
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
-           <img src={heroDiverseCrew} alt="Lawn Trooper Team" className="w-full h-full object-cover" />
+           <img src={bgLandscape} alt="Lawn Trooper Team" className="w-full h-full object-cover brightness-[0.65]" />
            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background"></div>
            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         </div>
@@ -757,8 +761,14 @@ export default function LandingPage() {
       </section>
 
       {/* Promos Banner */}
-      <section className="bg-primary text-primary-foreground py-12 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+      <section className="relative py-12 overflow-hidden text-primary-foreground">
+        {/* Background Image Matching Hero */}
+        <div className="absolute inset-0 z-0">
+           <img src={bgLandscape} alt="Background" className="w-full h-full object-cover brightness-[0.4]" />
+           <div className="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
+        </div>
+
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 z-0"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
@@ -801,16 +811,24 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            <div className="bg-muted p-8 rounded-2xl border border-border relative">
-              <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
-              <p className="text-lg italic text-foreground/80 relative z-10 pt-4 mb-6">
-                I used to dread weekends because it meant mowing. Now I don't even think about it. The crew is like clockwork, and the billing is totally predictable. Best decision I made for my home.
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">JD</div>
-                <div>
-                  <div className="font-bold">James D.</div>
-                  <div className="text-xs text-muted-foreground">Premium Command Member since 2023</div>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-accent/10 rounded-xl transform rotate-3"></div>
+              <img 
+                src={heroDiverseCrew} 
+                alt="Lawn Trooper Crew" 
+                className="w-full rounded-xl shadow-2xl relative z-10 border-4 border-white object-cover h-[400px]"
+              />
+              <div className="bg-muted p-6 rounded-2xl border border-border relative mt-8 z-20 transform -translate-y-12 mx-4 shadow-xl">
+                <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
+                <p className="text-lg italic text-foreground/80 relative z-10 pt-4 mb-6">
+                  I used to dread weekends because it meant mowing. Now I don't even think about it. The crew is like clockwork, and the billing is totally predictable. Best decision I made for my home.
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">JD</div>
+                  <div>
+                    <div className="font-bold">James D.</div>
+                    <div className="text-xs text-muted-foreground">Premium Command Member since 2023</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -930,7 +948,7 @@ export default function LandingPage() {
               <Clock className="w-8 h-8" />
             </div>
             <h2 className="text-4xl font-heading font-bold text-primary mb-4">Request Your Deployment</h2>
-            <p className="text-muted-foreground">Fill out the intel below. We'll analyze your property satellite data and send your custom plan within 24 hours.</p>
+            <p className="text-muted-foreground">Fill out the intel below. We'll analyze your property satellite data and send your custom plan.</p>
           </div>
 
           <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
