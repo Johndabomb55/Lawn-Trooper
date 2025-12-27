@@ -1,54 +1,19 @@
 // Integration with Resend for sending emails
 import { Resend } from 'resend';
 
-let connectionSettings: any;
-
-async function getCredentials() {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  console.log('Fetching Resend credentials from connector...');
-  console.log('Hostname:', hostname);
-  console.log('Token type:', xReplitToken ? (xReplitToken.startsWith('repl ') ? 'repl' : 'depl') : 'none');
-
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
-  }
-
-  const response = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  );
+// Use RESEND_API_KEY secret directly for reliability
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
   
-  const data = await response.json();
-  console.log('Connector response items count:', data.items?.length || 0);
-  
-  connectionSettings = data.items?.[0];
-
-  if (!connectionSettings || (!connectionSettings.settings?.api_key)) {
-    console.error('Resend connection settings missing or invalid');
-    throw new Error('Resend not connected');
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY secret is not configured');
   }
   
-  console.log('API key starts with:', connectionSettings.settings.api_key?.substring(0, 6) + '...');
-  console.log('From email:', connectionSettings.settings.from_email);
+  console.log('Using Resend API key from secret (starts with):', apiKey.substring(0, 6) + '...');
   
-  return {apiKey: connectionSettings.settings.api_key, fromEmail: connectionSettings.settings.from_email};
-}
-
-// WARNING: Never cache this client.
-// Access tokens expire, so a new client must be created each time.
-async function getUncachableResendClient() {
-  const { apiKey, fromEmail } = await getCredentials();
+  // Default from email - should be a verified domain in Resend
+  const fromEmail = 'noreply@lawntrooper.com';
+  
   return {
     client: new Resend(apiKey),
     fromEmail: fromEmail
@@ -68,7 +33,7 @@ export interface QuoteRequestData {
 }
 
 export async function sendQuoteEmails(data: QuoteRequestData) {
-  const { client, fromEmail } = await getUncachableResendClient();
+  const { client, fromEmail } = getResendClient();
 
   // Format add-ons list
   const addOnsText = data.addOns.length > 0 
