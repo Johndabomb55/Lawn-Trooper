@@ -79,11 +79,14 @@ import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
-import imgXmasPremium from "@assets/stock_images/professional_christm_83426922.jpg";
+import imgXmasPremium from "@assets/stock_images/christmas_lights_on__eb18a0e8.jpg";
 import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
 import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
-import imgTrashBinWash from "@assets/stock_images/worker_pressure_wash_312170c4.jpg";
-import imgPineStrawInstall from "@assets/stock_images/landscaper_installin_2c9acf87.jpg";
+import imgTrashBinWash from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
+import imgPineStrawInstall from "@assets/stock_images/worker_spreading_pin_0a485d21.jpg";
+import imgAlabamaYard1 from "@assets/stock_images/beautiful_southern_a_c982769e.jpg";
+import imgAlabamaYard2 from "@assets/stock_images/beautiful_southern_a_1db009dc.jpg";
+import imgAlabamaYard3 from "@assets/stock_images/beautiful_southern_a_73724127.jpg";
 import imgSmallYard1 from "@assets/generated_images/athens_al_home_with_pansies.png";
 import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
 import imgSmallYard3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
@@ -738,6 +741,33 @@ export default function LandingPage() {
               Transparent pricing. Simple annual plans. No hidden fees.
             </p>
           </div>
+          
+          {/* Alabama Yards Gallery */}
+          <div className="mb-16">
+            <h3 className="text-center text-xl font-bold text-white mb-6" style={{ textShadow: '-1px -1px 0 #15803d, 1px -1px 0 #15803d, -1px 1px 0 #15803d, 1px 1px 0 #15803d' }}>
+              Examples of Tennessee Valley Yards We Maintain
+            </h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
+                <img src={imgAlabamaYard1} alt="Beautiful Alabama Home with Landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
+                  <span className="text-white text-sm font-bold">Madison, AL - Executive Plan</span>
+                </div>
+              </div>
+              <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
+                <img src={imgAlabamaYard2} alt="Southern Home Front Yard" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
+                  <span className="text-white text-sm font-bold">Huntsville, AL - Premium Plan</span>
+                </div>
+              </div>
+              <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
+                <img src={imgAlabamaYard3} alt="Landscaped Front Yard with Flowers" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
+                  <span className="text-white text-sm font-bold">Athens, AL - Basic Plan</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             {PLANS.map((plan) => (
@@ -1295,8 +1325,8 @@ export default function LandingPage() {
                   <div className="grid gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="photos">Yard Photos</Label>
-                      <Input id="photos" type="file" accept="image/*" multiple className="cursor-pointer" />
-                      <p className="text-[0.8rem] text-muted-foreground">Upload photos of your yard to help us quote faster.</p>
+                      <Input id="photos" type="file" accept="image/*" multiple className="cursor-pointer" disabled />
+                      <p className="text-[0.8rem] text-muted-foreground">Photo upload coming soon! For now, you can text photos to us after submitting your quote request or share them during your consultation.</p>
                     </div>
 
                     <FormField
@@ -1672,7 +1702,6 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="absolute -inset-4 bg-accent/10 rounded-xl transform rotate-3"></div>
               <img 
                 src={heroDiverseCrew} 
                 alt="Lawn Trooper Crew" 
