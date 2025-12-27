@@ -332,7 +332,7 @@ export default function LandingPage() {
     
     toast({
       title: "Simulation Successful! 🫡",
-      description: "This is a prototype. In the live version, this data will be emailed to jclaxtonlandscapes@gmail.com and saved to the database.",
+      description: "This is a prototype. In the live version, this data will be emailed to lawntrooperllc@gmail.com and saved to the database.",
       duration: 5000,
     });
     
@@ -428,6 +428,38 @@ export default function LandingPage() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
+            {estimatedPrice && (
+              <div className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded border border-green-200 animate-in fade-in slide-in-from-top-2">
+                Estimate: ${estimatedPrice}/mo 
+                {(() => {
+                   const termMonths = discounts.agreement === "2year" ? 24 : 12;
+                   let freeMonths = 0;
+                   if (discounts.agreement === "1year") freeMonths = 1;
+                   if (discounts.agreement === "2year") freeMonths = 3;
+                   
+                   const billableMonths = termMonths - freeMonths;
+                   const basePrice = estimatedPrice || 0;
+                   const standardTotal = basePrice * termMonths;
+                   const billableBaseCost = basePrice * billableMonths;
+                   
+                   let percentOff = 0;
+                   if (discounts.payFull) {
+                     percentOff += discounts.agreement === "2year" ? 0.15 : 0.10;
+                   }
+                   if (discounts.veteran) percentOff += 0.05;
+                   if (discounts.senior) percentOff += 0.05;
+                   if (discounts.renter) percentOff += 0.05;
+                   
+                   const finalTotal = billableBaseCost * (1 - percentOff);
+                   const totalSavings = standardTotal - finalTotal;
+                   
+                   if (totalSavings > 0) {
+                     return <span className="ml-1 text-green-700"> (Save ${totalSavings.toFixed(0)})</span>
+                   }
+                   return null;
+                })()}
+              </div>
+            )}
             <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
@@ -503,7 +535,7 @@ export default function LandingPage() {
                 Instant Pricing
               </h1>
               <h2 className="text-xl md:text-2xl font-serif font-bold text-white/90 uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-2 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30 max-w-3xl leading-relaxed">
-                Total landscape maintenance plans for under-1-acre neighborhood yards starting at $129/month
+                Total landscape maintenance plans for under-1-acre neighborhood yards starting at $169/month
               </h2>
             </div>
             
@@ -673,7 +705,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 text-center">
           <div className="inline-block bg-primary/5 border border-primary/10 rounded-lg px-8 py-4">
             <h2 className="text-xl md:text-2xl font-heading font-bold text-primary mb-1">
-              Lawn Trooper — 25+ years serving North Alabama. 100+ beautification awards.
+              Lawn Trooper — 25+ years serving the Tennessee Valley. 100+ beautification awards.
             </h2>
             <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest mb-2">
               Military-level reliability. Premium results.

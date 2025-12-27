@@ -32,7 +32,7 @@ export const PLANS = [
       "Weed Control: 2 pre-emergent weed control treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
-      `Bush Trimming: 1 bush trimming per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `<span class='font-bold text-primary'>Bush Trimming: 1 bush trimming per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”</span>`,
       "Light Spring & Fall Cleanup: Pull out dead seasonal plants, cut back pampas grasses, lillies, and other seasonal and ornamental growth for excellent early season curb appeal.",
       "Small Tree & Low-Hanging Branch Trimming: Not Included",
       "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal"
@@ -60,8 +60,9 @@ export const PLANS = [
       "Weed Control: 2 pre-emergent weed control treatments + weed killer",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
-      `Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `<span class='font-bold text-primary'>Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”</span>`,
       "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
@@ -90,8 +91,9 @@ export const PLANS = [
       "Weed Control: 6 weed treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
-      `Bush Trimming: 3 bush trimmings per year (Unlimited) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `<span class='font-bold text-accent'>Bush Trimming: 3 bush trimmings per year (Unlimited Bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”</span>`,
       "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
