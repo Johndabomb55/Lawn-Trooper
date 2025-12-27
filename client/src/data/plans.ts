@@ -38,7 +38,8 @@ export const PLANS = [
       "Weed-Free Guarantee: Not Included (Executive only)",
       "Off-season Bi-weekly Yard Checks: Not Included (Premium & Executive)",
       "Small Tree & Low-Hanging Branch Trimming: Not Included (Premium & Executive)",
-      "Free Customized Landscaping Plan: Not Included (Premium & Executive)"
+      "Free Customized Landscaping Plan: Not Included (Premium & Executive)",
+      "Multiple Trash Cans Cleaning: Not Included (Executive only)"
     ],
     allowance: {
       basic: 1,
@@ -68,7 +69,8 @@ export const PLANS = [
       "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
-      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
+      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
+      "Multiple Trash Cans Cleaning: Not Included (Executive only)"
     ],
     allowance: {
       basic: 2,
@@ -99,7 +101,8 @@ export const PLANS = [
       "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
-      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
+      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
+      "<span class='font-bold text-accent'>Multiple Trash Cans Cleaning: Monthly cleaning for up to 3 cans included</span>"
     ],
     allowance: {
       basic: 2,
