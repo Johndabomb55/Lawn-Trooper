@@ -11,11 +11,15 @@ async function getCredentials() {
     ? 'depl ' + process.env.WEB_REPL_RENEWAL 
     : null;
 
+  console.log('Fetching Resend credentials from connector...');
+  console.log('Hostname:', hostname);
+  console.log('Token type:', xReplitToken ? (xReplitToken.startsWith('repl ') ? 'repl' : 'depl') : 'none');
+
   if (!xReplitToken) {
     throw new Error('X_REPLIT_TOKEN not found for repl/depl');
   }
 
-  connectionSettings = await fetch(
+  const response = await fetch(
     'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
     {
       headers: {
@@ -23,11 +27,21 @@ async function getCredentials() {
         'X_REPLIT_TOKEN': xReplitToken
       }
     }
-  ).then(res => res.json()).then(data => data.items?.[0]);
+  );
+  
+  const data = await response.json();
+  console.log('Connector response items count:', data.items?.length || 0);
+  
+  connectionSettings = data.items?.[0];
 
-  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
+  if (!connectionSettings || (!connectionSettings.settings?.api_key)) {
+    console.error('Resend connection settings missing or invalid');
     throw new Error('Resend not connected');
   }
+  
+  console.log('API key starts with:', connectionSettings.settings.api_key?.substring(0, 6) + '...');
+  console.log('From email:', connectionSettings.settings.from_email);
+  
   return {apiKey: connectionSettings.settings.api_key, fromEmail: connectionSettings.settings.from_email};
 }
 
