@@ -11,8 +11,9 @@ function getResendClient() {
   
   console.log('Using Resend API key from secret (starts with):', apiKey.substring(0, 6) + '...');
   
-  // Default from email - should be a verified domain in Resend
-  const fromEmail = 'noreply@lawntrooper.com';
+  // Use Resend's shared domain for testing (until lawntrooper.com is verified)
+  // Change to 'noreply@lawntrooper.com' once domain is verified in Resend
+  const fromEmail = 'Lawn Trooper <onboarding@resend.dev>';
   
   return {
     client: new Resend(apiKey),
@@ -40,10 +41,11 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
     ? data.addOns.join(', ') 
     : 'None selected';
 
-  // Email to Lawn Trooper
+  // Email to Lawn Trooper (using verified email until domain is set up)
+  // Change to 'lawntrooperllc@gmail.com' once domain is verified
   const businessEmail = {
     from: fromEmail,
-    to: 'lawntrooperllc@gmail.com',
+    to: 'jclaxtonlandscapes@gmail.com',
     subject: `New Quote Request from ${data.name}`,
     html: `
       <h2>New Quote Request</h2>
