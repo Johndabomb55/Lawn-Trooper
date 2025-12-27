@@ -9,7 +9,7 @@ export const GLOBAL_CONSTANTS = {
   BUSH_TRIMMING_DISPOSAL: "All clippings removed and disposed for clean curb appeal and pristine flower beds.",
   AI_SAVINGS_MESSAGE: "We are lowering costs with new AI + 2026 technology and passing savings on to customers.",
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
-  EXISTING_CUSTOMER_LOYALTY: "Our Loyalty Club Customers: Are you shocked after all these years that your prices are dropping?! Sign into your account with your customer login for your loyalty discount based on your years of service. (Must complete 12 months to get a loyalty discount).",
+  EXISTING_CUSTOMER_LOYALTY: "Our Loyalty Club Customers: Sign into your account with your customer login for your loyalty discount based on your years of service. (Must complete 12 months to get a loyalty discount).",
   CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it’s not the right fit, provide a full refund.",
   AI_TECH_EXPLANATION: "We sometimes will deploy robotic AI vision, LiDAR sensor, satellite-linked mowing units to achieve the best cut quality and highest efficiency at no additional expense to the customer. Lawn Trooper reserves the right to choose which robot will be best for each property, although customer can weigh in of course."
 };
@@ -196,8 +196,8 @@ export const PREMIUM_ADDONS = [
   },
   {
     id: "bimonthly_trash_bin_cleaning",
-    label: "Bi-Monthly Trash Bin Cleaning",
-    description: "Cleaning and sanitizing of trash bins every other month"
+    label: "Monthly Trash Bin Cleaning",
+    description: "Cleaning and sanitizing of trash bins every month"
   },
   {
     id: "christmas_lights_premium",
