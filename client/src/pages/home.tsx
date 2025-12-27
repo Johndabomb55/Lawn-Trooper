@@ -255,7 +255,6 @@ export default function LandingPage() {
   };
 
   const handleAddOnToggle = (id: string, isPremium: boolean) => {
-    const limits = getPlanAllowance(selectedPlan, discounts.payFull);
     const currentAddOns = form.getValues("addOns");
     const isCurrentlySelected = currentAddOns.includes(id);
     
@@ -265,64 +264,17 @@ export default function LandingPage() {
       // Removing is always allowed
       form.setValue("addOns", currentAddOns.filter(item => item !== id));
     } else {
-      // Adding requires check
-      const { basicCount, premiumCount } = calculateCounts(currentAddOns);
-      
-      // Points System: Basic = 1, Premium = 2
-      // Allowance: Plan Basic + (Plan Premium * 2)
-      // Current Usage: Current Basic + (Current Premium * 2)
-      // New Item Cost: isPremium ? 2 : 1
-      
-      const totalAllowancePoints = limits.basic + (limits.premium * 2);
-      const currentUsagePoints = basicCount + (premiumCount * 2);
-      const newItemCost = isPremium ? 2 : 1;
-      
-      if (currentUsagePoints + newItemCost > totalAllowancePoints) {
-          // Rule Change: Allow unlimited BASIC add-ons at $15/month each
-          if (isPremium) {
-            // Still restrict premium add-ons if they go over limit (unless user trades basics? No, keep simple)
-             const msg = `Not enough allowance for this Premium add-on. (Cost: 2 Basic slots or 1 Premium slot).`;
-             setSlotError(msg);
-             setTimeout(() => setSlotError(null), 3000);
-             return;
-          }
-          // If Basic, allow it (it will cost extra)
-      }
-
+      // Adding is always allowed (pay extra if needed)
       form.setValue("addOns", [...currentAddOns, id]);
     }
   };
 
   // Reset add-ons when plan changes or payFull changes (as it affects allowance)
   useEffect(() => {
-    const currentAddOns = form.getValues("addOns");
-    const limits = getPlanAllowance(selectedPlan, discounts.payFull);
-    
-    const { basicCount, premiumCount } = calculateCounts(currentAddOns);
-    const totalUsage = basicCount + (premiumCount * 2);
-    const totalAllowance = limits.basic + (limits.premium * 2);
-    
-    // Only reset if we have excess Premium items or the usage is somehow invalid?
-    // With the new "paid extra basic" rule, total usage CAN exceed allowance if excess is basic.
-    // So we should only trim if we have excess PREMIUM items or if the "points" math implies we kept a Premium we shouldn't have.
-    // Simplified logic: If premium count > allowed premium slots (assuming basics = 0), then trim?
-    // Actually, let's keep it lenient. If they switch plans, just clear to avoid complex "what is paid extra" logic confusion.
-    // It's safer to clear so the user re-selects based on new limits.
-    
-    if (totalUsage > totalAllowance) {
-       // Check if excess is purely basic?
-       // If I have 1 premium allowance, and I have 1 premium + 1 basic selected.
-       // Usage = 3, Allowance = 2. Excess = 1.
-       // This is allowed (basic is paid).
-       
-       // If I have 1 premium allowance, and I have 2 premium selected.
-       // Usage = 4, Allowance = 2. Excess = 2.
-       // This is NOT allowed (extra premium not supported).
-       
-       // Let's check max possible allowance with infinite basic?
-       // Let's just clear for now to be safe and consistent with previous behavior.
-       form.setValue("addOns", []);
-    }
+    // Only clear if switching plans to avoid confusion, but since we allow overage now,
+    // we don't strictly need to clear. However, to keep it clean when switching contexts:
+    // Actually, let's NOT clear automatically. User can manually remove.
+    // This allows them to keep selections when toggling Pay Full (which changes allowance).
   }, [selectedPlan, form, discounts.payFull]);
 
 
@@ -371,16 +323,24 @@ export default function LandingPage() {
   const basePricePlan = estimatedPrice || 0;
   
   // Extra Add-ons Logic
-  // 1. Get Allowance
   const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-  const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
-  // 2. Get Usage
-  const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-  const currentUsagePoints = basicCount + (premiumCount * 2);
-  // 3. Diff
-  const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
-  // 4. Cost (1 point = 1 basic = $15)
-  const extraAddOnMonthlyCost = excessPoints * 15;
+  const { basicCount: selectedBasic, premiumCount: selectedPremium } = calculateCounts(selectedAddOns);
+
+  // Determine Extra Items
+  // 1. Calculate extra Premium (cannot be covered by Basic allowance)
+  const extraPremiumCount = Math.max(0, selectedPremium - allowance.premium);
+  
+  // 2. Calculate unused Premium slots (can cover Basic items? 1 Premium Slot = 2 Basic Items)
+  const unusedPremiumSlots = Math.max(0, allowance.premium - selectedPremium);
+  
+  // 3. Calculate effective Basic allowance (Base + converted Premium)
+  const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
+  
+  // 4. Calculate extra Basic
+  const extraBasicCount = Math.max(0, selectedBasic - effectiveBasicAllowance);
+  
+  // 5. Calculate Cost ($40/Premium, $15/Basic)
+  const extraAddOnMonthlyCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
   
   const basePrice = basePricePlan + extraAddOnMonthlyCost;
   
@@ -396,9 +356,14 @@ export default function LandingPage() {
   }
   if (discounts.veteran) percentOff += 0.05;
   if (discounts.senior) percentOff += 0.05;
+  if (discounts.renter) percentOff += 0.05;
   
   const finalTotalCost = billableBaseCost * (1 - percentOff);
   const discountedMonthlyPayment = finalTotalCost / termMonths;
+  
+  // For Savings Display
+  const standardTotalCost = basePrice * termMonths;
+  const totalSavings = standardTotalCost - finalTotalCost;
 
   return (
     <TooltipProvider>
@@ -428,36 +393,12 @@ export default function LandingPage() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            {estimatedPrice && (
+            {estimatedPrice !== null && (
               <div className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded border border-green-200 animate-in fade-in slide-in-from-top-2">
-                Estimate: ${estimatedPrice}/mo 
-                {(() => {
-                   const termMonths = discounts.agreement === "2year" ? 24 : 12;
-                   let freeMonths = 0;
-                   if (discounts.agreement === "1year") freeMonths = 1;
-                   if (discounts.agreement === "2year") freeMonths = 3;
-                   
-                   const billableMonths = termMonths - freeMonths;
-                   const basePrice = estimatedPrice || 0;
-                   const standardTotal = basePrice * termMonths;
-                   const billableBaseCost = basePrice * billableMonths;
-                   
-                   let percentOff = 0;
-                   if (discounts.payFull) {
-                     percentOff += discounts.agreement === "2year" ? 0.15 : 0.10;
-                   }
-                   if (discounts.veteran) percentOff += 0.05;
-                   if (discounts.senior) percentOff += 0.05;
-                   if (discounts.renter) percentOff += 0.05;
-                   
-                   const finalTotal = billableBaseCost * (1 - percentOff);
-                   const totalSavings = standardTotal - finalTotal;
-                   
-                   if (totalSavings > 0) {
-                     return <span className="ml-1 text-green-700"> (Save ${totalSavings.toFixed(0)})</span>
-                   }
-                   return null;
-                })()}
+                Estimate: ${discountedMonthlyPayment.toFixed(0)}/mo 
+                {totalSavings > 0 && (
+                     <span className="ml-1 text-green-700"> (Save ${totalSavings.toFixed(0)})</span>
+                )}
               </div>
             )}
             <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
