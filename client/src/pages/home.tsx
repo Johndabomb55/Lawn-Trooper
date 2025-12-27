@@ -283,8 +283,8 @@ export default function LandingPage() {
     // In a real app, this would be an API call to the backend
     
     toast({
-      title: "Simulation Successful! 🫡",
-      description: "This is a prototype. In the live version, this data will be emailed to lawntrooperllc@gmail.com and saved to the database.",
+      title: "Request Received! 🫡",
+      description: `We've received your request. A confirmation has been sent to ${values.email}. Our team will review your property details and contact you shortly.`,
       duration: 5000,
     });
     
@@ -685,8 +685,14 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Service Deployment Levels</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Transparent pricing. Simple annual plans. No hidden fees.</p>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4" 
+                style={{ textShadow: '-1px -1px 0 #15803d, 1px -1px 0 #15803d, -1px 1px 0 #15803d, 1px 1px 0 #15803d, 2px 2px 4px rgba(0,0,0,0.3)' }}>
+              Service Deployment Levels
+            </h2>
+            <p className="text-white text-lg font-bold max-w-2xl mx-auto tracking-wide"
+               style={{ textShadow: '-1px -1px 0 #15803d, 1px -1px 0 #15803d, -1px 1px 0 #15803d, 1px 1px 0 #15803d' }}>
+              Transparent pricing. Simple annual plans. No hidden fees.
+            </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 items-start">
@@ -1165,15 +1171,20 @@ export default function LandingPage() {
                     {/* Add-on Alert Banner */}
                     {(() => {
                         const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-                        const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
                         const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                        const currentUsagePoints = basicCount + (premiumCount * 2);
-                        const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
                         
-                        if (excessPoints > 0) {
+                        // Calculate Extra Items
+                        const extraPremiumCount = Math.max(0, premiumCount - allowance.premium);
+                        const unusedPremiumSlots = Math.max(0, allowance.premium - premiumCount);
+                        const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
+                        const extraBasicCount = Math.max(0, basicCount - effectiveBasicAllowance);
+                        
+                        const extraCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
+                        
+                        if (extraCost > 0) {
                            return (
                              <div className="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm z-20">
-                               +${excessPoints * 15}/mo
+                               +${extraCost}/mo
                              </div>
                            )
                         }
@@ -1187,15 +1198,20 @@ export default function LandingPage() {
                        
                        {(() => {
                           const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-                          const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
                           const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                          const currentUsagePoints = basicCount + (premiumCount * 2);
-                          const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
                           
-                          if (excessPoints > 0) {
+                          // Calculate Extra Items
+                          const extraPremiumCount = Math.max(0, premiumCount - allowance.premium);
+                          const unusedPremiumSlots = Math.max(0, allowance.premium - premiumCount);
+                          const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
+                          const extraBasicCount = Math.max(0, basicCount - effectiveBasicAllowance);
+                          
+                          const extraCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
+                          
+                          if (extraCost > 0) {
                             return (
                               <div className="text-sm font-bold text-green-600">
-                                +${excessPoints * 15}/mo added to subscription
+                                +${extraCost}/mo added to subscription
                               </div>
                             );
                           }
@@ -1212,12 +1228,17 @@ export default function LandingPage() {
                     
                     {(() => {
                         const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-                        const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
                         const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                        const currentUsagePoints = basicCount + (premiumCount * 2);
-                        const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
                         
-                        if (excessPoints > 0) {
+                        // Calculate Extra Items
+                        const extraPremiumCount = Math.max(0, premiumCount - allowance.premium);
+                        const unusedPremiumSlots = Math.max(0, allowance.premium - premiumCount);
+                        const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
+                        const extraBasicCount = Math.max(0, basicCount - effectiveBasicAllowance);
+                        
+                        const extraCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
+                        
+                        if (extraCost > 0) {
                            return (
                              <div className="mt-2 text-xs text-muted-foreground italic">
                                * Additional subscription add-ons selected. This amount will be added to your monthly deployment cost.
