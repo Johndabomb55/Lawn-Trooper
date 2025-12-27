@@ -122,13 +122,33 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
   };
 
   // Send both emails
-  const [businessResult, customerResult] = await Promise.all([
-    client.emails.send(businessEmail),
-    client.emails.send(customerEmail)
-  ]);
+  try {
+    console.log('Attempting to send emails via Resend...');
+    console.log('From email:', fromEmail);
+    console.log('To business:', businessEmail.to);
+    console.log('To customer:', customerEmail.to);
+    
+    const [businessResult, customerResult] = await Promise.all([
+      client.emails.send(businessEmail),
+      client.emails.send(customerEmail)
+    ]);
 
-  return {
-    businessEmailSent: businessResult.data !== null,
-    customerEmailSent: customerResult.data !== null
-  };
+    console.log('Business email result:', JSON.stringify(businessResult, null, 2));
+    console.log('Customer email result:', JSON.stringify(customerResult, null, 2));
+
+    if (businessResult.error) {
+      console.error('Business email error:', businessResult.error);
+    }
+    if (customerResult.error) {
+      console.error('Customer email error:', customerResult.error);
+    }
+
+    return {
+      businessEmailSent: businessResult.data !== null && !businessResult.error,
+      customerEmailSent: customerResult.data !== null && !customerResult.error
+    };
+  } catch (error) {
+    console.error('Email sending failed with exception:', error);
+    throw error;
+  }
 }
