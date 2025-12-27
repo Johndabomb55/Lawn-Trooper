@@ -1,7 +1,7 @@
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
   cutoffDate: "2026-01-01T23:59:59", // Sale ends Jan 1st at 11:59 PM (end of day)
-  saleLabel: "Anniversary Sale Ends January 1st"
+  saleLabel: "25th Anniversary Sale + AI Cost Reductions Ends January 1st"
 };
 
 export const GLOBAL_CONSTANTS = {

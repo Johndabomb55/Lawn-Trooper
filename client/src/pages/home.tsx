@@ -374,7 +374,7 @@ export default function LandingPage() {
            <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 h-10">
               <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
            </div>
-           <span className="uppercase tracking-wide md:pl-16">🎉 Celebrating 25 years of service with our biggest sale on maintenance plans ever! 🎉</span>
+           <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Sale + AI Cost Reductions! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
            <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 1, 2026</span> to lock in your pricing for up to 2 years!</span>
            <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
@@ -397,7 +397,10 @@ export default function LandingPage() {
               <div className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded border border-green-200 animate-in fade-in slide-in-from-top-2">
                 Estimate: ${discountedMonthlyPayment.toFixed(0)}/mo 
                 {totalSavings > 0 && (
-                     <span className="ml-1 text-green-700"> (Save ${totalSavings.toFixed(0)})</span>
+                     <span className="ml-1 text-green-700"> 
+                       <span className="font-extrabold mr-1">({(percentOff * 100).toFixed(0)}% OFF)</span>
+                       <span className="opacity-80">Save ${totalSavings.toFixed(0)}</span>
+                     </span>
                 )}
               </div>
             )}
@@ -482,7 +485,7 @@ export default function LandingPage() {
             
             <div className="mt-6 flex flex-col items-center gap-4">
                <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
-                 25 year anniversary sale: get up to 3 months free
+                 25th Anniversary Sale + AI Cost Reductions: get up to 3 months free
                </div>
                
                <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md mx-auto justify-center">
@@ -554,7 +557,7 @@ export default function LandingPage() {
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
                  <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl text-center">
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
-                   🎉 25th Anniversary Celebration Event 🎉
+                   🎉 25th Anniversary Sale + AI Cost Reductions 🎉
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
