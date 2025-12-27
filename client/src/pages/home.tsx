@@ -466,9 +466,10 @@ export default function LandingPage() {
         </div>
 
         {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 fixed">
            <img src={bgLandscape} alt="Lawn Trooper Team" className="w-full h-full object-cover brightness-[0.65]" />
-           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background"></div>
+           {/* Removed fade to background so image stays visible */}
+           <div className="absolute inset-0 bg-black/50"></div>
            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         </div>
         
@@ -1285,7 +1286,8 @@ export default function LandingPage() {
                         const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
                         const currentUsagePoints = basicCount + (premiumCount * 2);
                         const isChecked = selectedAddOns.includes(addon.id);
-                        const isDisabled = !isChecked && (currentUsagePoints + 2 > totalAllowancePoints);
+                        // Allow overage (paid extras)
+                        const isDisabled = false; 
 
                         return (
                           <div key={addon.id} className={`
