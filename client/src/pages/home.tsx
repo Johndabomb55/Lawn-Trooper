@@ -222,7 +222,7 @@ export default function LandingPage() {
   const selectedAddOns = form.watch("addOns");
 
   // State for new questions
-  const [maintenanceFreq, setMaintenanceFreq] = useState<string>("biweekly"); // Default to biweekly for Basic
+  // const [maintenanceFreq, setMaintenanceFreq] = useState<string>("biweekly"); // Removed as per request
 
   // Calculate Price Effect
   useEffect(() => {
@@ -234,14 +234,14 @@ export default function LandingPage() {
     }
   }, [selectedPlan, selectedYardSize]);
 
-  // Maintenance Frequency Logic - Enforce based on plan
-  useEffect(() => {
-     if (selectedPlan === "basic") {
-        setMaintenanceFreq("biweekly");
-     } else {
-        setMaintenanceFreq("weekly");
-     }
-  }, [selectedPlan]);
+  // Maintenance Frequency Logic - Removed
+  // useEffect(() => {
+  //    if (selectedPlan === "basic") {
+  //       setMaintenanceFreq("biweekly");
+  //    } else {
+  //       setMaintenanceFreq("weekly");
+  //    }
+  // }, [selectedPlan]);
 
   // Calculate counts
   const calculateCounts = (currentAddOns: string[]) => {
@@ -474,7 +474,7 @@ export default function LandingPage() {
                     WebkitTextFillColor: 'transparent',
                     filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))'
                   }}>
-                Instant Pricing in 30 Seconds
+                Instant Pricing
               </h1>
               <h2 className="text-xl md:text-2xl font-serif font-bold text-white/90 uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-2 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30 max-w-3xl leading-relaxed">
                 Total landscape maintenance plans for under-1-acre neighborhood yards starting at $129/month
@@ -1082,26 +1082,6 @@ export default function LandingPage() {
                     />
                    </div>
 
-                   {/* Question 2: Maintenance Frequency */}
-                   <div className="space-y-3">
-                     <Label className="text-base font-bold text-foreground">Maintenance Frequency</Label>
-                     <RadioGroup 
-                        value={maintenanceFreq} 
-                        onValueChange={setMaintenanceFreq}
-                        className="flex gap-4"
-                     >
-                        <div className={`flex items-center space-x-2 ${selectedPlan === 'basic' ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                          <RadioGroupItem value="weekly" id="freq-weekly" disabled={selectedPlan === 'basic'} />
-                          <Label htmlFor="freq-weekly" className={`font-medium ${selectedPlan === 'basic' ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
-                            Weekly {selectedPlan === 'basic' && <span className="text-xs text-destructive ml-1">(Not avail. with Basic)</span>}
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="biweekly" id="freq-biweekly" />
-                          <Label htmlFor="freq-biweekly" className="font-medium cursor-pointer">Bi-Weekly</Label>
-                        </div>
-                     </RadioGroup>
-                   </div>
                 </div>
 
                 {/* 3. Plan Selection */}

@@ -18,9 +18,9 @@ export const PLANS = [
   {
     id: "basic",
     name: "Basic Patrol",
-    price: 129,
-    oldPrice: 149,
-    priceLabel: "Starts at $129/mo",
+    price: 169,
+    oldPrice: 199,
+    priceLabel: "Starts at $169/mo",
     description: "Includes: 1 Basic Add-on • 0 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Bi-Weekly" },
@@ -32,7 +32,7 @@ export const PLANS = [
       "Weed Control: 2 pre-emergent weed control treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
-      `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Small Tree & Low-Hanging Branch Trimming: Not Included",
       "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal"
     ],
@@ -45,21 +45,21 @@ export const PLANS = [
   {
     id: "premium",
     name: "Premium Patrol",
-    price: 199,
-    oldPrice: 249,
-    priceLabel: "Starts at $199/mo",
-    description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 1 Premium Add-on",
+    price: 299,
+    oldPrice: 349,
+    priceLabel: "Starts at $299/mo",
+    description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 2 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "3 Treatments" },
-      { label: "Add-ons", value: "3 Included" }
+      { label: "Add-ons", value: "4 Included" }
     ],
     features: [
       "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 3 weed control applications per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
-      `Bush Trimming: 2 bush trimmings per year + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
@@ -67,28 +67,28 @@ export const PLANS = [
     ],
     allowance: {
       basic: 2,
-      premium: 1
+      premium: 2
     },
-    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On"
+    allowanceLabel: "2 Basic Add-Ons + 2 Premium Add-Ons"
   },
   {
     id: "executive",
     name: "Executive Patrol",
-    price: 299,
-    oldPrice: 369,
-    priceLabel: "Starts at $299/mo",
-    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons • 3 Premium Add-ons",
+    price: 399,
+    oldPrice: 479,
+    priceLabel: "Starts at $399/mo",
+    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons • 4 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "6 Treatments" },
-      { label: "Add-ons", value: "5 Included" }
+      { label: "Add-ons", value: "6 Included" }
     ],
     features: [
       "Mowing: Weekly mowing (top priority)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 6 weed treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
-      `Bush Trimming: 3 bush trimmings per year (scheduled by plant type and growth cycle) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `Bush Trimming: 3 bush trimmings per year (Unlimited) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
@@ -96,10 +96,10 @@ export const PLANS = [
     ],
     allowance: {
       basic: 2,
-      premium: 3
+      premium: 4
     },
-    allowanceLabel: "2 Basic Add-Ons + 3 Premium Add-Ons",
-    promoLabel: "Jan Promo: +1 Free Premium Add-on" // Logic handled via config but label kept here or derived
+    allowanceLabel: "2 Basic Add-Ons + 4 Premium Add-Ons",
+    promoLabel: "Jan Promo: +1 Free Basic Add-on" // Logic handled via config but label kept here or derived
   }
 ];
 
@@ -229,8 +229,8 @@ export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
     const cutoff = new Date(PROMO_CONFIG.cutoffDate);
     if (today < cutoff) {
        // Jan promo logic from before: +1 Free Premium Add-on
-       // If both apply, does user get +2? Let's assume yes as they are distinct reasons (Promo vs Payment Term)
-       premium += 1;
+       // New logic per user request: +1 Free Basic Add-on
+       basic += 1;
     }
   }
 
