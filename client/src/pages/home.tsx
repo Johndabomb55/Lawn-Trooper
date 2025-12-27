@@ -79,6 +79,11 @@ import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
+import imgXmasPremium from "@assets/stock_images/professional_christm_83426922.jpg";
+import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
+import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
+import imgTrashBinWash from "@assets/stock_images/worker_pressure_wash_312170c4.jpg";
+import imgPineStrawInstall from "@assets/stock_images/landscaper_installin_2c9acf87.jpg";
 import imgSmallYard1 from "@assets/generated_images/athens_al_home_with_pansies.png";
 import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
 import imgSmallYard3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
@@ -738,8 +743,14 @@ export default function LandingPage() {
             {PLANS.map((plan) => (
               <div 
                 key={plan.id}
-                className={`bg-card rounded-xl shadow-lg border border-border overflow-hidden ${plan.id === 'executive' ? 'border-2 border-primary relative transform md:-translate-y-4 shadow-xl' : ''}`}
+                className={`bg-card rounded-xl shadow-lg border border-border overflow-hidden relative ${plan.id === 'executive' ? 'border-2 border-primary transform md:-translate-y-4 shadow-xl' : ''}`}
               >
+                {/* Jan Promo Banner for Premium and Executive */}
+                {(plan.id === 'premium' || plan.id === 'executive') && plan.promoLabel && PROMO_CONFIG.executiveBonusEnabled && new Date() < new Date(PROMO_CONFIG.cutoffDate) && (
+                  <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-bl-lg shadow-md z-10 animate-pulse">
+                    {plan.promoLabel}
+                  </div>
+                )}
                 {plan.id === 'executive' && (
                   <div className="bg-primary text-primary-foreground text-center text-xs font-bold uppercase tracking-widest py-2">
                     Most Popular • Best Value
@@ -1235,6 +1246,43 @@ export default function LandingPage() {
                           </div>
                         );
                       })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Premium Add-on Image Gallery */}
+                  <div className="mt-8 pt-6 border-t border-border">
+                    <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-4">Premium Add-On Services Gallery</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                        <img src={imgXmasPremium} alt="Premium Christmas Lights Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                          <span className="text-white text-xs font-bold">Christmas Lights</span>
+                        </div>
+                      </div>
+                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                        <img src={imgSeasonalFlowers} alt="Seasonal Flower Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                          <span className="text-white text-xs font-bold">Seasonal Flowers</span>
+                        </div>
+                      </div>
+                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                        <img src={imgMulchInstall} alt="Brown Mulch Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                          <span className="text-white text-xs font-bold">Mulch Installation</span>
+                        </div>
+                      </div>
+                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                        <img src={imgTrashBinWash} alt="Pressure Washing Trash Bins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                          <span className="text-white text-xs font-bold">Trash Bin Cleaning</span>
+                        </div>
+                      </div>
+                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                        <img src={imgPineStrawInstall} alt="Pine Straw Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                          <span className="text-white text-xs font-bold">Pine Straw</span>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -148,8 +148,8 @@ export const BASIC_ADDONS = [
   },
   {
     id: "pine_straw_delivery_install_3yards",
-    label: "Pine Straw Delivery + Installation (Up to 3 Yards)",
-    description: "Fresh pine straw installed neatly in beds (Up to 3 Yards)"
+    label: "Pine Straw Delivery + Installation (Up to 4 Yards)",
+    description: "Fresh pine straw installed neatly in beds (Up to 4 Yards)"
   },
   {
     id: "basic_flower_install",
