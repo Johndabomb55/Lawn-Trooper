@@ -758,12 +758,6 @@ export default function LandingPage() {
                       <Check className="w-5 h-5 text-primary shrink-0" />
                       <span className="font-bold">{plan.allowanceLabel}</span>
                     </li>
-                    {plan.id === 'executive' && PROMO_CONFIG.executiveBonusEnabled && new Date() < new Date(PROMO_CONFIG.cutoffDate) && (
-                       <li className="flex items-start gap-3 text-sm text-accent font-bold">
-                         <Star className="w-5 h-5 fill-accent text-accent shrink-0" />
-                         <span>Jan Promo: +1 Free Premium Add-on</span>
-                       </li>
-                    )}
                   </ul>
                   <Button 
                     onClick={() => scrollToSection('quote')} 
@@ -1514,10 +1508,6 @@ export default function LandingPage() {
                                  onValueChange={(val) => setDiscounts(prev => ({ ...prev, agreement: val }))}
                                  className="flex flex-col gap-2"
                                >
-                                 <div className="flex items-center space-x-2">
-                                   <RadioGroupItem value="none" id="term-none" />
-                                   <Label htmlFor="term-none" className="text-sm font-medium">Month-to-Month (Standard)</Label>
-                                 </div>
                                  <div className="flex items-center space-x-2">
                                    <RadioGroupItem value="1year" id="term-1year" />
                                    <Label htmlFor="term-1year" className="text-sm font-medium flex-1 flex justify-between">

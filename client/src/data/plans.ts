@@ -5,7 +5,7 @@ export const PROMO_CONFIG = {
 };
 
 export const GLOBAL_CONSTANTS = {
-  YARD_ELIGIBILITY: "Anniversary Sale pricing applies to typical neighborhood yards. Larger yards require pics and custom quotes.",
+  YARD_ELIGIBILITY: "Yards larger than 1 acre or not in a neighborhood must submit pics for a custom quote.",
   BUSH_TRIMMING_DISPOSAL: "All clippings removed and disposed for clean curb appeal and pristine flower beds.",
   AI_SAVINGS_MESSAGE: "We are lowering costs with new AI + 2026 technology and passing savings on to customers.",
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
@@ -79,11 +79,11 @@ export const PLANS = [
     price: 399,
     oldPrice: 479,
     priceLabel: "Starts at $399/mo",
-    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons • 4 Premium Add-ons",
+    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons • 3 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "6 Treatments" },
-      { label: "Add-ons", value: "6 Included" }
+      { label: "Add-ons", value: "5 Included" }
     ],
     features: [
       "Mowing: Weekly mowing (top priority)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
@@ -98,9 +98,9 @@ export const PLANS = [
     ],
     allowance: {
       basic: 2,
-      premium: 4
+      premium: 3
     },
-    allowanceLabel: "2 Basic Add-Ons + 4 Premium Add-Ons",
+    allowanceLabel: "2 Basic Add-Ons + 3 Premium Add-Ons",
     promoLabel: "Jan Promo: +1 Free Basic Add-on" // Logic handled via config but label kept here or derived
   }
 ];
