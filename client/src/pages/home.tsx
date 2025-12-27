@@ -79,7 +79,7 @@ import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
-import imgXmasPremium from "@assets/stock_images/christmas_lights_on__eb18a0e8.jpg";
+import imgXmasPremium from "@assets/stock_images/christmas_lights_dec_f1cdfa38.jpg";
 import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
 import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
 import imgTrashBinWash from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
