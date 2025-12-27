@@ -33,6 +33,7 @@ export const PLANS = [
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
       `Bush Trimming: 1 bush trimming per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      "Light Spring & Fall Cleanup: Pull out dead seasonal plants, cut back pampas grasses, lillies, and other seasonal and ornamental growth for excellent early season curb appeal.",
       "Small Tree & Low-Hanging Branch Trimming: Not Included",
       "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal"
     ],
@@ -69,7 +70,8 @@ export const PLANS = [
       basic: 2,
       premium: 2
     },
-    allowanceLabel: "2 Basic Add-Ons + 2 Premium Add-Ons"
+    allowanceLabel: "2 Basic Add-Ons + 2 Premium Add-Ons",
+    promoLabel: "Jan Promo: +1 Free Basic Add-on"
   },
   {
     id: "executive",
@@ -136,8 +138,8 @@ export const BASIC_ADDONS = [
   },
   {
     id: "mulch_delivery_install_2yards",
-    label: "Mulch Delivery + Installation (Up to 2 Yards)",
-    description: "Fresh mulch install + light bed cleanup (Up to 2 Yards)"
+    label: "Mulch Delivery + Installation (Up to 3 Yards)",
+    description: "Fresh mulch install + light bed cleanup (Up to 3 Yards)"
   },
   {
     id: "pine_straw_delivery_install_3yards",
@@ -165,7 +167,7 @@ export const PREMIUM_ADDONS = [
   {
     id: "pest_control",
     label: "Quarterly Pest Control Applications",
-    description: "Exterior pest barrier treatments."
+    description: "Exterior pest barrier treatments + spray for mosquitos and bugs around perimeter (4x/year)."
   },
   {
     id: "aeration_overseeding",
@@ -173,14 +175,9 @@ export const PREMIUM_ADDONS = [
     description: "Relieves soil compaction / improves nutrient flow / thickens turf"
   },
   {
-    id: "spring_cleanup",
-    label: "Heavy Spring Cleanup",
-    description: "Removal of winter debris, trimming overgrown shrubs."
-  },
-  {
-    id: "fall_cleanup",
-    label: "Heavy Fall Cleanup",
-    description: "Removal of fall leaves/debris, trimming overgrown shrubs."
+    id: "pressure_washing",
+    label: "Driveway & Sidewalk Pressure Washing",
+    description: "Professional cleaning of driveway and front sidewalks."
   },
   {
     id: "mulch_delivery_install_over2yards",
@@ -221,20 +218,11 @@ export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
      premium += 1;
   }
   
-  // Also keep the existing promo logic if valid, or remove if superceded?
-  // User prompt said "If Executive Patrol + pay full term upfront → allow ONE additional Premium add-on."
-  // It didn't explicitly say remove the Jan Promo, but typically these might conflict.
-  // Assuming they stack or the Jan Promo is separate.
-  // Let's keep Jan Promo for now unless it conflicts.
-  // Actually, let's just stick to the requested rule for simplicity and correctness per recent prompt.
-  // Prompt 8) EXECUTIVE BONUS RULE: If Executive Patrol + pay full term upfront → allow ONE additional Premium add-on.
-  
-  if (planId === "executive" && PROMO_CONFIG.executiveBonusEnabled) {
+  if ((planId === "executive" || planId === "premium") && PROMO_CONFIG.executiveBonusEnabled) {
     const today = new Date();
     const cutoff = new Date(PROMO_CONFIG.cutoffDate);
     if (today < cutoff) {
-       // Jan promo logic from before: +1 Free Premium Add-on
-       // New logic per user request: +1 Free Basic Add-on
+       // Jan promo logic: +1 Free Basic Add-on
        basic += 1;
     }
   }

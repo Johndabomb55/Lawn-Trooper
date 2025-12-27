@@ -278,16 +278,15 @@ export default function LandingPage() {
       const newItemCost = isPremium ? 2 : 1;
       
       if (currentUsagePoints + newItemCost > totalAllowancePoints) {
-          // Construct specific error message based on what they tried to add
-          let msg = "";
+          // Rule Change: Allow unlimited BASIC add-ons at $15/month each
           if (isPremium) {
-             msg = `Not enough allowance for this Premium add-on. (Cost: 2 Basic slots or 1 Premium slot).`;
-          } else {
-             msg = `Not enough allowance for this Basic add-on.`;
+            // Still restrict premium add-ons if they go over limit (unless user trades basics? No, keep simple)
+             const msg = `Not enough allowance for this Premium add-on. (Cost: 2 Basic slots or 1 Premium slot).`;
+             setSlotError(msg);
+             setTimeout(() => setSlotError(null), 3000);
+             return;
           }
-           setSlotError(msg);
-           setTimeout(() => setSlotError(null), 3000);
-           return;
+          // If Basic, allow it (it will cost extra)
       }
 
       form.setValue("addOns", [...currentAddOns, id]);
@@ -299,20 +298,30 @@ export default function LandingPage() {
     const currentAddOns = form.getValues("addOns");
     const limits = getPlanAllowance(selectedPlan, discounts.payFull);
     
-    // Recalculate based on points to be safe, or just clear if over limit?
-    // Let's simple check: if total points used > total allowance, trim.
-    // Trimming logic: Remove Premiums first? Or just clear?
-    // Simple approach: Clear if over limit to avoid confusion.
-    
     const { basicCount, premiumCount } = calculateCounts(currentAddOns);
     const totalUsage = basicCount + (premiumCount * 2);
     const totalAllowance = limits.basic + (limits.premium * 2);
     
+    // Only reset if we have excess Premium items or the usage is somehow invalid?
+    // With the new "paid extra basic" rule, total usage CAN exceed allowance if excess is basic.
+    // So we should only trim if we have excess PREMIUM items or if the "points" math implies we kept a Premium we shouldn't have.
+    // Simplified logic: If premium count > allowed premium slots (assuming basics = 0), then trim?
+    // Actually, let's keep it lenient. If they switch plans, just clear to avoid complex "what is paid extra" logic confusion.
+    // It's safer to clear so the user re-selects based on new limits.
+    
     if (totalUsage > totalAllowance) {
-      // Try to save some? Na, just reset for simplicity or trim from end
-      // Let's try to keep what fits.
-      // Actually, simple reset is safer.
-      form.setValue("addOns", []);
+       // Check if excess is purely basic?
+       // If I have 1 premium allowance, and I have 1 premium + 1 basic selected.
+       // Usage = 3, Allowance = 2. Excess = 1.
+       // This is allowed (basic is paid).
+       
+       // If I have 1 premium allowance, and I have 2 premium selected.
+       // Usage = 4, Allowance = 2. Excess = 2.
+       // This is NOT allowed (extra premium not supported).
+       
+       // Let's check max possible allowance with infinite basic?
+       // Let's just clear for now to be safe and consistent with previous behavior.
+       form.setValue("addOns", []);
     }
   }, [selectedPlan, form, discounts.payFull]);
 
@@ -357,7 +366,24 @@ export default function LandingPage() {
   if (discounts.agreement === "2year") freeMonths = 3;
   
   const billableMonths = termMonths - freeMonths;
-  const basePrice = estimatedPrice || 0;
+  
+  // Calculate Base Price + Extra Add-ons
+  const basePricePlan = estimatedPrice || 0;
+  
+  // Extra Add-ons Logic
+  // 1. Get Allowance
+  const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
+  const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
+  // 2. Get Usage
+  const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
+  const currentUsagePoints = basicCount + (premiumCount * 2);
+  // 3. Diff
+  const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
+  // 4. Cost (1 point = 1 basic = $15)
+  const extraAddOnMonthlyCost = excessPoints * 15;
+  
+  const basePrice = basePricePlan + extraAddOnMonthlyCost;
+  
   const billableBaseCost = basePrice * billableMonths;
   
   let percentOff = 0;
@@ -1148,16 +1174,52 @@ export default function LandingPage() {
 
 
                   <div className="bg-muted/30 p-4 rounded-lg border border-border">
-                    <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
-                      <Info className="w-4 h-4 mt-0.5" />
-                      <span>{PLANS.find(p => p.id === selectedPlan)?.allowanceLabel}</span>
+                    <div className="flex items-center justify-between">
+                       <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
+                         <Info className="w-4 h-4 mt-0.5" />
+                         <span>{PLANS.find(p => p.id === selectedPlan)?.allowanceLabel}</span>
+                       </div>
+                       
+                       {(() => {
+                          const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
+                          const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
+                          const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
+                          const currentUsagePoints = basicCount + (premiumCount * 2);
+                          const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
+                          
+                          if (excessPoints > 0) {
+                            return (
+                              <div className="text-sm font-bold text-accent">
+                                +${excessPoints * 15}/mo (Extra Add-ons)
+                              </div>
+                            );
+                          }
+                          return null;
+                       })()}
                     </div>
+                    
                     {slotError && (
                       <div className="flex items-center gap-2 mt-2 text-destructive text-sm font-bold bg-destructive/10 p-2 rounded animate-pulse">
                         <AlertCircle className="w-4 h-4" />
                         {slotError}
                       </div>
                     )}
+                    
+                    {(() => {
+                        const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
+                        const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
+                        const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
+                        const currentUsagePoints = basicCount + (premiumCount * 2);
+                        const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
+                        
+                        if (excessPoints > 0) {
+                           return (
+                             <div className="mt-2 text-xs text-muted-foreground italic">
+                               * You have selected more add-ons than your plan allows. Each additional Basic add-on (or equivalent) adds <strong>$15/mo</strong> to your plan.
+                             </div>
+                           )
+                        }
+                    })()}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
@@ -1188,6 +1250,15 @@ export default function LandingPage() {
                                   </TooltipContent>
                                 </Tooltip>
                               </span>
+                              {selectedAddOns.includes(addon.id) && (() => {
+                                const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
+                                const totalPoints = allowance.basic + (allowance.premium * 2);
+                                const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
+                                // If this item was removed, would we be under limit?
+                                // This is tricky to show per-item "paid".
+                                // Instead, just show the total extra cost warning below.
+                                return null;
+                              })()}
                             </Label>
                           </div>
                           <div className="flex gap-3 pl-7">
