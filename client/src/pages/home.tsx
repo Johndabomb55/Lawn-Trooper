@@ -79,11 +79,11 @@ import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
-import imgXmasPremium from "@assets/stock_images/christmas_lights_dec_f1cdfa38.jpg";
+import imgXmasPremium from "@assets/stock_images/christmas_lights_on__eb18a0e8.jpg";
 import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
 import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
 import imgTrashBinWash from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
-import imgPineStrawInstall from "@assets/stock_images/brown_pine_straw_mul_50ac361a.jpg";
+import imgPineStrawInstall from "@assets/stock_images/man_trimming_hedges__4f4ec72f.jpg";
 import imgAlabamaYard1 from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
 import imgAlabamaYard2 from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
 import imgAlabamaYard3 from "@assets/stock_images/manicured_lawn_curb__32de1fed.jpg";
@@ -1309,9 +1309,9 @@ export default function LandingPage() {
                         </div>
                       </div>
                       <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                        <img src={imgPineStrawInstall} alt="Pine Straw Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <img src={imgPineStrawInstall} alt="Shrub Trimming" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                          <span className="text-white text-xs font-bold">Pine Straw</span>
+                          <span className="text-white text-xs font-bold">Shrub Trimming</span>
                         </div>
                       </div>
                     </div>
@@ -1894,10 +1894,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-      <div className="w-full h-[400px] relative">
-         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10"></div>
-         <img src={bgLandscape} alt="Beautiful Landscaped Yard" className="w-full h-full object-cover opacity-80" />
-      </div>
     </div>
     </TooltipProvider>
   );
