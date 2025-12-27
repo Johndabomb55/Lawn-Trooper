@@ -284,7 +284,7 @@ export default function LandingPage() {
     
     toast({
       title: "Request Received! 🫡",
-      description: `We've received your request. A confirmation has been sent to ${values.email}. Our team will review your property details and contact you shortly.`,
+      description: `Request sent to lawntrooperllc@gmail.com. A confirmation copy has also been sent to ${values.email}.`,
       duration: 5000,
     });
     
@@ -542,7 +542,7 @@ export default function LandingPage() {
                 { 
                   icon: Leaf, 
                   title: "3. Enjoy The Results", 
-                  desc: "Your yard stays always-ready. No scheduling calls, no equipment maintenance." 
+                  desc: "Your yard stays always-ready. Just set and forget. No scheduling calls, no equipment maintenance." 
                 }
               ].map((step, i) => (
                 <div 
