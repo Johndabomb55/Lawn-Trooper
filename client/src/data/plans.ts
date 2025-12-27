@@ -49,11 +49,11 @@ export const PLANS = [
     price: 299,
     oldPrice: 349,
     priceLabel: "Starts at $299/mo",
-    description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 2 Premium Add-ons",
+    description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 1 Premium Add-on",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "2 Treatments" },
-      { label: "Add-ons", value: "4 Included" }
+      { label: "Add-ons", value: "3 Included" }
     ],
     features: [
       "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
@@ -61,16 +61,16 @@ export const PLANS = [
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
       `Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
-      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
     ],
     allowance: {
       basic: 2,
-      premium: 2
+      premium: 1
     },
-    allowanceLabel: "2 Basic Add-Ons + 2 Premium Add-Ons",
+    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
     promoLabel: "Jan Promo: +1 Free Basic Add-on"
   },
   {
@@ -91,7 +91,7 @@ export const PLANS = [
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
       `Bush Trimming: 3 bush trimmings per year (Unlimited) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
-      "Spring & Fall Cleanup (Lite Included)<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"

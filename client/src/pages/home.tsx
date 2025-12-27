@@ -194,8 +194,8 @@ export default function LandingPage() {
   const [slotError, setSlotError] = useState<string | null>(null);
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
   const [discounts, setDiscounts] = useState({
-    payFull: false, // Previously 'yearly' payment
-    agreement: "none", // none, 1year, 2year
+    payFull: false,
+    agreement: "1year", // Default to 1year instead of none/month-to-month
     renter: false,
     veteran: false,
     senior: false
@@ -1168,12 +1168,29 @@ export default function LandingPage() {
                 {/* 4. Add-ons Selection */}
                 <div className="space-y-6">
                   <div className="flex flex-col gap-1 border-b border-border pb-2">
-                    <h3 className="text-lg font-bold font-heading uppercase text-primary">4. Choose Your Add-Ons</h3>
+                    <h3 className="text-lg font-bold font-heading uppercase text-primary">4. Subscription Add-Ons</h3>
                     <p className="text-sm text-muted-foreground">Included in your plan. Additional add-ons can be added during your consultation.</p>
                   </div>
 
 
-                  <div className="bg-muted/30 p-4 rounded-lg border border-border">
+                  <div className="bg-muted/30 p-4 rounded-lg border border-border relative overflow-hidden">
+                    {/* Add-on Alert Banner */}
+                    {(() => {
+                        const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
+                        const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
+                        const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
+                        const currentUsagePoints = basicCount + (premiumCount * 2);
+                        const excessPoints = Math.max(0, currentUsagePoints - totalAllowancePoints);
+                        
+                        if (excessPoints > 0) {
+                           return (
+                             <div className="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm z-20">
+                               +${excessPoints * 15}/mo
+                             </div>
+                           )
+                        }
+                    })()}
+
                     <div className="flex items-center justify-between">
                        <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
                          <Info className="w-4 h-4 mt-0.5" />
@@ -1189,8 +1206,8 @@ export default function LandingPage() {
                           
                           if (excessPoints > 0) {
                             return (
-                              <div className="text-sm font-bold text-accent">
-                                +${excessPoints * 15}/mo (Extra Add-ons)
+                              <div className="text-sm font-bold text-green-600">
+                                +${excessPoints * 15}/mo added to subscription
                               </div>
                             );
                           }
@@ -1215,7 +1232,7 @@ export default function LandingPage() {
                         if (excessPoints > 0) {
                            return (
                              <div className="mt-2 text-xs text-muted-foreground italic">
-                               * You have selected more add-ons than your plan allows. Each additional Basic add-on (or equivalent) adds <strong>$15/mo</strong> to your plan.
+                               * Additional subscription add-ons selected. This amount will be added to your monthly deployment cost.
                              </div>
                            )
                         }
