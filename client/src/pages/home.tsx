@@ -344,26 +344,35 @@ export default function LandingPage() {
   
   const basePrice = basePricePlan + extraAddOnMonthlyCost;
   
-  const billableBaseCost = basePrice * billableMonths;
-  
-  let percentOff = 0;
+  // Calculate Standard Total (No discounts, full term)
+  const standardTotalCost = basePrice * termMonths;
+
+  // Calculate Billed Amount (Base Price with just Percentage Discounts applied, ignoring free months for rate)
+  let discountMultiplier = 0;
   if (discounts.payFull) {
     if (discounts.agreement === "2year") {
-        percentOff += 0.15;
+        discountMultiplier += 0.15;
     } else {
-        percentOff += 0.10;
+        discountMultiplier += 0.10;
     }
   }
-  if (discounts.veteran) percentOff += 0.05;
-  if (discounts.senior) percentOff += 0.05;
-  if (discounts.renter) percentOff += 0.05;
+  if (discounts.veteran) discountMultiplier += 0.05;
+  if (discounts.senior) discountMultiplier += 0.05;
+  if (discounts.renter) discountMultiplier += 0.05;
   
-  const finalTotalCost = billableBaseCost * (1 - percentOff);
-  const discountedMonthlyPayment = finalTotalCost / termMonths;
+  const billedMonthlyRate = basePrice * (1 - discountMultiplier);
   
-  // For Savings Display
-  const standardTotalCost = basePrice * termMonths;
+  // Calculate Final Total Cost to Customer
+  // (Billed Rate * Billable Months)
+  // Free months are months where cost is 0, so we just pay the billed rate for the billable term.
+  const finalTotalCost = billedMonthlyRate * billableMonths;
+  
+  // Effective Monthly Payment (Amortized)
+  const effectiveMonthlyPayment = finalTotalCost / termMonths;
+  
+  // Savings
   const totalSavings = standardTotalCost - finalTotalCost;
+  const totalSavingsPercent = standardTotalCost > 0 ? (totalSavings / standardTotalCost) : 0;
 
   return (
     <TooltipProvider>
@@ -394,14 +403,22 @@ export default function LandingPage() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             {estimatedPrice !== null && (
-              <div className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded border border-green-200 animate-in fade-in slide-in-from-top-2">
-                Estimate: ${discountedMonthlyPayment.toFixed(0)}/mo 
-                {totalSavings > 0 && (
-                     <span className="ml-1 text-green-700"> 
-                       <span className="font-extrabold mr-1">({(percentOff * 100).toFixed(0)}% OFF)</span>
-                       <span className="opacity-80">Save ${totalSavings.toFixed(0)}</span>
-                     </span>
-                )}
+              <div className="flex flex-col items-end md:items-center">
+                <div className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded border border-green-200 animate-in fade-in slide-in-from-top-2 flex items-center gap-2">
+                  <span>
+                    Effective Avg: ${effectiveMonthlyPayment.toFixed(0)}/mo
+                  </span>
+                  {totalSavings > 0 && (
+                      <span className="ml-1 text-green-700 flex items-center"> 
+                        <span className="font-extrabold mr-1">({(totalSavingsPercent * 100).toFixed(0)}% OFF)</span>
+                        <span className="opacity-80">Save ${totalSavings.toFixed(0)}</span>
+                      </span>
+                  )}
+                </div>
+                {/* Clarity on billing */}
+                <div className="text-[10px] text-muted-foreground mt-0.5">
+                   Billed at ${billedMonthlyRate.toFixed(0)}/mo for {billableMonths} mos. Last {freeMonths} mos free.
+                </div>
               </div>
             )}
             <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
@@ -1464,7 +1481,7 @@ export default function LandingPage() {
                             {/* Payment Explanation */}
                             {discounts.agreement !== "none" && !discounts.payFull && (
                                 <div className="text-xs text-muted-foreground mt-2 italic">
-                                * Monthly payment reflects the discounted rate. You pay ${discountedMonthlyPayment.toFixed(0)} for {termMonths} months. The last {freeMonths} months are $0.
+                                * Your effective monthly rate is ${effectiveMonthlyPayment.toFixed(0)}/mo. You will be billed ${billedMonthlyRate.toFixed(0)}/mo for {billableMonths} months, and the last {freeMonths} months are $0 (Free).
                                 </div>
                             )}
                         </div>
