@@ -102,7 +102,7 @@ export const PLANS = [
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
-      "<span class='font-bold text-accent'>Multiple Trash Cans Cleaning: Monthly cleaning for up to 3 cans included</span>"
+      "<span class='font-bold text-accent'>Multiple Trash Cans: Included with any trash bin cleaning add-on (up to 3 cans)</span>"
     ],
     allowance: {
       basic: 2,
@@ -137,7 +137,7 @@ export const BASIC_ADDONS = [
   {
     id: "quarterly_trash_bin_cleaning",
     label: "Quarterly Trash Bin Cleaning",
-    description: "Cleaning and sanitizing of trash bins once every quarter"
+    description: "Cleaning and sanitizing of trash bins once every quarter. Executive Plan: Multiple cans (up to 3) included."
   },
   {
     id: "gutter_cleaning_first_floor",
@@ -205,7 +205,7 @@ export const PREMIUM_ADDONS = [
   {
     id: "bimonthly_trash_bin_cleaning",
     label: "Monthly Trash Bin Cleaning",
-    description: "Cleaning and sanitizing of trash bins every month"
+    description: "Cleaning and sanitizing of trash bins every month. Executive Plan: Multiple cans (up to 3) included."
   },
   {
     id: "christmas_lights_premium",

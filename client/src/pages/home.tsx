@@ -79,7 +79,7 @@ import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
-import imgXmasPremium from "@assets/stock_images/house_christmas_ligh_415cf4e9.jpg";
+import imgXmasPremium from "@assets/stock_images/house_exterior_chris_0167c6a7.jpg";
 import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
 import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
 import imgTrashBinWash from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
@@ -502,7 +502,7 @@ export default function LandingPage() {
         </div>
 
         {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0 fixed">
+        <div className="absolute inset-0 z-0">
            <img src={bgLandscape} alt="Lawn Trooper Team" className="w-full h-full object-cover brightness-[0.65]" />
            {/* Removed fade to background so image stays visible */}
            <div className="absolute inset-0 bg-black/50"></div>
@@ -1707,15 +1707,15 @@ export default function LandingPage() {
                 alt="Lawn Trooper Crew" 
                 className="w-full rounded-xl shadow-2xl relative z-10 border-4 border-white object-cover h-[400px]"
               />
-              <div className="bg-card p-6 rounded-2xl border border-border relative mt-8 z-20 transform -translate-y-12 mx-4 shadow-xl">
+              <div className="bg-card p-6 rounded-2xl border border-border relative mt-4 z-20 mx-4 shadow-xl">
                 <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
                 <p className="text-lg italic text-foreground/80 relative z-10 pt-4 mb-6">
                   I used to dread weekends because it meant mowing. Now I don't even think about it. The crew is like clockwork, and the billing is totally predictable. Best decision I made for my home.
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">JD</div>
+                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">LP</div>
                   <div>
-                    <div className="font-bold">James D.</div>
+                    <div className="font-bold">Loretta P.</div>
                     <div className="text-xs text-muted-foreground">Premium Command Member since 2023</div>
                   </div>
                 </div>
