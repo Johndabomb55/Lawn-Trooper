@@ -743,11 +743,11 @@ export default function LandingPage() {
               Quietly Powerful. Environmentally Responsible.
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto mb-6">
-              Lawn Trooper utilizes <span className="text-green-500 font-semibold">electric service vehicles</span>, <span className="text-green-500 font-semibold">battery-powered mowers</span>, and <span className="text-green-500 font-semibold">electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
+              Lawn Trooper utilizes <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>electric service vehicles</span>, <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>battery-powered mowers</span>, and <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
             </p>
             <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-6 py-3">
               <Zap className="w-5 h-5 text-green-400" />
-              <span className="text-green-400 font-medium">So quiet, you might not even notice we just mowed your lawn.</span>
+              <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>So quiet, you might not even notice we just mowed your lawn.</span>
             </div>
           </div>
         </div>
