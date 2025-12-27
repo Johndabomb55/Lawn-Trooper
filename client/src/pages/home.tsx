@@ -79,7 +79,7 @@ import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
 import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
-import imgXmasPremium from "@assets/stock_images/house_exterior_chris_0167c6a7.jpg";
+import imgXmasPremium from "@assets/stock_images/christmas_lights_dec_50e6447b.jpg";
 import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
 import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
 import imgTrashBinWash from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
@@ -723,6 +723,32 @@ export default function LandingPage() {
                <Shield className="w-3 h-3" />
                Lawn Trooper LLC is licensed and insured. We take full responsibility for any liability or damage to property while performing services.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Eco-Friendly Operations Section */}
+      <section className="py-12 bg-gradient-to-r from-green-900/20 via-emerald-900/10 to-green-900/20 border-y border-green-500/20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="flex justify-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                <Zap className="w-6 h-6 text-green-400" />
+              </div>
+              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                <Leaf className="w-6 h-6 text-green-400" />
+              </div>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-4">
+              Quietly Powerful. Environmentally Responsible.
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto mb-6">
+              Lawn Trooper utilizes <span className="text-green-500 font-semibold">electric service vehicles</span>, <span className="text-green-500 font-semibold">battery-powered mowers</span>, and <span className="text-green-500 font-semibold">electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
+            </p>
+            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-6 py-3">
+              <Zap className="w-5 h-5 text-green-400" />
+              <span className="text-green-400 font-medium">So quiet, you might not even notice we just mowed your lawn.</span>
+            </div>
           </div>
         </div>
       </section>
