@@ -844,108 +844,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials - Field Reports */}
-      <section className="py-20 bg-background relative border-t border-border">
-        <div className="container mx-auto px-4">
-           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Field Reports</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Debriefings from homeowners across the sector.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Report 1 */}
-            <motion.div 
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
-            >
-              <div className="h-48 overflow-hidden relative">
-                 <img src={imgSmallYard1} alt="Athens Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
-                   Sector: Athens, AL
-                 </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                 <div className="flex gap-1 text-accent mb-3">
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                 </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"The tactical approach is no joke. My yard has never looked this sharp. The pricing is transparent and the crew is incredibly disciplined."</p>
-                 <div>
-                   <div className="font-bold font-heading text-primary">Lt. Col. James R. (Ret)</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Plan Member</div>
-                 </div>
-              </div>
-            </motion.div>
-
-            {/* Report 2 */}
-            <motion.div 
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ delay: 0.1 }}
-               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
-            >
-              <div className="h-48 overflow-hidden relative">
-                 <img src={imgEstateMadison} alt="Madison Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
-                   Sector: Madison, AL
-                 </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                 <div className="flex gap-1 text-accent mb-3">
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                 </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"I signed a 2 year pact, paid in full, and saved well over $2,000. Lawn Trooper really does deliver and the jobber app makes customer requests and bill pay easy as pie."</p>
-                 <div>
-                   <div className="font-bold font-heading text-primary">Sarah & Mike T.</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Premium Plan Members</div>
-                 </div>
-              </div>
-            </motion.div>
-
-            {/* Report 3 */}
-            <motion.div 
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ delay: 0.2 }}
-               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
-            >
-              <div className="h-48 overflow-hidden relative">
-                 <img src={imgSmallYard3} alt="Huntsville Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
-                   Sector: Huntsville, AL
-                 </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                 <div className="flex gap-1 text-accent mb-3">
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                   <Star className="w-4 h-4 fill-accent" />
-                 </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Early Bird deal. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
-                 <div>
-                   <div className="font-bold font-heading text-primary">The Davidson Family</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Basic Patrol Members</div>
-                 </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-
       {/* Quote Form Section */}
       <section id="quote" className="py-24 bg-background relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
@@ -1745,6 +1643,107 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials - Field Reports */}
+      <section className="py-20 bg-background relative border-t border-border">
+        <div className="container mx-auto px-4">
+           <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Field Reports</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Debriefings from homeowners across the sector.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Report 1 */}
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
+            >
+              <div className="h-48 overflow-hidden relative">
+                 <img src={imgSmallYard1} alt="Athens Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
+                   Sector: Athens, AL
+                 </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                 <div className="flex gap-1 text-accent mb-3">
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                 </div>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"The tactical approach is no joke. My yard has never looked this sharp. The pricing is transparent and the crew is incredibly disciplined."</p>
+                 <div>
+                   <div className="font-bold font-heading text-primary">Lt. Col. James R. (Ret)</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Plan Member</div>
+                 </div>
+              </div>
+            </motion.div>
+
+            {/* Report 2 */}
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: 0.1 }}
+               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
+            >
+              <div className="h-48 overflow-hidden relative">
+                 <img src={imgEstateMadison} alt="Madison Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
+                   Sector: Madison, AL
+                 </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                 <div className="flex gap-1 text-accent mb-3">
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                 </div>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"I signed a 2 year pact, paid in full, and saved well over $2,000. Lawn Trooper really does deliver and the jobber app makes customer requests and bill pay easy as pie."</p>
+                 <div>
+                   <div className="font-bold font-heading text-primary">Sarah & Mike T.</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Premium Plan Members</div>
+                 </div>
+              </div>
+            </motion.div>
+
+            {/* Report 3 */}
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: 0.2 }}
+               className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
+            >
+              <div className="h-48 overflow-hidden relative">
+                 <img src={imgSmallYard3} alt="Huntsville Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
+                   Sector: Huntsville, AL
+                 </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                 <div className="flex gap-1 text-accent mb-3">
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                   <Star className="w-4 h-4 fill-accent" />
+                 </div>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Early Bird deal. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
+                 <div>
+                   <div className="font-bold font-heading text-primary">The Davidson Family</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Basic Patrol Members</div>
+                 </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

@@ -10,7 +10,7 @@ export const GLOBAL_CONSTANTS = {
   AI_SAVINGS_MESSAGE: "We are lowering costs with new AI + 2026 technology and passing savings on to customers.",
   COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
   EXISTING_CUSTOMER_LOYALTY: "Our Loyalty Club Customers: Sign into your account with your customer login for your loyalty discount based on your years of service. (Must complete 12 months to get a loyalty discount).",
-  CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it’s not the right fit, provide a full refund.",
+  CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it's not the right fit, provide a full refund.",
   AI_TECH_EXPLANATION: "We sometimes will deploy robotic AI vision, LiDAR sensor, satellite-linked mowing units to achieve the best cut quality and highest efficiency at no additional expense to the customer. Lawn Trooper reserves the right to choose which robot will be best for each property, although customer can weigh in of course."
 };
 
@@ -21,7 +21,7 @@ export const PLANS = [
     price: 169,
     oldPrice: 199,
     priceLabel: "Starts at $169/mo",
-    description: "Includes: 1 Basic Add-on • 0 Premium Add-ons",
+    description: "Includes: 1 Basic Add-on - 0 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Bi-Weekly" },
       { label: "Weed Control", value: "2 Treatments" },
@@ -31,11 +31,14 @@ export const PLANS = [
       "Mowing: Regular (bi-weekly) mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 2 pre-emergent weed control treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
-      "Weed-Free Guarantee: Not Included",
-      `<span class='font-bold text-primary'>Bush Trimming: 1 bush trimming per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”</span>`,
+      `<span class='font-bold text-primary'>Bush Trimming: 1 bush trimming per year (Limit 20 bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
       "Light Spring & Fall Cleanup: Pull out dead seasonal plants, cut back pampas grasses, lillies, and other seasonal and ornamental growth for excellent early season curb appeal.",
-      "Small Tree & Low-Hanging Branch Trimming: Not Included",
-      "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal"
+      "Leaf Service (Fall & Winter): Monthly leaf cleanup - Leaf blowing / Mulching / Removal",
+      "Weekly Mowing: Not Included (Upgrade to Premium or Executive)",
+      "Weed-Free Guarantee: Not Included (Executive only)",
+      "Off-season Bi-weekly Yard Checks: Not Included (Premium & Executive)",
+      "Small Tree & Low-Hanging Branch Trimming: Not Included (Premium & Executive)",
+      "Free Customized Landscaping Plan: Not Included (Premium & Executive)"
     ],
     allowance: {
       basic: 1,
@@ -49,7 +52,7 @@ export const PLANS = [
     price: 299,
     oldPrice: 349,
     priceLabel: "Starts at $299/mo",
-    description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 1 Premium Add-on",
+    description: "Plus weed control & beds. Includes: 2 Basic Add-ons - 1 Premium Add-on",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "2 Treatments" },
@@ -60,11 +63,11 @@ export const PLANS = [
       "Weed Control: 2 pre-emergent weed control treatments + weed killer",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
-      `<span class='font-bold text-primary'>Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”</span>`,
+      `<span class='font-bold text-primary'>Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
       "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
-      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
     ],
     allowance: {
@@ -80,7 +83,7 @@ export const PLANS = [
     price: 399,
     oldPrice: 479,
     priceLabel: "Starts at $399/mo",
-    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons • 3 Premium Add-ons",
+    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons - 3 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "6 Treatments" },
@@ -91,11 +94,11 @@ export const PLANS = [
       "Weed Control: 6 weed treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
-      `<span class='font-bold text-accent'>Bush Trimming: 3 bush trimmings per year (Unlimited Bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”</span>`,
+      `<span class='font-bold text-accent'>Bush Trimming: 3 bush trimmings per year (Unlimited Bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
       "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
       "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
-      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup — Leaf blowing / Mulching / Removal",
+      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout"
     ],
     allowance: {
@@ -103,7 +106,7 @@ export const PLANS = [
       premium: 3
     },
     allowanceLabel: "2 Basic Add-Ons + 3 Premium Add-Ons",
-    promoLabel: "Jan Promo: +1 Free Basic Add-on" // Logic handled via config but label kept here or derived
+    promoLabel: "Jan Promo: +1 Free Basic Add-on"
   }
 ];
 
@@ -244,14 +247,6 @@ export const calculatePlanPrice = (planId: string, acres: number) => {
   }
   
   // +20% per additional 1/3 acre
-  // Calculate how many additional 1/3 acre chunks (rounded up?)
-  // "Internal rule (never shown): +25% per additional 1/3 acre." -> Changed to 20%
-  // Typically means chunks.
-  // Example: 0.5 acres. 
-  // 0.5 - 0.33 = 0.17 surplus.
-  // 0.17 / 0.33 = ~0.5 chunks. 
-  // If we round up, that's 1 chunk.
-  
   const additionalAcres = acres - baseAcres;
   const chunks = Math.ceil(additionalAcres / 0.33);
   
