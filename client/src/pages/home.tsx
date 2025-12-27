@@ -158,7 +158,7 @@ const formSchema = z.object({
     required_error: "Please select a contact method",
   }),
   phone: z.string().optional(),
-  email: z.string().optional(),
+  email: z.string().email("Please enter a valid email address").or(z.literal("")),
   yardSize: z.coerce.number().min(0.01, "Please enter a valid lot size"),
   plan: z.enum(["basic", "premium", "executive"], {
     required_error: "Please select a plan",
@@ -184,7 +184,7 @@ const formSchema = z.object({
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: "Please provide either phone or email",
-      path: ["phone"],
+      path: ["email"],
     });
   }
 });
@@ -220,6 +220,7 @@ export default function LandingPage() {
   const selectedPlan = form.watch("plan");
   const selectedYardSize = form.watch("yardSize");
   const selectedAddOns = form.watch("addOns");
+  const selectedContactMethod = form.watch("contactMethod");
 
   // State for new questions
   // const [maintenanceFreq, setMaintenanceFreq] = useState<string>("biweekly"); // Removed as per request
@@ -916,39 +917,39 @@ export default function LandingPage() {
                       )}
                     />
 
-                    <div className="flex flex-col space-y-2">
-                       <Label>Mobile Phone</Label>
-                       <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input placeholder="(555) 123-4567" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Mobile Phone {(selectedContactMethod === "text" || selectedContactMethod === "phone") && <span className="text-red-500">*</span>}
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="(555) 123-4567" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
-                     <div className="flex flex-col space-y-2">
-                       <Label>Email Address</Label>
-                       <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input placeholder="john@example.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Email Address {selectedContactMethod === "email" && <span className="text-red-500">*</span>}
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="john@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   
                   <div className="text-xs text-muted-foreground bg-muted p-3 rounded">

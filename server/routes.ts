@@ -7,7 +7,7 @@ import { z } from "zod";
 // Quote request validation schema
 const quoteRequestSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email(),
+  email: z.string().email().or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().min(5),
   contactMethod: z.enum(["text", "phone", "email", "either"]),
@@ -15,6 +15,21 @@ const quoteRequestSchema = z.object({
   plan: z.enum(["basic", "premium", "executive"]),
   addOns: z.array(z.string()).default([]),
   notes: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.contactMethod === "email" && !data.email) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Email is required for this contact method",
+      path: ["email"],
+    });
+  }
+  if (data.contactMethod === "either" && !data.phone && !data.email) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Please provide either phone or email",
+      path: ["email"],
+    });
+  }
 });
 
 export async function registerRoutes(
