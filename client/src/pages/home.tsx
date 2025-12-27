@@ -278,26 +278,53 @@ export default function LandingPage() {
   }, [selectedPlan, form, discounts.payFull]);
 
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // In a real app, this would be an API call to the backend
-    
-    toast({
-      title: "Request Received! 🫡",
-      description: `Request sent to lawntrooperllc@gmail.com. A confirmation copy has also been sent to ${values.email}.`,
-      duration: 5000,
-    });
-    
-    form.reset({
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      contactMethod: "email",
-      plan: "basic",
-      addOns: [],
-      notes: "",
-    });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Request Sent! 🫡",
+          description: `Your quote request has been sent to lawntrooperllc@gmail.com and a confirmation copy was sent to ${values.email}. We'll contact you shortly!`,
+          duration: 6000,
+        });
+        
+        form.reset({
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          contactMethod: "email",
+          plan: "basic",
+          yardSize: 0.33,
+          addOns: [],
+          notes: "",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send quote request. Please try again or contact us directly.",
+          variant: "destructive",
+          duration: 5000,
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting quote:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send quote request. Please check your connection and try again.",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   }
 
   const scrollToSection = (id: string) => {
