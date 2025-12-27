@@ -512,20 +512,31 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
             <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
             
-            <div className="mt-8 relative z-20">
-              <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-2 leading-none" 
+            {/* Big Intimidating Camo Banner */}
+            <div className="mt-4 relative z-20 w-full">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase mb-4 leading-none" 
                   style={{ 
                     backgroundImage: `url(${camoPattern})`, 
                     backgroundSize: '200px',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))'
+                    filter: 'drop-shadow(0px 3px 6px rgba(0,0,0,0.7))'
                   }}>
-                Instant Pricing
+                Lawn Trooper
               </h1>
-              <h2 className="text-xl md:text-2xl font-serif font-bold text-white/90 uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-2 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30 max-w-3xl leading-relaxed">
-                Total landscape maintenance plans for under-1-acre neighborhood yards starting at $169/month
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-6 leading-tight" 
+                  style={{ 
+                    backgroundImage: `url(${camoPattern})`, 
+                    backgroundSize: '250px',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.6))'
+                  }}>
+                Landscape Maintenance<br/>& Exterior Home Care
               </h2>
+              <h3 className="text-xl md:text-2xl font-serif font-bold text-white/90 uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-2 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30 max-w-3xl leading-relaxed">
+                Total maintenance plans for under-1-acre neighborhood yards starting at $169/month
+              </h3>
             </div>
             
             <div className="mt-6 flex flex-col items-center gap-4">
@@ -833,58 +844,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Why Lawn Trooper */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-6">Why Enlist Lawn Trooper?</h2>
-              <div className="space-y-6">
-                {[
-                  { title: "Locally Owned Command", desc: "Not a faceless national chain. We live here, we work here." },
-                  { title: "Tech-Forward Tactics", desc: "Smart routing and robotic mowers where appropriate for maximum efficiency." },
-                  { title: "Consistent Personnel", desc: "You'll know who is on your property. Friendly, vetted, and professional." },
-                  { title: "The Mission Mindset", desc: "We treat every yard like an assignment we must complete with excellence." }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                      <Shield className="w-5 h-5 text-secondary-foreground" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-lg">{item.title}</h4>
-                      <p className="text-muted-foreground text-sm">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="relative">
-              <div className="absolute -inset-4 bg-accent/10 rounded-xl transform rotate-3"></div>
-              <img 
-                src={heroDiverseCrew} 
-                alt="Lawn Trooper Crew" 
-                className="w-full rounded-xl shadow-2xl relative z-10 border-4 border-white object-cover h-[400px]"
-              />
-              <div className="bg-muted p-6 rounded-2xl border border-border relative mt-8 z-20 transform -translate-y-12 mx-4 shadow-xl">
-                <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
-                <p className="text-lg italic text-foreground/80 relative z-10 pt-4 mb-6">
-                  I used to dread weekends because it meant mowing. Now I don't even think about it. The crew is like clockwork, and the billing is totally predictable. Best decision I made for my home.
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">JD</div>
-                  <div>
-                    <div className="font-bold">James D.</div>
-                    <div className="text-xs text-muted-foreground">Premium Command Member since 2023</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      
       {/* Testimonials - Field Reports */}
       <section className="py-20 bg-background relative border-t border-border">
         <div className="container mx-auto px-4">
@@ -1737,6 +1696,56 @@ export default function LandingPage() {
               </AccordionItem>
             ))}
           </Accordion>
+        </div>
+      </section>
+
+      {/* Why Lawn Trooper */}
+      <section className="py-20 bg-muted/30 border-t border-border">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-6">Why Enlist Lawn Trooper?</h2>
+              <div className="space-y-6">
+                {[
+                  { title: "Locally Owned Command", desc: "Not a faceless national chain. We live here, we work here." },
+                  { title: "Tech-Forward Tactics", desc: "Smart routing and robotic mowers where appropriate for maximum efficiency." },
+                  { title: "Consistent Personnel", desc: "You'll know who is on your property. Friendly, vetted, and professional." },
+                  { title: "The Mission Mindset", desc: "We treat every yard like an assignment we must complete with excellence." }
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <Shield className="w-5 h-5 text-secondary-foreground" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg">{item.title}</h4>
+                      <p className="text-muted-foreground text-sm">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-accent/10 rounded-xl transform rotate-3"></div>
+              <img 
+                src={heroDiverseCrew} 
+                alt="Lawn Trooper Crew" 
+                className="w-full rounded-xl shadow-2xl relative z-10 border-4 border-white object-cover h-[400px]"
+              />
+              <div className="bg-card p-6 rounded-2xl border border-border relative mt-8 z-20 transform -translate-y-12 mx-4 shadow-xl">
+                <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
+                <p className="text-lg italic text-foreground/80 relative z-10 pt-4 mb-6">
+                  I used to dread weekends because it meant mowing. Now I don't even think about it. The crew is like clockwork, and the billing is totally predictable. Best decision I made for my home.
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">JD</div>
+                  <div>
+                    <div className="font-bold">James D.</div>
+                    <div className="text-xs text-muted-foreground">Premium Command Member since 2023</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
