@@ -32,7 +32,7 @@ export const PLANS = [
       "Weed Control: 2 pre-emergent weed control treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
-      `Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
+      `Bush Trimming: 1 bush trimming per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
       "Small Tree & Low-Hanging Branch Trimming: Not Included",
       "Leaf Service (Fall & Winter): Monthly leaf cleanup — Leaf blowing / Mulching / Removal"
     ],
@@ -51,12 +51,12 @@ export const PLANS = [
     description: "Plus weed control & beds. Includes: 2 Basic Add-ons • 2 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
-      { label: "Weed Control", value: "3 Treatments" },
+      { label: "Weed Control", value: "2 Treatments" },
       { label: "Add-ons", value: "4 Included" }
     ],
     features: [
       "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Weed Control: 3 weed control applications per year",
+      "Weed Control: 2 pre-emergent weed control treatments + weed killer",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
       `Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + “${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}”`,
@@ -153,6 +153,11 @@ export const BASIC_ADDONS = [
     id: "basic_christmas_lights",
     label: "Basic Christmas Light Package",
     description: "Basic shrub and small tree decorations only. (No roofline lights)."
+  },
+  {
+    id: "extra_weed_control",
+    label: "Extra Weed Control + Fire Ant",
+    description: "2 extra weed control apps w/ fertilizer & weed killer + 1 fire ant treatment."
   }
 ];
 
@@ -248,9 +253,9 @@ export const calculatePlanPrice = (planId: string, acres: number) => {
     return plan.price;
   }
   
-  // +25% per additional 1/3 acre
+  // +20% per additional 1/3 acre
   // Calculate how many additional 1/3 acre chunks (rounded up?)
-  // "Internal rule (never shown): +25% per additional 1/3 acre."
+  // "Internal rule (never shown): +25% per additional 1/3 acre." -> Changed to 20%
   // Typically means chunks.
   // Example: 0.5 acres. 
   // 0.5 - 0.33 = 0.17 surplus.
@@ -260,7 +265,7 @@ export const calculatePlanPrice = (planId: string, acres: number) => {
   const additionalAcres = acres - baseAcres;
   const chunks = Math.ceil(additionalAcres / 0.33);
   
-  const multiplier = 1 + (chunks * 0.25);
+  const multiplier = 1 + (chunks * 0.20);
   
   return plan.price * multiplier;
 };

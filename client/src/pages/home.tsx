@@ -1143,7 +1143,7 @@ export default function LandingPage() {
                 <div className="space-y-6">
                   <div className="flex flex-col gap-1 border-b border-border pb-2">
                     <h3 className="text-lg font-bold font-heading uppercase text-primary">4. Choose Your Add-Ons</h3>
-                    <p className="text-sm text-muted-foreground">Included in your plan. (No images needed here, soldier.)</p>
+                    <p className="text-sm text-muted-foreground">Included in your plan. Additional add-ons can be added during your consultation.</p>
                   </div>
 
 
