@@ -27,19 +27,11 @@ export interface QuoteRequestData {
   phone?: string;
   address: string;
   contactMethod: string;
-  yardSize: number;
-  plan: string;
-  addOns: string[];
   notes?: string;
 }
 
 export async function sendQuoteEmails(data: QuoteRequestData) {
   const { client, fromEmail } = getResendClient();
-
-  // Format add-ons list
-  const addOnsText = data.addOns.length > 0 
-    ? data.addOns.join(', ') 
-    : 'None selected';
 
   // Email to Lawn Trooper (using verified email until domain is set up)
   // Change to 'lawntrooperllc@gmail.com' once domain is verified
@@ -52,20 +44,17 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
       <p><strong>Customer Information:</strong></p>
       <ul>
         <li><strong>Name:</strong> ${data.name}</li>
-        <li><strong>Email:</strong> ${data.email}</li>
+        <li><strong>Email:</strong> ${data.email || 'Not provided'}</li>
         <li><strong>Phone:</strong> ${data.phone || 'Not provided'}</li>
         <li><strong>Address:</strong> ${data.address}</li>
         <li><strong>Preferred Contact:</strong> ${data.contactMethod}</li>
       </ul>
       
-      <p><strong>Property & Service Details:</strong></p>
-      <ul>
-        <li><strong>Lot Size:</strong> ${data.yardSize} acres</li>
-        <li><strong>Plan Selected:</strong> ${data.plan.charAt(0).toUpperCase() + data.plan.slice(1)}</li>
-        <li><strong>Add-ons:</strong> ${addOnsText}</li>
-      </ul>
+      ${data.notes ? `<p><strong>Special Instructions / Notes:</strong><br/>${data.notes}</p>` : ''}
       
-      ${data.notes ? `<p><strong>Special Instructions:</strong><br/>${data.notes}</p>` : ''}
+      <p style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+        <strong>Next Steps:</strong> Contact this customer to schedule a consultation and discuss plan options.
+      </p>
       
       <p style="margin-top: 20px; color: #666; font-size: 12px;">
         Submitted via Lawn Trooper Quote Request Form
@@ -73,22 +62,28 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
     `
   };
 
-  // Email to Customer (confirmation)
-  const customerEmail = {
+  // Email to Customer (confirmation) - only if email provided
+  const customerEmail = data.email ? {
     from: fromEmail,
     to: data.email,
     subject: 'Your Lawn Trooper Quote Request - Confirmation',
     html: `
       <h2>Thank you for your quote request!</h2>
       <p>Hi ${data.name},</p>
-      <p>We've received your request for lawn care services. Our team will review your information and contact you shortly via ${data.contactMethod}.</p>
+      <p>We've received your request for lawn care services. Our Account Commander will review your property information and contact you shortly via your preferred method (${data.contactMethod}) to schedule a consultation.</p>
       
       <p><strong>Your Request Summary:</strong></p>
       <ul>
         <li><strong>Address:</strong> ${data.address}</li>
-        <li><strong>Lot Size:</strong> ${data.yardSize} acres</li>
-        <li><strong>Plan:</strong> ${data.plan.charAt(0).toUpperCase() + data.plan.slice(1)}</li>
-        <li><strong>Add-ons:</strong> ${addOnsText}</li>
+        <li><strong>Preferred Contact:</strong> ${data.contactMethod}</li>
+      </ul>
+      
+      <p>During your consultation, we'll discuss:</p>
+      <ul>
+        <li>Your property size and specific needs</li>
+        <li>The best plan for your yard (Basic, Premium, or Executive)</li>
+        <li>Available add-on services</li>
+        <li>Current promotional offers</li>
       </ul>
       
       <p>We typically respond within 24 hours. If you have any urgent questions, feel free to call us directly.</p>
@@ -100,33 +95,42 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
         This is an automated confirmation email.
       </p>
     `
-  };
+  } : null;
 
-  // Send both emails
+  // Send emails
   try {
     console.log('Attempting to send emails via Resend...');
     console.log('From email:', fromEmail);
     console.log('To business:', businessEmail.to);
-    console.log('To customer:', customerEmail.to);
+    console.log('To customer:', customerEmail?.to || 'No email provided');
     
-    const [businessResult, customerResult] = await Promise.all([
-      client.emails.send(businessEmail),
-      client.emails.send(customerEmail)
-    ]);
-
+    // Always send business email
+    const businessResult = await client.emails.send(businessEmail);
     console.log('Business email result:', JSON.stringify(businessResult, null, 2));
-    console.log('Customer email result:', JSON.stringify(customerResult, null, 2));
-
+    
     if (businessResult.error) {
       console.error('Business email error:', businessResult.error);
     }
-    if (customerResult.error) {
-      console.error('Customer email error:', customerResult.error);
+
+    // Only send customer email if email was provided
+    let customerEmailSent = true; // Default to true if no email to send
+    if (customerEmail) {
+      const customerResult = await client.emails.send(customerEmail);
+      console.log('Customer email result:', JSON.stringify(customerResult, null, 2));
+      
+      if (customerResult.error) {
+        console.error('Customer email error:', customerResult.error);
+        customerEmailSent = false;
+      } else {
+        customerEmailSent = customerResult.data !== null;
+      }
+    } else {
+      console.log('No customer email provided, skipping customer confirmation');
     }
 
     return {
       businessEmailSent: businessResult.data !== null && !businessResult.error,
-      customerEmailSent: customerResult.data !== null && !customerResult.error
+      customerEmailSent: customerEmailSent
     };
   } catch (error) {
     console.error('Email sending failed with exception:', error);

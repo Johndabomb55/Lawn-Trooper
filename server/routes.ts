@@ -4,16 +4,13 @@ import { storage } from "./storage";
 import { sendQuoteEmails, type QuoteRequestData } from "./email";
 import { z } from "zod";
 
-// Quote request validation schema
+// Quote request validation schema (simplified - plan/addons selected during consultation)
 const quoteRequestSchema = z.object({
   name: z.string().min(2),
   email: z.string().email().or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().min(5),
   contactMethod: z.enum(["text", "phone", "email", "either"]),
-  yardSize: z.number().min(0.01),
-  plan: z.enum(["basic", "premium", "executive"]),
-  addOns: z.array(z.string()).default([]),
   notes: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.contactMethod === "email" && !data.email) {

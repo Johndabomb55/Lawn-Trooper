@@ -234,7 +234,9 @@ export default function LandingPage() {
       if (data.success) {
         toast({
           title: "Request Sent! 🫡",
-          description: `Your quote request has been sent to lawntrooperllc@gmail.com and a confirmation copy was sent to ${values.email}. We'll contact you shortly!`,
+          description: values.email 
+            ? `Your quote request has been received and a confirmation was sent to ${values.email}. We'll contact you shortly!`
+            : "Your quote request has been received. We'll contact you shortly via your preferred method!",
           duration: 6000,
         });
         
@@ -943,6 +945,16 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Referral Program */}
+      <section className="py-16 bg-accent text-accent-foreground text-center">
+        <div className="container mx-auto px-4">
+           <div className="max-w-2xl mx-auto">
+             <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
+             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both get 1 month free!</p>
+           </div>
+        </div>
+      </section>
+
       {/* Promos Banner */}
       <section className="relative py-12 overflow-hidden text-primary-foreground">
         {/* Background Image Matching Hero */}
@@ -966,200 +978,6 @@ export default function LandingPage() {
             <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold whitespace-nowrap px-8">
               Claim Offer Now
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Quote Form Section */}
-      <section id="quote" className="py-24 bg-background relative overflow-hidden">
-        <div className="container mx-auto px-4 max-w-3xl relative z-10">
-          <div className="text-center mb-10">
-            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
-              <Clock className="w-8 h-8" />
-            </div>
-            <h2 className="text-4xl font-heading font-bold text-primary mb-4">Request Your Deployment</h2>
-            <p className="text-muted-foreground">Fill out the intel below. We'll analyze your property satellite data and send your custom plan.</p>
-          </div>
-
-          <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                {/* 1. Contact Intel */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">1. Contact Intel</h3>
-                  
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Street Address <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Maple Ave, Springfield, IL 62704" {...field} />
-                        </FormControl>
-                        <FormDescription>Include City and Zip Code</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="contactMethod"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Preferred Contact Method <span className="text-red-500">*</span></FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select method" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="text">Text Message</SelectItem>
-                              <SelectItem value="phone">Phone Call</SelectItem>
-                              <SelectItem value="email">Email</SelectItem>
-                              <SelectItem value="either">Either (Phone or Email)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Mobile Phone {(selectedContactMethod === "text" || selectedContactMethod === "phone") && <span className="text-red-500">*</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="(555) 123-4567" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Email Address {selectedContactMethod === "email" && <span className="text-red-500">*</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="john@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
-                    <Info className="w-3 h-3 inline mr-1" />
-                    To give you a quote, all we really need is your address and a way to reach you. Photos are helpful but optional.
-                  </div>
-                </div>
-
-
-                {/* 2. Premium Add-On Services Gallery */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Available Premium Services</h3>
-                  <p className="text-sm text-muted-foreground">We offer a variety of premium add-on services. Discuss your needs during your consultation.</p>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgXmasPremium} alt="Premium Christmas Lights Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Christmas Lights</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgSeasonalFlowers} alt="Seasonal Flower Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Seasonal Flowers</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgMulchInstall} alt="Brown Mulch Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Mulch Installation</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgTrashBinWash} alt="Pressure Washing Trash Bins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Trash Bin Cleaning</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgPineStrawInstall} alt="Shrub Trimming" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Shrub Trimming</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3. Optional Info */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Recon Data (Optional)</h3>
-                  
-                  <div className="grid gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="photos">Yard Photos</Label>
-                      <Input id="photos" type="file" accept="image/*" multiple className="cursor-pointer" disabled />
-                      <p className="text-[0.8rem] text-muted-foreground">Photo upload coming soon! For now, you can text photos to us after submitting your quote request or share them during your consultation.</p>
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Special Instructions / Gate Codes / Customer Names You're Referring</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Fenced backyard, dog on property, specific gate code, etc." 
-                              className="resize-none"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-4 gap-2">
-                  <span>DEPLOY THE TROOPS</span>
-                  <span className="text-xs font-bold normal-case text-yellow-400 max-w-md text-center leading-tight">your account commander will reach out asap<br/>to schedule a custom yard plan consultation with you.</span>
-                </Button>
-              </form>
-            </Form>
           </div>
         </div>
       </section>
@@ -1374,13 +1192,197 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Referral Program */}
-      <section className="py-16 bg-accent text-accent-foreground text-center">
-        <div className="container mx-auto px-4">
-           <div className="max-w-2xl mx-auto">
-             <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
-             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both get 1 month free!</p>
-           </div>
+      {/* Quote Form Section */}
+      <section id="quote" className="py-24 bg-background relative overflow-hidden">
+        <div className="container mx-auto px-4 max-w-3xl relative z-10">
+          <div className="text-center mb-10">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <Clock className="w-8 h-8" />
+            </div>
+            <h2 className="text-4xl font-heading font-bold text-primary mb-4">Request Your Deployment</h2>
+            <p className="text-muted-foreground">Fill out the intel below. We'll analyze your property satellite data and send your custom plan.</p>
+          </div>
+
+          <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                {/* 1. Contact Intel */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">1. Contact Intel</h3>
+                  
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name <span className="text-red-500">*</span></FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Street Address <span className="text-red-500">*</span></FormLabel>
+                        <FormControl>
+                          <Input placeholder="123 Maple Ave, Springfield, IL 62704" {...field} />
+                        </FormControl>
+                        <FormDescription>Include City and Zip Code</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="contactMethod"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preferred Contact Method <span className="text-red-500">*</span></FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select method" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="text">Text Message</SelectItem>
+                              <SelectItem value="phone">Phone Call</SelectItem>
+                              <SelectItem value="email">Email</SelectItem>
+                              <SelectItem value="either">Either (Phone or Email)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Mobile Phone {(selectedContactMethod === "text" || selectedContactMethod === "phone") && <span className="text-red-500">*</span>}
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="(555) 123-4567" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Email Address {selectedContactMethod === "email" && <span className="text-red-500">*</span>}
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="john@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
+                    <Info className="w-3 h-3 inline mr-1" />
+                    To give you a quote, all we really need is your address and a way to reach you. Photos are helpful but optional.
+                  </div>
+                </div>
+
+
+                {/* 2. Premium Add-On Services Gallery */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Available Premium Services</h3>
+                  <p className="text-sm text-muted-foreground">We offer a variety of premium add-on services. Discuss your needs during your consultation.</p>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgXmasPremium} alt="Premium Christmas Lights Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Christmas Lights</span>
+                      </div>
+                    </div>
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgSeasonalFlowers} alt="Seasonal Flower Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Seasonal Flowers</span>
+                      </div>
+                    </div>
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgMulchInstall} alt="Brown Mulch Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Mulch Installation</span>
+                      </div>
+                    </div>
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgTrashBinWash} alt="Pressure Washing Trash Bins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Trash Bin Cleaning</span>
+                      </div>
+                    </div>
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgPineStrawInstall} alt="Shrub Trimming" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Shrub Trimming</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Optional Info */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Recon Data (Optional)</h3>
+                  
+                  <div className="grid gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="photos">Yard Photos</Label>
+                      <Input id="photos" type="file" accept="image/*" multiple className="cursor-pointer" disabled />
+                      <p className="text-[0.8rem] text-muted-foreground">Photo upload coming soon! For now, you can text photos to us after submitting your quote request or share them during your consultation.</p>
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="notes"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Special Instructions / Gate Codes / Customer Names You're Referring</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Fenced backyard, dog on property, specific gate code, etc." 
+                              className="resize-none"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-4 gap-2">
+                  <span>DEPLOY THE TROOPS</span>
+                  <span className="text-xs font-bold normal-case text-yellow-400 max-w-md text-center leading-tight">your account commander will reach out asap<br/>to schedule a custom yard plan consultation with you.</span>
+                </Button>
+              </form>
+            </Form>
+          </div>
         </div>
       </section>
 
