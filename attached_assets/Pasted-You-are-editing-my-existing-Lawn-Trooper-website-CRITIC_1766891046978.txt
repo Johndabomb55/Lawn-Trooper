@@ -1,0 +1,74 @@
+You are editing my existing Lawn Trooper website. CRITICAL: Do NOT delete, rewrite, or remove ANY existing services, add-ons, plan descriptions, promotions, pricing notes, FAQs, policies, or copy. Preserve every item exactly as-is unless I explicitly ask otherwise.
+
+Goal:
+Replace the current 3 separate scrolling plan boxes with ONE single “Plan Builder” box that dynamically changes based on user selections:
+1) Yard Size: 1/3 acre, 2/3 acre, 1 acre
+2) Plan Tier: Basic, Premium, Executive
+3) Add-ons: show only the allowed add-ons for the selected tier (Basic add-ons for Basic plan only; Premium/Executive can see Premium add-ons)
+
+Requirements:
+- Keep ALL existing services and add-ons (same names, same descriptions, same categories, same pricing). Do not invent or remove items.
+- The new Plan Builder must simply DISPLAY existing plan/service/add-on data dynamically rather than having three separate boxes.
+- Keep the rest of the page layout unchanged as much as possible.
+- Preserve existing styling, branding, spacing, colors, fonts, and buttons unless required for the Plan Builder to work.
+
+Plan Builder behavior:
+A) Basic tier:
+- Shows Basic plan inclusions for the selected yard size
+- Allows selecting ONLY Basic add-ons
+- Include count rules: Basic gets exactly 1 Basic add-on included (if that is the current rule on the site).
+
+B) Premium tier:
+- Shows Premium plan inclusions for selected yard size
+- Allows selecting: 1 Basic add-on included + 2 Premium add-ons included (if current rule).
+- Premium add-ons list only appears when Premium is selected.
+
+C) Executive tier:
+- Shows Executive plan inclusions for selected yard size
+- Allows selecting: 1 Basic add-on included + 3 Premium add-ons included (if current rule).
+- Executive shows “Top Priority Scheduling” messaging.
+
+Pricing:
+- Use my current base prices:
+  Basic: $169/month for 1/3 acre
+  Premium: $299/month for 1/3 acre
+  Executive: $399/month for 1/3 acre
+- Apply a 25% increase per additional 1/3 acre:
+  2/3 acre = 1/3 price * 1.25 (rounded to nearest whole dollar)
+  1 acre = 2/3 price * 1.25 (rounded)
+- Add-on pricing rules:
+  - Keep existing add-on prices exactly as-is.
+  - If my site currently includes certain add-ons “free/included” by tier, keep that rule.
+  - If a customer selects add-ons beyond what is included in the plan, add the extra cost accordingly.
+  - Show a line-item summary: Base Plan + Included Add-ons + Paid Add-ons + Total Monthly Price.
+
+Service Method disclaimer:
+Add this text (verbatim) somewhere subtle under the Plan Builder (small text):
+“Service Method Disclaimer
+Lawn Trooper utilizes a combination of advanced lawn care technologies and professional equipment to deliver consistent, high-quality results.
+You are paying for results. Lawn Trooper assesses the property, selects the appropriate service method, and executes the mission to maintain your yard at the highest standard.”
+
+Data preservation:
+- IMPORTANT: Do NOT retype my services/add-ons manually.
+- Instead, refactor the code so ALL existing services/add-ons are defined once in structured data (arrays/objects) and rendered dynamically.
+- If my existing code already lists services/add-ons in HTML, migrate them into structured data WITHOUT CHANGING THE TEXT.
+
+Technical approach:
+- Create a single PlanBuilder component/section.
+- Create data objects:
+  - yardSizes = ["1/3", "2/3", "1"]
+  - plans = { Basic: {...}, Premium: {...}, Executive: {...} }
+  - addOns = { basic: [...], premium: [...] }
+- Render inclusions as checkmarked lists.
+- Enforce add-on selection limits by tier with live remaining-counter text:
+  “Basic add-ons remaining: X”
+  “Premium add-ons remaining: Y”
+- Keep mobile friendly layout.
+
+Safety step:
+- Before making changes, create a backup copy of the current file(s) being edited (duplicate or git commit).
+- Then implement changes.
+
+Deliverable:
+- Updated site with ONE dynamic plan builder box.
+- No lost services, add-ons, or copy.

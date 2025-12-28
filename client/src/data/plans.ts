@@ -249,11 +249,24 @@ export const calculatePlanPrice = (planId: string, acres: number) => {
     return plan.price;
   }
   
-  // +20% per additional 1/3 acre
+  // +25% per additional 1/3 acre (compounding)
+  // 1/3 acre = base price
+  // 2/3 acre = base * 1.25
+  // 1 acre = (base * 1.25) * 1.25 = base * 1.5625
   const additionalAcres = acres - baseAcres;
   const chunks = Math.ceil(additionalAcres / 0.33);
   
-  const multiplier = 1 + (chunks * 0.20);
+  let price = plan.price;
+  for (let i = 0; i < chunks; i++) {
+    price = price * 1.25;
+  }
   
-  return plan.price * multiplier;
+  return Math.round(price);
 };
+
+// Yard size options for Plan Builder
+export const YARD_SIZES = [
+  { id: "1/3", label: "1/3 Acre", acres: 0.33 },
+  { id: "2/3", label: "2/3 Acre", acres: 0.66 },
+  { id: "1", label: "1 Acre", acres: 1.0 }
+];
