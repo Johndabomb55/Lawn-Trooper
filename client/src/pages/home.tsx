@@ -60,7 +60,8 @@ import {
   GLOBAL_CONSTANTS, 
   getPlanAllowance,
   PROMO_CONFIG,
-  calculatePlanPrice
+  calculatePlanPrice,
+  YARD_SIZES
 } from "@/data/plans";
 
 // Assets
@@ -208,6 +209,13 @@ export default function LandingPage() {
     veteran: false,
     senior: false
   });
+  
+  // Plan Builder state
+  const [builderYardSize, setBuilderYardSize] = useState("1/3");
+  const [builderPlan, setBuilderPlan] = useState("basic");
+  const [builderBasicAddons, setBuilderBasicAddons] = useState<string[]>([]);
+  const [builderPremiumAddons, setBuilderPremiumAddons] = useState<string[]>([]);
+  
   const { toast } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -795,89 +803,307 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
-            {PLANS.map((plan) => (
-              <div 
-                key={plan.id}
-                className={`bg-card rounded-xl shadow-lg border border-border overflow-hidden relative ${plan.id === 'executive' ? 'border-2 border-primary transform md:-translate-y-4 shadow-xl' : ''}`}
-              >
-                {/* Jan Promo Banner for Premium and Executive */}
-                {(plan.id === 'premium' || plan.id === 'executive') && plan.promoLabel && PROMO_CONFIG.executiveBonusEnabled && new Date() < new Date(PROMO_CONFIG.cutoffDate) && (
-                  <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-bl-lg shadow-md z-10 animate-pulse">
-                    {plan.promoLabel}
-                  </div>
-                )}
-                {plan.id === 'executive' && (
-                  <div className="bg-primary text-primary-foreground text-center text-xs font-bold uppercase tracking-widest py-2">
-                    Most Popular • Best Value
-                  </div>
-                )}
-                <div className={`p-6 border-b border-border ${plan.id === 'executive' ? 'bg-primary/5' : 'bg-muted/30'}`}>
-                  <h3 className="text-2xl font-heading font-bold text-primary flex items-center gap-2">
-                    {plan.name} {plan.id === 'executive' && <Star className="w-5 h-5 fill-accent text-accent" />}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-3xl font-bold">${plan.price}</span>
-                    <span className="text-muted-foreground text-sm">/mo (starting)</span>
-                  </div>
-                  {plan.oldPrice && (
-                    <div className="flex flex-col">
-                       <p className="text-xs text-muted-foreground mt-1 line-through opacity-70">Was ${plan.oldPrice}/mo</p>
-                       <p className="text-[10px] text-accent font-medium mt-0.5">25th Anniversary + AI Savings</p>
+          {/* Plan Builder Component */}
+          {(() => {
+            const builderPlanData = PLANS.find(p => p.id === builderPlan);
+            const builderYardData = YARD_SIZES.find(y => y.id === builderYardSize);
+            const builderPlanPrice = builderPlanData && builderYardData 
+              ? calculatePlanPrice(builderPlan, builderYardData.acres) 
+              : 0;
+            
+            const builderAllowance = getPlanAllowance(builderPlan, false);
+            const builderBasicRemaining = Math.max(0, builderAllowance.basic - builderBasicAddons.length);
+            const builderPremiumRemaining = Math.max(0, builderAllowance.premium - builderPremiumAddons.length);
+            
+            const builderExtraBasicCount = Math.max(0, builderBasicAddons.length - builderAllowance.basic);
+            const builderExtraPremiumCount = Math.max(0, builderPremiumAddons.length - builderAllowance.premium);
+            const builderExtraAddonsCost = (builderExtraBasicCount * 15) + (builderExtraPremiumCount * 40);
+            const builderTotalPrice = builderPlanPrice + builderExtraAddonsCost;
+
+            const handleBuilderBasicAddonToggle = (addonId: string) => {
+              setBuilderBasicAddons(prev => 
+                prev.includes(addonId) 
+                  ? prev.filter(id => id !== addonId)
+                  : [...prev, addonId]
+              );
+            };
+
+            const handleBuilderPremiumAddonToggle = (addonId: string) => {
+              setBuilderPremiumAddons(prev => 
+                prev.includes(addonId) 
+                  ? prev.filter(id => id !== addonId)
+                  : [...prev, addonId]
+              );
+            };
+
+            const resetBuilderAddons = () => {
+              setBuilderBasicAddons([]);
+              setBuilderPremiumAddons([]);
+            };
+
+            return (
+              <div className="bg-card rounded-2xl shadow-2xl border-2 border-primary/30 overflow-hidden">
+                {/* Header */}
+                <div className="bg-primary text-primary-foreground p-6 text-center">
+                  <h3 className="text-2xl font-heading font-bold uppercase tracking-wider">Build Your Plan</h3>
+                  <p className="text-sm opacity-90 mt-1">Configure your perfect lawn care package</p>
+                </div>
+
+                <div className="p-6 md:p-8 space-y-8">
+                  {/* Step 1: Yard Size */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
+                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">1</span>
+                      Select Your Yard Size
+                    </h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      {YARD_SIZES.map((size) => (
+                        <button
+                          key={size.id}
+                          data-testid={`yard-size-${size.id}`}
+                          onClick={() => setBuilderYardSize(size.id)}
+                          className={`p-4 rounded-xl border-2 transition-all text-center ${
+                            builderYardSize === size.id
+                              ? 'border-primary bg-primary/10 shadow-lg'
+                              : 'border-border hover:border-primary/50 bg-muted/30'
+                          }`}
+                        >
+                          <div className="text-lg font-bold">{size.label}</div>
+                          <div className="text-xs text-muted-foreground">{size.acres} acres</div>
+                        </button>
+                      ))}
                     </div>
-                  )}
-                  
-                  {/* Key Stats Grid */}
-                  <div className="grid grid-cols-3 gap-2 mt-4 text-center">
-                    {plan.keyStats?.map((stat, idx) => (
-                      <div key={idx} className="bg-background/50 rounded p-2 border border-border/50">
-                        <div className="text-[10px] uppercase text-muted-foreground font-bold">{stat.label}</div>
-                        <div className="text-xs font-bold text-primary mt-0.5">
-                          {stat.value === 'Weekly' || stat.value === 'Bi-Weekly' ? (
-                            <span className="bg-yellow-100 text-yellow-800 px-1 py-0.5 rounded">{stat.value}</span>
-                          ) : (
-                            stat.value
+                  </div>
+
+                  {/* Step 2: Plan Tier */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
+                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">2</span>
+                      Select Your Plan Tier
+                    </h4>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {PLANS.map((plan) => (
+                        <button
+                          key={plan.id}
+                          data-testid={`plan-tier-${plan.id}`}
+                          onClick={() => {
+                            setBuilderPlan(plan.id);
+                            resetBuilderAddons();
+                          }}
+                          className={`p-4 rounded-xl border-2 transition-all text-left relative ${
+                            builderPlan === plan.id
+                              ? 'border-primary bg-primary/10 shadow-lg'
+                              : 'border-border hover:border-primary/50 bg-muted/30'
+                          }`}
+                        >
+                          {plan.id === 'executive' && (
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
+                              Top Priority Scheduling
+                            </div>
                           )}
+                          <div className="flex items-center gap-2">
+                            <h5 className="font-bold text-lg">{plan.name}</h5>
+                            {plan.id === 'executive' && <Star className="w-4 h-4 fill-accent text-accent" />}
+                          </div>
+                          <div className="text-2xl font-bold text-primary mt-1">
+                            ${calculatePlanPrice(plan.id, builderYardData?.acres || 0.33)}
+                            <span className="text-sm font-normal text-muted-foreground">/mo</span>
+                          </div>
+                          {plan.oldPrice && (
+                            <div className="text-xs text-muted-foreground line-through">Was ${plan.oldPrice}/mo</div>
+                          )}
+                          <div className="text-xs text-muted-foreground mt-2">{plan.allowanceLabel}</div>
+                          {builderPlan === plan.id && (
+                            <div className="absolute top-2 right-2">
+                              <Check className="w-5 h-5 text-primary" />
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Step 3: Plan Features */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
+                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">3</span>
+                      {builderPlanData?.name} Features
+                    </h4>
+                    <div className="bg-muted/30 rounded-xl p-4 border border-border">
+                      {/* Key Stats */}
+                      <div className="grid grid-cols-3 gap-3 mb-4">
+                        {builderPlanData?.keyStats?.map((stat, idx) => (
+                          <div key={idx} className="bg-background rounded-lg p-3 text-center border border-border/50">
+                            <div className="text-[10px] uppercase text-muted-foreground font-bold">{stat.label}</div>
+                            <div className="text-sm font-bold text-primary mt-0.5">
+                              {stat.value === 'Weekly' || stat.value === 'Bi-Weekly' ? (
+                                <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">{stat.value}</span>
+                              ) : (
+                                stat.value
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <ul className="space-y-2 max-h-64 overflow-y-auto">
+                        {builderPlanData?.features.map((feature, i) => {
+                          const isNotIncluded = feature.includes("Not Included");
+                          return (
+                            <li key={i} className={`flex items-start gap-2 text-sm ${isNotIncluded ? 'opacity-50' : ''}`}>
+                              {isNotIncluded ? (
+                                <X className="w-4 h-4 shrink-0 text-muted-foreground mt-0.5" />
+                              ) : (
+                                <Check className="w-4 h-4 shrink-0 text-primary mt-0.5" />
+                              )}
+                              <span dangerouslySetInnerHTML={{ __html: feature }} />
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Step 4: Add-ons */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
+                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">4</span>
+                      Select Add-ons
+                    </h4>
+                    
+                    {/* Add-on Counters */}
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      <div className={`px-4 py-2 rounded-lg border ${builderBasicRemaining > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-muted border-border'}`}>
+                        Basic add-ons remaining: <strong>{builderBasicRemaining}</strong>
+                      </div>
+                      {(builderPlan === 'premium' || builderPlan === 'executive') && (
+                        <div className={`px-4 py-2 rounded-lg border ${builderPremiumRemaining > 0 ? 'bg-accent/20 border-accent/40 text-accent-foreground' : 'bg-muted border-border'}`}>
+                          Premium add-ons remaining: <strong>{builderPremiumRemaining}</strong>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Basic Add-ons */}
+                    <div className="space-y-3">
+                      <h5 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-ons ($15/mo each if over limit)</h5>
+                      <div className="grid md:grid-cols-2 gap-2">
+                        {BASIC_ADDONS.map((addon) => (
+                          <label
+                            key={addon.id}
+                            data-testid={`addon-basic-${addon.id}`}
+                            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                              builderBasicAddons.includes(addon.id)
+                                ? 'border-primary bg-primary/5'
+                                : 'border-border hover:border-primary/30'
+                            }`}
+                          >
+                            <Checkbox
+                              checked={builderBasicAddons.includes(addon.id)}
+                              onCheckedChange={() => handleBuilderBasicAddonToggle(addon.id)}
+                              className="mt-0.5"
+                            />
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{addon.label}</div>
+                              <div className="text-xs text-muted-foreground">{addon.description}</div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Premium Add-ons (only for Premium and Executive) */}
+                    {(builderPlan === 'premium' || builderPlan === 'executive') && (
+                      <div className="space-y-3">
+                        <h5 className="font-bold text-sm uppercase tracking-wider text-accent">Premium Add-ons ($40/mo each if over limit)</h5>
+                        <div className="grid md:grid-cols-2 gap-2">
+                          {PREMIUM_ADDONS.map((addon) => (
+                            <label
+                              key={addon.id}
+                              data-testid={`addon-premium-${addon.id}`}
+                              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                                builderPremiumAddons.includes(addon.id)
+                                  ? 'border-accent bg-accent/10'
+                                  : 'border-border hover:border-accent/30'
+                              }`}
+                            >
+                              <Checkbox
+                                checked={builderPremiumAddons.includes(addon.id)}
+                                onCheckedChange={() => handleBuilderPremiumAddonToggle(addon.id)}
+                                className="mt-0.5"
+                              />
+                              <div className="flex-1">
+                                <div className="font-medium text-sm">{addon.label}</div>
+                                <div className="text-xs text-muted-foreground">{addon.description}</div>
+                              </div>
+                            </label>
+                          ))}
                         </div>
                       </div>
-                    ))}
+                    )}
                   </div>
 
-                </div>
-                <div className="p-6 space-y-4">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, i) => {
-                      const isNotIncluded = feature.includes("Not Included");
-                      return (
-                        <li key={i} className={`flex items-start gap-3 text-sm ${isNotIncluded ? 'opacity-50' : ''}`}>
-                          {isNotIncluded ? (
-                            <X className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          ) : (
-                            <Check className={`w-5 h-5 shrink-0 ${plan.id === 'executive' && i === 0 ? 'text-accent' : 'text-primary'}`} />
-                          )}
-                          <span dangerouslySetInnerHTML={{ __html: feature.replace("Weekly", "<strong>Weekly</strong>").replace("Bi-weekly", "<strong>Bi-weekly</strong>").replace("Biweekly", "<strong>Biweekly</strong>") }} />
-                        </li>
-                      );
-                    })}
-                    <li className="flex items-start gap-3 text-sm">
-                      <Check className="w-5 h-5 text-primary shrink-0" />
-                      <span className="font-bold">{plan.allowanceLabel}</span>
-                    </li>
-                  </ul>
-                  <Button 
-                    onClick={() => scrollToSection('quote')} 
-                    variant={plan.id === 'executive' ? 'default' : 'outline'}
-                    className={`w-full mt-4 ${plan.id === 'executive' ? 'bg-primary hover:bg-primary/90 text-white font-bold tracking-wide' : 'border-primary/20 hover:bg-primary/5 hover:text-primary'}`}
-                  >
-                    {plan.id === 'executive' ? 'Select Executive' : `Request ${plan.name.replace(' Patrol', '')}`}
-                  </Button>
+                  {/* Price Summary */}
+                  <div className="bg-muted/50 rounded-xl p-6 border border-border space-y-3">
+                    <h4 className="font-bold text-lg text-primary">Price Summary</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>{builderPlanData?.name} Base Price ({builderYardData?.label})</span>
+                        <span className="font-bold">${builderPlanPrice}/mo</span>
+                      </div>
+                      
+                      {builderBasicAddons.length > 0 && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>
+                            Basic Add-ons ({builderBasicAddons.length}) 
+                            {builderBasicAddons.length <= builderAllowance.basic && ' - Included'}
+                          </span>
+                          <span className={builderBasicAddons.length <= builderAllowance.basic ? 'text-green-600' : ''}>
+                            {builderBasicAddons.length <= builderAllowance.basic ? 'Free' : `+$${builderExtraBasicCount * 15}/mo`}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {builderPremiumAddons.length > 0 && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>
+                            Premium Add-ons ({builderPremiumAddons.length})
+                            {builderPremiumAddons.length <= builderAllowance.premium && ' - Included'}
+                          </span>
+                          <span className={builderPremiumAddons.length <= builderAllowance.premium ? 'text-green-600' : ''}>
+                            {builderPremiumAddons.length <= builderAllowance.premium ? 'Free' : `+$${builderExtraPremiumCount * 40}/mo`}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className="border-t border-border pt-3 flex justify-between text-lg font-bold">
+                        <span>Total Monthly</span>
+                        <span className="text-primary">${builderTotalPrice}/mo</span>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={() => scrollToSection('quote')} 
+                      className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg py-6 mt-4"
+                      data-testid="plan-builder-get-quote"
+                    >
+                      Get Your Custom Quote
+                    </Button>
+                  </div>
                 </div>
               </div>
-            ))}
+            );
+          })()}
+
+          {/* Service Method Disclaimer */}
+          <div className="mt-8 text-center">
+            <div className="bg-white/80 border border-border rounded-lg p-4 max-w-3xl mx-auto">
+              <h4 className="font-bold text-sm text-primary mb-2">Service Method Disclaimer</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Lawn Trooper utilizes a combination of advanced lawn care technologies and professional equipment to deliver consistent, high-quality results. You are paying for results. Lawn Trooper assesses the property, selects the appropriate service method, and executes the mission to maintain your yard at the highest standard.
+              </p>
+            </div>
           </div>
 
-          <div className="mt-12 text-center">
+          <div className="mt-8 text-center">
             <p className="text-sm text-muted-foreground bg-white/50 inline-block px-4 py-2 rounded-lg border border-border">
               <strong>Note:</strong> {GLOBAL_CONSTANTS.YARD_ELIGIBILITY}
             </p>
