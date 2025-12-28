@@ -168,11 +168,6 @@ const formSchema = z.object({
   }),
   phone: z.string().optional(),
   email: z.string().email("Please enter a valid email address").or(z.literal("")),
-  yardSize: z.coerce.number().min(0.01, "Please enter a valid lot size"),
-  plan: z.enum(["basic", "premium", "executive"], {
-    required_error: "Please select a plan",
-  }),
-  addOns: z.array(z.string()).default([]),
   notes: z.string().optional(),
 }).superRefine((data, ctx) => {
   if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {
@@ -200,17 +195,8 @@ const formSchema = z.object({
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [slotError, setSlotError] = useState<string | null>(null);
-  const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
-  const [discounts, setDiscounts] = useState({
-    payFull: false,
-    agreement: "1year", // Default to 1year instead of none/month-to-month
-    renter: false,
-    veteran: false,
-    senior: false
-  });
   
-  // Plan Builder state
+  // Plan Builder state (for interactive preview)
   const [builderYardSize, setBuilderYardSize] = useState("1/3");
   const [builderPlan, setBuilderPlan] = useState("basic");
   const [builderBasicAddons, setBuilderBasicAddons] = useState<string[]>([]);
@@ -226,73 +212,11 @@ export default function LandingPage() {
       phone: "",
       address: "",
       contactMethod: "email",
-      plan: "basic", // Default to basic
-      yardSize: 0.33, // Default size (Acres)
-      addOns: [],
       notes: "",
     },
   });
 
-  const selectedPlan = form.watch("plan");
-  const selectedYardSize = form.watch("yardSize");
-  const selectedAddOns = form.watch("addOns");
   const selectedContactMethod = form.watch("contactMethod");
-
-  // State for new questions
-  // const [maintenanceFreq, setMaintenanceFreq] = useState<string>("biweekly"); // Removed as per request
-
-  // Calculate Price Effect
-  useEffect(() => {
-    if (selectedPlan && selectedYardSize) {
-      const price = calculatePlanPrice(selectedPlan, selectedYardSize);
-      setEstimatedPrice(price);
-    } else {
-      setEstimatedPrice(null);
-    }
-  }, [selectedPlan, selectedYardSize]);
-
-  // Maintenance Frequency Logic - Removed
-  // useEffect(() => {
-  //    if (selectedPlan === "basic") {
-  //       setMaintenanceFreq("biweekly");
-  //    } else {
-  //       setMaintenanceFreq("weekly");
-  //    }
-  // }, [selectedPlan]);
-
-  // Calculate counts
-  const calculateCounts = (currentAddOns: string[]) => {
-    let basicCount = 0;
-    let premiumCount = 0;
-    currentAddOns.forEach(id => {
-      if (BASIC_ADDONS.find(a => a.id === id)) basicCount += 1;
-      if (PREMIUM_ADDONS.find(a => a.id === id)) premiumCount += 1;
-    });
-    return { basicCount, premiumCount };
-  };
-
-  const handleAddOnToggle = (id: string, isPremium: boolean) => {
-    const currentAddOns = form.getValues("addOns");
-    const isCurrentlySelected = currentAddOns.includes(id);
-    
-    setSlotError(null);
-
-    if (isCurrentlySelected) {
-      // Removing is always allowed
-      form.setValue("addOns", currentAddOns.filter(item => item !== id));
-    } else {
-      // Adding is always allowed (pay extra if needed)
-      form.setValue("addOns", [...currentAddOns, id]);
-    }
-  };
-
-  // Reset add-ons when plan changes or payFull changes (as it affects allowance)
-  useEffect(() => {
-    // Only clear if switching plans to avoid confusion, but since we allow overage now,
-    // we don't strictly need to clear. However, to keep it clean when switching contexts:
-    // Actually, let's NOT clear automatically. User can manually remove.
-    // This allows them to keep selections when toggling Pay Full (which changes allowance).
-  }, [selectedPlan, form, discounts.payFull]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -320,9 +244,6 @@ export default function LandingPage() {
           phone: "",
           address: "",
           contactMethod: "email",
-          plan: "basic",
-          yardSize: 0.33,
-          addOns: [],
           notes: "",
         });
       } else {
@@ -355,69 +276,6 @@ export default function LandingPage() {
 
   const mascotLogo = heroMascot;
 
-  // Calculation Logic for variables used in JSX
-  const termMonths = discounts.agreement === "2year" ? 24 : 12;
-  let freeMonths = 0;
-  if (discounts.agreement === "1year") freeMonths = 1;
-  if (discounts.agreement === "2year") freeMonths = 3;
-  
-  const billableMonths = termMonths - freeMonths;
-  
-  // Calculate Base Price + Extra Add-ons
-  const basePricePlan = estimatedPrice || 0;
-  
-  // Extra Add-ons Logic
-  const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-  const { basicCount: selectedBasic, premiumCount: selectedPremium } = calculateCounts(selectedAddOns);
-
-  // Determine Extra Items
-  // 1. Calculate extra Premium (cannot be covered by Basic allowance)
-  const extraPremiumCount = Math.max(0, selectedPremium - allowance.premium);
-  
-  // 2. Calculate unused Premium slots (can cover Basic items? 1 Premium Slot = 2 Basic Items)
-  const unusedPremiumSlots = Math.max(0, allowance.premium - selectedPremium);
-  
-  // 3. Calculate effective Basic allowance (Base + converted Premium)
-  const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
-  
-  // 4. Calculate extra Basic
-  const extraBasicCount = Math.max(0, selectedBasic - effectiveBasicAllowance);
-  
-  // 5. Calculate Cost ($40/Premium, $15/Basic)
-  const extraAddOnMonthlyCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
-  
-  const basePrice = basePricePlan + extraAddOnMonthlyCost;
-  
-  // Calculate Standard Total (No discounts, full term)
-  const standardTotalCost = basePrice * termMonths;
-
-  // Calculate Billed Amount (Base Price with just Percentage Discounts applied, ignoring free months for rate)
-  let discountMultiplier = 0;
-  if (discounts.payFull) {
-    if (discounts.agreement === "2year") {
-        discountMultiplier += 0.15;
-    } else {
-        discountMultiplier += 0.10;
-    }
-  }
-  if (discounts.veteran) discountMultiplier += 0.05;
-  if (discounts.senior) discountMultiplier += 0.05;
-  if (discounts.renter) discountMultiplier += 0.05;
-  
-  const billedMonthlyRate = basePrice * (1 - discountMultiplier);
-  
-  // Calculate Final Total Cost to Customer
-  // (Billed Rate * Billable Months)
-  // Free months are months where cost is 0, so we just pay the billed rate for the billable term.
-  const finalTotalCost = billedMonthlyRate * billableMonths;
-  
-  // Effective Monthly Payment (Amortized)
-  const effectiveMonthlyPayment = finalTotalCost / termMonths;
-  
-  // Savings
-  const totalSavings = standardTotalCost - finalTotalCost;
-  const totalSavingsPercent = standardTotalCost > 0 ? (totalSavings / standardTotalCost) : 0;
-
   return (
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
@@ -446,25 +304,6 @@ export default function LandingPage() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            {estimatedPrice !== null && (
-              <div className="flex flex-col items-end md:items-center">
-                <div className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded border border-green-200 animate-in fade-in slide-in-from-top-2 flex items-center gap-2">
-                  <span>
-                    Effective Avg: ${effectiveMonthlyPayment.toFixed(0)}/mo
-                  </span>
-                  {totalSavings > 0 && (
-                      <span className="ml-1 text-green-700 flex items-center"> 
-                        <span className="font-extrabold mr-1">({(totalSavingsPercent * 100).toFixed(0)}% OFF)</span>
-                        <span className="opacity-80">Save ${totalSavings.toFixed(0)}</span>
-                      </span>
-                  )}
-                </div>
-                {/* Clarity on billing */}
-                <div className="text-[10px] text-muted-foreground mt-0.5">
-                   Billed at ${billedMonthlyRate.toFixed(0)}/mo for {billableMonths} mos. Last {freeMonths} mos free.
-                </div>
-              </div>
-            )}
             <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
@@ -1080,13 +919,6 @@ export default function LandingPage() {
                       </div>
                     </div>
                     
-                    <Button 
-                      onClick={() => scrollToSection('quote')} 
-                      className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg py-6 mt-4"
-                      data-testid="plan-builder-get-quote"
-                    >
-                      Get Your Custom Quote
-                    </Button>
                   </div>
                 </div>
               </div>
@@ -1251,328 +1083,49 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                  {/* 2. Instant Quote Questions */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Property Details</h3>
-                   
-                   {/* Question 1: Lot Size */}
-                   <div className="space-y-3">
-                     <Label className="text-base font-bold text-foreground">Approximate Lot Size (Acres) <span className="text-red-500">*</span></Label>
-                     <FormField
-                      control={form.control}
-                      name="yardSize"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              step="0.01" 
-                              min="0" 
-                              placeholder="e.g. 0.25, 0.5, 0.75" 
-                              {...field} 
-                              className="max-w-[200px]"
-                            />
-                          </FormControl>
-                          <FormDescription>Pricing adjusts based on lot size (increases for lots over 1/3 acre) and is verified during the consultation and walkthrough.</FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                   </div>
 
-                </div>
-
-                {/* 3. Plan Selection */}
+                {/* 2. Premium Add-On Services Gallery */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Pick Your Style</h3>
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Available Premium Services</h3>
+                  <p className="text-sm text-muted-foreground">We offer a variety of premium add-on services. Discuss your needs during your consultation.</p>
                   
-                  <FormField
-                    control={form.control}
-                    name="plan"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="grid md:grid-cols-3 gap-4"
-                          >
-                            {PLANS.map((plan) => (
-                              <div key={plan.id} className="relative">
-                                <RadioGroupItem value={plan.id} id={plan.id} className="peer sr-only" />
-                                <Label
-                                  htmlFor={plan.id}
-                                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer h-full relative overflow-hidden"
-                                >
-                                  {plan.promoLabel && PROMO_CONFIG.executiveBonusEnabled && new Date() < new Date(PROMO_CONFIG.cutoffDate) && (
-                                    <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl shadow-sm">
-                                      {plan.promoLabel}
-                                    </div>
-                                  )}
-                                  
-                                  <span className="mb-2 text-lg font-bold flex items-center gap-1 mt-2">
-                                    {plan.name} 
-                                    {plan.id === 'executive' && <Star className="w-3 h-3 fill-accent text-accent" />}
-                                  </span>
-                                  <span className="text-sm text-center text-muted-foreground">{plan.allowanceLabel}</span>
-                                  <div className="mt-2 flex flex-col items-center">
-                                     <span className="text-sm font-bold text-primary">{plan.priceLabel}</span>
-                                     {plan.oldPrice && (
-                                       <span className="text-xs text-muted-foreground line-through opacity-70">
-                                         Was ${plan.oldPrice}/mo
-                                       </span>
-                                     )}
-                                     {plan.oldPrice && (
-                                        <span className="text-[10px] text-accent font-medium mt-1">25th Anniversary + AI Savings</span>
-                                     )}
-                                  </div>
-                                </Label>
-                              </div>
-                            ))}
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* 4. Add-ons Selection */}
-                <div className="space-y-6">
-                  <div className="flex flex-col gap-1 border-b border-border pb-2">
-                    <h3 className="text-lg font-bold font-heading uppercase text-primary">4. Subscription Add-Ons</h3>
-                    <p className="text-sm text-muted-foreground">Included in your plan. Additional add-ons can be added during your consultation.</p>
-                  </div>
-
-
-                  <div className="bg-muted/30 p-4 rounded-lg border border-border relative overflow-hidden">
-                    {/* Add-on Alert Banner */}
-                    {(() => {
-                        const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-                        const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                        
-                        // Calculate Extra Items
-                        const extraPremiumCount = Math.max(0, premiumCount - allowance.premium);
-                        const unusedPremiumSlots = Math.max(0, allowance.premium - premiumCount);
-                        const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
-                        const extraBasicCount = Math.max(0, basicCount - effectiveBasicAllowance);
-                        
-                        const extraCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
-                        
-                        if (extraCost > 0) {
-                           return (
-                             <div className="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm z-20">
-                               +${extraCost}/mo
-                             </div>
-                           )
-                        }
-                    })()}
-
-                    <div className="flex items-center justify-between">
-                       <div className="flex items-start gap-2 text-sm text-primary font-medium mb-1">
-                         <Info className="w-4 h-4 mt-0.5" />
-                         <span>{PLANS.find(p => p.id === selectedPlan)?.allowanceLabel}</span>
-                       </div>
-                       
-                       {(() => {
-                          const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-                          const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                          
-                          // Calculate Extra Items
-                          const extraPremiumCount = Math.max(0, premiumCount - allowance.premium);
-                          const unusedPremiumSlots = Math.max(0, allowance.premium - premiumCount);
-                          const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
-                          const extraBasicCount = Math.max(0, basicCount - effectiveBasicAllowance);
-                          
-                          const extraCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
-                          
-                          if (extraCost > 0) {
-                            return (
-                              <div className="text-sm font-bold text-green-600">
-                                +${extraCost}/mo added to subscription
-                              </div>
-                            );
-                          }
-                          return null;
-                       })()}
-                    </div>
-                    
-                    {slotError && (
-                      <div className="flex items-center gap-2 mt-2 text-destructive text-sm font-bold bg-destructive/10 p-2 rounded animate-pulse">
-                        <AlertCircle className="w-4 h-4" />
-                        {slotError}
-                      </div>
-                    )}
-                    
-                    {(() => {
-                        const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-                        const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                        
-                        // Calculate Extra Items
-                        const extraPremiumCount = Math.max(0, premiumCount - allowance.premium);
-                        const unusedPremiumSlots = Math.max(0, allowance.premium - premiumCount);
-                        const effectiveBasicAllowance = allowance.basic + (unusedPremiumSlots * 2);
-                        const extraBasicCount = Math.max(0, basicCount - effectiveBasicAllowance);
-                        
-                        const extraCost = (extraPremiumCount * 40) + (extraBasicCount * 15);
-                        
-                        if (extraCost > 0) {
-                           return (
-                             <div className="mt-2 text-xs text-muted-foreground italic">
-                               * Additional subscription add-ons selected. This amount will be added to your monthly deployment cost.
-                             </div>
-                           )
-                        }
-                    })()}
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-Ons</h4>
-                      <div className="grid gap-3">
-                      {BASIC_ADDONS.map((addon) => (
-                        <div key={addon.id} className={`
-                          relative flex flex-col p-3 rounded-lg border transition-all
-                          ${selectedAddOns.includes(addon.id) ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
-                        `}>
-                          <div className="flex items-center space-x-3 mb-2">
-                            <Checkbox 
-                              id={addon.id} 
-                              checked={selectedAddOns.includes(addon.id)}
-                              onCheckedChange={() => handleAddOnToggle(addon.id, false)}
-                              className="z-10"
-                            />
-                            <Label htmlFor={addon.id} className="text-base font-bold cursor-pointer flex-1 z-10 flex items-center justify-between">
-                              <span className="flex items-center gap-2">
-                                {addon.label}
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Info className="w-4 h-4 text-muted-foreground/70 hover:text-primary transition-colors cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p className="max-w-xs text-sm">{addon.description}</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </span>
-                              {selectedAddOns.includes(addon.id) && (() => {
-                                const allowance = getPlanAllowance(selectedPlan, discounts.payFull);
-                                const totalPoints = allowance.basic + (allowance.premium * 2);
-                                const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                                // If this item was removed, would we be under limit?
-                                // This is tricky to show per-item "paid".
-                                // Instead, just show the total extra cost warning below.
-                                return null;
-                              })()}
-                            </Label>
-                          </div>
-                          <div className="flex gap-3 pl-7">
-                            <div className="text-xs text-muted-foreground leading-relaxed flex-1">
-                              {addon.description}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgXmasPremium} alt="Premium Christmas Lights Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Christmas Lights</span>
                       </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Premium Add-Ons</h4>
-                      <div className="grid gap-3">
-                      {PREMIUM_ADDONS.map((addon) => {
-                        const allowance = getPlanAllowance(selectedPlan);
-                        // Points Logic
-                        const totalAllowancePoints = allowance.basic + (allowance.premium * 2);
-                        const { basicCount, premiumCount } = calculateCounts(selectedAddOns);
-                        const currentUsagePoints = basicCount + (premiumCount * 2);
-                        const isChecked = selectedAddOns.includes(addon.id);
-                        // Allow overage (paid extras)
-                        const isDisabled = false; 
-
-                        return (
-                          <div key={addon.id} className={`
-                            relative flex flex-col p-3 rounded-lg border transition-all
-                            ${isChecked ? 'border-accent bg-accent/5' : 'border-border'}
-                            ${isDisabled ? 'opacity-50 cursor-not-allowed bg-muted/20' : 'hover:border-accent/50'}
-                          `}>
-                            <div className="flex items-center space-x-3 mb-2">
-                              <Checkbox 
-                                id={addon.id} 
-                                checked={isChecked}
-                                onCheckedChange={() => handleAddOnToggle(addon.id, true)}
-                                disabled={isDisabled}
-                                className="z-10"
-                              />
-                              <Label 
-                                htmlFor={addon.id} 
-                                className={`text-base font-bold flex-1 z-10 flex items-center justify-between ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                              >
-                                <span className="flex items-center gap-2">
-                                  {addon.label}
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info className="w-4 h-4 text-muted-foreground/70 hover:text-accent transition-colors cursor-help" />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p className="max-w-xs text-sm">{addon.description}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </span>
-                              </Label>
-                            </div>
-                            
-                            <div className="flex gap-3 pl-7">
-                              <div className="text-xs text-muted-foreground leading-relaxed flex-1">
-                                {addon.description}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgSeasonalFlowers} alt="Seasonal Flower Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Seasonal Flowers</span>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Premium Add-on Image Gallery */}
-                  <div className="mt-8 pt-6 border-t border-border">
-                    <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-4">Premium Add-On Services Gallery</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                        <img src={imgXmasPremium} alt="Premium Christmas Lights Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                          <span className="text-white text-xs font-bold">Christmas Lights</span>
-                        </div>
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgMulchInstall} alt="Brown Mulch Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Mulch Installation</span>
                       </div>
-                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                        <img src={imgSeasonalFlowers} alt="Seasonal Flower Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                          <span className="text-white text-xs font-bold">Seasonal Flowers</span>
-                        </div>
+                    </div>
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgTrashBinWash} alt="Pressure Washing Trash Bins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Trash Bin Cleaning</span>
                       </div>
-                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                        <img src={imgMulchInstall} alt="Brown Mulch Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                          <span className="text-white text-xs font-bold">Mulch Installation</span>
-                        </div>
-                      </div>
-                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                        <img src={imgTrashBinWash} alt="Pressure Washing Trash Bins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                          <span className="text-white text-xs font-bold">Trash Bin Cleaning</span>
-                        </div>
-                      </div>
-                      <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                        <img src={imgPineStrawInstall} alt="Shrub Trimming" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                          <span className="text-white text-xs font-bold">Shrub Trimming</span>
-                        </div>
+                    </div>
+                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
+                      <img src={imgPineStrawInstall} alt="Shrub Trimming" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
+                        <span className="text-white text-xs font-bold">Shrub Trimming</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 5. Optional Info */}
+                {/* 3. Optional Info */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">5. Recon Data (Optional)</h3>
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Recon Data (Optional)</h3>
                   
                   <div className="grid gap-6">
                     <div className="space-y-2">
@@ -1600,226 +1153,6 @@ export default function LandingPage() {
                     />
                   </div>
                 </div>
-
-                {/* Price Display */}
-                <AnimatePresence>
-                  {estimatedPrice && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      className="bg-primary/5 border-2 border-primary/20 rounded-xl p-6 shadow-lg"
-                    >
-                      <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-6">
-                        <div className="flex-1">
-                          <h4 className="text-muted-foreground uppercase tracking-widest text-xs font-bold mb-2">Estimated Deployment Cost</h4>
-                          
-                          <div className="flex items-baseline gap-2">
-                             <div className="text-5xl font-heading font-bold text-primary flex items-center">
-                              <span className="text-2xl mt-2">$</span>
-                              {(() => {
-                                const basePrice = estimatedPrice || 0;
-                                
-                                // 1. Determine Term Length (for comparison)
-                                const termMonths = discounts.agreement === "2year" ? 24 : 12;
-                                
-                                // 2. Calculate Free Months
-                                let freeMonths = 0;
-                                if (discounts.agreement === "1year") freeMonths = 1;
-                                if (discounts.agreement === "2year") freeMonths = 3;
-                                
-                                // 3. Calculate Billable Base Amount
-                                const billableMonths = termMonths - freeMonths;
-                                const billableBaseCost = basePrice * billableMonths;
-                                
-                                // 4. Apply Stackable Percentage Discounts
-                                let percentOff = 0;
-                                
-                                // Pay Full Discount Logic (Updated)
-                                if (discounts.payFull) {
-                                  if (discounts.agreement === "2year") {
-                                    percentOff += 0.15; // 15% for 2-Year Paid Upfront
-                                  } else {
-                                    percentOff += 0.10; // 10% for 1-Year Paid Upfront (default)
-                                  }
-                                }
-                                
-                                if (discounts.veteran) percentOff += 0.05;
-                                if (discounts.senior) percentOff += 0.05;
-                                
-                                const finalTotalCost = billableBaseCost * (1 - percentOff);
-                                
-                                // 5. Display Logic
-                                if (discounts.payFull) {
-                                  // Show Total Cost for the full term (1 or 2 years)
-                                  return finalTotalCost.toFixed(0);
-                                } else {
-                                  // Show Effective Monthly Rate (averaged)
-                                  return (finalTotalCost / termMonths).toFixed(0);
-                                }
-                              })()}
-                              <span className="text-xl text-muted-foreground font-sans font-normal ml-1 self-end mb-2">
-                                {discounts.payFull ? (discounts.agreement === "2year" ? "/2yr" : "/yr") : "/mo"}
-                              </span>
-                            </div>
-                            
-                            {/* Strikethrough Price */}
-                            {(discounts.payFull || discounts.agreement !== "none" || discounts.veteran || discounts.senior) && (
-                              <div className="text-sm font-bold text-muted-foreground line-through">
-                                ${discounts.payFull ? (estimatedPrice * (discounts.agreement === "2year" ? 24 : 12)) : estimatedPrice}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Savings Badge */}
-                          {(discounts.payFull || discounts.agreement !== "none" || discounts.veteran || discounts.senior) && (
-                             <div className="text-sm font-bold text-green-600 mt-2 bg-green-100 dark:bg-green-900/30 inline-block px-2 py-1 rounded">
-                               {(() => {
-                                  const basePrice = estimatedPrice || 0;
-                                  const termMonths = discounts.agreement === "2year" ? 24 : 12;
-                                  const standardTotalCost = basePrice * termMonths;
-                                  
-                                  let freeMonths = 0;
-                                  if (discounts.agreement === "1year") freeMonths = 1;
-                                  if (discounts.agreement === "2year") freeMonths = 3;
-                                  
-                                  const billableMonths = termMonths - freeMonths;
-                                  const billableBaseCost = basePrice * billableMonths;
-                                  
-                                  let percentOff = 0;
-                                  
-                                  // Pay Full Discount Logic (Updated for Savings Badge)
-                                  if (discounts.payFull) {
-                                    if (discounts.agreement === "2year") {
-                                      percentOff += 0.15;
-                                    } else {
-                                      percentOff += 0.10;
-                                    }
-                                  }
-                                  
-                                  if (discounts.veteran) percentOff += 0.05;
-                                  if (discounts.senior) percentOff += 0.05;
-                                  if (discounts.renter) percentOff += 0.05;
-                                  
-                                  const finalTotalCost = billableBaseCost * (1 - percentOff);
-                                  const totalSavings = standardTotalCost - finalTotalCost;
-                                  const savingsPercent = (totalSavings / standardTotalCost) * 100;
-                                  
-                                  return (
-                                    <>
-                                      Total Savings: ${totalSavings.toFixed(0)}
-                                      <span className="ml-1">
-                                         ({savingsPercent.toFixed(0)}% OFF)
-                                      </span>
-                                    </>
-                                  );
-                               })()}
-                             </div>
-                          )}
-                          
-                            {/* Payment Explanation */}
-                            {discounts.agreement !== "none" && !discounts.payFull && (
-                                <div className="text-xs text-muted-foreground mt-2 italic">
-                                * Your effective monthly rate is ${effectiveMonthlyPayment.toFixed(0)}/mo. You will be billed ${billedMonthlyRate.toFixed(0)}/mo for {billableMonths} months, and the last {freeMonths} months are $0 (Free).
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Right Column: Stackable Discounts Controls */}
-                        <div className="bg-background border border-border p-4 rounded-xl w-full md:w-80 shadow-sm">
-                           <h5 className="font-bold text-sm mb-3 flex items-center gap-2">
-                             <Zap className="w-4 h-4 text-accent fill-accent" />
-                             Stackable Discounts
-                           </h5>
-                           <div className="space-y-4">
-                             {/* Agreement Term */}
-                             <div className="space-y-2 pb-3 border-b border-border/50">
-                               <Label className="text-xs font-bold uppercase text-muted-foreground">Service Agreement</Label>
-                               <RadioGroup 
-                                 value={discounts.agreement} 
-                                 onValueChange={(val) => setDiscounts(prev => ({ ...prev, agreement: val }))}
-                                 className="flex flex-col gap-2"
-                               >
-                                 <div className="flex items-center space-x-2">
-                                   <RadioGroupItem value="1year" id="term-1year" />
-                                   <Label htmlFor="term-1year" className="text-sm font-medium flex-1 flex justify-between">
-                                     <span>1-Year Agreement</span>
-                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">1 Mo. Free</span>
-                                   </Label>
-                                 </div>
-                                 <div className="flex items-center space-x-2">
-                                   <RadioGroupItem value="2year" id="term-2year" />
-                                   <Label htmlFor="term-2year" className="text-sm font-medium flex-1 flex justify-between">
-                                     <span>2-Year Agreement</span>
-                                     <span className="text-green-600 font-bold text-xs bg-green-100 px-1 rounded">3 Mo. Free</span>
-                                   </Label>
-                                 </div>
-                               </RadioGroup>
-                             </div>
-
-                             {/* Payment Method */}
-                             <div className="flex items-start space-x-3 pb-3 border-b border-border/50">
-                               <Checkbox 
-                                 id="discount-payFull" 
-                                 checked={discounts.payFull}
-                                 onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, payFull: !!c }))}
-                               />
-                               <div className="grid gap-1.5 leading-none">
-                                 <label
-                                   htmlFor="discount-payFull"
-                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                 >
-                                   Pay Full Term Upfront
-                                   <span className="block text-[10px] text-green-600 mt-1 font-bold">Extra 10-15% OFF</span>
-                                 </label>
-                               </div>
-                             </div>
-
-                             {/* Discounts */}
-                             <div className="space-y-2">
-                               <Label className="text-xs font-bold uppercase text-muted-foreground">Service Discounts (Stackable)</Label>
-                               
-                               <div className="flex items-center space-x-2">
-                                 <Checkbox 
-                                   id="discount-veteran" 
-                                   checked={discounts.veteran}
-                                   onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, veteran: !!c }))}
-                                 />
-                                 <Label htmlFor="discount-veteran" className="text-sm font-medium cursor-pointer flex-1 flex justify-between">
-                                   <span>Veteran / Responder</span>
-                                   <span className="text-green-600 font-bold text-xs">5% OFF</span>
-                                 </Label>
-                               </div>
-
-                               <div className="flex items-center space-x-2">
-                                 <Checkbox 
-                                   id="discount-senior" 
-                                   checked={discounts.senior}
-                                   onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, senior: !!c }))}
-                                 />
-                                 <Label htmlFor="discount-senior" className="text-sm font-medium cursor-pointer flex-1 flex justify-between">
-                                   <span>Senior Citizen</span>
-                                   <span className="text-green-600 font-bold text-xs">5% OFF</span>
-                                 </Label>
-                               </div>
-
-                               <div className="flex items-center space-x-2">
-                                 <Checkbox 
-                                   id="discount-renter" 
-                                   checked={discounts.renter}
-                                   onCheckedChange={(c) => setDiscounts(prev => ({ ...prev, renter: !!c }))}
-                                 />
-                                 <Label htmlFor="discount-renter" className="text-sm font-medium cursor-pointer flex-1 flex justify-between">
-                                   <span>Renter</span>
-                                   <span className="text-green-600 font-bold text-xs">5% OFF</span>
-                                 </Label>
-                               </div>
-                             </div>
-                           </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
                 <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-4 gap-2">
                   <span>DEPLOY THE TROOPS</span>
