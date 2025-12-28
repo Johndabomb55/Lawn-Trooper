@@ -656,7 +656,7 @@ export default function LandingPage() {
             
             const builderExtraBasicCount = Math.max(0, builderBasicAddons.length - builderAllowance.basic);
             const builderExtraPremiumCount = Math.max(0, builderPremiumAddons.length - builderAllowance.premium);
-            const builderExtraAddonsCost = (builderExtraBasicCount * 15) + (builderExtraPremiumCount * 40);
+            const builderExtraAddonsCost = (builderExtraBasicCount * 20) + (builderExtraPremiumCount * 40);
             const builderTotalPrice = builderPlanPrice + builderExtraAddonsCost;
 
             const handleBuilderBasicAddonToggle = (addonId: string) => {
@@ -823,7 +823,7 @@ export default function LandingPage() {
 
                     {/* Basic Add-ons */}
                     <div className="space-y-3">
-                      <h5 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-ons ($15/mo each if over limit)</h5>
+                      <h5 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-ons ($20/mo each if over limit)</h5>
                       <div className="grid md:grid-cols-2 gap-2">
                         {BASIC_ADDONS.map((addon) => (
                           <label
@@ -896,7 +896,7 @@ export default function LandingPage() {
                             {builderBasicAddons.length <= builderAllowance.basic && ' - Included'}
                           </span>
                           <span className={builderBasicAddons.length <= builderAllowance.basic ? 'text-green-600' : ''}>
-                            {builderBasicAddons.length <= builderAllowance.basic ? 'Free' : `+$${builderExtraBasicCount * 15}/mo`}
+                            {builderBasicAddons.length <= builderAllowance.basic ? 'Free' : `+$${builderExtraBasicCount * 20}/mo`}
                           </span>
                         </div>
                       )}
@@ -1160,43 +1160,6 @@ export default function LandingPage() {
                 </Button>
               </form>
             </Form>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 bg-primary/5">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center text-primary mb-12">Field Reports</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                text: "My yard has never looked this good. The crew is incredibly professional!",
-                author: "James W.",
-                loc: "Huntsville, AL"
-              },
-              {
-                text: "I love the automated billing and text updates. Total set-it-and-forget-it service. Highly recommend the Executive plan.",
-                author: "Sarah T.",
-                loc: "Madison, AL"
-              },
-              {
-                text: "Finally a lawn service that actually shows up when they say they will. The weed control works wonders.",
-                author: "Michael R.",
-                loc: "Harvest, AL"
-              }
-            ].map((review, i) => (
-              <div key={i} className="bg-card p-6 rounded-xl shadow-md border border-border">
-                <div className="flex text-accent mb-4">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
-                </div>
-                <p className="text-muted-foreground italic mb-6">"{review.text}"</p>
-                <div>
-                  <p className="font-bold text-primary">{review.author}</p>
-                  <p className="text-xs text-muted-foreground">{review.loc}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
