@@ -21,6 +21,36 @@ function getResendClient() {
   };
 }
 
+// Plan name mapping
+const PLAN_NAMES: Record<string, string> = {
+  basic: "Basic Patrol",
+  premium: "Premium Patrol",
+  executive: "Executive Patrol"
+};
+
+// Add-on label mapping
+const ADDON_LABELS: Record<string, string> = {
+  extra_bush_trimming: "Extra Bush Trimming",
+  shrub_fertilization: "Shrub Fertilization / Diseased Plant Application",
+  irrigation_check: "Full Irrigation Check/Diagnosis + Seasonal Activation & Winterization",
+  fire_ant_app: "Quarterly Fire Ant Applications",
+  quarterly_trash_bin_cleaning: "Quarterly Trash Bin Cleaning",
+  gutter_cleaning_first_floor: "Gutter Cleaning (First Floor Only)",
+  mulch_delivery_install_2yards: "Mulch Delivery + Installation (Up to 3 Yards)",
+  pine_straw_delivery_install_3yards: "Pine Straw Delivery + Installation (Up to 4 Yards)",
+  basic_flower_install: "Basic Flower Install (Fall Only)",
+  basic_christmas_lights: "Basic Christmas Light Package",
+  extra_weed_control: "Extra Weed Control + Fire Ant",
+  pest_control: "Quarterly Pest Control Applications",
+  aeration_overseeding: "Aeration + Overseeding",
+  pressure_washing: "Driveway & Sidewalk Pressure Washing",
+  mulch_delivery_install_over2yards: "Mulch Delivery + Installation (Up to 8 Yards)",
+  pine_straw_delivery_install_over3yards: "Pine Straw Delivery + Installation (Up to 10 Yards)",
+  premium_flower_install: "Premium Flower Install (Spring or 2 Seasons)",
+  bimonthly_trash_bin_cleaning: "Monthly Trash Bin Cleaning",
+  christmas_lights_premium: "Christmas Light Premium Package"
+};
+
 export interface QuoteRequestData {
   name: string;
   email: string;
@@ -28,20 +58,34 @@ export interface QuoteRequestData {
   address: string;
   contactMethod: string;
   notes?: string;
+  yardSize: string;
+  plan: string;
+  basicAddons: string[];
+  premiumAddons: string[];
+}
+
+function formatAddons(addons: string[]): string {
+  if (!addons || addons.length === 0) return "None selected";
+  return addons.map(id => ADDON_LABELS[id] || id).join(", ");
 }
 
 export async function sendQuoteEmails(data: QuoteRequestData) {
   const { client, fromEmail } = getResendClient();
+
+  const planName = PLAN_NAMES[data.plan] || data.plan;
+  const basicAddonsFormatted = formatAddons(data.basicAddons);
+  const premiumAddonsFormatted = formatAddons(data.premiumAddons);
 
   // Email to Lawn Trooper (using verified email until domain is set up)
   // Change to 'lawntrooperllc@gmail.com' once domain is verified
   const businessEmail = {
     from: fromEmail,
     to: 'jclaxtonlandscapes@gmail.com',
-    subject: `New Quote Request from ${data.name}`,
+    subject: `New Quote Request from ${data.name} - ${planName}`,
     html: `
       <h2>New Quote Request</h2>
-      <p><strong>Customer Information:</strong></p>
+      
+      <h3 style="color: #2E7D32; border-bottom: 2px solid #2E7D32; padding-bottom: 8px;">Customer Information</h3>
       <ul>
         <li><strong>Name:</strong> ${data.name}</li>
         <li><strong>Email:</strong> ${data.email || 'Not provided'}</li>
@@ -50,10 +94,18 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
         <li><strong>Preferred Contact:</strong> ${data.contactMethod}</li>
       </ul>
       
-      ${data.notes ? `<p><strong>Special Instructions / Notes:</strong><br/>${data.notes}</p>` : ''}
+      <h3 style="color: #5D4037; border-bottom: 2px solid #5D4037; padding-bottom: 8px;">Selected Plan Details</h3>
+      <ul>
+        <li><strong>Yard Size:</strong> ${data.yardSize} Acre</li>
+        <li><strong>Plan:</strong> ${planName}</li>
+        <li><strong>Basic Add-ons:</strong> ${basicAddonsFormatted}</li>
+        <li><strong>Premium Add-ons:</strong> ${premiumAddonsFormatted}</li>
+      </ul>
+      
+      ${data.notes ? `<h3 style="color: #666;">Special Instructions / Notes</h3><p>${data.notes}</p>` : ''}
       
       <p style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
-        <strong>Next Steps:</strong> Contact this customer to schedule a consultation and discuss plan options.
+        <strong>Next Steps:</strong> Contact this customer to schedule a consultation and finalize their plan.
       </p>
       
       <p style="margin-top: 20px; color: #666; font-size: 12px;">
@@ -70,23 +122,23 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
     html: `
       <h2>Thank you for your quote request!</h2>
       <p>Hi ${data.name},</p>
-      <p>We've received your request for lawn care services. Our Account Commander will review your property information and contact you shortly via your preferred method (${data.contactMethod}) to schedule a consultation.</p>
+      <p>We've received your request for lawn care services. Our Account Commander will review your information and contact you shortly via your preferred method (${data.contactMethod}) to schedule a consultation.</p>
       
-      <p><strong>Your Request Summary:</strong></p>
+      <h3 style="color: #2E7D32; border-bottom: 2px solid #2E7D32; padding-bottom: 8px;">Your Selected Plan</h3>
       <ul>
         <li><strong>Address:</strong> ${data.address}</li>
-        <li><strong>Preferred Contact:</strong> ${data.contactMethod}</li>
+        <li><strong>Yard Size:</strong> ${data.yardSize} Acre</li>
+        <li><strong>Plan:</strong> ${planName}</li>
+        <li><strong>Basic Add-ons:</strong> ${basicAddonsFormatted}</li>
+        <li><strong>Premium Add-ons:</strong> ${premiumAddonsFormatted}</li>
       </ul>
       
-      <p>During your consultation, we'll discuss:</p>
-      <ul>
-        <li>Your property size and specific needs</li>
-        <li>The best plan for your yard (Basic, Premium, or Executive)</li>
-        <li>Available add-on services</li>
-        <li>Current promotional offers</li>
-      </ul>
+      <p style="margin-top: 20px; padding: 15px; background: #E8F5E9; border-radius: 8px; border-left: 4px solid #2E7D32;">
+        <strong>What's Next?</strong><br/>
+        During your consultation, we'll confirm your yard size, discuss any special needs, and finalize your plan. Current promotional offers will be applied at signup!
+      </p>
       
-      <p>We typically respond within 24 hours. If you have any urgent questions, feel free to call us directly.</p>
+      <p>We typically respond within 24 hours. If you have any urgent questions, feel free to contact us directly.</p>
       
       <p>Thank you for choosing Lawn Trooper!</p>
       
@@ -103,6 +155,7 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
     console.log('From email:', fromEmail);
     console.log('To business:', businessEmail.to);
     console.log('To customer:', customerEmail?.to || 'No email provided');
+    console.log('Plan data:', { yardSize: data.yardSize, plan: data.plan, basicAddons: data.basicAddons, premiumAddons: data.premiumAddons });
     
     // Always send business email
     const businessResult = await client.emails.send(businessEmail);

@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { sendQuoteEmails, type QuoteRequestData } from "./email";
 import { z } from "zod";
 
-// Quote request validation schema (simplified - plan/addons selected during consultation)
+// Quote request validation schema (includes plan selection)
 const quoteRequestSchema = z.object({
   name: z.string().min(2),
   email: z.string().email().or(z.literal("")),
@@ -12,7 +12,19 @@ const quoteRequestSchema = z.object({
   address: z.string().min(5),
   contactMethod: z.enum(["text", "phone", "email", "either"]),
   notes: z.string().optional(),
+  // Plan selection fields
+  yardSize: z.string(),
+  plan: z.string(),
+  basicAddons: z.array(z.string()),
+  premiumAddons: z.array(z.string()),
 }).superRefine((data, ctx) => {
+  if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Phone number is required for this contact method",
+      path: ["phone"],
+    });
+  }
   if (data.contactMethod === "email" && !data.email) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -42,7 +54,8 @@ export async function registerRoutes(
       // Send emails via Resend
       const result = await sendQuoteEmails(data as QuoteRequestData);
 
-      if (result.businessEmailSent && result.customerEmailSent) {
+      // Success if business email was sent (customer email is optional)
+      if (result.businessEmailSent) {
         res.json({ 
           success: true, 
           message: "Quote request sent successfully" 
@@ -50,7 +63,7 @@ export async function registerRoutes(
       } else {
         res.status(500).json({ 
           success: false, 
-          message: "Failed to send one or more emails" 
+          message: "Failed to send quote request email" 
         });
       }
     } catch (error) {
