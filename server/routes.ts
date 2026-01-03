@@ -4,6 +4,13 @@ import { storage } from "./storage";
 import { sendQuoteEmails, type QuoteRequestData } from "./email";
 import { z } from "zod";
 
+// Photo schema for uploaded images
+const photoSchema = z.object({
+  name: z.string(),
+  data: z.string(), // base64 encoded
+  type: z.string(),
+});
+
 // Quote request validation schema (includes plan selection)
 const quoteRequestSchema = z.object({
   name: z.string().min(2),
@@ -17,6 +24,8 @@ const quoteRequestSchema = z.object({
   plan: z.string(),
   basicAddons: z.array(z.string()),
   premiumAddons: z.array(z.string()),
+  // Optional photos
+  photos: z.array(photoSchema).optional(),
 }).superRefine((data, ctx) => {
   if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {
     ctx.addIssue({

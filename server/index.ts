@@ -14,6 +14,7 @@ declare module "http" {
 
 app.use(
   express.json({
+    limit: '50mb', // Allow large payloads for photo uploads (5 photos x 5MB + base64 overhead)
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },

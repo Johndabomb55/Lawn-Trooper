@@ -207,6 +207,10 @@ export default function LandingPage() {
   const [builderBasicAddons, setBuilderBasicAddons] = useState<string[]>([]);
   const [builderPremiumAddons, setBuilderPremiumAddons] = useState<string[]>([]);
   
+  // Photo upload state
+  const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  
   const { toast } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -235,15 +239,60 @@ export default function LandingPage() {
 
   const selectedContactMethod = form.watch("contactMethod");
 
+  // Handle photo file selection
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    const validFiles: File[] = [];
+    const maxSize = 5 * 1024 * 1024; // 5MB per file
+    const maxFiles = 5;
+    
+    for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
+      if (files[i].size <= maxSize) {
+        validFiles.push(files[i]);
+      }
+    }
+    
+    if (files.length > maxFiles) {
+      setPhotoError(`Maximum ${maxFiles} photos allowed. Only first ${maxFiles} will be uploaded.`);
+    } else if (validFiles.length < files.length) {
+      setPhotoError("Some files were too large (max 5MB each) and were skipped.");
+    } else {
+      setPhotoError(null);
+    }
+    
+    setSelectedPhotos(validFiles);
+  };
+
+  // Convert files to base64 for submission
+  const filesToBase64 = async (files: File[]): Promise<{name: string, data: string, type: string}[]> => {
+    return Promise.all(files.map(file => {
+      return new Promise<{name: string, data: string, type: string}>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve({
+            name: file.name,
+            data: reader.result as string,
+            type: file.type
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }));
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      // Convert photos to base64 if any
+      const photos = selectedPhotos.length > 0 ? await filesToBase64(selectedPhotos) : [];
+      
       const response = await fetch('/api/quote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, photos }),
       });
 
       const data = await response.json();
@@ -269,11 +318,13 @@ export default function LandingPage() {
           basicAddons: [],
           premiumAddons: [],
         });
-        // Reset plan builder state
+        // Reset plan builder state and photos
         setBuilderYardSize("1/3");
         setBuilderPlan("basic");
         setBuilderBasicAddons([]);
         setBuilderPremiumAddons([]);
+        setSelectedPhotos([]);
+        setPhotoError(null);
       } else {
         toast({
           title: "Error",
@@ -1284,11 +1335,11 @@ export default function LandingPage() {
                           <FormLabel>Preferred Contact Method <span className="text-red-500">*</span></FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="bg-white border-2 border-border">
                                 <SelectValue placeholder="Select method" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="bg-white">
                               <SelectItem value="text">Text Message</SelectItem>
                               <SelectItem value="phone">Phone Call</SelectItem>
                               <SelectItem value="email">Email</SelectItem>
@@ -1387,9 +1438,24 @@ export default function LandingPage() {
                   
                   <div className="grid gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="photos">Yard Photos</Label>
-                      <Input id="photos" type="file" accept="image/*" multiple className="cursor-pointer" disabled />
-                      <p className="text-[0.8rem] text-muted-foreground">Photo upload coming soon! For now, you can text photos to us after submitting your quote request or share them during your consultation.</p>
+                      <Label htmlFor="photos">Yard Photos (Optional - up to 5 photos, max 5MB each)</Label>
+                      <Input 
+                        id="photos" 
+                        type="file" 
+                        accept="image/*" 
+                        multiple 
+                        className="cursor-pointer bg-white border-2 border-border" 
+                        onChange={handlePhotoChange}
+                      />
+                      {selectedPhotos.length > 0 && (
+                        <p className="text-[0.8rem] text-green-600 font-medium">
+                          {selectedPhotos.length} photo{selectedPhotos.length > 1 ? 's' : ''} selected: {selectedPhotos.map(f => f.name).join(', ')}
+                        </p>
+                      )}
+                      {photoError && (
+                        <p className="text-[0.8rem] text-amber-600">{photoError}</p>
+                      )}
+                      <p className="text-[0.8rem] text-muted-foreground">Photos help us give you a more accurate quote. You can also text photos to us or share them during your consultation.</p>
                     </div>
 
                     <FormField
