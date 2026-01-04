@@ -1,6 +1,6 @@
 import React from "react";
 
-type MascotPose = "sprayer" | "sprayer-action" | "blower" | "logo";
+type MascotPose = "sprayer" | "sprayer-action" | "blower" | "logo" | "trooper1" | "trooper2" | "trooper3" | "trooper4" | "trooper5";
 type MascotSize = "sm" | "md" | "lg" | "xl";
 type MascotAlign = "left" | "right" | "center";
 
@@ -17,6 +17,11 @@ const POSE_IMAGES: Record<MascotPose, string> = {
   "sprayer-action": "/mascot/sprayer-action.png",
   blower: "/mascot/blower.png",
   logo: "/mascot/logo.png",
+  trooper1: "/mascot/trooper1.png",
+  trooper2: "/mascot/trooper2.png",
+  trooper3: "/mascot/trooper3.png",
+  trooper4: "/mascot/trooper4.png",
+  trooper5: "/mascot/trooper5.png",
 };
 
 const SIZE_CLASSES: Record<MascotSize, string> = {

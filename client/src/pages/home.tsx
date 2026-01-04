@@ -668,15 +668,15 @@ export default function LandingPage() {
                 <Leaf className="w-6 h-6 text-green-400" />
               </div>
             </div>
-            <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-4">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-[#0f2f1a] mb-4">
               Quietly Powerful. Environmentally Responsible.
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto mb-6">
-              Lawn Trooper utilizes <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>electric service vehicles</span>, <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>battery-powered mowers</span>, and <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
+            <p className="text-[#1a3d24] text-lg leading-relaxed max-w-3xl mx-auto mb-6">
+              Lawn Trooper utilizes <span className="text-amber-500 font-bold">electric service vehicles</span>, <span className="text-amber-500 font-bold">battery-powered mowers</span>, and <span className="text-amber-500 font-bold">electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
             </p>
-            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-6 py-3">
-              <Zap className="w-5 h-5 text-green-400" />
-              <span className="text-green-400 font-bold" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000' }}>So quiet, you might not even notice we just mowed your lawn.</span>
+            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/40 rounded-full px-6 py-3">
+              <Zap className="w-5 h-5 text-amber-500" />
+              <span className="text-[#0f2f1a] font-bold">So quiet, you might not even notice we just mowed your lawn.</span>
             </div>
           </div>
         </div>
@@ -684,44 +684,45 @@ export default function LandingPage() {
 
       <section id="plans" className="py-24 bg-primary/5 relative">
         <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
-        <div className="absolute top-12 left-4 z-10">
-          <Mascot pose="sprayer" size="lg" hideOnMobile />
+        <div className="absolute top-1/4 -left-8 z-10 opacity-60">
+          <Mascot pose="trooper1" size="lg" hideOnMobile />
+        </div>
+        <div className="absolute top-2/3 -right-8 z-10 opacity-60">
+          <Mascot pose="trooper2" size="lg" hideOnMobile />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4" 
-                style={{ textShadow: '-1px -1px 0 #15803d, 1px -1px 0 #15803d, -1px 1px 0 #15803d, 1px 1px 0 #15803d, 2px 2px 4px rgba(0,0,0,0.3)' }}>
-              Service Deployment Levels
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#0f2f1a] mb-4">
+              Service <span className="text-amber-500">Deployment</span> Levels
             </h2>
-            <p className="text-white text-lg font-bold max-w-2xl mx-auto tracking-wide"
-               style={{ textShadow: '-1px -1px 0 #15803d, 1px -1px 0 #15803d, -1px 1px 0 #15803d, 1px 1px 0 #15803d' }}>
+            <p className="text-[#1a3d24] text-lg font-bold max-w-2xl mx-auto tracking-wide">
               Transparent pricing. Simple annual plans. No hidden fees.
             </p>
           </div>
           
           {/* Alabama Yards Gallery */}
           <div className="mb-16">
-            <h3 className="text-center text-xl font-bold text-white mb-6" style={{ textShadow: '-1px -1px 0 #15803d, 1px -1px 0 #15803d, -1px 1px 0 #15803d, 1px 1px 0 #15803d' }}>
+            <h3 className="text-center text-xl font-bold text-[#0f2f1a] mb-6">
               Examples of Tennessee Valley Yards We Maintain
             </h3>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
                 <img src={imgAlabamaYard1} alt="Beautiful Alabama Home with Landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Madison, AL - Executive Plan</span>
+                  <span className="text-white text-sm font-bold">Madison, AL - Executive Command</span>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
                 <img src={imgAlabamaYard2} alt="Southern Home Front Yard" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Huntsville, AL - Premium Plan</span>
+                  <span className="text-white text-sm font-bold">Huntsville, AL - Premium Patrol</span>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
                 <img src={imgAlabamaYard3} alt="Landscaped Front Yard with Flowers" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Athens, AL - Basic Plan</span>
+                  <span className="text-white text-sm font-bold">Athens, AL - Basic Patrol</span>
                 </div>
               </div>
             </div>
@@ -1196,8 +1197,8 @@ export default function LandingPage() {
 
       {/* Testimonials - Field Reports */}
       <section className="py-20 bg-background relative border-t border-border">
-        <div className="absolute top-8 right-8 z-10">
-          <Mascot pose="logo" size="lg" hideOnMobile />
+        <div className="absolute top-1/3 -left-8 z-10 opacity-60">
+          <Mascot pose="trooper3" size="lg" hideOnMobile />
         </div>
         <div className="container mx-auto px-4">
            <div className="text-center mb-16">
@@ -1230,7 +1231,7 @@ export default function LandingPage() {
                  <p className="text-muted-foreground italic mb-4 flex-1">"The tactical approach is no joke. My yard has never looked this sharp. The pricing is transparent and the crew is incredibly disciplined."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">Lt. Col. James R. (Ret)</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Plan Member</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Command Member</div>
                  </div>
               </div>
             </motion.div>
@@ -1260,7 +1261,7 @@ export default function LandingPage() {
                  <p className="text-muted-foreground italic mb-4 flex-1">"I signed a 2 year pact, paid in full, and saved well over $2,000. Lawn Trooper really does deliver and the jobber app makes customer requests and bill pay easy as pie."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">Sarah & Mike T.</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Premium Plan Members</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Premium Patrol Members</div>
                  </div>
               </div>
             </motion.div>
@@ -1300,8 +1301,8 @@ export default function LandingPage() {
 
       {/* Quote Form Section */}
       <section id="quote" className="py-24 bg-background relative overflow-hidden">
-        <div className="absolute bottom-8 right-8 z-0 opacity-30">
-          <Mascot pose="sprayer-action" size="xl" hideOnMobile />
+        <div className="absolute top-1/2 -right-8 z-0 opacity-40">
+          <Mascot pose="trooper4" size="lg" hideOnMobile />
         </div>
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <div className="text-center mb-10">
