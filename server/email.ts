@@ -25,7 +25,7 @@ function getResendClient() {
 const PLAN_NAMES: Record<string, string> = {
   basic: "Basic Patrol",
   premium: "Premium Patrol",
-  executive: "Executive Patrol"
+  executive: "Executive Command"
 };
 
 // Add-on label mapping

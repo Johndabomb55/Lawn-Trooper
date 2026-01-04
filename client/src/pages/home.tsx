@@ -61,6 +61,8 @@ import {
   getPlanAllowance,
   PROMO_CONFIG,
   calculatePlanPrice,
+  calculate2026Price,
+  calculate2025Price,
   YARD_SIZES
 } from "@/data/plans";
 
@@ -100,6 +102,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Mascot } from "@/components/Mascot";
 
 // Countdown Timer Component
 function CountdownTimer() {
@@ -681,6 +684,9 @@ export default function LandingPage() {
 
       <section id="plans" className="py-24 bg-primary/5 relative">
         <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
+        <div className="absolute top-12 left-4 z-10">
+          <Mascot pose="sprayer" size="lg" hideOnMobile />
+        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
@@ -725,9 +731,7 @@ export default function LandingPage() {
           {(() => {
             const builderPlanData = PLANS.find(p => p.id === builderPlan);
             const builderYardData = YARD_SIZES.find(y => y.id === builderYardSize);
-            const builderPlanPrice = builderPlanData && builderYardData 
-              ? calculatePlanPrice(builderPlan, builderYardData.acres) 
-              : 0;
+            const builderPlanPrice = calculate2026Price(builderPlan, builderYardSize);
             
             const builderAllowance = getPlanAllowance(builderPlan, false);
             const builderBasicRemaining = Math.max(0, builderAllowance.basic - builderBasicAddons.length);
@@ -800,44 +804,56 @@ export default function LandingPage() {
                       Select Your Plan Tier
                     </h4>
                     <div className="grid md:grid-cols-3 gap-4">
-                      {PLANS.map((plan) => (
-                        <button
-                          key={plan.id}
-                          data-testid={`plan-tier-${plan.id}`}
-                          onClick={() => {
-                            setBuilderPlan(plan.id);
-                            resetBuilderAddons();
-                          }}
-                          className={`p-4 rounded-xl border-2 transition-all text-left relative ${
-                            builderPlan === plan.id
-                              ? 'border-primary bg-primary/10 shadow-lg'
-                              : 'border-border hover:border-primary/50 bg-muted/30'
-                          }`}
-                        >
-                          {plan.id === 'executive' && (
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                              Top Priority Scheduling
+                      {PLANS.map((plan) => {
+                        const price2026 = calculate2026Price(plan.id, builderYardSize);
+                        const price2025 = calculate2025Price(plan.id, builderYardSize);
+                        const isExecutive = plan.id === 'executive';
+                        const isSelected = builderPlan === plan.id;
+                        
+                        return (
+                          <button
+                            key={plan.id}
+                            data-testid={`plan-tier-${plan.id}`}
+                            onClick={() => {
+                              setBuilderPlan(plan.id);
+                              resetBuilderAddons();
+                            }}
+                            className={`p-4 rounded-xl transition-all text-left relative ${
+                              isExecutive 
+                                ? `border-3 border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`
+                                : isSelected
+                                  ? 'border-2 border-primary bg-primary/10 shadow-lg'
+                                  : 'border-2 border-border hover:border-primary/50 bg-muted/30'
+                            }`}
+                          >
+                            {isExecutive && (
+                              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
+                                Command Tier
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <h5 className={`font-bold ${isExecutive ? 'text-xl' : 'text-lg'}`}>{plan.name}</h5>
+                              {isExecutive && <Star className="w-5 h-5 fill-accent text-accent" />}
                             </div>
-                          )}
-                          <div className="flex items-center gap-2">
-                            <h5 className="font-bold text-lg">{plan.name}</h5>
-                            {plan.id === 'executive' && <Star className="w-4 h-4 fill-accent text-accent" />}
-                          </div>
-                          <div className="text-2xl font-bold text-primary mt-1">
-                            ${calculatePlanPrice(plan.id, builderYardData?.acres || 0.33)}
-                            <span className="text-sm font-normal text-muted-foreground">/mo</span>
-                          </div>
-                          {plan.oldPrice && (
-                            <div className="text-xs text-muted-foreground line-through">Was ${plan.oldPrice}/mo</div>
-                          )}
-                          <div className="text-xs text-muted-foreground mt-2">{plan.allowanceLabel}</div>
-                          {builderPlan === plan.id && (
-                            <div className="absolute top-2 right-2">
-                              <Check className="w-5 h-5 text-primary" />
+                            <div className="mt-2">
+                              <div className="text-xs text-muted-foreground line-through">
+                                2025 Standard: ${price2025}/mo
+                              </div>
+                              <div className={`font-bold text-primary ${isExecutive ? 'text-3xl' : 'text-2xl'}`}>
+                                ${price2026}
+                                <span className="text-sm font-normal text-muted-foreground">/mo</span>
+                              </div>
+                              <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
                             </div>
-                          )}
-                        </button>
-                      ))}
+                            <div className="text-xs text-muted-foreground mt-2">{plan.allowanceLabel}</div>
+                            {isSelected && (
+                              <div className="absolute top-2 right-2">
+                                <Check className="w-5 h-5 text-primary" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -892,7 +908,10 @@ export default function LandingPage() {
                   </div>
 
                   {/* Step 4: Add-ons */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 relative">
+                    <div className="absolute -top-4 -right-4 hidden lg:block">
+                      <Mascot pose="blower" size="md" />
+                    </div>
                     <h4 className="text-lg font-bold text-primary flex items-center gap-2">
                       <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">4</span>
                       Select Add-ons
@@ -1180,6 +1199,9 @@ export default function LandingPage() {
 
       {/* Testimonials - Field Reports */}
       <section className="py-20 bg-background relative border-t border-border">
+        <div className="absolute top-8 right-8 z-10">
+          <Mascot pose="logo" size="lg" hideOnMobile />
+        </div>
         <div className="container mx-auto px-4">
            <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Field Reports</h2>

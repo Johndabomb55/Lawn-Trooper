@@ -81,7 +81,7 @@ export const PLANS = [
   },
   {
     id: "executive",
-    name: "Executive Patrol",
+    name: "Executive Command",
     price: 399,
     oldPrice: 479,
     priceLabel: "Starts at $399/mo",
@@ -238,30 +238,52 @@ export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
   return { basic, premium };
 };
 
-export const calculatePlanPrice = (planId: string, acres: number) => {
+// Acre multipliers for pricing: 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44
+// For future larger sizes: each additional 1/3 acre multiplies by 1.2
+const ACRE_MULTIPLIERS: Record<string, number> = {
+  "1/3": 1.0,
+  "2/3": 1.2,
+  "1": 1.44
+};
+
+// AI Savings rate: 15% discount (2025 = 2026 / 0.85)
+const AI_SAVINGS_RATE = 0.15;
+
+// Get multiplier for a given yard size ID
+export const getAcreMultiplier = (yardSizeId: string): number => {
+  return ACRE_MULTIPLIERS[yardSizeId] || 1.0;
+};
+
+// Calculate 2026 AI-Savings price (current promotional price)
+export const calculate2026Price = (planId: string, yardSizeId: string): number => {
   const plan = PLANS.find(p => p.id === planId);
   if (!plan) return 0;
   
-  // Base price covers up to 1/3 acre (0.33)
-  const baseAcres = 0.33;
+  const multiplier = getAcreMultiplier(yardSizeId);
+  const price = plan.price * multiplier;
   
-  if (acres <= baseAcres) {
-    return plan.price;
-  }
+  // Round to whole dollars
+  return Math.round(price);
+};
+
+// Calculate 2025 Standard price (before AI savings)
+export const calculate2025Price = (planId: string, yardSizeId: string): number => {
+  const price2026 = calculate2026Price(planId, yardSizeId);
+  // 2025 = 2026 / (1 - 0.15) = 2026 / 0.85
+  const price2025 = price2026 / (1 - AI_SAVINGS_RATE);
   
-  // +25% per additional 1/3 acre (compounding, rounded at each step)
-  // 1/3 acre = base price
-  // 2/3 acre = round(base * 1.25)
-  // 1 acre = round(2/3 price * 1.25)
-  const additionalAcres = acres - baseAcres;
-  const chunks = Math.ceil(additionalAcres / 0.33);
+  // Round to nearest $5 for cleaner display
+  return Math.round(price2025 / 5) * 5;
+};
+
+// Legacy function for backward compatibility
+export const calculatePlanPrice = (planId: string, acres: number): number => {
+  // Map acres to yard size ID
+  let yardSizeId = "1/3";
+  if (acres > 0.5) yardSizeId = "2/3";
+  if (acres > 0.8) yardSizeId = "1";
   
-  let price = plan.price;
-  for (let i = 0; i < chunks; i++) {
-    price = Math.round(price * 1.25);
-  }
-  
-  return price;
+  return calculate2026Price(planId, yardSizeId);
 };
 
 // Yard size options for Plan Builder
