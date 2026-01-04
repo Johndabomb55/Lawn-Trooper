@@ -496,7 +496,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            id="how-it-works" className="w-full max-w-6xl mx-auto mb-12 scroll-mt-24"
+            id="how-it-works" className="w-full max-w-6xl mx-auto mb-12 scroll-mt-24 relative"
           >
             <div className="text-center mb-8">
                <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2 drop-shadow-md">Your Mission Plan</h3>
@@ -908,10 +908,7 @@ export default function LandingPage() {
                   </div>
 
                   {/* Step 4: Add-ons */}
-                  <div className="space-y-4 relative">
-                    <div className="absolute -top-4 -right-4 hidden lg:block">
-                      <Mascot pose="blower" size="md" />
-                    </div>
+                  <div className="space-y-4">
                     <h4 className="text-lg font-bold text-primary flex items-center gap-2">
                       <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">4</span>
                       Select Add-ons
@@ -1303,6 +1300,9 @@ export default function LandingPage() {
 
       {/* Quote Form Section */}
       <section id="quote" className="py-24 bg-background relative overflow-hidden">
+        <div className="absolute bottom-8 right-8 z-0 opacity-30">
+          <Mascot pose="sprayer-action" size="xl" hideOnMobile />
+        </div>
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <div className="text-center mb-10">
             <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
