@@ -787,7 +787,7 @@ export default function LandingPage() {
                           }`}
                         >
                           <div className="text-lg font-bold">{size.label}</div>
-                          <div className="text-xs text-muted-foreground">{size.acres} acres</div>
+                          <div className="text-xs text-muted-foreground">{size.subtitle}</div>
                         </button>
                       ))}
                     </div>

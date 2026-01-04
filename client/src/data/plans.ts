@@ -266,7 +266,7 @@ export const calculatePlanPrice = (planId: string, acres: number) => {
 
 // Yard size options for Plan Builder
 export const YARD_SIZES = [
-  { id: "1/3", label: "1/3 Acre", acres: 0.33 },
-  { id: "2/3", label: "2/3 Acre", acres: 0.66 },
-  { id: "1", label: "1 Acre", acres: 1.0 }
+  { id: "1/3", label: "Small", subtitle: "Up to 1/3 acre", acres: 0.33 },
+  { id: "2/3", label: "Medium", subtitle: "1/3 - 2/3 acre", acres: 0.66 },
+  { id: "1", label: "Large", subtitle: "2/3 - 1 acre", acres: 1.0 }
 ];
