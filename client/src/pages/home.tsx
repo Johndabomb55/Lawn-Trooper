@@ -34,6 +34,7 @@ import {
   GLOBAL_CONSTANTS, 
   PROMO_CONFIG
 } from "@/data/plans";
+import { FEATURE_FLAGS } from "@/config/featureFlags";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -235,7 +236,10 @@ export default function LandingPage() {
             className="mb-8 relative w-full max-w-4xl"
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
-            <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
+            <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
+            {FEATURE_FLAGS.enableFBCompliantHeroCopy && (
+              <p className="text-white/70 text-sm italic mt-2">That's not a weapon — it's a weed eater. We fight weeds, not people.</p>
+            )}
             
             {/* Big Intimidating Camo Banner */}
             <div className="mt-4 relative z-20 w-full">
@@ -270,6 +274,7 @@ export default function LandingPage() {
                </div>
                
                <div className="flex flex-col items-center gap-4 mt-2">
+                 <p className="text-white/60 text-xs uppercase tracking-wider">Residential lawn care & landscaping — no weapons involved.</p>
                  <CTAButton 
                    onClick={() => scrollToSection('quote')} 
                    variant="hero" 
@@ -867,7 +872,11 @@ export default function LandingPage() {
           </div>
           
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
-            <p>&copy; {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+              <p>&copy; {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
+              <span className="hidden md:inline text-white/30">|</span>
+              <p className="text-xs italic text-primary-foreground/50">Military-style branding. Landscaping tools only.</p>
+            </div>
             <div className="flex gap-8">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
