@@ -1420,26 +1420,59 @@ export default function LandingPage() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Your Selected Plan</h3>
                   <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center mb-4">
                       <div>
                         <div className="text-xs text-muted-foreground uppercase font-bold">Yard Size</div>
-                        <div className="font-bold text-primary">{YARD_SIZES.find(y => y.id === builderYardSize)?.label || builderYardSize} Acre</div>
+                        <div className="font-bold text-primary">{YARD_SIZES.find(y => y.id === builderYardSize)?.label || builderYardSize} ({builderYardSize} Acre)</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted-foreground uppercase font-bold">Plan</div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Plan Tier</div>
                         <div className="font-bold text-primary">{PLANS.find(p => p.id === builderPlan)?.name}</div>
                       </div>
-                      <div>
+                      <div className="col-span-2 md:col-span-1">
                         <div className="text-xs text-muted-foreground uppercase font-bold">Monthly Price</div>
-                        <div className="font-bold text-primary">${calculate2026Price(builderPlan, builderYardSize)}/mo</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground uppercase font-bold">Add-ons</div>
-                        <div className="font-bold text-primary">{builderBasicAddons.length + builderPremiumAddons.length} selected</div>
+                        <div className="font-bold text-primary text-xl">${calculate2026Price(builderPlan, builderYardSize)}/mo</div>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground text-center mt-3">
-                      <a href="#plans" className="text-primary underline hover:no-underline">Edit your plan selection above</a>
+                    
+                    {(builderBasicAddons.length > 0 || builderPremiumAddons.length > 0) && (
+                      <div className="border-t border-primary/10 pt-3 mt-3">
+                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Selected Add-ons:</div>
+                        <ul className="text-sm space-y-1">
+                          {builderBasicAddons.map(addonId => {
+                            const addon = BASIC_ADDONS.find(a => a.id === addonId);
+                            return addon ? (
+                              <li key={addonId} className="flex items-center gap-2">
+                                <Check className="w-3 h-3 text-green-600 shrink-0" />
+                                <span>{addon.label}</span>
+                              </li>
+                            ) : null;
+                          })}
+                          {builderPremiumAddons.map(addonId => {
+                            const addon = PREMIUM_ADDONS.find(a => a.id === addonId);
+                            return addon ? (
+                              <li key={addonId} className="flex items-center gap-2">
+                                <Check className="w-3 h-3 text-green-600 shrink-0" />
+                                <span>{addon.label} <span className="text-xs text-accent">(Premium)</span></span>
+                              </li>
+                            ) : null;
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {builderBasicAddons.length === 0 && builderPremiumAddons.length === 0 && (
+                      <div className="text-sm text-muted-foreground text-center">No add-ons selected yet</div>
+                    )}
+                    
+                    <p className="text-xs text-muted-foreground text-center mt-4">
+                      <button 
+                        type="button"
+                        onClick={() => document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="text-primary underline hover:no-underline cursor-pointer"
+                      >
+                        Edit your plan selection above
+                      </button>
                     </p>
                   </div>
                 </div>
@@ -1467,7 +1500,7 @@ export default function LandingPage() {
                       {photoError && (
                         <p className="text-[0.8rem] text-amber-600">{photoError}</p>
                       )}
-                      <p className="text-[0.8rem] text-muted-foreground">Photos help us give you a more accurate quote. You can also text photos to us or share them during your consultation.</p>
+                      <p className="text-[0.8rem] text-muted-foreground">Photos help us give you a more accurate quote. You can also text photos to us or share them during your Dream Yard Recon Appointment.</p>
                     </div>
 
                     <FormField
@@ -1492,11 +1525,11 @@ export default function LandingPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full font-bold uppercase tracking-wider py-6 md:py-8 text-lg md:text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-3 md:px-4 gap-1 md:gap-2"
-                  style={{ backgroundColor: '#1a3d24', color: 'white', border: 'none' }}
+                  className="w-full font-bold uppercase tracking-wider shadow-xl mt-8 flex flex-col items-center justify-center h-auto overflow-hidden"
+                  style={{ backgroundColor: '#1a3d24', color: 'white', border: 'none', padding: '20px 16px', minHeight: '80px' }}
                 >
-                  <span className="text-center whitespace-nowrap" style={{ color: 'white' }}>DEPLOY THE TROOPS</span>
-                  <span className="text-[9px] md:text-xs font-bold normal-case w-full text-center leading-snug break-words" style={{ color: '#facc15' }}>Your account commander will reach out to schedule a consultation.</span>
+                  <span className="text-lg md:text-2xl text-center" style={{ color: 'white' }}>DEPLOY THE TROOPS</span>
+                  <span className="text-[10px] md:text-xs font-bold normal-case text-center mt-1 px-2" style={{ color: '#facc15' }}>We'll reach out to schedule your FREE Dream Yard Recon Appointment</span>
                 </Button>
               </form>
             </Form>
