@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
+import MultiStepQuoteWizard from "@/components/MultiStepQuoteWizard";
+import CTAButton from "@/components/CTAButton";
 import { motion, AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { 
   Check, 
   Shield, 
@@ -31,28 +30,7 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage,
-  FormDescription
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { Label } from "@/components/ui/label";
 import { 
   PLANS, 
   BASIC_ADDONS, 
@@ -162,190 +140,14 @@ function CountdownTimer() {
   );
 }
 
-// Schema for the quote form
-const formSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  address: z.string().min(5, "Full street address is required"),
-  contactMethod: z.enum(["text", "phone", "email", "either"], {
-    required_error: "Please select a contact method",
-  }),
-  phone: z.string().optional(),
-  email: z.string().email("Please enter a valid email address").or(z.literal("")),
-  notes: z.string().optional(),
-  // Plan selection fields
-  yardSize: z.string(),
-  plan: z.string(),
-  basicAddons: z.array(z.string()),
-  premiumAddons: z.array(z.string()),
-}).superRefine((data, ctx) => {
-  if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Phone number is required for this contact method",
-      path: ["phone"],
-    });
-  }
-  if (data.contactMethod === "email" && !data.email) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Email is required for this contact method",
-      path: ["email"],
-    });
-  }
-  if (data.contactMethod === "either" && !data.phone && !data.email) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Please provide either phone or email",
-      path: ["email"],
-    });
-  }
-});
-
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  // Plan Builder state (for interactive preview)
+  // Plan Builder state (for interactive preview in the Service Levels section)
   const [builderYardSize, setBuilderYardSize] = useState("1/3");
   const [builderPlan, setBuilderPlan] = useState("basic");
   const [builderBasicAddons, setBuilderBasicAddons] = useState<string[]>([]);
   const [builderPremiumAddons, setBuilderPremiumAddons] = useState<string[]>([]);
-  
-  // Photo upload state
-  const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
-  const [photoError, setPhotoError] = useState<string | null>(null);
-  
-  const { toast } = useToast();
-  
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      contactMethod: "email",
-      notes: "",
-      yardSize: builderYardSize,
-      plan: builderPlan,
-      basicAddons: builderBasicAddons,
-      premiumAddons: builderPremiumAddons,
-    },
-  });
-  
-  // Keep form in sync with plan builder selections
-  React.useEffect(() => {
-    form.setValue("yardSize", builderYardSize);
-    form.setValue("plan", builderPlan);
-    form.setValue("basicAddons", builderBasicAddons);
-    form.setValue("premiumAddons", builderPremiumAddons);
-  }, [builderYardSize, builderPlan, builderBasicAddons, builderPremiumAddons, form]);
-
-  const selectedContactMethod = form.watch("contactMethod");
-
-  // Handle photo file selection
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    
-    const validFiles: File[] = [];
-    const maxSize = 5 * 1024 * 1024; // 5MB per file
-    const maxFiles = 5;
-    
-    for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
-      if (files[i].size <= maxSize) {
-        validFiles.push(files[i]);
-      }
-    }
-    
-    if (files.length > maxFiles) {
-      setPhotoError(`Maximum ${maxFiles} photos allowed. Only first ${maxFiles} will be uploaded.`);
-    } else if (validFiles.length < files.length) {
-      setPhotoError("Some files were too large (max 5MB each) and were skipped.");
-    } else {
-      setPhotoError(null);
-    }
-    
-    setSelectedPhotos(validFiles);
-  };
-
-  // Convert files to base64 for submission
-  const filesToBase64 = async (files: File[]): Promise<{name: string, data: string, type: string}[]> => {
-    return Promise.all(files.map(file => {
-      return new Promise<{name: string, data: string, type: string}>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve({
-            name: file.name,
-            data: reader.result as string,
-            type: file.type
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-    }));
-  };
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      // Convert photos to base64 if any
-      const photos = selectedPhotos.length > 0 ? await filesToBase64(selectedPhotos) : [];
-      
-      const response = await fetch('/api/quote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...values, photos }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast({
-          title: "Request Sent! 🫡",
-          description: values.email 
-            ? `Your quote request has been received and a confirmation was sent to ${values.email}. We'll contact you shortly!`
-            : "Your quote request has been received. We'll contact you shortly via your preferred method!",
-          duration: 6000,
-        });
-        
-        form.reset({
-          name: "",
-          email: "",
-          phone: "",
-          address: "",
-          contactMethod: "email",
-          notes: "",
-          yardSize: "1/3",
-          plan: "basic",
-          basicAddons: [],
-          premiumAddons: [],
-        });
-        // Reset plan builder state and photos
-        setBuilderYardSize("1/3");
-        setBuilderPlan("basic");
-        setBuilderBasicAddons([]);
-        setBuilderPremiumAddons([]);
-        setSelectedPhotos([]);
-        setPhotoError(null);
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to send quote request. Please try again or contact us directly.",
-          variant: "destructive",
-          duration: 5000,
-        });
-      }
-    } catch (error) {
-      console.error('Error submitting quote:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send quote request. Please check your connection and try again.",
-        variant: "destructive",
-        duration: 5000,
-      });
-    }
-  }
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -482,9 +284,17 @@ export default function LandingPage() {
                  25th Anniversary Sale + AI Cost Reductions: get up to 3 months free
                </div>
                
-               <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md mx-auto justify-center">
-                 <Button onClick={() => scrollToSection('plans')} variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10 font-bold uppercase tracking-wider py-6 text-lg bg-black/40 backdrop-blur-sm">
-                   See What’s Included
+               <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-lg mx-auto justify-center">
+                 <CTAButton 
+                   onClick={() => scrollToSection('quote')} 
+                   variant="hero" 
+                   size="large"
+                   urgentText="Sale ends Jan 25 - Act now!"
+                 >
+                   Get Instant Quote
+                 </CTAButton>
+                 <Button onClick={() => scrollToSection('plans')} variant="outline" className="border-white/30 text-white hover:bg-white/10 font-bold uppercase tracking-wider py-4 text-base bg-black/40 backdrop-blur-sm">
+                   See Plans
                  </Button>
                </div>
             </div>
@@ -1079,9 +889,14 @@ export default function LandingPage() {
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH get 1 Month FREE!</strong></li>
               </ul>
             </div>
-            <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold whitespace-nowrap px-8 uppercase tracking-wider text-center">
-              Claim Offer Now
-            </Button>
+            <CTAButton 
+              onClick={() => scrollToSection('quote')} 
+              variant="hero" 
+              size="large"
+              urgentText="Offer ends Jan 25!"
+            >
+              Get Instant Quote
+            </CTAButton>
           </div>
         </div>
       </section>
@@ -1299,241 +1114,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Quote Form Section */}
+      {/* Quote Wizard Section */}
       <section id="quote" className="py-24 bg-background relative overflow-hidden">
         <div className="absolute top-1/2 -right-8 z-0 opacity-40">
           <Mascot pose="trooper4" size="lg" hideOnMobile />
         </div>
-        <div className="container mx-auto px-4 max-w-3xl relative z-10">
-          <div className="text-center mb-10">
-            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
-              <Clock className="w-8 h-8" />
-            </div>
-            <h2 className="text-4xl font-heading font-bold text-primary mb-4">Request Your Deployment</h2>
-            <p className="text-muted-foreground">Fill out the intel below. We'll analyze your property satellite data and send your custom plan.</p>
-          </div>
-
-          <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                {/* 1. Contact Intel */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">1. Contact Intel</h3>
-                  
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Street Address <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Maple Ave, Springfield, IL 62704" {...field} />
-                        </FormControl>
-                        <FormDescription>Include City and Zip Code</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="contactMethod"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Preferred Contact Method <span className="text-red-500">*</span></FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-white border-2 border-border">
-                                <SelectValue placeholder="Select method" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-white">
-                              <SelectItem value="text">Text Message</SelectItem>
-                              <SelectItem value="phone">Phone Call</SelectItem>
-                              <SelectItem value="email">Email</SelectItem>
-                              <SelectItem value="either">Either (Phone or Email)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Mobile Phone {(selectedContactMethod === "text" || selectedContactMethod === "phone") && <span className="text-red-500">*</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="(555) 123-4567" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Email Address {selectedContactMethod === "email" && <span className="text-red-500">*</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="john@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
-                    <Info className="w-3 h-3 inline mr-1" />
-                    To give you a quote, all we really need is your address and a way to reach you. Photos are helpful but optional.
-                  </div>
-                </div>
-
-
-                {/* 2. Your Selected Plan Summary */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Your Selected Plan</h3>
-                  <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center mb-4">
-                      <div>
-                        <div className="text-xs text-muted-foreground uppercase font-bold">Yard Size</div>
-                        <div className="font-bold text-primary">{YARD_SIZES.find(y => y.id === builderYardSize)?.label || builderYardSize} ({builderYardSize} Acre)</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground uppercase font-bold">Plan Tier</div>
-                        <div className="font-bold text-primary">{PLANS.find(p => p.id === builderPlan)?.name}</div>
-                      </div>
-                      <div className="col-span-2 md:col-span-1">
-                        <div className="text-xs text-muted-foreground uppercase font-bold">Monthly Price</div>
-                        <div className="font-bold text-primary text-xl">${calculate2026Price(builderPlan, builderYardSize)}/mo</div>
-                      </div>
-                    </div>
-                    
-                    {(builderBasicAddons.length > 0 || builderPremiumAddons.length > 0) && (
-                      <div className="border-t border-primary/10 pt-3 mt-3">
-                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Selected Add-ons:</div>
-                        <ul className="text-sm space-y-1">
-                          {builderBasicAddons.map(addonId => {
-                            const addon = BASIC_ADDONS.find(a => a.id === addonId);
-                            return addon ? (
-                              <li key={addonId} className="flex items-center gap-2">
-                                <Check className="w-3 h-3 text-green-600 shrink-0" />
-                                <span>{addon.label}</span>
-                              </li>
-                            ) : null;
-                          })}
-                          {builderPremiumAddons.map(addonId => {
-                            const addon = PREMIUM_ADDONS.find(a => a.id === addonId);
-                            return addon ? (
-                              <li key={addonId} className="flex items-center gap-2">
-                                <Check className="w-3 h-3 text-green-600 shrink-0" />
-                                <span>{addon.label} <span className="text-xs text-accent">(Premium)</span></span>
-                              </li>
-                            ) : null;
-                          })}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {builderBasicAddons.length === 0 && builderPremiumAddons.length === 0 && (
-                      <div className="text-sm text-muted-foreground text-center">No add-ons selected yet</div>
-                    )}
-                    
-                    <p className="text-xs text-muted-foreground text-center mt-4">
-                      <button 
-                        type="button"
-                        onClick={() => document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="text-primary underline hover:no-underline cursor-pointer"
-                      >
-                        Edit your plan selection above
-                      </button>
-                    </p>
-                  </div>
-                </div>
-
-                {/* 3. Optional Info */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Recon Data (Optional)</h3>
-                  
-                  <div className="grid gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="photos">Yard Photos (Optional - up to 5 photos, max 5MB each)</Label>
-                      <Input 
-                        id="photos" 
-                        type="file" 
-                        accept="image/*" 
-                        multiple 
-                        className="cursor-pointer bg-white border-2 border-border" 
-                        onChange={handlePhotoChange}
-                      />
-                      {selectedPhotos.length > 0 && (
-                        <p className="text-[0.8rem] text-green-600 font-medium">
-                          {selectedPhotos.length} photo{selectedPhotos.length > 1 ? 's' : ''} selected: {selectedPhotos.map(f => f.name).join(', ')}
-                        </p>
-                      )}
-                      {photoError && (
-                        <p className="text-[0.8rem] text-amber-600">{photoError}</p>
-                      )}
-                      <p className="text-[0.8rem] text-muted-foreground">Photos help us give you a more accurate quote. You can also text photos to us or share them during your Dream Yard Recon Appointment.</p>
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Special Instructions / Gate Codes / Customer Names You're Referring</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Fenced backyard, dog on property, specific gate code, etc." 
-                              className="resize-none"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full font-bold uppercase tracking-wider shadow-xl mt-8 flex flex-col items-center justify-center h-auto overflow-hidden"
-                  style={{ backgroundColor: '#1a3d24', color: 'white', border: 'none', padding: '20px 16px', minHeight: '80px' }}
-                >
-                  <span className="text-lg md:text-2xl text-center" style={{ color: 'white' }}>DEPLOY THE TROOPS</span>
-                  <span className="text-[10px] md:text-xs font-bold normal-case text-center mt-1 px-2" style={{ color: '#facc15' }}>We'll reach out to schedule your FREE Dream Yard Recon Appointment</span>
-                </Button>
-              </form>
-            </Form>
-          </div>
+        <div className="container mx-auto px-4 max-w-4xl relative z-10">
+          <MultiStepQuoteWizard />
         </div>
       </section>
 
