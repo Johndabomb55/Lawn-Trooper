@@ -1,0 +1,102 @@
+You are a senior product engineer and conversion-focused UX designer.
+
+Context:
+Lawn-trooper.com currently has a single multi-step “Get Your Instant Quote” form
+(Yard Size → Plan Tier → Add-ons → Contact). Core logic and pricing already work.
+DO NOT rebuild or move the form. This task is marketing, engagement, and polish only.
+
+Primary Goal:
+Increase form completion, enjoyment, memorability, and lead quality by adding
+lightweight gamification, clarity, and feedback — without slowing the site
+or changing pricing logic.
+
+STRICT CONSTRAINTS:
+- Do NOT change pricing calculations, plans, or add-on rules
+- Do NOT remove existing validation
+- Do NOT add heavy libraries
+- Do NOT break mobile UX
+- All changes must be additive and reversible
+- Use existing styles, colors, and components where possible
+
+--------------------------------------------------
+TASKS
+--------------------------------------------------
+
+1) GAMIFIED PROGRESS BAR (LIGHTWEIGHT)
+- Enhance the existing progress bar with rank labels:
+  Step 1: Recruit
+  Step 2: Specialist
+  Step 3: Sergeant
+  Step 4: Commander
+- Display rank labels subtly under each icon.
+- When a step is completed, briefly animate:
+  - checkmark pulse OR
+  - small confetti burst (CSS-only, <1s duration)
+- Ensure animations are optional and do not block interaction.
+
+2) ADD-ON STEP CLARITY + FEEDBACK
+- At the top of the Add-ons step:
+  Show a small status pill:
+  “Mission Loadout: 3 Basic + 1 Premium required”
+- As users select add-ons:
+  - Update text dynamically:
+    “2 Basic remaining”
+    “Premium slot filled”
+- When requirements are met:
+  Show green confirmation:
+  “Loadout Complete — Ready to Deploy”
+
+3) ADD-ON SUMMARY (REINFORCE VALUE)
+- At the bottom of the Add-ons step AND top of Contact step:
+  Show a compact summary card:
+  - Yard Size
+  - Plan Tier
+  - Selected Add-ons (pill-style tags)
+  - Monthly Total
+- Highlight included add-ons vs paid extras visually.
+- This summary must auto-update if the user goes back and changes selections.
+
+4) MICRO-ENGAGEMENT BANNERS (OPTIONAL, ROTATING)
+- Insert a small banner between Add-ons → Contact:
+  Examples:
+  “Fun Fact: Most Huntsville lawns need aeration every 12–18 months.”
+  “Pro Tip: Weekly mowing keeps Bermuda thicker and greener.”
+- Rotate 3–5 messages randomly.
+- Keep banners subtle and dismissible.
+
+5) FINAL STEP COPY + CONFIDENCE
+- Update Contact step headline to:
+  “Mission Almost Complete”
+- Subtext:
+  “You’re requesting a FREE Dream Yard Recon. No payment required.”
+- Make sure placeholder data (e.g., John Doe, fake addresses) are removed.
+
+6) POST-SUBMIT “MISSION ACCOMPLISHED” CONFIRMATION
+- After submission:
+  Replace the default success message with a branded confirmation panel:
+  Headline: “Mission Accomplished”
+  Show:
+    - Yard Size
+    - Plan Tier
+    - Selected Add-ons
+    - Estimated Monthly Total
+- Add CTA:
+  “Join the Priority Waitlist for Lawn Trooper Elite (Launching Spring 2026)”
+  → Email-only capture (optional)
+- Add referral nudge:
+  “Refer a neighbor — you both get 1 month free.”
+
+7) PERFORMANCE & SAFETY CHECKS
+- Ensure:
+  - No horizontal scrolling introduced
+  - No blocking animations
+  - No impact to load time
+- Add comments in code explaining how to disable gamification if needed.
+
+--------------------------------------------------
+DELIVERABLES
+--------------------------------------------------
+- List of files modified
+- Short explanation of each feature added
+- Manual test checklist (desktop + mobile)
+- Confirmation that pricing and validation were untouched
