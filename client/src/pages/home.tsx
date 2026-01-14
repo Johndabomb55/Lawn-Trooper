@@ -1423,7 +1423,7 @@ export default function LandingPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                       <div>
                         <div className="text-xs text-muted-foreground uppercase font-bold">Yard Size</div>
-                        <div className="font-bold text-primary">{builderYardSize} Acre</div>
+                        <div className="font-bold text-primary">{YARD_SIZES.find(y => y.id === builderYardSize)?.label || builderYardSize} Acre</div>
                       </div>
                       <div>
                         <div className="text-xs text-muted-foreground uppercase font-bold">Plan</div>
