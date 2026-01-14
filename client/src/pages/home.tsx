@@ -30,18 +30,9 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { 
-  PLANS, 
-  BASIC_ADDONS, 
-  PREMIUM_ADDONS, 
   GLOBAL_CONSTANTS, 
-  getPlanAllowance,
-  PROMO_CONFIG,
-  calculatePlanPrice,
-  calculate2026Price,
-  calculate2025Price,
-  YARD_SIZES
+  PROMO_CONFIG
 } from "@/data/plans";
 
 // Assets
@@ -142,12 +133,6 @@ function CountdownTimer() {
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  // Plan Builder state (for interactive preview in the Service Levels section)
-  const [builderYardSize, setBuilderYardSize] = useState("1/3");
-  const [builderPlan, setBuilderPlan] = useState("basic");
-  const [builderBasicAddons, setBuilderBasicAddons] = useState<string[]>([]);
-  const [builderPremiumAddons, setBuilderPremiumAddons] = useState<string[]>([]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -162,7 +147,7 @@ export default function LandingPage() {
 
   return (
     <TooltipProvider>
-    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
       {/* Top Announcement Banner */}
       <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
         <div className="container mx-auto relative flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
@@ -192,7 +177,7 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
             <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
-              Get Quote
+              Get Instant Quote
             </Button>
           </div>
 
@@ -215,7 +200,7 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Quote</Button>
+                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Quote</Button>
               </div>
             </motion.div>
           )}
@@ -284,7 +269,7 @@ export default function LandingPage() {
                  25th Anniversary Sale + AI Cost Reductions: get up to 3 months free
                </div>
                
-               <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-lg mx-auto justify-center">
+               <div className="flex flex-col items-center gap-4 mt-2">
                  <CTAButton 
                    onClick={() => scrollToSection('quote')} 
                    variant="hero" 
@@ -293,9 +278,12 @@ export default function LandingPage() {
                  >
                    Get Instant Quote
                  </CTAButton>
-                 <Button onClick={() => scrollToSection('plans')} variant="outline" className="border-white/30 text-white hover:bg-white/10 font-bold uppercase tracking-wider py-4 text-base bg-black/40 backdrop-blur-sm">
-                   See Plans
-                 </Button>
+                 <button 
+                   onClick={() => scrollToSection('plans')} 
+                   className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
+                 >
+                   View service tiers & pricing
+                 </button>
                </div>
             </div>
           </motion.div>
@@ -431,15 +419,33 @@ export default function LandingPage() {
                </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold uppercase tracking-wider text-lg h-16 px-10 shadow-xl shadow-accent/20 transform hover:-translate-y-1 transition-all">
+            <div className="flex flex-col items-center gap-4">
+              <CTAButton 
+                onClick={() => scrollToSection('quote')} 
+                variant="hero" 
+                size="large"
+                urgentText="Sale ends Jan 25 - Act now!"
+              >
                 Get Instant Quote
-              </Button>
-              <Button onClick={() => scrollToSection('plans')} variant="outline" size="lg" className="border-white/30 bg-black/30 backdrop-blur-sm text-white hover:bg-white/10 font-bold uppercase tracking-wider text-lg h-16 px-10">
-                View Service Tiers
-              </Button>
+              </CTAButton>
+              <button 
+                onClick={() => scrollToSection('plans')} 
+                className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
+              >
+                View service tiers & pricing
+              </button>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Quote Wizard Section - Primary CTA */}
+      <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
+        <div className="absolute top-1/2 -right-8 z-0 opacity-40">
+          <Mascot pose="trooper4" size="lg" hideOnMobile />
+        </div>
+        <div className="container mx-auto px-4 max-w-4xl relative z-10">
+          <MultiStepQuoteWizard />
         </div>
       </section>
 
@@ -537,309 +543,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-
-          {/* Plan Builder Component */}
-          {(() => {
-            const builderPlanData = PLANS.find(p => p.id === builderPlan);
-            const builderYardData = YARD_SIZES.find(y => y.id === builderYardSize);
-            const builderPlanPrice = calculate2026Price(builderPlan, builderYardSize);
-            
-            const builderAllowance = getPlanAllowance(builderPlan, false);
-            const builderBasicRemaining = Math.max(0, builderAllowance.basic - builderBasicAddons.length);
-            const builderPremiumRemaining = Math.max(0, builderAllowance.premium - builderPremiumAddons.length);
-            
-            const builderExtraBasicCount = Math.max(0, builderBasicAddons.length - builderAllowance.basic);
-            const builderExtraPremiumCount = Math.max(0, builderPremiumAddons.length - builderAllowance.premium);
-            const builderExtraAddonsCost = (builderExtraBasicCount * 20) + (builderExtraPremiumCount * 40);
-            const builderTotalPrice = builderPlanPrice + builderExtraAddonsCost;
-
-            const handleBuilderBasicAddonToggle = (addonId: string) => {
-              setBuilderBasicAddons(prev => 
-                prev.includes(addonId) 
-                  ? prev.filter(id => id !== addonId)
-                  : [...prev, addonId]
-              );
-            };
-
-            const handleBuilderPremiumAddonToggle = (addonId: string) => {
-              setBuilderPremiumAddons(prev => 
-                prev.includes(addonId) 
-                  ? prev.filter(id => id !== addonId)
-                  : [...prev, addonId]
-              );
-            };
-
-            const resetBuilderAddons = () => {
-              setBuilderBasicAddons([]);
-              setBuilderPremiumAddons([]);
-            };
-
-            return (
-              <div className="bg-card rounded-2xl shadow-2xl border-2 border-primary/30 overflow-hidden">
-                {/* Header */}
-                <div className="bg-primary text-primary-foreground p-6 text-center">
-                  <h3 className="text-2xl font-heading font-bold uppercase tracking-wider">Build Your Plan</h3>
-                  <p className="text-sm opacity-90 mt-1">Configure your perfect lawn care package</p>
-                </div>
-
-                <div className="p-6 md:p-8 space-y-8">
-                  {/* Step 1: Yard Size */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">1</span>
-                      Select Your Yard Size
-                    </h4>
-                    <div className="grid grid-cols-3 gap-3">
-                      {YARD_SIZES.map((size) => (
-                        <button
-                          key={size.id}
-                          data-testid={`yard-size-${size.id}`}
-                          onClick={() => setBuilderYardSize(size.id)}
-                          className={`p-4 rounded-xl border-2 transition-all text-center ${
-                            builderYardSize === size.id
-                              ? 'border-primary bg-primary/10 shadow-lg'
-                              : 'border-border hover:border-primary/50 bg-muted/30'
-                          }`}
-                        >
-                          <div className="text-lg font-bold">{size.label}</div>
-                          <div className="text-xs text-muted-foreground">{size.subtitle}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Step 2: Plan Tier */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">2</span>
-                      Select Your Plan Tier
-                    </h4>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      {PLANS.map((plan) => {
-                        const price2026 = calculate2026Price(plan.id, builderYardSize);
-                        const price2025 = calculate2025Price(plan.id, builderYardSize);
-                        const isExecutive = plan.id === 'executive';
-                        const isSelected = builderPlan === plan.id;
-                        
-                        return (
-                          <button
-                            key={plan.id}
-                            data-testid={`plan-tier-${plan.id}`}
-                            onClick={() => {
-                              setBuilderPlan(plan.id);
-                              resetBuilderAddons();
-                            }}
-                            className={`p-4 rounded-xl transition-all text-left relative ${
-                              isExecutive 
-                                ? `border-3 border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`
-                                : isSelected
-                                  ? 'border-2 border-primary bg-primary/10 shadow-lg'
-                                  : 'border-2 border-border hover:border-primary/50 bg-muted/30'
-                            }`}
-                          >
-                            {isExecutive && (
-                              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                                Command Tier
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <h5 className={`font-bold ${isExecutive ? 'text-xl' : 'text-lg'}`}>{plan.name}</h5>
-                              {isExecutive && <Star className="w-5 h-5 fill-accent text-accent" />}
-                            </div>
-                            <div className="mt-2">
-                              <div className="text-xs text-muted-foreground line-through">
-                                2025 Standard: ${price2025}/mo
-                              </div>
-                              <div className={`font-bold text-primary ${isExecutive ? 'text-3xl' : 'text-2xl'}`}>
-                                ${price2026}
-                                <span className="text-sm font-normal text-muted-foreground">/mo</span>
-                              </div>
-                              <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-2">{plan.allowanceLabel}</div>
-                            {isSelected && (
-                              <div className="absolute top-2 right-2">
-                                <Check className="w-5 h-5 text-primary" />
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Step 3: Plan Features */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">3</span>
-                      {builderPlanData?.name} Features
-                    </h4>
-                    <div className="bg-muted/30 rounded-xl p-4 border border-border">
-                      {/* Key Stats */}
-                      <div className="grid grid-cols-3 gap-3 mb-4">
-                        {builderPlanData?.keyStats?.map((stat, idx) => (
-                          <div key={idx} className="bg-background rounded-lg p-3 text-center border border-border/50">
-                            <div className="text-[10px] uppercase text-muted-foreground font-bold">{stat.label}</div>
-                            <div className="text-sm font-bold text-primary mt-0.5">
-                              {stat.value === 'Weekly' || stat.value === 'Bi-Weekly' ? (
-                                <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">{stat.value}</span>
-                              ) : (
-                                stat.value
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <ul className="space-y-2">
-                        {/* Sort features: included first, then not included */}
-                        {builderPlanData?.features
-                          .slice()
-                          .sort((a, b) => {
-                            const aNotIncluded = a.includes("Not Included");
-                            const bNotIncluded = b.includes("Not Included");
-                            if (aNotIncluded && !bNotIncluded) return 1;
-                            if (!aNotIncluded && bNotIncluded) return -1;
-                            return 0;
-                          })
-                          .map((feature, i) => {
-                          const isNotIncluded = feature.includes("Not Included");
-                          return (
-                            <li key={i} className={`flex items-start gap-2 text-sm ${isNotIncluded ? 'opacity-50' : ''}`}>
-                              {isNotIncluded ? (
-                                <X className="w-4 h-4 shrink-0 text-muted-foreground mt-0.5" />
-                              ) : (
-                                <Check className="w-4 h-4 shrink-0 text-primary mt-0.5" />
-                              )}
-                              <span dangerouslySetInnerHTML={{ __html: feature }} />
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Step 4: Add-ons */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">4</span>
-                      Select Add-ons
-                    </h4>
-                    
-                    {/* Add-on Counters */}
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <div className={`px-4 py-2 rounded-lg border ${builderBasicRemaining > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-muted border-border'}`}>
-                        Basic add-ons remaining: <strong>{builderBasicRemaining}</strong>
-                      </div>
-                      {(builderPlan === 'premium' || builderPlan === 'executive') && (
-                        <div className={`px-4 py-2 rounded-lg border ${builderPremiumRemaining > 0 ? 'bg-accent/20 border-accent/40 text-accent-foreground' : 'bg-muted border-border'}`}>
-                          Premium add-ons remaining: <strong>{builderPremiumRemaining}</strong>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Basic Add-ons */}
-                    <div className="space-y-3">
-                      <h5 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-ons ($20/mo each if over limit)</h5>
-                      <div className="grid md:grid-cols-2 gap-2">
-                        {BASIC_ADDONS.map((addon) => (
-                          <label
-                            key={addon.id}
-                            data-testid={`addon-basic-${addon.id}`}
-                            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                              builderBasicAddons.includes(addon.id)
-                                ? 'border-primary bg-primary/5'
-                                : 'border-border hover:border-primary/30'
-                            }`}
-                          >
-                            <Checkbox
-                              checked={builderBasicAddons.includes(addon.id)}
-                              onCheckedChange={() => handleBuilderBasicAddonToggle(addon.id)}
-                              className="mt-0.5"
-                            />
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{addon.label}</div>
-                              <div className="text-xs text-muted-foreground">{addon.description}</div>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Premium Add-ons (only for Premium and Executive) */}
-                    {(builderPlan === 'premium' || builderPlan === 'executive') && (
-                      <div className="space-y-3">
-                        <h5 className="font-bold text-sm uppercase tracking-wider text-accent">Premium Add-ons ($40/mo each if over limit)</h5>
-                        <div className="grid md:grid-cols-2 gap-2">
-                          {PREMIUM_ADDONS.map((addon) => (
-                            <label
-                              key={addon.id}
-                              data-testid={`addon-premium-${addon.id}`}
-                              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                                builderPremiumAddons.includes(addon.id)
-                                  ? 'border-accent bg-accent/10'
-                                  : 'border-border hover:border-accent/30'
-                              }`}
-                            >
-                              <Checkbox
-                                checked={builderPremiumAddons.includes(addon.id)}
-                                onCheckedChange={() => handleBuilderPremiumAddonToggle(addon.id)}
-                                className="mt-0.5"
-                              />
-                              <div className="flex-1">
-                                <div className="font-medium text-sm">{addon.label}</div>
-                                <div className="text-xs text-muted-foreground">{addon.description}</div>
-                              </div>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Price Summary */}
-                  <div className="bg-muted/50 rounded-xl p-6 border border-border space-y-3">
-                    <h4 className="font-bold text-lg text-primary">Price Summary</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>{builderPlanData?.name} Base Price ({builderYardData?.label})</span>
-                        <span className="font-bold">${builderPlanPrice}/mo</span>
-                      </div>
-                      
-                      {builderBasicAddons.length > 0 && (
-                        <div className="flex justify-between text-muted-foreground">
-                          <span>
-                            Basic Add-ons ({builderBasicAddons.length}) 
-                            {builderBasicAddons.length <= builderAllowance.basic && ' - Included'}
-                          </span>
-                          <span className={builderBasicAddons.length <= builderAllowance.basic ? 'text-green-600' : ''}>
-                            {builderBasicAddons.length <= builderAllowance.basic ? 'Free' : `+$${builderExtraBasicCount * 20}/mo`}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {builderPremiumAddons.length > 0 && (
-                        <div className="flex justify-between text-muted-foreground">
-                          <span>
-                            Premium Add-ons ({builderPremiumAddons.length})
-                            {builderPremiumAddons.length <= builderAllowance.premium && ' - Included'}
-                          </span>
-                          <span className={builderPremiumAddons.length <= builderAllowance.premium ? 'text-green-600' : ''}>
-                            {builderPremiumAddons.length <= builderAllowance.premium ? 'Free' : `+$${builderExtraPremiumCount * 40}/mo`}
-                          </span>
-                        </div>
-                      )}
-                      
-                      <div className="border-t border-border pt-3 flex justify-between text-lg font-bold">
-                        <span>Total Monthly</span>
-                        <span className="text-primary">${builderTotalPrice}/mo</span>
-                      </div>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
 
           {/* Service Method Disclaimer */}
           <div className="mt-8 text-center">
@@ -1111,16 +814,6 @@ export default function LandingPage() {
               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Quote Wizard Section */}
-      <section id="quote" className="py-24 bg-background relative overflow-hidden">
-        <div className="absolute top-1/2 -right-8 z-0 opacity-40">
-          <Mascot pose="trooper4" size="lg" hideOnMobile />
-        </div>
-        <div className="container mx-auto px-4 max-w-4xl relative z-10">
-          <MultiStepQuoteWizard />
         </div>
       </section>
 

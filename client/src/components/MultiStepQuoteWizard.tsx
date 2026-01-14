@@ -457,7 +457,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         {extraBasicCount > 0 && <span className="text-accent ml-1">(+{extraBasicCount} extra @ $20/mo each)</span>}
                       </span>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[300px] md:max-h-none overflow-y-auto md:overflow-visible">
                       {BASIC_ADDONS.map((addon) => {
                         const isSelected = basicAddons.includes(addon.id);
                         return (
@@ -482,16 +482,16 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
                   {/* Premium Add-ons */}
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <h5 className="font-bold text-accent flex items-center gap-1">
                         <Star className="w-4 h-4 fill-accent" /> Premium Add-ons
                       </h5>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-xs md:text-sm text-muted-foreground">
                         {premiumAddons.length}/{allowance.premium} included
-                        {extraPremiumCount > 0 && <span className="text-accent ml-1">(+{extraPremiumCount} extra @ $40/mo each)</span>}
+                        {extraPremiumCount > 0 && <span className="text-accent ml-1">(+{extraPremiumCount} extra)</span>}
                       </span>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[300px] md:max-h-none overflow-y-auto md:overflow-visible">
                       {PREMIUM_ADDONS.map((addon) => {
                         const isSelected = premiumAddons.includes(addon.id);
                         return (
