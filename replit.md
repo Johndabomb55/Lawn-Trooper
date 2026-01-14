@@ -70,3 +70,22 @@ Preferred communication style: Simple, everyday language.
 ### Environment Variables Required
 - `DATABASE_URL`: PostgreSQL connection string
 - Resend credentials via Replit Connectors (`REPLIT_CONNECTORS_HOSTNAME`, `REPL_IDENTITY`)
+
+## Recent Changes (January 2026)
+
+### Quote Wizard Gamification & Lead Capture
+- **Marketing Config**: Created centralized config file (`client/src/data/marketing.ts`) with feature flags, military ranks, local tips, and social sharing templates
+- **Military Rank Progress**: Steps now show rank progression (Recruit → Sergeant → Commander → General) with confetti animations
+- **Add-on Validation**: "Mission Ready" indicator ensures users select required add-ons before proceeding
+- **Local Tips Banner**: Rotating lawn care tips appear during add-on selection step
+- **MissionAccomplished Page**: Confirmation page with quote summary, PDF download, waitlist signup, and social sharing
+- **Lead Capture API**: `/api/leads` endpoint with PostgreSQL storage, `/api/waitlist` for early access signups
+- **Feature Flags**: All gamification features can be toggled via `FEATURE_FLAGS` with defensive defaults
+
+### Marketing Team Configuration Guide
+All marketing content is in `client/src/data/marketing.ts`:
+- `FEATURE_FLAGS`: Toggle confetti, waitlist, PDF download, social sharing
+- `MILITARY_RANKS`: Customize rank names and icons for each step
+- `LOCAL_TIPS`: Add/edit lawn care tips shown during wizard
+- `CELEBRATION_MESSAGES`: Update step completion messages
+- `SOCIAL_SHARING`: Configure sharing templates for each platform

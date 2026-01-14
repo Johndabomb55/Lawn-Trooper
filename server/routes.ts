@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { sendQuoteEmails, type QuoteRequestData } from "./email";
 import { z } from "zod";
+import { insertLeadSchema, insertWaitlistSchema } from "@shared/schema";
 
 // Photo schema for uploaded images
 const photoSchema = z.object({
@@ -77,6 +78,62 @@ export async function registerRoutes(
       }
     } catch (error) {
       console.error("Error processing quote request:", error);
+      res.status(400).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : "Invalid request" 
+      });
+    }
+  });
+
+  // Capture lead data
+  app.post("/api/leads", async (req, res) => {
+    try {
+      const data = insertLeadSchema.parse(req.body);
+      
+      // Store lead in database
+      const lead = await storage.createLead(data);
+      
+      res.json({ 
+        success: true, 
+        message: "Lead captured successfully",
+        leadId: lead?.id
+      });
+    } catch (error) {
+      console.error("Error capturing lead:", error);
+      // Return error for monitoring but don't block user experience on frontend
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : "Failed to capture lead",
+        error: true
+      });
+    }
+  });
+
+  // Waitlist signup
+  app.post("/api/waitlist", async (req, res) => {
+    try {
+      const data = insertWaitlistSchema.parse(req.body);
+      
+      // Check if email already exists
+      const existing = await storage.getWaitlistByEmail(data.email);
+      if (existing) {
+        res.json({ 
+          success: true, 
+          message: "You're already on the waitlist!",
+          alreadySignedUp: true
+        });
+        return;
+      }
+      
+      // Store waitlist entry
+      await storage.createWaitlistEntry(data);
+      
+      res.json({ 
+        success: true, 
+        message: "Successfully joined the waitlist!"
+      });
+    } catch (error) {
+      console.error("Error adding to waitlist:", error);
       res.status(400).json({ 
         success: false, 
         message: error instanceof Error ? error.message : "Invalid request" 
