@@ -235,7 +235,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, type: "spring" }}
             className="mb-8 relative w-full max-w-4xl"
           >
-            <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
+            <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
             <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
             {FEATURE_FLAGS.enableFBCompliantHeroCopy && (
               <p className="text-white/70 text-sm italic mt-2">That's not a weapon — it's a weed eater. We fight weeds, not people.</p>
