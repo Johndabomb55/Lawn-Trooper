@@ -461,21 +461,23 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {BASIC_ADDONS.map((addon) => {
                         const isSelected = basicAddons.includes(addon.id);
                         return (
-                          <button
+                          <div
                             key={addon.id}
-                            type="button"
+                            role="button"
+                            tabIndex={0}
                             onClick={() => handleBasicAddonToggle(addon.id)}
-                            className={`p-3 rounded-lg border text-left transition-all ${
+                            onKeyDown={(e) => e.key === 'Enter' && handleBasicAddonToggle(addon.id)}
+                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer ${
                               isSelected 
                                 ? 'border-primary bg-primary/10' 
                                 : 'border-border hover:border-primary/50'
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <Checkbox checked={isSelected} className="pointer-events-none" />
+                              <Checkbox checked={isSelected} onCheckedChange={() => handleBasicAddonToggle(addon.id)} />
                               <span className="text-sm font-medium">{addon.label}</span>
                             </div>
-                          </button>
+                          </div>
                         );
                       })}
                     </div>
@@ -496,21 +498,23 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {PREMIUM_ADDONS.map((addon) => {
                         const isSelected = premiumAddons.includes(addon.id);
                         return (
-                          <button
+                          <div
                             key={addon.id}
-                            type="button"
+                            role="button"
+                            tabIndex={0}
                             onClick={() => handlePremiumAddonToggle(addon.id)}
-                            className={`p-3 rounded-lg border text-left transition-all ${
+                            onKeyDown={(e) => e.key === 'Enter' && handlePremiumAddonToggle(addon.id)}
+                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer ${
                               isSelected 
                                 ? 'border-accent bg-accent/10' 
                                 : 'border-border hover:border-accent/50'
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <Checkbox checked={isSelected} className="pointer-events-none" />
+                              <Checkbox checked={isSelected} onCheckedChange={() => handlePremiumAddonToggle(addon.id)} />
                               <span className="text-sm font-medium">{addon.label}</span>
                             </div>
-                          </button>
+                          </div>
                         );
                       })}
                     </div>
