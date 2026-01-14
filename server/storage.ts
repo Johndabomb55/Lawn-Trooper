@@ -40,6 +40,10 @@ export class DatabaseStorage implements IStorage {
       totalPrice: insertLead.totalPrice ?? null,
       basicAddons: (insertLead.basicAddons ?? []) as string[],
       premiumAddons: (insertLead.premiumAddons ?? []) as string[],
+      term: insertLead.term ?? null,
+      payUpfront: insertLead.payUpfront ?? null,
+      segments: (insertLead.segments ?? []) as string[],
+      appliedPromos: (insertLead.appliedPromos ?? []) as string[],
     }).returning();
     return lead;
   }

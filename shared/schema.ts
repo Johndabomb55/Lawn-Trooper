@@ -31,6 +31,10 @@ export const leads = pgTable("leads", {
   premiumAddons: jsonb("premium_addons").$type<string[]>().default([]),
   notes: text("notes"),
   totalPrice: text("total_price"),
+  term: text("term"), // '1-year' or '2-year'
+  payUpfront: text("pay_upfront"), // 'true' or 'false'
+  segments: jsonb("segments").$type<string[]>().default([]), // ['renter', 'veteran', 'senior']
+  appliedPromos: jsonb("applied_promos").$type<string[]>().default([]), // List of applied promo titles
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

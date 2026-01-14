@@ -29,7 +29,19 @@ import {
   CELEBRATION_MESSAGES,
   getFeatureFlag
 } from "@/data/marketing";
+import {
+  getApplicablePromotions,
+  applyPromotions,
+  TRUST_MESSAGES,
+  PLAN_VALUE_HIGHLIGHTS,
+  RECOMMENDED_ADDONS,
+  type UserSelections,
+} from "@/data/promotions";
 import MissionAccomplished from "./MissionAccomplished";
+import TrustBadge from "./TrustBadge";
+import SavingsPanel from "./SavingsPanel";
+import TermSelector from "./TermSelector";
+import SegmentCheckboxes from "./SegmentCheckboxes";
 import { Button } from "@/components/ui/button";
 import { 
   Form, 
@@ -150,6 +162,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
+  
+  // New state for promotions engine
+  const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
+  const [payUpfront, setPayUpfront] = useState(false);
+  const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
+  const [showPromoUnlocked, setShowPromoUnlocked] = useState(false);
+  const [previousAppliedCount, setPreviousAppliedCount] = useState(0);
+  
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
     email: string;
@@ -160,6 +180,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     basicAddons: string[];
     premiumAddons: string[];
     totalPrice: number;
+    term: '1-year' | '2-year';
+    payUpfront: boolean;
+    segments: string[];
+    appliedPromos: string[];
   } | null>(null);
   
   const { toast } = useToast();
@@ -320,6 +344,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           premiumAddons,
           notes: values.notes || null,
           totalPrice: String(totalPrice),
+          term,
+          payUpfront: String(payUpfront),
+          segments,
+          appliedPromos: promotionResult.applied.map(p => p.title),
         }),
       }).catch(err => console.error('Lead capture error:', err));
 
@@ -335,6 +363,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           basicAddons,
           premiumAddons,
           totalPrice,
+          term,
+          payUpfront,
+          segments,
+          appliedPromos: promotionResult.applied.map(p => p.title),
         });
         
         // Show the Mission Accomplished page
@@ -354,12 +386,42 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   }
 
   const planData = PLANS.find(p => p.id === plan);
-  const allowance = getPlanAllowance(plan, false);
+  const allowance = getPlanAllowance(plan, payUpfront);
   const planPrice = calculate2026Price(plan, yardSize);
   const extraBasicCount = Math.max(0, basicAddons.length - allowance.basic);
   const extraPremiumCount = Math.max(0, premiumAddons.length - allowance.premium);
   const extraCost = (extraBasicCount * 20) + (extraPremiumCount * 40);
-  const totalPrice = planPrice + extraCost;
+  const baseMonthlyTotal = planPrice + extraCost;
+
+  // Calculate promotions
+  const userSelections: UserSelections = {
+    term,
+    payUpfront,
+    segments,
+    hasReferral: false, // Will be true when referral system is implemented
+    monthlyTotal: baseMonthlyTotal,
+  };
+  
+  const promotionResult = getApplicablePromotions(userSelections);
+  const appliedTotals = applyPromotions({ monthlyTotal: baseMonthlyTotal, term }, promotionResult);
+  const totalPrice = appliedTotals.displayedMonthly;
+
+  // Detect when a new promo is unlocked for animation
+  useEffect(() => {
+    if (promotionResult.applied.length > previousAppliedCount) {
+      setShowPromoUnlocked(true);
+      if (getFeatureFlag('showConfetti', true)) {
+        setShowConfetti(true);
+        toast({
+          title: "Discount Unlocked!",
+          description: promotionResult.applied[promotionResult.applied.length - 1]?.title,
+        });
+        setTimeout(() => setShowConfetti(false), 2000);
+      }
+      setTimeout(() => setShowPromoUnlocked(false), 1500);
+    }
+    setPreviousAppliedCount(promotionResult.applied.length);
+  }, [promotionResult.applied.length]);
 
   // Check if add-on requirements are met
   const addonsRequirementMet = basicAddons.length >= allowance.basic && premiumAddons.length >= allowance.premium;
@@ -423,6 +485,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     setSelectedPhotos([]);
     setSubmittedQuoteData(null);
     setShowMissionAccomplished(false);
+    setTerm('2-year');
+    setPayUpfront(false);
+    setSegments([]);
+    setPreviousAppliedCount(0);
   };
 
   // If showing Mission Accomplished, render that instead
@@ -482,6 +548,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Trust Badge at Top */}
+      <div className="bg-green-50 px-4 py-2 border-b border-green-200">
+        <TrustBadge variant="compact" message={TRUST_MESSAGES.ctaTop} />
+      </div>
 
       {/* Progress Header with Military Ranks */}
       <div className="bg-primary text-primary-foreground p-4 md:p-6">
@@ -641,10 +712,17 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     })}
                   </div>
 
-                  {/* Plan Features Preview */}
+                  {/* Plan Features Preview with Value Highlights */}
                   {planData && (
                     <div className="bg-muted/30 rounded-xl p-4 border border-border mt-4">
-                      <h5 className="font-bold text-primary mb-2">{planData.name} Features:</h5>
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-bold text-primary">{planData.name} Features:</h5>
+                        {plan === 'premium' && (
+                          <span className="text-xs bg-accent text-accent-foreground px-2 py-0.5 rounded-full font-bold">
+                            Most Popular
+                          </span>
+                        )}
+                      </div>
                       <ul className="grid md:grid-cols-2 gap-1 text-sm">
                         {planData.features.slice(0, 6).map((feature, i) => (
                           <li key={i} className="flex items-start gap-2">
@@ -653,8 +731,48 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           </li>
                         ))}
                       </ul>
+                      {/* Value Highlights for Premium/Executive */}
+                      {(plan === 'premium' || plan === 'executive') && PLAN_VALUE_HIGHLIGHTS[plan] && (
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <div className="text-xs font-bold text-accent mb-1">Value Highlights:</div>
+                          <ul className="text-xs space-y-1">
+                            {PLAN_VALUE_HIGHLIGHTS[plan].map((highlight, i) => (
+                              <li key={i} className="flex items-center gap-1 text-green-700">
+                                <Sparkles className="w-3 h-3" />
+                                {highlight}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {/* Upgrade Impact for Basic */}
+                      {plan === 'basic' && (
+                        <div className="mt-3 pt-3 border-t border-border text-center">
+                          <p className="text-xs text-muted-foreground">
+                            Upgrade to <span className="font-bold text-primary">Premium</span> for about 
+                            <span className="font-bold text-accent"> +${calculate2026Price('premium', yardSize) - calculate2026Price('basic', yardSize)}/mo</span> more
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
+
+                  {/* Term Selector */}
+                  <TermSelector
+                    term={term}
+                    payUpfront={payUpfront}
+                    onTermChange={setTerm}
+                    onPayUpfrontChange={setPayUpfront}
+                  />
+
+                  {/* Savings Panel */}
+                  <SavingsPanel
+                    baseMonthly={baseMonthlyTotal}
+                    promotionResult={promotionResult}
+                    appliedTotals={appliedTotals}
+                    term={term}
+                    showUnlockedAnimation={showPromoUnlocked}
+                  />
                 </motion.div>
               )}
 
@@ -802,6 +920,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
                     <p className="text-muted-foreground">We'll reach out to schedule your FREE Dream Yard Recon</p>
                   </div>
+
+                  {/* Trust Badge */}
+                  <TrustBadge variant="full" message={TRUST_MESSAGES.contactStep} />
+
+                  {/* Segment Checkboxes for Discounts */}
+                  <SegmentCheckboxes
+                    segments={segments}
+                    onSegmentChange={setSegments}
+                  />
 
                   {/* Summary Card */}
                   <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 mb-6">

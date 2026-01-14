@@ -89,3 +89,57 @@ All marketing content is in `client/src/data/marketing.ts`:
 - `LOCAL_TIPS`: Add/edit lawn care tips shown during wizard
 - `CELEBRATION_MESSAGES`: Update step completion messages
 - `SOCIAL_SHARING`: Configure sharing templates for each platform
+
+### Promotions Engine (NEW - January 2026)
+
+#### Overview
+The promotions engine is a config-driven stacking discounts system. All promotions are defined in `client/src/data/promotions.ts`.
+
+#### Stacking Rules
+- All promotions can stack up to defined caps
+- **Max 30% total discount** from percentage-based promos
+- **Max 3 free months** from term-based promos
+- If cap is exceeded, the last-applied benefit is reduced first
+
+#### Promotion Types
+1. **termFreeMonths**: Free months at end of agreement (Early Bird deals)
+2. **prepayPercentOff**: Discount for paying upfront (10-15% off)
+3. **segmentPercentOff**: Discount for customer segments (renter/veteran/senior - 5% each)
+4. **referralFreeMonth**: Free month for referrals (pending until friend commits)
+
+#### How to Update Promotions
+1. Open `client/src/data/promotions.ts`
+2. Find the `PROMOTIONS` array
+3. Add/edit promotion objects with these fields:
+   - `id`: Unique identifier
+   - `title`: Display name
+   - `shortDescription`: Brief description
+   - `type`: One of the promotion types above
+   - `stackGroup`: 'freeMonths' or 'percentOff'
+   - `value`: Number (months or percent)
+   - `eligibility`: Object with conditions (term, payUpfront, segment, hasReferral)
+   - `displayOrder`: Sort order for UI
+   - `active`: Boolean to enable/disable
+
+#### How to Update Term Options
+Edit `CONTRACT_TERMS` array in `client/src/data/promotions.ts`
+
+#### How to Update Segment Discounts
+Edit `SEGMENT_OPTIONS` array in `client/src/data/promotions.ts`
+
+#### Trust Messaging
+All trust messages are in `TRUST_MESSAGES` object in `client/src/data/promotions.ts`:
+- `ctaTop`: Message at top of wizard
+- `contactStep`: Message on contact form
+- `confirmation`: Message on confirmation page
+- `commitment`: "Commit to us..." tagline
+- `miguelNote`: Recon scheduling note
+- `referralNudge`: Referral encouragement message
+
+#### Lead Capture Fields
+The `/api/leads` endpoint now captures:
+- All original fields (name, email, phone, address, plan, addons, etc.)
+- `term`: '1-year' or '2-year'
+- `payUpfront`: 'true' or 'false'
+- `segments`: Array of segment IDs ['renter', 'veteran', 'senior']
+- `appliedPromos`: Array of applied promotion titles

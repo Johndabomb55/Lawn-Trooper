@@ -30,6 +30,7 @@ import {
   PDF_QUOTE_CONFIG,
   getFeatureFlag
 } from "@/data/marketing";
+import { TRUST_MESSAGES } from "@/data/promotions";
 
 interface MissionAccomplishedProps {
   quoteData: {
@@ -42,6 +43,10 @@ interface MissionAccomplishedProps {
     basicAddons: string[];
     premiumAddons: string[];
     totalPrice: number;
+    term?: '1-year' | '2-year';
+    payUpfront?: boolean;
+    segments?: string[];
+    appliedPromos?: string[];
   };
   onClose: () => void;
   onReset: () => void;
@@ -254,10 +259,57 @@ Contact: info@lawntrooper.com | (256) 555-LAWN
             </div>
           )}
 
+          {/* Applied Promotions */}
+          {quoteData.appliedPromos && quoteData.appliedPromos.length > 0 && (
+            <div className="border-t border-primary/10 pt-4 mb-4">
+              <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Applied Promotions</span>
+              <div className="flex flex-wrap gap-1.5">
+                {quoteData.appliedPromos.map((promo, i) => (
+                  <span key={i} className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {promo}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Contract Term & Payment */}
+          {quoteData.term && (
+            <div className="border-t border-primary/10 pt-4 mb-4 grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-xs text-muted-foreground uppercase font-bold">Contract Term</span>
+                <p className="font-bold text-primary">{quoteData.term === '2-year' ? '2-Year Pact' : '1-Year Pact'}</p>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground uppercase font-bold">Payment</span>
+                <p className="font-bold text-primary">{quoteData.payUpfront ? 'Paid Upfront' : 'Monthly'}</p>
+              </div>
+            </div>
+          )}
+
           <div className="border-t border-primary/10 pt-4 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Monthly Total</span>
             <span className="text-2xl font-bold text-primary">${quoteData.totalPrice}/mo</span>
           </div>
+        </div>
+
+        {/* Trust & Privacy Message */}
+        <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+          <p className="text-sm text-green-800">{TRUST_MESSAGES.confirmation}</p>
+        </div>
+
+        {/* Miguel Recon Note */}
+        <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
+          <p className="text-sm text-muted-foreground">{TRUST_MESSAGES.miguelNote}</p>
+        </div>
+
+        {/* Referral Nudge */}
+        <div className="bg-accent/10 rounded-xl p-4 border border-accent/20 text-center">
+          <p className="text-sm text-accent font-medium flex items-center justify-center gap-2">
+            <Users className="w-4 h-4" />
+            {TRUST_MESSAGES.referralNudge}
+          </p>
         </div>
 
         {/* Download Button */}
