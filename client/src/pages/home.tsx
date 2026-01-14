@@ -1416,42 +1416,31 @@ export default function LandingPage() {
                 </div>
 
 
-                {/* 2. Premium Add-On Services Gallery */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Available Premium Services</h3>
-                  <p className="text-sm text-muted-foreground">We offer a variety of premium add-on services. Discuss your needs during your consultation.</p>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgXmasPremium} alt="Premium Christmas Lights Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Christmas Lights</span>
+                {/* 2. Your Selected Plan Summary */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Your Selected Plan</h3>
+                  <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Yard Size</div>
+                        <div className="font-bold text-primary">{builderYardSize} Acre</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Plan</div>
+                        <div className="font-bold text-primary">{PLANS.find(p => p.id === builderPlan)?.name}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Monthly Price</div>
+                        <div className="font-bold text-primary">${calculate2026Price(builderPlan, builderYardSize)}/mo</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Add-ons</div>
+                        <div className="font-bold text-primary">{builderBasicAddons.length + builderPremiumAddons.length} selected</div>
                       </div>
                     </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgSeasonalFlowers} alt="Seasonal Flower Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Seasonal Flowers</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgMulchInstall} alt="Brown Mulch Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Mulch Installation</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgTrashBinWash} alt="Pressure Washing Trash Bins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Trash Bin Cleaning</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgPineStrawInstall} alt="Shrub Trimming" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Shrub Trimming</span>
-                      </div>
-                    </div>
+                    <p className="text-xs text-muted-foreground text-center mt-3">
+                      <a href="#plans" className="text-primary underline hover:no-underline">Edit your plan selection above</a>
+                    </p>
                   </div>
                 </div>
 
