@@ -38,7 +38,7 @@ import { FEATURE_FLAGS } from "@/config/featureFlags";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import heroMascot from "@assets/generated_images/soldier_mascot_with_battery_trimmer.png";
+import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 import heroDiverseCrew from "@assets/generated_images/black_woman_waving_from_porch.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
@@ -237,6 +237,9 @@ export default function LandingPage() {
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
             <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
+            {FEATURE_FLAGS.enableFBCompliantHeroCopy && (
+              <p className="text-white/70 text-sm italic mt-2">That's not a weapon — it's a weed eater. We fight weeds, not people.</p>
+            )}
             
             {/* Big Intimidating Camo Banner */}
             <div className="mt-4 relative z-20 w-full">
