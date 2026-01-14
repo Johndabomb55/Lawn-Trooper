@@ -1501,9 +1501,13 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 md:py-8 text-lg md:text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-3 md:px-4 gap-1 md:gap-2">
-                  <span className="text-center whitespace-nowrap">DEPLOY THE TROOPS</span>
-                  <span className="text-[9px] md:text-xs font-bold normal-case text-yellow-400 w-full text-center leading-snug break-words">Your account commander will reach out to schedule a consultation.</span>
+                <Button 
+                  type="submit" 
+                  className="w-full font-bold uppercase tracking-wider py-6 md:py-8 text-lg md:text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-3 md:px-4 gap-1 md:gap-2"
+                  style={{ backgroundColor: '#1a3d24', color: 'white', border: 'none' }}
+                >
+                  <span className="text-center whitespace-nowrap" style={{ color: 'white' }}>DEPLOY THE TROOPS</span>
+                  <span className="text-[9px] md:text-xs font-bold normal-case w-full text-center leading-snug break-words" style={{ color: '#facc15' }}>Your account commander will reach out to schedule a consultation.</span>
                 </Button>
               </form>
             </Form>
