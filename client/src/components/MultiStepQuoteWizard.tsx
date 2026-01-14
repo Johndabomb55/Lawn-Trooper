@@ -325,14 +325,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <p className="text-muted-foreground">Choose the option that best matches your property</p>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-items-center">
                     {YARD_SIZES.map((size) => (
                       <button
                         key={size.id}
                         type="button"
                         data-testid={`wizard-yard-${size.id}`}
                         onClick={() => setYardSize(size.id)}
-                        className={`p-6 rounded-xl border-2 transition-all text-center ${
+                        className={`p-6 rounded-xl border-2 transition-all text-center w-full max-w-xs ${
                           yardSize === size.id
                             ? 'border-primary bg-primary/10 shadow-lg scale-105'
                             : 'border-border hover:border-primary/50 bg-muted/30 hover:scale-102'
@@ -446,6 +446,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <p className="text-muted-foreground">
                       {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium add-ons
                     </p>
+                    <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
+                      Select {allowance.basic} Basic & {allowance.premium} Premium add-on{allowance.premium > 1 ? 's' : ''} (required)
+                    </p>
                   </div>
 
                   {/* Basic Add-ons */}
@@ -558,8 +561,26 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       </div>
                     </div>
                     {(basicAddons.length > 0 || premiumAddons.length > 0) && (
-                      <div className="mt-3 pt-3 border-t border-primary/10 text-xs text-muted-foreground text-center">
-                        {basicAddons.length + premiumAddons.length} add-on(s) selected
+                      <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
+                        <div className="font-semibold text-primary mb-2">Selected Add-ons:</div>
+                        <div className="flex flex-wrap gap-1.5 justify-center">
+                          {basicAddons.map(id => {
+                            const addon = BASIC_ADDONS.find(a => a.id === id);
+                            return addon ? (
+                              <span key={id} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                                {addon.label}
+                              </span>
+                            ) : null;
+                          })}
+                          {premiumAddons.map(id => {
+                            const addon = PREMIUM_ADDONS.find(a => a.id === id);
+                            return addon ? (
+                              <span key={id} className="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-accent" />{addon.label}
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
