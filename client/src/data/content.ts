@@ -68,7 +68,7 @@ export const PLAN_SUMMARIES = {
       perfectFor: "Families who want a consistently great-looking yard all year.",
       highlights: [
         "Weekly mowing",
-        "2 weed treatments + killer",
+        "4 weed treatments + killer",
         "2 bush trimmings per year",
         "3 add-ons included"
       ]

@@ -57,13 +57,13 @@ export const PLANS = [
     description: "Plus weed control & beds. Includes: 2 Basic Add-ons - 1 Premium Add-on",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
-      { label: "Weed Control", value: "2 Treatments" },
+      { label: "Weed Control", value: "4 Treatments" },
       { label: "Bush Trimming", value: "2x/Year" },
       { label: "Add-ons", value: "3 Included" }
     ],
     features: [
       "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Weed Control: 2 pre-emergent weed control treatments + weed killer",
+      "Weed Control: 4 weed control treatments + weed killer",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
       `<span class='font-bold text-primary'>Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
