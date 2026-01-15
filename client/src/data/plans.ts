@@ -25,6 +25,7 @@ export const PLANS = [
     keyStats: [
       { label: "Mowing", value: "Bi-Weekly" },
       { label: "Weed Control", value: "2 Treatments" },
+      { label: "Bush Trimming", value: "1x/Year" },
       { label: "Add-ons", value: "1 Included" }
     ],
     features: [
@@ -57,6 +58,7 @@ export const PLANS = [
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "2 Treatments" },
+      { label: "Bush Trimming", value: "2x/Year" },
       { label: "Add-ons", value: "3 Included" }
     ],
     features: [
@@ -89,6 +91,7 @@ export const PLANS = [
     keyStats: [
       { label: "Mowing", value: "Weekly" },
       { label: "Weed Control", value: "6 Treatments" },
+      { label: "Bush Trimming", value: "3x/Year" },
       { label: "Add-ons", value: "5 Included" }
     ],
     features: [

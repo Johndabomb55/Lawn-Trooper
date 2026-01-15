@@ -156,9 +156,9 @@ export default function LandingPage() {
            </div>
            <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Sale + AI Cost Reductions! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
-           <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 25, 2026</span> to lock in your pricing for up to 2 years!</span>
+           <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 25, 2026</span> to lock in your pricing for up to 3 years!</span>
            <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
-             + Up to 3 Months Free
+             + Up to 6 Months Free
            </span>
         </div>
       </div>
@@ -266,7 +266,7 @@ export default function LandingPage() {
             
             <div className="mt-6 flex flex-col items-center gap-4">
                <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
-                 25th Anniversary Sale + AI Cost Reductions: get up to 3 months free
+                 25th Anniversary Sale + AI Cost Reductions: get up to 6 months free
                </div>
                
                <div className="flex flex-col items-center gap-4 mt-2">
@@ -345,7 +345,7 @@ export default function LandingPage() {
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                   ⚠️ Lock in lowest pricing for up to 2 years - Ends Jan 25th!
+                   ⚠️ Lock in lowest pricing for up to 3 years - Ends Jan 25th!
                  </p>
                </div>
                
@@ -353,28 +353,28 @@ export default function LandingPage() {
                  {/* Deal 1: Early Bird Special */}
                  <div className="bg-accent/10 p-3 rounded border border-accent/50 hover:bg-accent/20 transition-colors relative">
                    <div className="absolute -top-2 -right-2">
-                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">EARLY BIRD ONLY</span>
+                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">EARLY BIRD</span>
                    </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Sign Up By Jan 25th</span>
+                     <span className="text-accent font-bold uppercase text-xs">Sign Up by Apr 25th</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between items-center mb-1"><span>2-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">3 Months Free</span></div>
-                     <div className="flex justify-between items-center mb-1"><span>1-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">1 Month Free</span></div>
-                     <div className="flex justify-between items-center"><span>Renters:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">5% OFF</span></div>
+                     <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">Up to 3 Extra Months Free</div>
+                     <div className="text-white/70 text-xs mt-1 text-center">Hurry - benefit decreases each month!</div>
                    </div>
                  </div>
 
-                 {/* Deal 2: Pay Upfront */}
+                 {/* Deal 2: Commitment Rewards */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Zap className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Pay Upfront (Full Term)</span>
+                     <span className="text-accent font-bold uppercase text-xs">Commitment Rewards</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between"><span>2-Year Term:</span> <span className="text-green-400 font-bold">15% OFF</span></div>
-                     <div className="flex justify-between"><span>1-Year Term:</span> <span className="text-green-400 font-bold">10% OFF</span></div>
+                     <div className="flex justify-between"><span>1-Year:</span> <span className="text-green-400 font-bold">1 Month Free</span></div>
+                     <div className="flex justify-between"><span>2-Year:</span> <span className="text-green-400 font-bold">2 Months Free</span></div>
+                     <div className="flex justify-between"><span>3-Year:</span> <span className="text-green-400 font-bold">3 Months Free</span></div>
                    </div>
                  </div>
 
@@ -390,14 +390,14 @@ export default function LandingPage() {
                    </div>
                  </div>
 
-                 {/* Deal 4: Stackable */}
+                 {/* Deal 4: Pay in Full Bonus */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Star className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Total Savings</span>
+                     <span className="text-accent font-bold uppercase text-xs">Pay in Full Bonus</span>
                    </div>
                    <div className="text-white text-sm font-medium leading-relaxed">
-                     Stack incentives for up to <span className="text-green-400 font-bold">30% OFF</span> and 3 free months.
+                     Pay upfront for <span className="text-green-400 font-bold">+1 Additional Month Free</span>
                    </div>
                  </div>
                </div>
@@ -405,7 +405,7 @@ export default function LandingPage() {
                {/* Existing Customer Message */}
                <div className="mt-4 text-center space-y-2">
                   <p className="text-green-400 font-bold text-base md:text-lg bg-green-900/30 inline-block px-4 py-1 rounded-full border border-green-500/30 shadow-lg">
-                    Save up to $2,000+/year with stacked promotions on Executive plans.
+                    Stack all rewards for up to 6 FREE months on any plan!
                   </p>
                   <p className="text-xs text-white/60 italic block">{GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY}</p>
                </div>
@@ -582,12 +582,6 @@ export default function LandingPage() {
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH get 1 Month FREE!</strong></li>
               </ul>
             </div>
-            <Button 
-              onClick={() => scrollToSection('quote')} 
-              className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold uppercase tracking-wider px-6 py-3"
-            >
-              Get Your Free Quote
-            </Button>
           </div>
         </div>
       </section>
@@ -697,6 +691,73 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HOA Partnership Section */}
+      <section id="hoa-partnership" className="py-16 bg-muted/30 border-t border-border">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2">HOA Partnership Program</h2>
+            <p className="text-muted-foreground">
+              If your HOA partners with Lawn Trooper, residents receive additional benefits.
+            </p>
+          </div>
+          
+          <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); }}>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">HOA Name</label>
+                <input 
+                  type="text" 
+                  data-testid="input-hoa-name"
+                  placeholder="e.g., Oakwood Estates HOA"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Contact Name</label>
+                  <input 
+                    type="text" 
+                    data-testid="input-hoa-contact-name"
+                    placeholder="Your name"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Phone</label>
+                  <input 
+                    type="tel" 
+                    data-testid="input-hoa-phone"
+                    placeholder="(256) 555-0000"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Email</label>
+                <input 
+                  type="email" 
+                  data-testid="input-hoa-email"
+                  placeholder="contact@hoa.com"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Notes / Directions</label>
+                <textarea 
+                  data-testid="input-hoa-notes"
+                  placeholder="Any additional information about your HOA..."
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                />
+              </div>
+              <Button type="submit" data-testid="button-submit-hoa" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+                Submit HOA Inquiry
+              </Button>
+            </form>
           </div>
         </div>
       </section>

@@ -279,7 +279,9 @@ Contact: info@lawntrooper.com | (256) 555-LAWN
             <div className="border-t border-primary/10 pt-4 mb-4 grid grid-cols-2 gap-4">
               <div>
                 <span className="text-xs text-muted-foreground uppercase font-bold">Contract Term</span>
-                <p className="font-bold text-primary">{quoteData.term === '2-year' ? '2-Year Pact' : '1-Year Pact'}</p>
+                <p className="font-bold text-primary">
+                  {quoteData.term === '3-year' ? '3-Year Pact' : quoteData.term === '2-year' ? '2-Year Pact' : '1-Year Pact'}
+                </p>
               </div>
               <div>
                 <span className="text-xs text-muted-foreground uppercase font-bold">Payment</span>
@@ -288,10 +290,30 @@ Contact: info@lawntrooper.com | (256) 555-LAWN
             </div>
           )}
 
+          {/* Operation Price Drop - Loyalty Benefits */}
+          <div className="border-t border-primary/10 pt-4 mb-4">
+            <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Future Loyalty Benefits</span>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-200">
+              <p className="text-xs font-bold text-green-800 mb-2">Operation Price Drop - Your Future Savings:</p>
+              <div className="flex gap-4 text-xs text-green-700">
+                <span>After Year 1: <strong>5% off</strong></span>
+                <span>After Year 2: <strong>10% off</strong></span>
+                <span>After Year 3: <strong>15% off</strong></span>
+              </div>
+              <p className="text-xs text-green-600 mt-2 italic">Loyalty rewarded automatically on renewal.</p>
+            </div>
+          </div>
+
           <div className="border-t border-primary/10 pt-4 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Monthly Total</span>
             <span className="text-2xl font-bold text-primary">${quoteData.totalPrice}/mo</span>
           </div>
+        </div>
+
+        {/* No Obligation Message */}
+        <div className="bg-accent/10 rounded-xl p-4 border border-accent/30 text-center">
+          <p className="text-lg font-bold text-primary mb-1">No payment required. No obligation.</p>
+          <p className="text-sm text-accent font-medium">Free Dream Yard Recon.</p>
         </div>
 
         {/* Trust & Privacy Message */}

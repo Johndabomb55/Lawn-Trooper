@@ -664,6 +664,46 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Plan Tier</h4>
                     <p className="text-muted-foreground">All prices reflect 2026 AI-Savings discount</p>
                   </div>
+
+                  {/* Compact Plan Comparison */}
+                  <div className="bg-muted/30 rounded-xl p-4 border border-border mb-4 overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 pr-2 text-muted-foreground font-medium">Feature</th>
+                          <th className="text-center py-2 px-2 font-bold text-primary">Basic</th>
+                          <th className="text-center py-2 px-2 font-bold text-primary">Premium</th>
+                          <th className="text-center py-2 px-2 font-bold text-accent">Executive</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-border/50">
+                          <td className="py-2 pr-2 text-muted-foreground">Mowing</td>
+                          <td className="py-2 px-2 text-center">Bi-Weekly</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">Weekly</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">Weekly</td>
+                        </tr>
+                        <tr className="border-b border-border/50">
+                          <td className="py-2 pr-2 text-muted-foreground">Weed Control</td>
+                          <td className="py-2 px-2 text-center">2 Apps</td>
+                          <td className="py-2 px-2 text-center">2 Apps</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">6 Apps</td>
+                        </tr>
+                        <tr className="border-b border-border/50">
+                          <td className="py-2 pr-2 text-muted-foreground">Bush Trimming</td>
+                          <td className="py-2 px-2 text-center">1x/Year</td>
+                          <td className="py-2 px-2 text-center">2x/Year</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">3x/Year</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 pr-2 text-muted-foreground">Add-ons Included</td>
+                          <td className="py-2 px-2 text-center">1</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">3</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">5</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                   
                   <div className="grid md:grid-cols-3 gap-4">
                     {PLANS.map((p) => {
