@@ -93,6 +93,7 @@ export default function StreamlinedWizard() {
   const [basicAddons, setBasicAddons] = useState<string[]>([]);
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
+  const [execSwapMode, setExecSwapMode] = useState(false);
   const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('1-year');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('monthly');
   const [promoCode, setPromoCode] = useState("");
@@ -121,6 +122,16 @@ export default function StreamlinedWizard() {
   const promoDiscount = promoValid ? (HOA_PROMO_CODES[promoCode.toUpperCase()]?.discount || 0) : 0;
   
   const totalFreeMonths = getTotalFreeMonths(term, payInFull, false);
+  
+  const isExecutive = plan === 'executive';
+  const effectiveBasicAllowance = selectedPlan ? 
+    (isExecutive && execSwapMode ? selectedPlan.allowance.basic + 2 : selectedPlan.allowance.basic) : 0;
+  const effectivePremiumAllowance = selectedPlan ? 
+    (isExecutive && execSwapMode ? 0 : selectedPlan.allowance.premium) : 0;
+  
+  const extraBasicCount = Math.max(0, basicAddons.length - effectiveBasicAllowance);
+  const extraPremiumCount = Math.max(0, premiumAddons.length - effectivePremiumAllowance);
+  const addonExtraCost = (extraBasicCount * 20) + (extraPremiumCount * 40);
 
   const calculateBasePrice = () => {
     if (!selectedPlan || !selectedYard) return 0;
@@ -134,8 +145,8 @@ export default function StreamlinedWizard() {
   };
 
   const basePrice = calculateBasePrice();
-  const actualMonthly = isHOA ? 0 : calculateActualMonthly(basePrice, term);
-  const effectiveMonthly = isHOA ? 0 : calculateEffectiveMonthly(basePrice, term, payInFull);
+  const actualMonthly = isHOA ? 0 : calculateActualMonthly(basePrice, term) + addonExtraCost;
+  const effectiveMonthly = isHOA ? 0 : calculateEffectiveMonthly(basePrice + addonExtraCost, term, payInFull);
 
   const handleNext = () => {
     if (isHOA && step === 1) {
@@ -226,7 +237,7 @@ export default function StreamlinedWizard() {
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-primary to-green-700 p-4 text-white">
         <div className="flex items-center justify-between mb-3">
-          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Dream Yard Recon</h2>
+          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Build My Plan</h2>
           <span data-testid="text-step-badge" className="text-sm bg-white/20 px-3 py-1 rounded-full">
             Step {step} of 7
           </span>
@@ -239,12 +250,18 @@ export default function StreamlinedWizard() {
             transition={{ duration: 0.3 }}
           />
         </div>
-        {!isHOA && totalFreeMonths > 0 && step > 1 && step < 7 && (
+        {!isHOA && step > 1 && step < 7 && (
           <div className="mt-2 text-center">
-            <span data-testid="text-free-months-unlocked" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
-              <Sparkles className="w-3 h-3 inline mr-1" />
-              {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''} Unlocked!
-            </span>
+            {step >= 5 && totalFreeMonths > 0 ? (
+              <span data-testid="text-free-months-unlocked" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
+                <Sparkles className="w-3 h-3 inline mr-1" />
+                {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''} Unlocked!
+              </span>
+            ) : (
+              <span data-testid="text-free-months-available" className="text-sm bg-white/20 px-3 py-1 rounded-full">
+                Free months available with annual plans
+              </span>
+            )}
           </div>
         )}
         {isHOA && step > 1 && step < 7 && (
@@ -297,8 +314,8 @@ export default function StreamlinedWizard() {
                   }`}
                 >
                   <div className="text-4xl mb-2">🏘️</div>
-                  <div className="font-bold text-lg">HOA / Commercial</div>
-                  <div className="text-xs text-muted-foreground">Community or business</div>
+                  <div className="font-bold text-lg">Multi-Home Community</div>
+                  <div className="text-xs text-muted-foreground">Or properties over 1 acre</div>
                 </button>
               </div>
 
@@ -306,7 +323,7 @@ export default function StreamlinedWizard() {
               {isHOA && (
                 <div className="space-y-3 bg-accent/5 rounded-xl p-4 border border-accent/20">
                   <div>
-                    <Label htmlFor="hoaName">HOA / Property Name *</Label>
+                    <Label htmlFor="hoaName">Community / Property Name *</Label>
                     <Input
                       id="hoaName"
                       data-testid="input-hoa-name"
@@ -346,7 +363,7 @@ export default function StreamlinedWizard() {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    HOA quotes require a custom review. We'll contact you within 1 business day.
+                    We can service any residential property. Larger properties and communities receive a custom quote within 1 business day.
                   </p>
                 </div>
               )}
@@ -465,7 +482,12 @@ export default function StreamlinedWizard() {
                     <div key={p.id} className="relative">
                       <button
                         data-testid={`plan-${p.id}`}
-                        onClick={() => setPlan(p.id)}
+                        onClick={() => {
+                          setPlan(p.id);
+                          if (p.id !== 'executive') {
+                            setExecSwapMode(false);
+                          }
+                        }}
                         className={`w-full p-4 rounded-xl border-2 transition-all text-left relative ${
                           isPremium
                             ? `border-primary ${isSelected ? 'bg-primary/10 shadow-lg ring-2 ring-primary/30' : 'bg-primary/5'}`
@@ -551,19 +573,56 @@ export default function StreamlinedWizard() {
                 </p>
               </div>
 
-              {/* Selection Counter */}
+              {/* Executive Swap Toggle */}
+              {isExecutive && (
+                <div className="bg-accent/10 rounded-lg p-3 border border-accent/30">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      data-testid="exec-swap-toggle"
+                      checked={execSwapMode}
+                      onChange={(e) => {
+                        setExecSwapMode(e.target.checked);
+                        if (e.target.checked) {
+                          setPremiumAddons([]);
+                        }
+                      }}
+                      className="w-5 h-5 accent-accent"
+                    />
+                    <div>
+                      <div className="font-medium text-sm">Swap Premium slot for +2 Basic slots</div>
+                      <div className="text-xs text-muted-foreground">
+                        {execSwapMode 
+                          ? "You now have 4 Basic add-ons included (0 Premium)" 
+                          : "Default: 2 Basic + 1 Premium included"
+                        }
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              )}
+
+              {/* Selection Counter with Live Pricing */}
               <div data-testid="addon-counter" className="bg-primary/10 rounded-lg p-3 text-center text-sm">
                 <span className="font-medium">Selected: </span>
-                <span className="font-bold text-primary">{basicAddons.length} basic</span>
-                {selectedPlan && selectedPlan.allowance.premium > 0 && (
-                  <span>, <span className="font-bold text-accent">{premiumAddons.length} premium</span></span>
+                <span className={`font-bold ${basicAddons.length > effectiveBasicAllowance ? 'text-amber-600' : 'text-primary'}`}>
+                  {basicAddons.length} basic
+                </span>
+                {effectivePremiumAllowance > 0 && (
+                  <span>, <span className={`font-bold ${premiumAddons.length > effectivePremiumAllowance ? 'text-amber-600' : 'text-accent'}`}>
+                    {premiumAddons.length} premium
+                  </span></span>
                 )}
-                <span className="text-muted-foreground"> • Extra add-ons: $20-40/mo each</span>
+                {addonExtraCost > 0 ? (
+                  <span className="text-amber-600 font-bold"> • +${addonExtraCost}/mo for extras</span>
+                ) : (
+                  <span className="text-muted-foreground"> • All included in plan</span>
+                )}
               </div>
 
               <div className="space-y-2 max-h-[280px] overflow-y-auto">
                 <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
-                  Basic Add-ons ({basicAddons.length}/{selectedPlan?.allowance.basic || 1} included free)
+                  Basic Add-ons ({basicAddons.length}/{effectiveBasicAllowance} included free)
                 </div>
                 {BASIC_ADDONS.slice(0, 6).map((addon) => {
                   const isSelected = basicAddons.includes(addon.id);
@@ -605,7 +664,7 @@ export default function StreamlinedWizard() {
                   );
                 })}
 
-                {selectedPlan && selectedPlan.allowance.premium > 0 && (
+                {selectedPlan && effectivePremiumAllowance > 0 && !execSwapMode && (
                   <>
                     <button
                       data-testid="toggle-advanced-addons"
@@ -618,7 +677,7 @@ export default function StreamlinedWizard() {
                     {showAdvancedAddons && (
                       <>
                         <div className="text-xs font-bold text-accent uppercase tracking-wider mt-2 mb-2">
-                          Premium Add-ons ({premiumAddons.length}/{selectedPlan.allowance.premium} included free)
+                          Premium Add-ons ({premiumAddons.length}/{effectivePremiumAllowance} included free)
                         </div>
                         {PREMIUM_ADDONS.slice(0, 4).map((addon) => {
                           const isSelected = premiumAddons.includes(addon.id);
@@ -764,8 +823,8 @@ export default function StreamlinedWizard() {
                         type="button"
                         onClick={() => showInfo("Effective Monthly", (
                           <div className="space-y-2">
-                            <p>Effective monthly shows the average cost after your free months are applied at the end of your agreement.</p>
-                            <p className="text-sm text-muted-foreground">Free months are service credits, not cash refunds.</p>
+                            <p>Free months are <strong>skipped billing months</strong> at the end of your agreement.</p>
+                            <p className="text-sm text-muted-foreground">Example: 2 free months on a 12-month plan = pay for first 10 months, final 2 months not billed.</p>
                           </div>
                         ))}
                         className="text-primary underline"
@@ -819,7 +878,7 @@ export default function StreamlinedWizard() {
               {isHOA ? (
                 <div data-testid="card-hoa-summary" className="bg-accent/5 rounded-xl p-4 border border-accent/20">
                   <div className="text-center space-y-2">
-                    <div className="text-xl font-bold text-accent">HOA / Commercial Quote Request</div>
+                    <div className="text-xl font-bold text-accent">Custom Quote Request</div>
                     <div className="text-sm text-muted-foreground">
                       <strong>{hoaName}</strong> - {hoaAcreage}
                     </div>
@@ -843,7 +902,7 @@ export default function StreamlinedWizard() {
                     <span data-testid="text-yard-size" className="bg-muted px-2 py-0.5 rounded">{selectedYard?.label}</span>
                     <span data-testid="text-term" className="bg-muted px-2 py-0.5 rounded">{selectedTerm?.label}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Free months are applied as service credits at the end of your agreement.</p>
+                  <p className="text-xs text-muted-foreground mt-2">Free months = skipped billing at end of term. You pay for fewer months, not a discount.</p>
                 </div>
               )}
 
@@ -959,7 +1018,7 @@ export default function StreamlinedWizard() {
 
               <div className="bg-accent/10 rounded-xl p-4 border border-accent/30">
                 <p className="font-bold text-primary">No payment required. No obligation.</p>
-                <p className="text-sm text-accent">{isHOA ? "Free Property Consultation" : "Free Dream Yard Recon"}</p>
+                <p className="text-sm text-accent">{isHOA ? "Free Property Consultation" : "Free Quote"}</p>
               </div>
 
               <div className="bg-green-50 rounded-xl p-3 border border-green-200">
@@ -1028,7 +1087,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-accent hover:bg-accent/90 text-white"
               data-testid="button-submit"
             >
-              {isSubmitting ? "Submitting..." : "Get My Free Quote"}
+              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "Get My Free Quote")}
             </Button>
           )}
 

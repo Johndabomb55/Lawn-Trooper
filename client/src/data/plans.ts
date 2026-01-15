@@ -87,32 +87,35 @@ export const PLANS = [
     price: 399,
     oldPrice: 479,
     priceLabel: "Starts at $399/mo",
-    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons - 3 Premium Add-ons",
+    description: "Weekly Mowing. 6 Weed Apps. Includes: 2 Basic Add-ons + 1 Premium Add-on",
     keyStats: [
-      { label: "Mowing", value: "Weekly" },
+      { label: "Mowing", value: "Priority Weekly" },
       { label: "Weed Control", value: "6 Treatments" },
       { label: "Bush Trimming", value: "3x/Year" },
-      { label: "Add-ons", value: "5 Included" }
+      { label: "Add-ons", value: "3 Included" }
     ],
     features: [
-      "Mowing: Weekly mowing (top priority)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+      "<span class='font-bold text-accent'>Priority Mowing: Weekly mowing with top-priority scheduling</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 6 weed treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
       `<span class='font-bold text-accent'>Bush Trimming: 3 bush trimmings per year (Unlimited Bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
       "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
-      "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
+      "<span class='font-bold text-accent'>After-Storm Visits: Small limbs and debris cleanup included</span>",
+      "<span class='font-bold text-accent'>Bi-weekly Winter Visits & Yard Checks</span><br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
       "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
-      "<span class='font-bold text-accent'>Multiple Trash Cans: Included with any trash bin cleaning add-on (up to 3 cans)</span>"
+      "<span class='font-bold text-accent'>Multiple Trash Cans: Included with any trash bin cleaning add-on (up to 3 cans)</span>",
+      "<span class='font-bold text-accent'>Commander's Club: 1 FREE premium add-on on your service anniversary</span>"
     ],
     allowance: {
       basic: 2,
-      premium: 3
+      premium: 1
     },
-    allowanceLabel: "2 Basic Add-Ons + 3 Premium Add-Ons",
-    promoLabel: "Jan Promo: +1 Free Basic Add-on"
+    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
+    promoLabel: "Jan Promo: +1 Free Basic Add-on",
+    canSwapPremiumForBasic: true
   }
 ];
 
@@ -156,6 +159,11 @@ export const BASIC_ADDONS = [
     id: "monthly_trash_bin_cleaning",
     label: "Monthly Trash Bin Cleaning (Upgrade)",
     description: "Monthly cleaning and sanitizing of trash bins."
+  },
+  {
+    id: "christmas_lights_basic",
+    label: "Christmas Lights (Basic)",
+    description: "Simple shrub and small tree decorations. No roofline or yard pop-ups."
   }
 ];
 
@@ -187,8 +195,8 @@ export const PREMIUM_ADDONS = [
   },
   {
     id: "christmas_lights_premium",
-    label: "Premium Christmas Light Package",
-    description: "First floor roofline lighting + yard decorations."
+    label: "Christmas Lights (Premium)",
+    description: "First floor roofline lighting + flower bed lights + yard pop-ups."
   },
   {
     id: "house_soft_wash",
@@ -211,10 +219,11 @@ export const SEASONAL_ADDONS = [
 ];
 
 export const EXECUTIVE_PERKS = [
-  "Unlimited mulch installs (no yardage cap)",
-  "Priority scheduling",
-  "After-storm debris cleanup included",
-  "All premium add-ons available"
+  "Priority mowing scheduling",
+  "After-storm visits: Small limbs & debris cleanup",
+  "Bi-weekly winter visits & yard checks",
+  "Commander's Club: 1 FREE premium add-on on anniversary",
+  "Swap toggle: Trade 1 Premium slot for +2 Basic slots"
 ];
 
 // Helper to get allowance including promo
