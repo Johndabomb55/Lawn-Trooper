@@ -74,21 +74,21 @@ export const LOYALTY_DISCOUNTS = [
 export const COMMITMENT_TERMS = [
   {
     id: '1-year' as const,
-    label: '1-Year Commitment',
+    label: 'Flexible (Month-to-Month)',
     months: 12,
     freeMonths: 1,
     badge: 'Flexible',
   },
   {
     id: '2-year' as const,
-    label: '2-Year Commitment',
+    label: 'Popular (2-Year Commitment)',
     months: 24,
     freeMonths: 2,
     badge: 'Popular',
   },
   {
     id: '3-year' as const,
-    label: '3-Year Commitment',
+    label: 'Best Value (3-Year Commitment)',
     months: 36,
     freeMonths: 3,
     badge: 'Best Value',

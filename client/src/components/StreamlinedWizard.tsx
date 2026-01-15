@@ -427,12 +427,24 @@ export default function StreamlinedWizard() {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Customize with add-ons</h3>
                 <p className="text-muted-foreground text-sm">
-                  {selectedPlan?.allowanceLabel || "Select add-ons to include"}
+                  Your plan includes {selectedPlan?.allowanceLabel || "add-ons"} at no extra cost.
                 </p>
               </div>
 
+              {/* Selection Counter */}
+              <div data-testid="addon-counter" className="bg-primary/10 rounded-lg p-3 text-center text-sm">
+                <span className="font-medium">Selected: </span>
+                <span className="font-bold text-primary">{basicAddons.length} basic</span>
+                {selectedPlan && selectedPlan.allowance.premium > 0 && (
+                  <span>, <span className="font-bold text-accent">{premiumAddons.length} premium</span></span>
+                )}
+                <span className="text-muted-foreground"> • Extra add-ons: $20-40/mo each</span>
+              </div>
+
               <div className="space-y-2 max-h-[280px] overflow-y-auto">
-                <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Basic Add-ons</div>
+                <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                  Basic Add-ons ({basicAddons.length}/{selectedPlan?.allowance.basic || 1} included free)
+                </div>
                 {BASIC_ADDONS.slice(0, 6).map((addon) => {
                   const isSelected = basicAddons.includes(addon.id);
                   return (
@@ -475,7 +487,9 @@ export default function StreamlinedWizard() {
 
                 {selectedPlan && selectedPlan.allowance.premium > 0 && (
                   <>
-                    <div className="text-xs font-bold text-accent uppercase tracking-wider mt-4 mb-2">Premium Add-ons</div>
+                    <div className="text-xs font-bold text-accent uppercase tracking-wider mt-4 mb-2">
+                      Premium Add-ons ({premiumAddons.length}/{selectedPlan.allowance.premium} included free)
+                    </div>
                     {PREMIUM_ADDONS.slice(0, 4).map((addon) => {
                       const isSelected = premiumAddons.includes(addon.id);
                       return (
@@ -513,7 +527,7 @@ export default function StreamlinedWizard() {
               </div>
 
               <p className="text-xs text-center text-muted-foreground">
-                Tap any add-on for more details. Add-ons beyond plan allowance are $20-40/mo each.
+                Tap the info icon for details. You can always adjust add-ons later.
               </p>
             </motion.div>
           )}
