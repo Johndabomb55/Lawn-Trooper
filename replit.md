@@ -102,10 +102,11 @@ The promotions engine is a config-driven stacking discounts system. All promotio
 - If cap is exceeded, the last-applied benefit is reduced first
 
 #### Commitment Model (Updated January 2026)
-- **1-Year Commitment**: 1 free month (Flexible badge)
-- **2-Year Commitment**: 2 free months (Popular badge)
-- **3-Year Commitment**: 3 free months (Best Value badge)
+- **Month-to-Month**: No free months, 15% flexibility premium over 1-year rate
+- **1-Year Commitment**: 1 free month (Save More badge)
+- **2-Year Commitment**: 2 free months (Best Value badge)
 - **Pay in Full Bonus**: +1 additional free month for paying upfront
+- **Payment Options**: Monthly, Yearly, Pay in Full
 
 #### Operation Price Drop - Loyalty Pricing
 Future renewals earn automatic discounts:
@@ -176,13 +177,26 @@ All trust messages are in `TRUST_MESSAGES` object in `client/src/data/promotions
 #### Lead Capture Fields
 The `/api/leads` endpoint now captures:
 - All original fields (name, email, phone, address, plan, addons, etc.)
-- `term`: '1-year', '2-year', or '3-year'
+- `term`: 'month-to-month', '1-year', or '2-year' (or 'custom' for HOA)
 - `payUpfront`: 'true' or 'false'
+- `paymentMethod`: 'monthly', 'yearly', or 'pay-in-full'
+- `propertyType`: 'residential' or 'hoa'
+- `hoaName`, `hoaAcreage`, `hoaUnits`, `hoaNotes`: HOA-specific fields
 - `segments`: Array of segment IDs ['renter', 'veteran', 'senior']
 - `appliedPromos`: Array of applied promotion titles
 - `promoCode`: HOA partner promo code if applied
 - `freeMonths`: Total free months earned
-- `totalPrice`: Calculated monthly price
+- `totalPrice`: Calculated monthly price (or 'custom' for HOA)
+
+#### Property Type Selection (NEW - January 2026)
+- Step 1 of wizard asks: "What are you servicing?"
+- **Residential**: Standard pricing flow with yard size, plan, add-ons, commitment
+- **HOA/Commercial**: Custom quote flow that skips pricing steps
+  - Collects: HOA Name, Acreage, Units (optional), Notes (optional)
+  - Jumps directly from Step 1 to Step 6 (Contact)
+  - Shows "Custom Quote Request" badge instead of free months counter
+  - Confirmation shows "Custom Quote Pending" badge
+  - All lead data flagged as "custom" for plan/term/pricing fields
 
 ### Streamlined Quote Wizard (NEW - January 2026)
 
@@ -221,9 +235,9 @@ New simplified quote wizard at root URL (`/`) designed for Facebook ad complianc
 - Includes: HERO_CONTENT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, TRUST_BAR, FOOTER_CONTENT, CTA_BUTTONS
 
 #### Commitment Option Labels (Updated)
-- "Flexible (Month-to-Month)" - 1 free month
-- "Popular (2-Year Commitment)" - 2 free months
-- "Best Value (3-Year Commitment)" - 3 free months
+- "Flexible (Month-to-Month)" - 0 free months, 15% premium
+- "Save More (1-Year Commitment)" - 1 free month
+- "Best Value (2-Year Commitment)" - 2 free months
 
 #### Add-ons UX Improvements
 - Selection counter shows basic and premium add-ons selected
