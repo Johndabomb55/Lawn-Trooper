@@ -4,17 +4,22 @@
  * This file defines all available promotions, their stacking rules, and caps.
  * Marketing team can edit this file to add/modify promotions without touching component code.
  * 
- * STACKING RULES:
- * - All promotions can stack up to the defined caps
- * - Max 30% total discount from percentage-based promos
- * - Max 3 free months from term-based promos
- * - If cap is exceeded, reduce the last-applied benefit first
+ * PRICING STRUCTURE:
+ * - Base monthly price assumes a 1-year agreement
+ * - Month-to-month carries a 15% premium over 1-year rate
+ * - Free months apply ONLY as service credits at END of agreement
+ * - Free months are never cash-equivalent
  * 
- * PROMO TYPES:
- * - termFreeMonths: Free months at end of agreement (Early Bird deals)
- * - prepayPercentOff: Discount for paying upfront
- * - segmentPercentOff: Discount for customer segments (renter/veteran/senior)
- * - referralFreeMonth: Free month for referrals (pending until friend commits)
+ * FREE MONTH RULES (STACKABLE):
+ * - 1-year term → +1 free month
+ * - 2-year term → +2 free months
+ * - Pay in full → +1 free month
+ * - Referral → +1 free month AFTER signup (displayed but NOT in effective monthly)
+ * 
+ * PAYMENT OPTIONS:
+ * - Monthly (default)
+ * - Yearly (one payment per year)
+ * - Pay in full (entire term upfront)
  */
 
 export interface Promotion {
@@ -23,9 +28,9 @@ export interface Promotion {
   shortDescription: string;
   type: 'termFreeMonths' | 'prepayPercentOff' | 'segmentPercentOff' | 'referralFreeMonth';
   stackGroup: 'freeMonths' | 'percentOff';
-  value: number; // Free months OR percent off (e.g., 3 or 15)
+  value: number;
   eligibility: {
-    term?: '1-year' | '2-year' | '3-year';
+    term?: 'month-to-month' | '1-year' | '2-year';
     payUpfront?: boolean;
     segment?: 'renter' | 'veteran' | 'senior';
     hasReferral?: boolean;
@@ -40,28 +45,17 @@ export const PROMO_CAPS = {
   maxFreeMonths: 6,
 };
 
-// Early Bird Promotion Config - time-decaying free months
-export const EARLY_BIRD_CONFIG = {
-  startDate: "2026-01-25",
-  endDate: "2026-04-25",
-  monthlyDecay: 1, // Each month that passes removes 1 free month
-  maxFreeMonths: 3, // Maximum early bird free months
-};
+// Month-to-month premium (15% over 1-year rate)
+export const MONTH_TO_MONTH_PREMIUM = 0.15;
 
-// Calculate remaining early bird free months based on current date
-export function getEarlyBirdFreeMonths(currentDate: Date = new Date()): number {
-  const start = new Date(EARLY_BIRD_CONFIG.startDate);
-  const end = new Date(EARLY_BIRD_CONFIG.endDate);
-  
-  if (currentDate < start) return EARLY_BIRD_CONFIG.maxFreeMonths;
-  if (currentDate >= end) return 0;
-  
-  const monthsPassed = Math.floor(
-    (currentDate.getTime() - start.getTime()) / (30 * 24 * 60 * 60 * 1000)
-  );
-  
-  return Math.max(0, EARLY_BIRD_CONFIG.maxFreeMonths - monthsPassed);
-}
+// Payment method options
+export type PaymentMethod = 'monthly' | 'yearly' | 'pay-in-full';
+
+export const PAYMENT_METHODS = [
+  { id: 'monthly' as const, label: 'Monthly', description: 'Pay each month' },
+  { id: 'yearly' as const, label: 'Yearly', description: 'One payment per year' },
+  { id: 'pay-in-full' as const, label: 'Pay in Full', description: 'Entire term upfront', bonus: '+1 free month' },
+];
 
 // Operation Price Drop - Loyalty Pricing
 export const LOYALTY_DISCOUNTS = [
@@ -73,42 +67,110 @@ export const LOYALTY_DISCOUNTS = [
 // Contract term options with commitment rewards
 export const COMMITMENT_TERMS = [
   {
+    id: 'month-to-month' as const,
+    label: 'Month-to-Month',
+    months: 1,
+    freeMonths: 0,
+    badge: 'Flexible',
+    description: 'Cancel anytime with 30 days notice',
+    hasPremium: true,
+  },
+  {
     id: '1-year' as const,
-    label: 'Flexible (Month-to-Month)',
+    label: '1-Year Commitment',
     months: 12,
     freeMonths: 1,
-    badge: 'Flexible',
+    badge: 'Save More',
+    description: '+1 free month at end of agreement',
+    hasPremium: false,
   },
   {
     id: '2-year' as const,
-    label: 'Popular (2-Year Commitment)',
+    label: '2-Year Commitment',
     months: 24,
     freeMonths: 2,
-    badge: 'Popular',
-  },
-  {
-    id: '3-year' as const,
-    label: 'Best Value (3-Year Commitment)',
-    months: 36,
-    freeMonths: 3,
     badge: 'Best Value',
+    description: '+2 free months at end of agreement',
+    hasPremium: false,
   },
 ];
+
+/**
+ * Calculate the actual monthly payment based on term and base price
+ * Month-to-month includes 15% flexibility pricing
+ */
+export function calculateActualMonthly(basePrice: number, term: 'month-to-month' | '1-year' | '2-year'): number {
+  if (term === 'month-to-month') {
+    return Math.round(basePrice * (1 + MONTH_TO_MONTH_PREMIUM));
+  }
+  return basePrice;
+}
+
+/**
+ * Calculate effective monthly price after free months are applied
+ * Free months are applied at END of agreement as service credits
+ * 
+ * Formula:
+ * - termMonths = total months in term (12 or 24)
+ * - freeMonthsEarned = term bonus + pay-in-full bonus (NOT referral)
+ * - paidMonths = max(termMonths - freeMonthsEarned, 1)
+ * - effectiveMonthly = (actualMonthly * termMonths) / paidMonths
+ * 
+ * Note: For month-to-month, effectiveMonthly = actualMonthly (no free months)
+ */
+export function calculateEffectiveMonthly(
+  basePrice: number, 
+  term: 'month-to-month' | '1-year' | '2-year',
+  payInFull: boolean = false
+): number {
+  const actualMonthly = calculateActualMonthly(basePrice, term);
+  
+  // Month-to-month has no free months
+  if (term === 'month-to-month') {
+    return actualMonthly;
+  }
+  
+  const termConfig = COMMITMENT_TERMS.find(t => t.id === term);
+  if (!termConfig) return actualMonthly;
+  
+  const termMonths = termConfig.months;
+  let freeMonthsEarned = termConfig.freeMonths;
+  
+  // Pay in full bonus
+  if (payInFull) {
+    freeMonthsEarned += 1;
+  }
+  
+  const paidMonths = Math.max(termMonths - freeMonthsEarned, 1);
+  const effectiveMonthly = (actualMonthly * termMonths) / paidMonths;
+  
+  return Math.round(effectiveMonthly * 100) / 100;
+}
+
+/**
+ * Get total free months earned (for display)
+ * Includes referral bonus for display purposes
+ */
+export function getTotalFreeMonths(
+  term: 'month-to-month' | '1-year' | '2-year',
+  payInFull: boolean = false,
+  hasReferral: boolean = false
+): number {
+  if (term === 'month-to-month') return 0;
+  
+  const termConfig = COMMITMENT_TERMS.find(t => t.id === term);
+  if (!termConfig) return 0;
+  
+  let total = termConfig.freeMonths;
+  if (payInFull) total += 1;
+  if (hasReferral) total += 1; // Display only, not in effective monthly calc
+  
+  return Math.min(total, PROMO_CAPS.maxFreeMonths);
+}
 
 // All available promotions
 export const PROMOTIONS: Promotion[] = [
   // Commitment-based free months (base rewards)
-  {
-    id: 'commitment_3year',
-    title: '3-Year Commitment',
-    shortDescription: '3 free months at end of agreement',
-    type: 'termFreeMonths',
-    stackGroup: 'freeMonths',
-    value: 3,
-    eligibility: { term: '3-year' },
-    displayOrder: 1,
-    active: true,
-  },
   {
     id: 'commitment_2year',
     title: '2-Year Commitment',
@@ -117,7 +179,7 @@ export const PROMOTIONS: Promotion[] = [
     stackGroup: 'freeMonths',
     value: 2,
     eligibility: { term: '2-year' },
-    displayOrder: 2,
+    displayOrder: 1,
     active: true,
   },
   {
@@ -128,7 +190,7 @@ export const PROMOTIONS: Promotion[] = [
     stackGroup: 'freeMonths',
     value: 1,
     eligibility: { term: '1-year' },
-    displayOrder: 3,
+    displayOrder: 2,
     active: true,
   },
 
@@ -141,7 +203,7 @@ export const PROMOTIONS: Promotion[] = [
     stackGroup: 'freeMonths',
     value: 1,
     eligibility: { payUpfront: true },
-    displayOrder: 4,
+    displayOrder: 3,
     active: true,
   },
 
@@ -196,7 +258,7 @@ export const PROMOTIONS: Promotion[] = [
 
 // User selections interface for promotions engine
 export interface UserSelections {
-  term: '1-year' | '2-year' | '3-year';
+  term: 'month-to-month' | '1-year' | '2-year';
   payUpfront: boolean;
   segments: ('renter' | 'veteran' | 'senior')[];
   hasReferral: boolean;
@@ -250,8 +312,7 @@ export interface AppliedTotals {
  * Get applicable promotions based on user selections
  */
 export function getApplicablePromotions(
-  selections: UserSelections,
-  nowDate: Date = new Date()
+  selections: UserSelections
 ): PromotionResult {
   const activePromos = PROMOTIONS.filter(p => p.active);
   const eligible: Promotion[] = [];
@@ -262,51 +323,6 @@ export function getApplicablePromotions(
   let totalPercentOff = 0;
   let totalFreeMonths = 0;
   let capApplied = false;
-
-  // Apply Early Bird time-decaying promotion if applicable
-  const earlyBirdFreeMonths = getEarlyBirdFreeMonths(nowDate);
-  if (earlyBirdFreeMonths > 0) {
-    const earlyBirdPromo: Promotion = {
-      id: 'early_bird_dynamic',
-      title: 'Early Bird Bonus',
-      shortDescription: `${earlyBirdFreeMonths} free month${earlyBirdFreeMonths > 1 ? 's' : ''} for signing up early`,
-      type: 'termFreeMonths',
-      stackGroup: 'freeMonths',
-      value: earlyBirdFreeMonths,
-      eligibility: {},
-      displayOrder: 0,
-      active: true,
-    };
-
-    eligible.push(earlyBirdPromo);
-    applied.push(earlyBirdPromo);
-    
-    // Apply early bird with cap check
-    const newTotal = totalFreeMonths + earlyBirdFreeMonths;
-    if (newTotal > PROMO_CAPS.maxFreeMonths) {
-      const allowedValue = PROMO_CAPS.maxFreeMonths - totalFreeMonths;
-      if (allowedValue > 0) {
-        savingsBreakdown.push({
-          promoId: earlyBirdPromo.id,
-          title: `${earlyBirdPromo.title} (capped)`,
-          savings: selections.monthlyTotal * allowedValue,
-          freeMonths: allowedValue,
-          percentOff: 0,
-        });
-        totalFreeMonths = PROMO_CAPS.maxFreeMonths;
-        capApplied = true;
-      }
-    } else {
-      savingsBreakdown.push({
-        promoId: earlyBirdPromo.id,
-        title: earlyBirdPromo.title,
-        savings: selections.monthlyTotal * earlyBirdFreeMonths,
-        freeMonths: earlyBirdFreeMonths,
-        percentOff: 0,
-      });
-      totalFreeMonths = newTotal;
-    }
-  }
 
   // Sort by display order for consistent application
   const sortedPromos = [...activePromos].sort((a, b) => a.displayOrder - b.displayOrder);

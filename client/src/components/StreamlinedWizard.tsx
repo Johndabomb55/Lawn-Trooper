@@ -30,14 +30,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { PLANS, YARD_SIZES, GLOBAL_CONSTANTS, BASIC_ADDONS, PREMIUM_ADDONS } from "@/data/plans";
+import { PLANS, YARD_SIZES, GLOBAL_CONSTANTS, BASIC_ADDONS, PREMIUM_ADDONS, getYardMultiplier } from "@/data/plans";
 import { 
   COMMITMENT_TERMS, 
   LOYALTY_DISCOUNTS,
-  getEarlyBirdFreeMonths,
+  PAYMENT_METHODS,
   PROMO_CAPS,
   HOA_PROMO_CODES,
-  validatePromoCode
+  validatePromoCode,
+  calculateActualMonthly,
+  calculateEffectiveMonthly,
+  getTotalFreeMonths,
+  type PaymentMethod
 } from "@/data/promotions";
 
 const STEPS = [
@@ -75,15 +79,22 @@ function InfoPopup({ open, onClose, title, content }: InfoPopupProps) {
   );
 }
 
+export type PropertyType = 'residential' | 'hoa';
+
 export default function StreamlinedWizard() {
   const [step, setStep] = useState(1);
+  const [propertyType, setPropertyType] = useState<PropertyType>('residential');
+  const [hoaName, setHoaName] = useState("");
+  const [hoaAcreage, setHoaAcreage] = useState("");
+  const [hoaUnits, setHoaUnits] = useState("");
+  const [hoaNotes, setHoaNotes] = useState("");
   const [yardSize, setYardSize] = useState("");
   const [plan, setPlan] = useState("premium");
   const [basicAddons, setBasicAddons] = useState<string[]>([]);
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
-  const [term, setTerm] = useState<'1-year' | '2-year' | '3-year'>('1-year');
-  const [payUpfront, setPayUpfront] = useState(false);
+  const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('1-year');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('monthly');
   const [promoCode, setPromoCode] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -97,29 +108,24 @@ export default function StreamlinedWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   
+  const isHOA = propertyType === 'hoa';
+  
   const { toast } = useToast();
 
   const selectedPlan = PLANS.find(p => p.id === plan);
   const selectedYard = YARD_SIZES.find(y => y.id === yardSize);
   const selectedTerm = COMMITMENT_TERMS.find(t => t.id === term);
   
-  const earlyBirdMonths = getEarlyBirdFreeMonths();
-  const commitmentMonths = selectedTerm?.freeMonths || 0;
-  const payFullBonus = payUpfront ? 1 : 0;
+  const payInFull = paymentMethod === 'pay-in-full';
   const promoValid = validatePromoCode(promoCode);
   const promoDiscount = promoValid ? (HOA_PROMO_CODES[promoCode.toUpperCase()]?.discount || 0) : 0;
   
-  const totalFreeMonths = Math.min(
-    earlyBirdMonths + commitmentMonths + payFullBonus,
-    PROMO_CAPS.maxFreeMonths
-  );
+  const totalFreeMonths = getTotalFreeMonths(term, payInFull, false);
 
-  const calculatePrice = () => {
+  const calculateBasePrice = () => {
     if (!selectedPlan || !selectedYard) return 0;
     const basePrice = selectedPlan.price;
-    const sizeMultiplier = selectedYard.id === "0.25" ? 1 : 
-                          selectedYard.id === "0.5" ? 1.15 : 
-                          selectedYard.id === "0.75" ? 1.30 : 1.45;
+    const sizeMultiplier = getYardMultiplier(selectedYard.id);
     let price = Math.round(basePrice * sizeMultiplier);
     if (promoDiscount > 0) {
       price = Math.round(price * (1 - promoDiscount / 100));
@@ -127,20 +133,34 @@ export default function StreamlinedWizard() {
     return price;
   };
 
-  const monthlyPrice = calculatePrice();
+  const basePrice = calculateBasePrice();
+  const actualMonthly = isHOA ? 0 : calculateActualMonthly(basePrice, term);
+  const effectiveMonthly = isHOA ? 0 : calculateEffectiveMonthly(basePrice, term, payInFull);
 
   const handleNext = () => {
-    if (step < 7) setStep(step + 1);
+    if (isHOA && step === 1) {
+      setStep(6);
+    } else if (step < 7) {
+      setStep(step + 1);
+    }
   };
 
   const handleBack = () => {
-    if (step > 1) setStep(step - 1);
+    if (isHOA && step === 6) {
+      setStep(1);
+    } else if (step > 1) {
+      setStep(step - 1);
+    }
   };
 
   const canProceed = () => {
     switch (step) {
-      case 1: return true;
-      case 2: return !!yardSize;
+      case 1: 
+        if (isHOA) {
+          return hoaName.trim() !== '' && hoaAcreage.trim() !== '';
+        }
+        return true;
+      case 2: return !!yardSize || isHOA;
       case 3: return !!plan;
       case 4: return true;
       case 5: return true;
@@ -160,15 +180,21 @@ export default function StreamlinedWizard() {
           email,
           phone,
           address,
-          yardSize,
-          plan,
-          basicAddons,
-          premiumAddons,
-          term,
-          payUpfront: String(payUpfront),
+          yardSize: isHOA ? 'custom' : yardSize,
+          plan: isHOA ? 'custom' : plan,
+          basicAddons: isHOA ? [] : basicAddons,
+          premiumAddons: isHOA ? [] : premiumAddons,
+          term: isHOA ? 'custom' : term,
+          paymentMethod: isHOA ? 'custom' : paymentMethod,
+          payUpfront: String(isHOA ? false : payInFull),
           promoCode,
-          totalPrice: String(monthlyPrice),
-          freeMonths: String(totalFreeMonths),
+          totalPrice: isHOA ? 'custom' : String(actualMonthly),
+          freeMonths: isHOA ? '0' : String(totalFreeMonths),
+          propertyType,
+          hoaName: isHOA ? hoaName : undefined,
+          hoaAcreage: isHOA ? hoaAcreage : undefined,
+          hoaUnits: isHOA ? hoaUnits : undefined,
+          hoaNotes: isHOA ? hoaNotes : undefined,
         }),
       });
       
@@ -213,11 +239,18 @@ export default function StreamlinedWizard() {
             transition={{ duration: 0.3 }}
           />
         </div>
-        {totalFreeMonths > 0 && step > 1 && step < 7 && (
+        {!isHOA && totalFreeMonths > 0 && step > 1 && step < 7 && (
           <div className="mt-2 text-center">
             <span data-testid="text-free-months-unlocked" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
               <Sparkles className="w-3 h-3 inline mr-1" />
               {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''} Unlocked!
+            </span>
+          </div>
+        )}
+        {isHOA && step > 1 && step < 7 && (
+          <div className="mt-2 text-center">
+            <span data-testid="text-custom-quote" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
+              Custom Quote Request
             </span>
           </div>
         )}
@@ -226,41 +259,119 @@ export default function StreamlinedWizard() {
       {/* Step Content */}
       <div className="p-6 min-h-[400px]">
         <AnimatePresence mode="wait">
-          {/* Step 1: Welcome */}
+          {/* Step 1: Property Type Selection */}
           {step === 1 && (
             <motion.div
               key="step1"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="text-center space-y-6"
+              className="space-y-6"
             >
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <Shield className="w-10 h-10 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-primary mb-2">Welcome to Lawn Trooper</h3>
-                <p className="text-muted-foreground">Let's build your perfect lawn care plan in just a few taps.</p>
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-primary mb-2">What are you servicing?</h3>
+                <p className="text-muted-foreground">Select your property type to get started.</p>
               </div>
               
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>25+ Years Experience</span>
-                </div>
-                <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>100+ Awards</span>
-                </div>
-                <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>AI-Powered Savings</span>
-                </div>
-                <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>No Obligation Quote</span>
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  data-testid="property-residential"
+                  onClick={() => setPropertyType('residential')}
+                  className={`p-6 rounded-xl border-2 transition-all text-center ${
+                    propertyType === 'residential'
+                      ? 'border-primary bg-primary/10 shadow-lg'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="text-4xl mb-2">🏠</div>
+                  <div className="font-bold text-lg">Residential</div>
+                  <div className="text-xs text-muted-foreground">Single family home</div>
+                </button>
+                <button
+                  data-testid="property-hoa"
+                  onClick={() => setPropertyType('hoa')}
+                  className={`p-6 rounded-xl border-2 transition-all text-center ${
+                    propertyType === 'hoa'
+                      ? 'border-accent bg-accent/10 shadow-lg'
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                >
+                  <div className="text-4xl mb-2">🏘️</div>
+                  <div className="font-bold text-lg">HOA / Commercial</div>
+                  <div className="text-xs text-muted-foreground">Community or business</div>
+                </button>
               </div>
+
+              {/* HOA-specific fields */}
+              {isHOA && (
+                <div className="space-y-3 bg-accent/5 rounded-xl p-4 border border-accent/20">
+                  <div>
+                    <Label htmlFor="hoaName">HOA / Property Name *</Label>
+                    <Input
+                      id="hoaName"
+                      data-testid="input-hoa-name"
+                      value={hoaName}
+                      onChange={(e) => setHoaName(e.target.value)}
+                      placeholder="e.g., Oak Valley HOA"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="hoaAcreage">Estimated Acreage *</Label>
+                    <Input
+                      id="hoaAcreage"
+                      data-testid="input-hoa-acreage"
+                      value={hoaAcreage}
+                      onChange={(e) => setHoaAcreage(e.target.value)}
+                      placeholder="e.g., 5 acres"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="hoaUnits">Number of Units (optional)</Label>
+                    <Input
+                      id="hoaUnits"
+                      data-testid="input-hoa-units"
+                      value={hoaUnits}
+                      onChange={(e) => setHoaUnits(e.target.value)}
+                      placeholder="e.g., 50 homes"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="hoaNotes">Additional Notes (optional)</Label>
+                    <Input
+                      id="hoaNotes"
+                      data-testid="input-hoa-notes"
+                      value={hoaNotes}
+                      onChange={(e) => setHoaNotes(e.target.value)}
+                      placeholder="Any special requirements..."
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    HOA quotes require a custom review. We'll contact you within 1 business day.
+                  </p>
+                </div>
+              )}
+
+              {/* Trust badges for residential */}
+              {!isHOA && (
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span>25+ Years Experience</span>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span>100+ Awards</span>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span>AI-Powered Savings</span>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span>No Obligation Quote</span>
+                  </div>
+                </div>
+              )}
 
               <button
                 data-testid="info-about"
@@ -271,7 +382,7 @@ export default function StreamlinedWizard() {
                     <p className="font-semibold text-primary">Commit to us, and we commit to you.</p>
                   </div>
                 ))}
-                className="text-sm text-primary underline"
+                className="text-sm text-primary underline mx-auto block"
               >
                 Learn more about us
               </button>
@@ -317,10 +428,9 @@ export default function StreamlinedWizard() {
                   <div className="space-y-2">
                     <p>Not sure of your yard size? Here's a quick guide:</p>
                     <ul className="list-disc pl-4 space-y-1 text-sm">
-                      <li><strong>1/4 acre:</strong> Typical small suburban lot</li>
-                      <li><strong>1/2 acre:</strong> Average neighborhood home</li>
-                      <li><strong>3/4 acre:</strong> Larger lot with more lawn</li>
-                      <li><strong>1+ acre:</strong> Estate or rural property</li>
+                      <li><strong>Up to 1/3 acre:</strong> Typical small suburban lot</li>
+                      <li><strong>1/3 - 2/3 acre:</strong> Average neighborhood home</li>
+                      <li><strong>2/3 - 1 acre:</strong> Larger lot with more lawn</li>
                     </ul>
                     <p className="text-xs text-muted-foreground mt-2">{GLOBAL_CONSTANTS.YARD_ELIGIBILITY}</p>
                   </div>
@@ -571,62 +681,99 @@ export default function StreamlinedWizard() {
               <div className="space-y-3">
                 {COMMITMENT_TERMS.map((t) => {
                   const isSelected = term === t.id;
+                  const isBestValue = t.id === '2-year';
                   return (
                     <button
                       key={t.id}
                       data-testid={`term-${t.id}`}
                       onClick={() => setTerm(t.id)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between ${
-                        isSelected
-                          ? 'border-primary bg-primary/10 shadow-lg'
-                          : 'border-border hover:border-primary/50'
+                      className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between relative ${
+                        isBestValue
+                          ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
+                          : isSelected
+                            ? 'border-primary bg-primary/10 shadow-lg'
+                            : 'border-border hover:border-primary/50'
                       }`}
                     >
+                      {isBestValue && (
+                        <div className="absolute -top-2 left-4 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          BEST VALUE
+                        </div>
+                      )}
                       <div>
                         <div className="font-bold text-lg">{t.label}</div>
-                        <div className="text-sm text-muted-foreground">{t.badge}</div>
+                        <div className="text-sm text-muted-foreground">{t.description}</div>
+                        {t.hasPremium && (
+                          <div className="text-xs text-amber-600 mt-1">Includes flexibility pricing (+15%)</div>
+                        )}
                       </div>
                       <div className="text-right">
-                        <div className="text-xl font-bold text-green-600">+{t.freeMonths} FREE</div>
-                        <div className="text-xs text-muted-foreground">month{t.freeMonths > 1 ? 's' : ''}</div>
+                        {t.freeMonths > 0 ? (
+                          <>
+                            <div className="text-xl font-bold text-green-600">+{t.freeMonths} FREE</div>
+                            <div className="text-xs text-muted-foreground">month{t.freeMonths > 1 ? 's' : ''}</div>
+                          </>
+                        ) : (
+                          <div className="text-sm text-muted-foreground">{t.badge}</div>
+                        )}
                       </div>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Pay Upfront Toggle */}
-              <button
-                data-testid="pay-upfront-toggle"
-                onClick={() => setPayUpfront(!payUpfront)}
-                className={`w-full p-4 rounded-xl border-2 transition-all flex items-center justify-between ${
-                  payUpfront
-                    ? 'border-accent bg-accent/10'
-                    : 'border-border hover:border-accent/50'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                    payUpfront ? 'bg-accent border-accent' : 'border-muted-foreground'
-                  }`}>
-                    {payUpfront && <Check className="w-4 h-4 text-white" />}
-                  </div>
-                  <div>
-                    <div className="font-bold">Pay in Full</div>
-                    <div className="text-xs text-muted-foreground">Get +1 extra free month</div>
-                  </div>
+              {/* Payment Method Selection */}
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-center">How would you like to pay?</div>
+                <div className="grid grid-cols-3 gap-2">
+                  {PAYMENT_METHODS.map((pm) => {
+                    const isSelected = paymentMethod === pm.id;
+                    return (
+                      <button
+                        key={pm.id}
+                        data-testid={`payment-${pm.id}`}
+                        onClick={() => setPaymentMethod(pm.id)}
+                        className={`p-3 rounded-lg border-2 transition-all text-center ${
+                          isSelected
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="font-medium text-sm">{pm.label}</div>
+                        {pm.bonus && (
+                          <div className="text-xs text-green-600 font-bold">{pm.bonus}</div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-                <div className="text-green-600 font-bold">+1 FREE</div>
-              </button>
+              </div>
 
-              {/* Early Bird Banner */}
-              {earlyBirdMonths > 0 && (
-                <div data-testid="banner-early-bird" className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                  <div data-testid="text-early-bird-bonus" className="text-green-800 font-bold flex items-center justify-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    Early Bird Bonus: +{earlyBirdMonths} FREE months!
+              {/* Pricing Summary */}
+              {basePrice > 0 && (
+                <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-lg">Your monthly payment:</span>
+                    <span className="text-2xl font-bold text-primary">${actualMonthly}/mo</span>
                   </div>
-                  <div className="text-xs text-green-600">Sign up before April 25 to lock in this bonus</div>
+                  {term !== 'month-to-month' && totalFreeMonths > 0 && (
+                    <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                      <Info className="w-3 h-3" />
+                      <span>Effective monthly after free months: ${effectiveMonthly.toFixed(0)}/mo</span>
+                      <button
+                        type="button"
+                        onClick={() => showInfo("Effective Monthly", (
+                          <div className="space-y-2">
+                            <p>Effective monthly shows the average cost after your free months are applied at the end of your agreement.</p>
+                            <p className="text-sm text-muted-foreground">Free months are service credits, not cash refunds.</p>
+                          </div>
+                        ))}
+                        className="text-primary underline"
+                      >
+                        What's this?
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -668,20 +815,37 @@ export default function StreamlinedWizard() {
                 <p className="text-muted-foreground text-sm">Enter your info to receive your free quote</p>
               </div>
 
-              {/* Summary Card */}
-              <div data-testid="card-summary" className="bg-primary/5 rounded-xl p-4 border border-primary/20">
-                <div className="flex justify-between items-center mb-2">
-                  <span data-testid="text-selected-plan" className="font-bold">{selectedPlan?.name}</span>
-                  <span data-testid="text-monthly-price" className="text-xl font-bold text-primary">${monthlyPrice}/mo</span>
+              {/* Summary Card - Different for HOA vs Residential */}
+              {isHOA ? (
+                <div data-testid="card-hoa-summary" className="bg-accent/5 rounded-xl p-4 border border-accent/20">
+                  <div className="text-center space-y-2">
+                    <div className="text-xl font-bold text-accent">HOA / Commercial Quote Request</div>
+                    <div className="text-sm text-muted-foreground">
+                      <strong>{hoaName}</strong> - {hoaAcreage}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      We'll review your property details and provide a custom quote within 1 business day.
+                    </p>
+                  </div>
                 </div>
-                <div className="flex gap-2 flex-wrap text-xs">
-                  <span data-testid="text-free-months-summary" className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                    {totalFreeMonths} Free Months
-                  </span>
-                  <span data-testid="text-yard-size" className="bg-muted px-2 py-0.5 rounded">{selectedYard?.label}</span>
-                  <span data-testid="text-term" className="bg-muted px-2 py-0.5 rounded">{selectedTerm?.label}</span>
+              ) : (
+                <div data-testid="card-summary" className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                  <div className="flex justify-between items-center mb-2">
+                    <span data-testid="text-selected-plan" className="font-bold">{selectedPlan?.name}</span>
+                    <span data-testid="text-monthly-price" className="text-xl font-bold text-primary">${actualMonthly}/mo</span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap text-xs">
+                    {totalFreeMonths > 0 && (
+                      <span data-testid="text-free-months-summary" className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                        {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''}
+                      </span>
+                    )}
+                    <span data-testid="text-yard-size" className="bg-muted px-2 py-0.5 rounded">{selectedYard?.label}</span>
+                    <span data-testid="text-term" className="bg-muted px-2 py-0.5 rounded">{selectedTerm?.label}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Free months are applied as service credits at the end of your agreement.</p>
                 </div>
-              </div>
+              )}
 
               <div className="space-y-3">
                 <div>
@@ -740,52 +904,91 @@ export default function StreamlinedWizard() {
               
               <div>
                 <h3 data-testid="text-complete-title" className="text-2xl font-bold text-primary mb-2">Mission Accomplished!</h3>
-                <p data-testid="text-complete-subtitle" className="text-muted-foreground">Your quote has been submitted, General.</p>
+                <p data-testid="text-complete-subtitle" className="text-muted-foreground">
+                  {isHOA ? "Your custom quote request has been submitted." : "Your quote has been submitted, General."}
+                </p>
               </div>
 
-              <div data-testid="card-confirmation" className="bg-primary/5 rounded-xl p-4 border border-primary/20 text-left">
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span className="text-xs text-muted-foreground block">Plan</span>
-                    <span data-testid="text-confirm-plan" className="font-bold">{selectedPlan?.name}</span>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground block">Monthly</span>
-                    <span data-testid="text-confirm-price" className="font-bold text-primary">${monthlyPrice}/mo</span>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground block">Commitment</span>
-                    <span data-testid="text-confirm-term" className="font-bold">{selectedTerm?.label}</span>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground block">Free Months</span>
-                    <span data-testid="text-confirm-free-months" className="font-bold text-green-600">{totalFreeMonths}</span>
+              {/* HOA Confirmation */}
+              {isHOA ? (
+                <div data-testid="card-hoa-confirmation" className="bg-accent/5 rounded-xl p-4 border border-accent/20 text-left">
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Property</span>
+                      <span className="font-bold">{hoaName}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Acreage</span>
+                      <span className="font-bold">{hoaAcreage}</span>
+                    </div>
+                    {hoaUnits && (
+                      <div>
+                        <span className="text-xs text-muted-foreground block">Units</span>
+                        <span className="font-bold">{hoaUnits}</span>
+                      </div>
+                    )}
+                    <div className="pt-2 text-center">
+                      <span className="bg-accent/20 text-accent px-3 py-1 rounded-full text-sm font-bold">
+                        Custom Quote Pending
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div data-testid="card-confirmation" className="bg-primary/5 rounded-xl p-4 border border-primary/20 text-left">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Plan</span>
+                      <span data-testid="text-confirm-plan" className="font-bold">{selectedPlan?.name}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Monthly</span>
+                      <span data-testid="text-confirm-price" className="font-bold text-primary">${actualMonthly}/mo</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Commitment</span>
+                      <span data-testid="text-confirm-term" className="font-bold">{selectedTerm?.label}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Free Months</span>
+                      <span data-testid="text-confirm-free-months" className="font-bold text-green-600">{totalFreeMonths}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="bg-accent/10 rounded-xl p-4 border border-accent/30">
                 <p className="font-bold text-primary">No payment required. No obligation.</p>
-                <p className="text-sm text-accent">Free Dream Yard Recon</p>
+                <p className="text-sm text-accent">{isHOA ? "Free Property Consultation" : "Free Dream Yard Recon"}</p>
               </div>
 
               <div className="bg-green-50 rounded-xl p-3 border border-green-200">
                 <p className="text-sm text-green-800">
-                  <strong>What's next?</strong> We'll reach out within 1 business day to schedule your free consultation.
+                  <strong>What's next?</strong> We'll reach out within 1 business day to {isHOA ? "discuss your custom quote" : "schedule your free consultation"}.
                 </p>
               </div>
 
-              {/* Future Loyalty */}
-              <div className="text-left">
-                <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Future Loyalty Benefits</p>
-                <div className="flex gap-2 text-xs">
-                  {LOYALTY_DISCOUNTS.map((l, i) => (
-                    <span key={i} className="bg-green-50 text-green-700 px-2 py-1 rounded">
-                      {l.label}: {l.discount}% off
-                    </span>
-                  ))}
+              {/* Cancellation Policy - Residential only */}
+              {!isHOA && (
+                <div className="text-left text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium mb-1">Cancellation Policy:</p>
+                  <p>Month-to-month plans may be canceled anytime with 30 days notice. Term plans may be canceled early at any time; free months and unused credits are forfeited if canceled before the term ends.</p>
                 </div>
-              </div>
+              )}
+
+              {/* Future Loyalty - Residential only */}
+              {!isHOA && (
+                <div className="text-left">
+                  <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Future Loyalty Benefits</p>
+                  <div className="flex gap-2 text-xs">
+                    {LOYALTY_DISCOUNTS.map((l, i) => (
+                      <span key={i} className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                        {l.label}: {l.discount}% off
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -833,12 +1036,17 @@ export default function StreamlinedWizard() {
             <Button
               onClick={() => {
                 setStep(1);
+                setPropertyType('residential');
+                setHoaName("");
+                setHoaAcreage("");
+                setHoaUnits("");
+                setHoaNotes("");
                 setYardSize("");
-                setPlan("");
+                setPlan("premium");
                 setBasicAddons([]);
                 setPremiumAddons([]);
                 setTerm('1-year');
-                setPayUpfront(false);
+                setPaymentMethod('monthly');
                 setName("");
                 setEmail("");
                 setPhone("");

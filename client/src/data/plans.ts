@@ -118,103 +118,103 @@ export const PLANS = [
 
 export const BASIC_ADDONS = [
   {
-    id: "extra_bush_trimming",
-    label: "Extra Bush Trimming",
+    id: "mulch_install_8yards",
+    label: "Mulch Install (Up to 8 Yards)",
+    description: "Fresh mulch delivery and installation with light bed cleanup."
+  },
+  {
+    id: "pine_straw_install_10bales",
+    label: "Pine Straw Install (Up to 10 Bales)",
+    description: "Fresh pine straw installed neatly in beds."
+  },
+  {
+    id: "leaf_cleanup",
+    label: "Leaf Cleanup",
+    description: "Seasonal leaf blowing, mulching, and removal."
+  },
+  {
+    id: "shrub_hedge_trimming",
+    label: "Shrub / Hedge Trimming",
     description: `Additional trimming beyond plan limits. ${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}`
   },
   {
-    id: "shrub_fertilization",
-    label: "Shrub Fertilization / Diseased Plant Application",
-    description: "Targeted nutrient boost and disease control for healthier shrubs."
+    id: "mailbox_cleaning",
+    label: "Mailbox Cleaning",
+    description: "Clean and polish mailbox for curb appeal."
   },
   {
-    id: "irrigation_check",
-    label: "Full Irrigation Check/Diagnosis + Seasonal Activation & Winterization",
-    description: "System diagnostics and seasonal preparation."
-  },
-  {
-    id: "fire_ant_app",
-    label: "Quarterly Fire Ant Applications",
-    description: "Quarterly treatments to control fire ant mounds."
+    id: "front_porch_pressure_wash",
+    label: "Front Sidewalk + Front Porch Pressure Wash",
+    description: "Basic exterior clean for front walkway and porch area."
   },
   {
     id: "quarterly_trash_bin_cleaning",
     label: "Quarterly Trash Bin Cleaning",
-    description: "Cleaning and sanitizing of trash bins once every quarter. Executive Plan: Multiple cans (up to 3) included."
+    description: "Cleaning and sanitizing of trash bins once every quarter."
   },
   {
-    id: "gutter_cleaning_first_floor",
-    label: "Gutter Cleaning (First Floor Only)",
-    description: "First-floor / single-story gutters only (no multi-story work)"
-  },
-  {
-    id: "mulch_delivery_install_2yards",
-    label: "Mulch Delivery + Installation (Up to 3 Yards)",
-    description: "Fresh mulch install + light bed cleanup (Up to 3 Yards)"
-  },
-  {
-    id: "pine_straw_delivery_install_3yards",
-    label: "Pine Straw Delivery + Installation (Up to 4 Yards)",
-    description: "Fresh pine straw installed neatly in beds (Up to 4 Yards)"
-  },
-  {
-    id: "basic_flower_install",
-    label: "Basic Flower Install (Fall Only)",
-    description: "Up to 4 flats of flowers (Fall Only). Upgrade to Premium for Spring."
-  },
-  {
-    id: "basic_christmas_lights",
-    label: "Basic Christmas Light Package",
-    description: "Basic shrub and small tree decorations only. (No roofline lights)."
-  },
-  {
-    id: "extra_weed_control",
-    label: "Extra Weed Control + Fire Ant",
-    description: "2 extra weed control apps w/ fertilizer & weed killer + 1 fire ant treatment."
+    id: "monthly_trash_bin_cleaning",
+    label: "Monthly Trash Bin Cleaning (Upgrade)",
+    description: "Monthly cleaning and sanitizing of trash bins."
   }
 ];
 
 export const PREMIUM_ADDONS = [
   {
-    id: "pest_control",
-    label: "Quarterly Pest Control Applications",
-    description: "Exterior pest barrier treatments + spray for mosquitos and bugs around perimeter (4x/year)."
+    id: "extra_weed_control",
+    label: "Additional Weed Control Treatments",
+    description: "Extra weed control applications with fertilizer and weed killer."
   },
   {
-    id: "aeration_overseeding",
-    label: "Aeration + Overseeding",
-    description: "Relieves soil compaction / improves nutrient flow / thickens turf"
+    id: "lawn_aeration",
+    label: "Lawn Aeration",
+    description: "Relieves soil compaction and improves nutrient flow for healthier grass."
   },
   {
-    id: "pressure_washing",
-    label: "Driveway & Sidewalk Pressure Washing",
-    description: "Professional cleaning of driveway and front sidewalks."
+    id: "mulch_install_10yards",
+    label: "Mulch Install (Up to 10 Yards)",
+    description: "Premium mulch delivery and installation. 4 colors available."
   },
   {
-    id: "mulch_delivery_install_over2yards",
-    label: "Mulch Delivery + Installation (Up to 8 Yards)",
-    description: "Fresh mulch install + light bed cleanup. 4 colors avail (Brown Hardwood recommended)."
+    id: "pine_straw_install_10yards",
+    label: "Pine Straw Install (Up to 10 Yards)",
+    description: "Premium pine straw installed neatly in beds."
   },
   {
-    id: "pine_straw_delivery_install_over3yards",
-    label: "Pine Straw Delivery + Installation (Up to 10 Yards)",
-    description: "Fresh pine straw installed neatly in beds (Up to 10 Yards)."
-  },
-  {
-    id: "premium_flower_install",
-    label: "Premium Flower Install (Spring or 2 Seasons)",
-    description: "Spring flowers (or Spring AND Fall). Up to 5 flats per season."
-  },
-  {
-    id: "bimonthly_trash_bin_cleaning",
-    label: "Monthly Trash Bin Cleaning",
-    description: "Cleaning and sanitizing of trash bins every month. Executive Plan: Multiple cans (up to 3) included."
+    id: "driveway_pressure_wash",
+    label: "Driveway Pressure Wash / Soft Wash",
+    description: "Professional cleaning of driveway and sidewalks."
   },
   {
     id: "christmas_lights_premium",
-    label: "Christmas Light Premium Package",
+    label: "Premium Christmas Light Package",
+    description: "First floor roofline lighting + yard decorations."
+  },
+  {
+    id: "house_soft_wash",
+    label: "House Soft Wash",
+    description: "Gentle exterior cleaning for siding and surfaces."
+  }
+];
+
+export const SEASONAL_ADDONS = [
+  {
+    id: "christmas_lights_basic",
+    label: "Basic Christmas Light Package",
+    description: "Shrub and small tree decorations. (No roofline lights)."
+  },
+  {
+    id: "christmas_lights_premium",
+    label: "Premium Christmas Light Package",
     description: "First floor roofline lighting + yard decorations."
   }
+];
+
+export const EXECUTIVE_PERKS = [
+  "Unlimited mulch installs (no yardage cap)",
+  "Priority scheduling",
+  "After-storm debris cleanup included",
+  "All premium add-ons available"
 ];
 
 // Helper to get allowance including promo
@@ -291,7 +291,12 @@ export const calculatePlanPrice = (planId: string, acres: number): number => {
 
 // Yard size options for Plan Builder
 export const YARD_SIZES = [
-  { id: "1/3", label: "Small", subtitle: "Up to 1/3 acre", acres: 0.33 },
-  { id: "2/3", label: "Medium", subtitle: "1/3 - 2/3 acre", acres: 0.66 },
-  { id: "1", label: "Large", subtitle: "2/3 - 1 acre", acres: 1.0 }
+  { id: "1/3", label: "Small", subtitle: "Up to 1/3 acre", acres: 0.33, multiplier: 1.0 },
+  { id: "2/3", label: "Medium", subtitle: "1/3 - 2/3 acre", acres: 0.66, multiplier: 1.2 },
+  { id: "1", label: "Large", subtitle: "2/3 - 1 acre", acres: 1.0, multiplier: 1.44 }
 ];
+
+export const getYardMultiplier = (yardSizeId: string): number => {
+  const yard = YARD_SIZES.find(y => y.id === yardSizeId);
+  return yard?.multiplier ?? 1.0;
+};
