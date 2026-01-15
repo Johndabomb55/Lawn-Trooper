@@ -181,3 +181,29 @@ The `/api/leads` endpoint now captures:
 - `segments`: Array of segment IDs ['renter', 'veteran', 'senior']
 - `appliedPromos`: Array of applied promotion titles
 - `promoCode`: HOA partner promo code if applied
+- `freeMonths`: Total free months earned
+- `totalPrice`: Calculated monthly price
+
+### Streamlined Quote Wizard (NEW - January 2026)
+
+#### Overview
+New simplified quote wizard at root URL (`/`) designed for Facebook ad compliance and mobile-first UX. Original full wizard still available at `/full` route.
+
+#### Key Features
+- **One Choice Per Screen**: Each step focuses on one decision with big, tappable buttons
+- **7-Step Flow**: Welcome → Yard Size → Plan → Add-ons → Commitment → Contact → Complete
+- **Info Pop-ups**: Additional details available via info buttons without cluttering the UI
+- **Progress Tracking**: Visual progress bar and "Free Months Unlocked" counter
+- **Minimal Landing Page**: Wizard-focused design with simple header/footer
+
+#### Route Structure
+- `/` - Streamlined wizard with minimal landing page (`simple-home.tsx`)
+- `/full` - Original full landing page with multi-step wizard
+
+#### Component Files
+- `client/src/components/StreamlinedWizard.tsx` - Main wizard component
+- `client/src/pages/simple-home.tsx` - Minimal landing page wrapper
+
+#### Schema Updates
+- `address` and `contactMethod` fields now optional in leads schema
+- Added `freeMonths` and `promoCode` fields for streamlined wizard submissions

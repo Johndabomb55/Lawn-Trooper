@@ -23,18 +23,20 @@ export const leads = pgTable("leads", {
   name: text("name").notNull(),
   email: text("email"),
   phone: text("phone"),
-  address: text("address").notNull(),
-  contactMethod: text("contact_method").notNull(),
+  address: text("address"),
+  contactMethod: text("contact_method"),
   yardSize: text("yard_size").notNull(),
   plan: text("plan").notNull(),
   basicAddons: jsonb("basic_addons").$type<string[]>().default([]),
   premiumAddons: jsonb("premium_addons").$type<string[]>().default([]),
   notes: text("notes"),
   totalPrice: text("total_price"),
-  term: text("term"), // '1-year' or '2-year'
-  payUpfront: text("pay_upfront"), // 'true' or 'false'
-  segments: jsonb("segments").$type<string[]>().default([]), // ['renter', 'veteran', 'senior']
-  appliedPromos: jsonb("applied_promos").$type<string[]>().default([]), // List of applied promo titles
+  freeMonths: text("free_months"),
+  term: text("term"),
+  payUpfront: text("pay_upfront"),
+  promoCode: text("promo_code"),
+  segments: jsonb("segments").$type<string[]>().default([]),
+  appliedPromos: jsonb("applied_promos").$type<string[]>().default([]),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
