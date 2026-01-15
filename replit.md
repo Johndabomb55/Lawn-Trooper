@@ -123,6 +123,21 @@ Future renewals earn automatic discounts:
 - Validate codes via `validatePromoCode()` function
 - Add partner codes to `HOA_PROMO_CODES` object in promotions.ts
 
+#### HOA Partnership Form (NEW)
+- Standalone form on home page at #hoa-partnership section
+- Fields: HOA Name, Contact Name, Phone, Email, Notes
+- For HOA board members to inquire about partnership benefits
+
+#### Plan Comparison Table (NEW)
+- Compact comparison table shown in Step 2 of quote wizard
+- Displays: Mowing frequency, Weed Control apps, Bush Trimming frequency, Included Add-ons
+- Helps customers quickly compare plan differences at a glance
+
+#### Confirmation Page Enhancements (NEW)
+- Displays selected plan, term, and all applied promotions
+- Shows "Operation Price Drop" loyalty benefits (5%/10%/15% off on renewal)
+- Clear messaging: "No payment required. No obligation. Free Dream Yard Recon."
+
 #### Promotion Types
 1. **termFreeMonths**: Free months at end of agreement (commitment rewards)
 2. **prepayPercentOff**: Discount for paying upfront (legacy - now uses Pay Full bonus)
