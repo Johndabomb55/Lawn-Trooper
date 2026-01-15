@@ -1,0 +1,114 @@
+You are a senior engineer + product QA. This is a RETROFIT job (do not rewrite). Your job is to (1) run a Source-of-Truth audit, (2) propose a minimal-change plan, (3) implement the approved changes, and (4) re-test end-to-end so we do not break anything.
+
+CRITICAL RULES:
+- Do NOT rebuild from scratch. Do incremental refactors only.
+- Preserve the current UI look and overall flow unless explicitly requested.
+- The site must match the Source of Truth config after this work.
+- Remove the word "commercial" everywhere. Use "Multi-Home Community / Over 1 Acre" only.
+- The online tool is NOT called "Dream Yard Recon" (that is in-person). Public CTAs remain: "Start My Free Quote" and "Build My Plan".
+- Add-ons must update price live with every selection.
+- Free months are skipped billing months at the END (not credits/discounts).
+
+PHASE 1 — AUDIT (do this first, before code changes):
+1) Locate where plan definitions, add-ons, free months, and payment options are currently stored.
+2) Identify any hardcoded numbers/text in components that should be config-driven.
+3) Search for drift (e.g., Premium shows 4 weed treatments in one place and 2 somewhere else; Executive missing storm/winter perks in some spots).
+4) Output a short "Audit Findings" list:
+   - Which values are hardcoded
+   - Which config files exist / missing
+   - Which screens are out of sync
+   - Which changes are low-risk vs high-risk
+
+PHASE 2 — SOURCE OF TRUTH CONFIG (create/normalize):
+Create or update these files and move values into them:
+- src/config/plans.ts
+- src/config/addons.ts
+- src/config/promotions.ts
+- src/config/content.ts
+
+These configs must drive:
+- Plan cards (Basic/Premium/Executive)
+- Plan detail modals
+- Wizard step labels and inclusions
+- Price calculations and summary
+- Promotions page
+
+SOURCE OF TRUTH (IMPLEMENT EXACTLY):
+
+PROPERTY TYPES:
+- Residential Home
+- Multi-Home Community / Over 1 Acre
+Trigger custom quote if:
+  a) Multi-Home Community selected, OR
+  b) Residential property > 1 acre
+This is not a rejection. Copy: "We can service any residential property. Larger properties and communities receive a custom quote within 1 business day."
+
+PLANS:
+Basic Patrol:
+- Keep existing baseline mowing and current included items unless changed below.
+
+Premium Patrol:
+- Weed control: 4 treatments/year (everywhere).
+- Allowance: 2 Basic add-ons included + 1 Premium add-on included.
+- Premium plan cannot swap premium slot for basics.
+
+Executive Command:
+- Includes by default:
+  - Priority mowing
+  - After-storm visits included (small limbs/debris)
+  - Bi-weekly winter visits & yard checks
+  - Commander’s Club access (1 premium add-on free on anniversary)
+- Allowance options:
+  - Default: 2 Basic + 1 Premium
+  - Executive-only swap toggle: user may choose "No Premium Add-On" and instead get +2 Basic slots (total 4 Basic).
+  (Premium plan does NOT get this option.)
+
+ADD-ONS:
+Only two tiers exist: Basic Add-Ons and Premium Add-Ons.
+Add-ons must impact price live.
+Christmas lights shown year-round in BOTH tiers:
+- Christmas Lights (Basic): simple install (no roofline, no yard pop-ups)
+- Christmas Lights (Premium): roofline + flower bed + yard pop-ups
+
+FREE MONTHS + PAY:
+Free months are skipped billing months at END.
+Example copy: "If you earn 2 free months on a 12-month plan, you pay for the first 10 months. Your final 2 months are not billed."
+Options:
+- Month-to-month (higher price / flexibility premium)
+- 1-year (+1 free month)
+- 2-year (+2 free months)
+- Pay in full (+1 additional free month OR additional savings — keep consistent with existing implementation, but explain clearly)
+
+PROMOTIONS PAGE:
+Create /promotions (or /savings) page that is separate from the main flow:
+- It shows all ways to save (term, pay method, free months)
+- Shows: monthly payment (actual), months billed vs free, effective monthly, total savings
+- Copy includes: "Commit to us, and we commit to you."
+- Promotions page must not clutter the plan selection steps.
+
+COPY / BRAND VOICE:
+- Military style, friendly, residential Alabama vibe.
+- More business info (25 years, awards, electric, honest pricing) but concise.
+- No “commercial” vibe.
+
+PHASE 3 — IMPLEMENTATION (minimal-change):
+- Update the wizard so free-month badge does NOT appear before commitment step (or change it to "Free months available with annual plans" before that step).
+- Ensure all plan cards and modals match the plan config (Premium 4 treatments; Executive storm + winter perks + commander’s club).
+- Restore full add-on catalog and enforce included counts per plan + exec swap toggle.
+- Ensure HOA/large property goes to custom quote form with correct CTA text ("Request Custom Quote") not "Start My Free Quote".
+
+PHASE 4 — TEST + CONFIRM:
+Run locally and confirm:
+- Residential flow works end-to-end (Step 1 → submit) with live pricing changes.
+- Multi-home / over-1-acre routes to custom quote and does not show instant pricing.
+- Promotions page loads and calculations match commitment step.
+- No mismatched numbers across cards, modals, wizard, and summary.
+- No console errors.
+
+DELIVERABLE:
+- Short final report listing:
+  a) Files changed
+  b) What moved into config
+  c) Confirmed tests passed
+  d) Any remaining TODOs
+Then commit/publish.
