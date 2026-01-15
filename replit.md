@@ -207,3 +207,31 @@ New simplified quote wizard at root URL (`/`) designed for Facebook ad complianc
 #### Schema Updates
 - `address` and `contactMethod` fields now optional in leads schema
 - Added `freeMonths` and `promoCode` fields for streamlined wizard submissions
+
+### Enhanced Landing Page (January 2026)
+
+#### New Sections Added
+1. **Plan Overview Section**: Three responsive cards showing Basic Patrol, Premium Patrol, and Executive Command with "Build My Plan" buttons that scroll to wizard
+2. **Why Lawn Trooper Section**: Four bullet points (Electric Equipment, 25+ Years Experience, AI-Powered Efficiency, Licensed & Insured)
+3. **Testimonials Section**: Six customer reviews with star ratings and verified customer labels
+4. **Final CTA**: Bottom call-to-action section before footer
+
+#### Marketing Content Organization
+- All marketing copy centralized in `client/src/data/content.ts`
+- Includes: HERO_CONTENT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, TRUST_BAR, FOOTER_CONTENT, CTA_BUTTONS
+
+#### Commitment Option Labels (Updated)
+- "Flexible (Month-to-Month)" - 1 free month
+- "Popular (2-Year Commitment)" - 2 free months
+- "Best Value (3-Year Commitment)" - 3 free months
+
+#### Add-ons UX Improvements
+- Selection counter shows basic and premium add-ons selected
+- Labels show "X/Y included free" for each category
+- Clearer pricing note: "Extra add-ons: $20-40/mo each"
+
+#### Accessibility
+- Smooth scrolling enabled via HTML scroll-behavior
+- ARIA labels on all sections, cards, and star ratings
+- Proper heading hierarchy with aria-labelledby references
+- data-testid attributes on all interactive and display elements
