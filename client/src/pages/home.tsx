@@ -34,7 +34,6 @@ import {
   GLOBAL_CONSTANTS, 
   PROMO_CONFIG
 } from "@/data/plans";
-import { FEATURE_FLAGS } from "@/config/featureFlags";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -237,9 +236,6 @@ export default function LandingPage() {
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
             <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
-            {FEATURE_FLAGS.enableFBCompliantHeroCopy && (
-              <p className="text-white/70 text-sm italic mt-2">That's not a weapon — it's a weed eater. We fight weeds, not people.</p>
-            )}
             
             {/* Big Intimidating Camo Banner */}
             <div className="mt-4 relative z-20 w-full">
@@ -274,20 +270,11 @@ export default function LandingPage() {
                </div>
                
                <div className="flex flex-col items-center gap-4 mt-2">
-                 <p className="text-white/60 text-xs uppercase tracking-wider">Residential lawn care & landscaping — no weapons involved.</p>
-                 <CTAButton 
-                   onClick={() => scrollToSection('quote')} 
-                   variant="hero" 
-                   size="large"
-                   urgentText="Sale ends Jan 25 - Act now!"
-                 >
-                   Get Instant Quote
-                 </CTAButton>
                  <button 
-                   onClick={() => scrollToSection('plans')} 
+                   onClick={() => scrollToSection('quote')} 
                    className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
                  >
-                   View service tiers & pricing
+                   Get your free quote below
                  </button>
                </div>
             </div>
@@ -424,23 +411,20 @@ export default function LandingPage() {
                </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4">
-              <CTAButton 
-                onClick={() => scrollToSection('quote')} 
-                variant="hero" 
-                size="large"
-                urgentText="Sale ends Jan 25 - Act now!"
-              >
-                Get Instant Quote
-              </CTAButton>
-              <button 
-                onClick={() => scrollToSection('plans')} 
-                className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
-              >
-                View service tiers & pricing
-              </button>
-            </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* About Us Section */}
+      <section className="py-12 bg-background border-b border-border">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            <span className="text-primary font-bold">Lawn Trooper</span> is built on commitment, efficiency, and loyalty. 
+            We've spent decades putting relationships before scale. 
+            As we adopt new automation, technology, and processes, 
+            we're passing those savings back to our customers. 
+            <span className="font-semibold text-primary">Commit to us, and we commit to you.</span>
+          </p>
         </div>
       </section>
 
@@ -591,20 +575,19 @@ export default function LandingPage() {
             <div className="text-center md:text-left">
               <h3 className="text-2xl font-heading font-bold text-accent mb-2">LIMITED TIME ENLISTMENT OFFERS</h3>
               <ul className="text-sm md:text-base space-y-1 opacity-90">
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 1-year agreement: <strong>1 Month FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 2-year agreement: <strong>3 Months FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay in Full: <strong>Extra 2 Months FREE</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> 1-Year Commitment: <strong>1 Month FREE</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> 2-Year Commitment: <strong>2 Months FREE</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> 3-Year Commitment: <strong>3 Months FREE</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay in Full: <strong>+1 Additional Month FREE</strong></li>
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH get 1 Month FREE!</strong></li>
               </ul>
             </div>
-            <CTAButton 
+            <Button 
               onClick={() => scrollToSection('quote')} 
-              variant="hero" 
-              size="large"
-              urgentText="Offer ends Jan 25!"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold uppercase tracking-wider px-6 py-3"
             >
-              Get Instant Quote
-            </CTAButton>
+              Get Your Free Quote
+            </Button>
           </div>
         </div>
       </section>

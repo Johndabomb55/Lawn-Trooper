@@ -32,6 +32,7 @@ import {
 import {
   getApplicablePromotions,
   applyPromotions,
+  validatePromoCode,
   TRUST_MESSAGES,
   PLAN_VALUE_HIGHLIGHTS,
   RECOMMENDED_ADDONS,
@@ -164,11 +165,13 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
   
   // New state for promotions engine
-  const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
+  const [term, setTerm] = useState<'1-year' | '2-year' | '3-year'>('2-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
   const [showPromoUnlocked, setShowPromoUnlocked] = useState(false);
   const [previousAppliedCount, setPreviousAppliedCount] = useState(0);
+  const [promoCode, setPromoCode] = useState('');
+  const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -180,10 +183,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     basicAddons: string[];
     premiumAddons: string[];
     totalPrice: number;
-    term: '1-year' | '2-year';
+    term: '1-year' | '2-year' | '3-year';
     payUpfront: boolean;
     segments: string[];
     appliedPromos: string[];
+    promoCode?: string;
   } | null>(null);
   
   const { toast } = useToast();
@@ -348,6 +352,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           payUpfront: String(payUpfront),
           segments,
           appliedPromos: promotionResult.applied.map(p => p.title),
+          promoCode: promoCodeStatus?.valid ? promoCode : null,
         }),
       }).catch(err => console.error('Lead capture error:', err));
 
@@ -367,6 +372,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           payUpfront,
           segments,
           appliedPromos: promotionResult.applied.map(p => p.title),
+          promoCode: promoCodeStatus?.valid ? promoCode : undefined,
         });
         
         // Show the Mission Accomplished page
@@ -400,6 +406,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     segments,
     hasReferral: false, // Will be true when referral system is implemented
     monthlyTotal: baseMonthlyTotal,
+    promoCode: promoCodeStatus?.valid ? promoCode : undefined,
   };
   
   const promotionResult = getApplicablePromotions(userSelections);
@@ -929,6 +936,64 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     segments={segments}
                     onSegmentChange={setSegments}
                   />
+
+                  {/* Promo Code Field */}
+                  <div className="bg-muted/30 rounded-xl p-4 border border-border">
+                    <div className="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+                      <Award className="w-4 h-4" />
+                      HOA Partner Code (optional)
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter promo code"
+                        value={promoCode}
+                        onChange={(e) => {
+                          setPromoCode(e.target.value);
+                          setPromoCodeStatus(null);
+                        }}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          if (promoCode.trim()) {
+                            const result = validatePromoCode(promoCode);
+                            setPromoCodeStatus(result);
+                            if (result.valid) {
+                              toast({
+                                title: "Code Applied!",
+                                description: `${result.hoaName} partner discount: ${result.discount}% off`,
+                              });
+                            } else {
+                              toast({
+                                title: "Invalid Code",
+                                description: "This promo code is not recognized.",
+                                variant: "destructive",
+                              });
+                            }
+                          }
+                        }}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                    {promoCodeStatus && (
+                      <div className={`mt-2 text-xs flex items-center gap-1 ${promoCodeStatus.valid ? 'text-green-600' : 'text-red-500'}`}>
+                        {promoCodeStatus.valid ? (
+                          <>
+                            <CheckCircle2 className="w-3 h-3" />
+                            {promoCodeStatus.hoaName} partner discount applied: {promoCodeStatus.discount}% off
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="w-3 h-3" />
+                            Invalid promo code
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {/* Summary Card */}
                   <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 mb-6">

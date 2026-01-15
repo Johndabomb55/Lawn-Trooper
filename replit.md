@@ -98,12 +98,34 @@ The promotions engine is a config-driven stacking discounts system. All promotio
 #### Stacking Rules
 - All promotions can stack up to defined caps
 - **Max 30% total discount** from percentage-based promos
-- **Max 3 free months** from term-based promos
+- **Max 6 free months** from term-based promos
 - If cap is exceeded, the last-applied benefit is reduced first
 
+#### Commitment Model (Updated January 2026)
+- **1-Year Commitment**: 1 free month (Flexible badge)
+- **2-Year Commitment**: 2 free months (Popular badge)
+- **3-Year Commitment**: 3 free months (Best Value badge)
+- **Pay in Full Bonus**: +1 additional free month for paying upfront
+
+#### Operation Price Drop - Loyalty Pricing
+Future renewals earn automatic discounts:
+- After Year 1: 5% off
+- After Year 2: 10% off  
+- After Year 3: 15% off
+
+#### Early Bird Promotions (Time-Decaying)
+- Jan 25 - Apr 25, 2026 promotion window
+- Starts at 3 free months, decays by 1 month each month
+- Configure in `EARLY_BIRD_CONFIG` in promotions.ts
+
+#### HOA Promo Codes
+- Promo code input field in Contact step
+- Validate codes via `validatePromoCode()` function
+- Add partner codes to `HOA_PROMO_CODES` object in promotions.ts
+
 #### Promotion Types
-1. **termFreeMonths**: Free months at end of agreement (Early Bird deals)
-2. **prepayPercentOff**: Discount for paying upfront (10-15% off)
+1. **termFreeMonths**: Free months at end of agreement (commitment rewards)
+2. **prepayPercentOff**: Discount for paying upfront (legacy - now uses Pay Full bonus)
 3. **segmentPercentOff**: Discount for customer segments (renter/veteran/senior - 5% each)
 4. **referralFreeMonth**: Free month for referrals (pending until friend commits)
 
@@ -139,7 +161,8 @@ All trust messages are in `TRUST_MESSAGES` object in `client/src/data/promotions
 #### Lead Capture Fields
 The `/api/leads` endpoint now captures:
 - All original fields (name, email, phone, address, plan, addons, etc.)
-- `term`: '1-year' or '2-year'
+- `term`: '1-year', '2-year', or '3-year'
 - `payUpfront`: 'true' or 'false'
 - `segments`: Array of segment IDs ['renter', 'veteran', 'senior']
 - `appliedPromos`: Array of applied promotion titles
+- `promoCode`: HOA partner promo code if applied

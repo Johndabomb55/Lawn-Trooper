@@ -21,7 +21,7 @@ interface SavingsPanelProps {
   baseMonthly: number;
   promotionResult: PromotionResult;
   appliedTotals: AppliedTotals;
-  term: '1-year' | '2-year';
+  term: '1-year' | '2-year' | '3-year';
   showUnlockedAnimation?: boolean;
   className?: string;
 }
@@ -46,7 +46,12 @@ export default function SavingsPanel({
   const { applied, pending, savingsBreakdown, capApplied } = promotionResult;
 
   const hasDiscounts = applied.length > 0 || pending.length > 0;
-  const termLabel = term === '2-year' ? '2-Year Pact' : '1-Year Pact';
+  const termLabels: Record<string, string> = {
+    '1-year': '1-Year Commitment',
+    '2-year': '2-Year Commitment',
+    '3-year': '3-Year Commitment',
+  };
+  const termLabel = termLabels[term] || term;
 
   return (
     <div className={`bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border border-primary/20 overflow-hidden ${className}`}>
@@ -67,7 +72,7 @@ export default function SavingsPanel({
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 3 free months).</p>
+                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 6 free months).</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
