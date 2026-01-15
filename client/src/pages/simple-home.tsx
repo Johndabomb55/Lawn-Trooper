@@ -1,7 +1,7 @@
 import React from "react";
 import StreamlinedWizard from "@/components/StreamlinedWizard";
 import { Shield, Mail, Phone, Leaf, Award, Cpu, Star, ChevronRight } from "lucide-react";
-import { HERO_CONTENT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
+import { HERO_CONTENT, TRUST_BAR_COMPACT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
 import { PLANS } from "@/data/plans";
 import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
 
@@ -39,34 +39,29 @@ export default function SimpleHome() {
       </header>
 
       {/* Hero Section with Wizard */}
-      <main className="container mx-auto px-4 py-8 md:py-12">
-        <div className="text-center mb-8">
-          <h1 data-testid="text-main-title" className="text-3xl md:text-4xl font-heading font-bold text-primary mb-2">
+      <main className="container mx-auto px-4 py-4 md:py-6">
+        <div className="text-center mb-3">
+          <h1 data-testid="text-main-title" className="text-2xl md:text-3xl font-heading font-bold text-primary mb-1">
             {HERO_CONTENT.title}
           </h1>
-          <p data-testid="text-subtitle" className="text-muted-foreground max-w-xl mx-auto">
+          <p data-testid="text-subtitle" className="text-muted-foreground text-sm">
             {HERO_CONTENT.subtitle}
           </p>
         </div>
 
-        <div id="quote-wizard">
-          <StreamlinedWizard />
+        {/* Compact Trust Bar - directly under hero */}
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground mb-4">
+          {TRUST_BAR_COMPACT.map((item, i) => (
+            <span key={i} className="flex items-center gap-1">
+              {i > 0 && <span className="hidden sm:inline">•</span>}
+              <Shield className="w-3 h-3 text-primary" />
+              {item}
+            </span>
+          ))}
         </div>
 
-        {/* Trust Bar */}
-        <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Shield className="w-4 h-4 text-primary" />
-            <span>Licensed & Insured</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span>•</span>
-            <span>25+ Years in North Alabama</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span>•</span>
-            <span>100+ Beautification Awards</span>
-          </div>
+        <div id="quote-wizard">
+          <StreamlinedWizard />
         </div>
       </main>
 

@@ -6,9 +6,16 @@
  */
 
 export const HERO_CONTENT = {
-  title: "Get Your Free Lawn Care Quote",
-  subtitle: "North Alabama's trusted lawn care service for 25+ years. Build your perfect plan in under 2 minutes.",
+  title: "Your Dream Lawn Starts Here",
+  subtitle: "Build your plan in 60 seconds — no payment required.",
 };
+
+export const TRUST_BAR_COMPACT = [
+  "25+ Years in North Alabama",
+  "100+ Beautification Awards",
+  "Quiet Electric Equipment",
+  "Honest Pricing"
+];
 
 export const WHY_LAWN_TROOPER = {
   sectionTitle: "Why Lawn Trooper?",

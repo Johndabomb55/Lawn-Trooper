@@ -4,6 +4,7 @@ import {
   Check, 
   ChevronRight, 
   ChevronLeft,
+  ChevronDown,
   Info,
   X,
   Star,
@@ -77,9 +78,10 @@ function InfoPopup({ open, onClose, title, content }: InfoPopupProps) {
 export default function StreamlinedWizard() {
   const [step, setStep] = useState(1);
   const [yardSize, setYardSize] = useState("");
-  const [plan, setPlan] = useState("");
+  const [plan, setPlan] = useState("premium");
   const [basicAddons, setBasicAddons] = useState<string[]>([]);
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
+  const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
   const [term, setTerm] = useState<'1-year' | '2-year' | '3-year'>('1-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -142,7 +144,7 @@ export default function StreamlinedWizard() {
       case 3: return !!plan;
       case 4: return true;
       case 5: return true;
-      case 6: return name && (email || phone);
+      case 6: return name && phone;
       default: return true;
     }
   };
@@ -348,19 +350,27 @@ export default function StreamlinedWizard() {
                 {PLANS.map((p) => {
                   const isSelected = plan === p.id;
                   const isExecutive = p.id === 'executive';
+                  const isPremium = p.id === 'premium';
                   return (
                     <div key={p.id} className="relative">
                       <button
                         data-testid={`plan-${p.id}`}
                         onClick={() => setPlan(p.id)}
                         className={`w-full p-4 rounded-xl border-2 transition-all text-left relative ${
-                          isExecutive 
-                            ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
-                            : isSelected
-                              ? 'border-primary bg-primary/10 shadow-lg'
-                              : 'border-border hover:border-primary/50'
+                          isPremium
+                            ? `border-primary ${isSelected ? 'bg-primary/10 shadow-lg ring-2 ring-primary/30' : 'bg-primary/5'}`
+                            : isExecutive 
+                              ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
+                              : isSelected
+                                ? 'border-primary bg-primary/10 shadow-lg'
+                                : 'border-border hover:border-primary/50'
                         }`}
                       >
+                        {isPremium && (
+                          <div className="absolute -top-2 left-4 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            MOST POPULAR
+                          </div>
+                        )}
                         {isExecutive && (
                           <div className="absolute -top-2 right-4 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                             BEST VALUE
@@ -487,41 +497,53 @@ export default function StreamlinedWizard() {
 
                 {selectedPlan && selectedPlan.allowance.premium > 0 && (
                   <>
-                    <div className="text-xs font-bold text-accent uppercase tracking-wider mt-4 mb-2">
-                      Premium Add-ons ({premiumAddons.length}/{selectedPlan.allowance.premium} included free)
-                    </div>
-                    {PREMIUM_ADDONS.slice(0, 4).map((addon) => {
-                      const isSelected = premiumAddons.includes(addon.id);
-                      return (
-                        <div key={addon.id} className="flex items-center gap-2">
-                          <button
-                            data-testid={`addon-${addon.id}`}
-                            onClick={() => {
-                              if (isSelected) {
-                                setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
-                              } else {
-                                setPremiumAddons([...premiumAddons, addon.id]);
-                              }
-                            }}
-                            className={`flex-1 p-3 rounded-lg border transition-all text-left flex items-center gap-3 ${
-                              isSelected
-                                ? 'border-accent bg-accent/10'
-                                : 'border-border hover:border-accent/50'
-                            }`}
-                          >
-                            <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                              isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
-                            }`}>
-                              {isSelected && <Check className="w-4 h-4 text-white" />}
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{addon.label}</div>
-                            </div>
-                            <Star className="w-4 h-4 text-accent" />
-                          </button>
+                    <button
+                      data-testid="toggle-advanced-addons"
+                      onClick={() => setShowAdvancedAddons(!showAdvancedAddons)}
+                      className="w-full mt-3 py-2 text-sm text-primary font-medium flex items-center justify-center gap-1 hover:underline"
+                    >
+                      {showAdvancedAddons ? "Hide" : "Show"} advanced options
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showAdvancedAddons ? 'rotate-180' : ''}`} />
+                    </button>
+                    {showAdvancedAddons && (
+                      <>
+                        <div className="text-xs font-bold text-accent uppercase tracking-wider mt-2 mb-2">
+                          Premium Add-ons ({premiumAddons.length}/{selectedPlan.allowance.premium} included free)
                         </div>
-                      );
-                    })}
+                        {PREMIUM_ADDONS.slice(0, 4).map((addon) => {
+                          const isSelected = premiumAddons.includes(addon.id);
+                          return (
+                            <div key={addon.id} className="flex items-center gap-2">
+                              <button
+                                data-testid={`addon-${addon.id}`}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
+                                  } else {
+                                    setPremiumAddons([...premiumAddons, addon.id]);
+                                  }
+                                }}
+                                className={`flex-1 p-3 rounded-lg border transition-all text-left flex items-center gap-3 ${
+                                  isSelected
+                                    ? 'border-accent bg-accent/10'
+                                    : 'border-border hover:border-accent/50'
+                                }`}
+                              >
+                                <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                                  isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
+                                }`}>
+                                  {isSelected && <Check className="w-4 h-4 text-white" />}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-medium text-sm">{addon.label}</div>
+                                </div>
+                                <Star className="w-4 h-4 text-accent" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
                   </>
                 )}
               </div>
@@ -683,7 +705,7 @@ export default function StreamlinedWizard() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email (optional)</Label>
                   <Input
                     id="email"
                     data-testid="input-email"
@@ -693,36 +715,14 @@ export default function StreamlinedWizard() {
                     placeholder="you@email.com"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="address">Address (optional)</Label>
-                  <Input
-                    id="address"
-                    data-testid="input-address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="123 Main St, City, AL"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="promo">HOA/Promo Code</Label>
-                  <Input
-                    id="promo"
-                    data-testid="input-promo"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                    placeholder="Enter code (optional)"
-                  />
-                  {promoValid && (
-                    <p data-testid="text-promo-valid" className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                      <Check className="w-3 h-3" /> {promoDiscount}% HOA discount applied!
-                    </p>
-                  )}
-                </div>
               </div>
 
-              <p className="text-xs text-center text-muted-foreground">
-                No payment required. No obligation. We'll reach out to schedule your free Dream Yard Recon.
-              </p>
+              {/* Privacy Reassurance */}
+              <div data-testid="text-privacy" className="text-center bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-sm text-green-800 font-medium">
+                  No payment required. We never sell your info.
+                </p>
+              </div>
             </motion.div>
           )}
 
