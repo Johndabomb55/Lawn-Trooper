@@ -1,0 +1,78 @@
+You are a senior full-stack engineer + conversion-focused web designer. Build a brand-new website from scratch for Lawn Trooper (North Alabama lawn care). The goal is to generate leads and close customers fast. The #1 focus is an interactive “Dream Yard Recon / Plan Picker” tool that produces a simple quote estimate and captures contact info.
+
+Hard requirements:
+1) Build as a single-page modern site with the Plan Picker as the hero section at the top.
+2) Site must load fast, be mobile-first, and look premium but simple.
+3) Keep words short and clear. Big buttons. Minimal scrolling before the picker.
+4) Do not use paid APIs or services. Use only free libraries.
+5) Provide clean, readable code and comments.
+
+Tech requirements:
+- Use a simple stack that runs easily on Replit. Prefer: Vite + React + TypeScript + Tailwind CSS.
+- No database required. Store leads by sending an email OR writing to a simple local JSON file OR a lightweight server endpoint that saves to a file (choose the simplest reliable option).
+- Include basic form validation and spam prevention (honeypot field).
+- Include a /health route if you use a backend.
+- Include instructions in README.md on how to run + deploy in Replit.
+
+Brand & messaging requirements (use throughout):
+- Business: Lawn Trooper (say “lawn dash trooper dot com” only if used in voice script; otherwise display lawn-trooper.com normally)
+- Trust signals: “25th anniversary serving North Alabama” and “100+ beautification awards”
+- Value proposition: Premium service at honest prices. Mention electric equipment for reduced noise and cleaner operation + new tech in 2026 lowering costs and passing savings to customers.
+- Primary CTA: “Get your free Dream Yard Recon”
+- Secondary CTA: “Text us” and “Call us” buttons (use placeholder phone number variable).
+- Include “party with a purpose” vibe is NOT needed here; keep Lawn Trooper professional, friendly, confident.
+
+Information architecture:
+A) Sticky header with: Plans, Picker, Reviews, FAQs, Contact.
+B) Hero section: headline + subheadline + 2 buttons + the Plan Picker card embedded.
+C) Trust bar under hero: 25 years, 100+ awards, electric equipment, honest prices.
+D) Plans section: 3 tiers (Basic / Plus / Premium) with short bullet points and “Select in Picker” buttons.
+E) Reviews section: 6 placeholders (no fake names that look real; use “Verified Customer” + star rating placeholders).
+F) FAQ section: licensing/insurance question (answer generically: “We are properly insured for the work we perform. Ask us for proof any time.” Don’t give legal advice.)
+G) Service area: list key towns in North Alabama as placeholders.
+H) Final CTA section + Contact form.
+
+Plan Picker tool requirements (MAIN FEATURE):
+- Title: “Dream Yard Recon — Plan & Price Picker”
+- User inputs:
+  1) Property size (choices): up to 1/4 acre, 1/4–1/2, 1/2–3/4, 3/4–1 acre, 1–1.5, 1.5–2
+  2) Mowing frequency: biweekly, weekly
+  3) Plan level: Basic / Plus / Premium
+  4) Add-ons (checkboxes): weed control, edging upgrade, shrub trimming, mulch, leaf cleanup, pre-emergent
+  5) Start timing: ASAP / next month / just researching
+- Output:
+  - Show an estimated monthly range (low–high) based on a simple transparent formula.
+  - Show what’s included (bullets) based on plan selection.
+  - Show next step CTA: “Get My Free Recon” which opens a lead capture modal.
+
+Pricing logic (make it easy to edit in one file):
+- Use a config object that defines base prices by property size for Basic at biweekly.
+- Weekly adds a multiplier (example: 1.35).
+- Plus adds +$X, Premium adds +$Y (set reasonable placeholder numbers).
+- Add-ons add fixed monthly amounts (some can be seasonal, but keep simple).
+- Output range: +/- 10% to avoid “exact quote” claims.
+- Display disclaimer: “Final price confirmed after your free Dream Yard Recon.”
+
+Lead capture:
+- Modal form fields: name, phone, email, address (optional), notes.
+- Include hidden honeypot field.
+- On submit:
+  - Save the lead with timestamp + the user’s picker selections + estimated range.
+  - Show success screen: “We’ll reach out within 1 business day.”
+- Provide a simple admin view route (/admin) protected by a basic password env var to display saved leads (table view). Keep it simple.
+
+Accessibility & polish:
+- Keyboard accessible modal
+- Clear focus states
+- Good contrast
+- Mobile friendly spacing
+- Smooth scroll navigation
+- Basic SEO: title, meta description, OpenGraph placeholders, sitemap.xml, robots.txt
+
+Deliverables:
+1) Working site with the Plan Picker as the main focus
+2) Clean code + config-driven pricing
+3) README with setup instructions
+4) Notes at bottom: where to edit prices, towns, phone number, and copy
+
+Start by scaffolding the project, then implement page sections, then implement picker logic, then lead capture and saving, then admin page. Ensure everything runs successfully in Replit.
