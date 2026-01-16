@@ -1,7 +1,7 @@
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
-  cutoffDate: "2026-01-25T23:59:59", // Sale ends Jan 25th at 11:59 PM (end of day)
-  saleLabel: "25th Anniversary Sale + AI Cost Reductions Ends January 25th"
+  cutoffDate: "2026-01-25T23:59:59", // Early Bird Bonus ends Jan 25th at 11:59 PM (end of day)
+  saleLabel: "25th Anniversary Early Bird Bonus Ends January 25th"
 };
 
 export const GLOBAL_CONSTANTS = {

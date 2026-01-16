@@ -117,8 +117,8 @@ export const FUN_FACTS = [
 export const PROMO_BANNERS = [
   {
     id: "anniversary",
-    title: "25th Anniversary Celebration",
-    subtitle: "Lock in 2025 prices before they increase",
+    title: "25th Anniversary Early Bird Bonus",
+    subtitle: "Enroll by Jan 25 for +1 free month • First payment by Feb 1",
     cta: "Get Your Quote",
     active: true,
     priority: 1

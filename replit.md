@@ -103,21 +103,30 @@ The promotions engine is a config-driven stacking discounts system. All promotio
 
 #### Commitment Model (Updated January 2026)
 - **Month-to-Month**: No free months, 15% flexibility premium over 1-year rate
-- **1-Year Commitment**: 1 free month (Save More badge)
-- **2-Year Commitment**: 2 free months (Best Value badge)
-- **Pay in Full Bonus**: +1 additional free month for paying upfront
-- **Payment Options**: Monthly, Yearly, Pay in Full
+- **1-Year Commitment**: Commitment Bonus +1 free month (Save More badge)
+- **2-Year Commitment**: Commitment Bonus +2 free months (Best Value badge)
+- **Payment Options**: Monthly or Pay in Full
+
+#### 25th Anniversary Early Bird Bonus
+- **Bonus**: +1 free month (limited time)
+- **Deadlines**: Enroll by Jan 25, first payment by Feb 1
+- **Stacks with**: Commitment Bonus and Pay-in-Full Accelerator
+- Configure in `EARLY_BIRD_BONUS` in promotions.ts
+
+#### Pay-in-Full Accelerator (Optional)
+- **Effect**: Doubles ALL earned free months (Early Bird + Commitment)
+- **Examples**:
+  - 1-Year (monthly): 1 + 1 = 2 free months
+  - 1-Year + PIF: (1 + 1) × 2 = 4 free months
+  - 2-Year (monthly): 2 + 1 = 3 free months
+  - 2-Year + PIF: (2 + 1) × 2 = 6 free months
+- **Note**: Always optional - monthly payment is always available
 
 #### Operation Price Drop - Loyalty Pricing
 Future renewals earn automatic discounts:
 - After Year 1: 5% off
 - After Year 2: 10% off  
 - After Year 3: 15% off
-
-#### Early Bird Promotions (Time-Decaying)
-- Jan 25 - Apr 25, 2026 promotion window
-- Starts at 3 free months, decays by 1 month each month
-- Configure in `EARLY_BIRD_CONFIG` in promotions.ts
 
 #### HOA Promo Codes
 - Promo code input field in Contact step

@@ -54,7 +54,7 @@ import {
   calculateActualMonthly,
   calculateTermFreeMonths,
   getFreeMonthsBreakdown,
-  getAnniversaryBonus,
+  getEarlyBirdBonus,
   MONTH_TO_MONTH_PREMIUM
 } from "@/data/promotions";
 
@@ -134,12 +134,11 @@ export default function StreamlinedWizard() {
   const promoValid = validatePromoCode(promoCode);
   const promoDiscount = promoValid ? (HOA_PROMO_CODES[promoCode.toUpperCase()]?.discount || 0) : 0;
   
-  // Calculate complimentary service months based on commitment model
-  // Month-to-month: 0, 1-year: 1 base (+1 if PIF = 2), 2-year: 2 base (+2 if PIF = 4) + anniversary bonus (0-2)
-  // Pay-in-full doubles commitment only, NOT anniversary bonus. Max total: 6
+  // Calculate free service months based on commitment model
+  // Earned free months = Early Bird Bonus (+1 if before Jan 25) + Commitment Bonus (1-year: +1, 2-year: +2)
+  // Pay-in-Full Accelerator: Doubles ALL earned free months (e.g., 1Y: 2→4, 2Y: 3→6)
   const totalFreeMonths = calculateTermFreeMonths(term, payInFull);
   const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
-  const anniversaryBonus = getAnniversaryBonus();
   
   const isExecutive = plan === 'executive';
   // Get effective allowances using the canonical function with swap adjustment
@@ -287,11 +286,11 @@ export default function StreamlinedWizard() {
             {step >= 5 && totalFreeMonths > 0 ? (
               <span data-testid="text-free-months-unlocked" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
                 <Sparkles className="w-3 h-3 inline mr-1" />
-                {totalFreeMonths} Complimentary Month{totalFreeMonths > 1 ? 's' : ''} Unlocked!
+                {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''} Unlocked!
               </span>
             ) : (
               <span data-testid="text-free-months-available" className="text-sm bg-white/20 px-3 py-1 rounded-full">
-                Complimentary months available with 2-year subscription
+                Earn free months with 1-year or 2-year commitment
               </span>
             )}
           </div>
@@ -1079,7 +1078,7 @@ export default function StreamlinedWizard() {
             >
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose your commitment</h3>
-                <p className="text-muted-foreground text-sm">We reward loyalty — longer commitment = more complimentary months</p>
+                <p className="text-muted-foreground text-sm">We reward loyalty — longer commitment = more free months</p>
               </div>
 
               <div className="space-y-3">
@@ -1132,7 +1131,7 @@ export default function StreamlinedWizard() {
                           {displayFreeMonths > 0 ? (
                             <>
                               <div className="text-xl font-bold text-green-600">+{displayFreeMonths}</div>
-                              <div className="text-xs text-muted-foreground">complimentary</div>
+                              <div className="text-xs text-muted-foreground">free months</div>
                             </>
                           ) : (
                             <div className="text-sm text-muted-foreground">{t.badge}</div>
@@ -1140,9 +1139,34 @@ export default function StreamlinedWizard() {
                         </div>
                       </button>
                       
-                      {/* Pay in Full Toggle - For 1-year and 2-year when selected */}
+                      {/* Pay-in-Full Accelerator Toggle - Optional for 1-year and 2-year */}
                       {t.allowsPayInFull && isSelected && (
-                        <div className="mt-3 ml-4">
+                        <div className="mt-3 ml-4 space-y-2">
+                          {/* 25th Anniversary Early Bird Bonus Banner */}
+                          {(() => {
+                            const earlyBird = getEarlyBirdBonus();
+                            if (earlyBird.isActive) {
+                              return (
+                                <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg text-center">
+                                  <div className="text-xs font-bold text-amber-700">
+                                    🎉 25th Anniversary Early Bird Bonus: +{earlyBird.months} free month!
+                                  </div>
+                                  <div className="text-[10px] text-amber-600">
+                                    Enroll by {earlyBird.enrollBy} • First payment by {earlyBird.payBy}
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-center">
+                                  <div className="text-xs text-muted-foreground line-through">
+                                    25th Anniversary Early Bird Bonus (expired)
+                                  </div>
+                                </div>
+                              );
+                            }
+                          })()}
+                          
                           <button
                             data-testid="toggle-pay-in-full"
                             onClick={() => setPayInFull(!payInFull)}
@@ -1159,41 +1183,23 @@ export default function StreamlinedWizard() {
                                 {payInFull && <Check className="w-3 h-3 text-white" />}
                               </div>
                               <div className="text-left">
-                                <div className="font-medium">Pay in Full (Recommended)</div>
-                                <div className="text-xs text-muted-foreground">Double your complimentary months</div>
+                                <div className="font-medium">Pay-in-Full Accelerator (Optional)</div>
+                                <div className="text-xs text-muted-foreground">Doubles ALL earned free months</div>
                               </div>
                             </div>
                             <div className="text-right">
                               <div className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
-                                {t.id === '2-year' ? 'BEST VALUE' : 'BONUS'}
+                                ×2 BONUS
                               </div>
                               <div className="text-xs text-green-600 font-bold mt-1">
-                                {t.id === '1-year' ? '1 → 2 months' : '2 → 4 months'}
+                                {t.id === '1-year' ? '2 → 4 months' : '3 → 6 months'}
                               </div>
                             </div>
                           </button>
                           
-                          {/* 25th Anniversary Enrollment Bonus */}
-                          {anniversaryBonus.months > 0 && (
-                            <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg text-center">
-                              <div className="text-xs font-bold text-amber-700">
-                                🎉 25th Anniversary Enrollment Bonus: +{anniversaryBonus.months} complimentary month{anniversaryBonus.months > 1 ? 's' : ''}!
-                              </div>
-                              <div className="text-[10px] text-amber-600">
-                                {anniversaryBonus.tier === 'tier1' 
-                                  ? 'Enroll by Jan 25 to lock in this bonus'
-                                  : 'Enroll by Feb 25 to lock in this bonus'
-                                }
-                              </div>
-                            </div>
-                          )}
-                          {anniversaryBonus.tier === 'concluded' && (
-                            <div className="mt-2 p-2 bg-gray-50 border border-gray-200 rounded-lg text-center">
-                              <div className="text-xs text-muted-foreground line-through">
-                                25th Anniversary Enrollment Bonus (concluded)
-                              </div>
-                            </div>
-                          )}
+                          <p className="text-[10px] text-center text-muted-foreground">
+                            Pay monthly is always available. Pay in full to double your free months.
+                          </p>
                         </div>
                       )}
                     </div>
@@ -1213,25 +1219,25 @@ export default function StreamlinedWizard() {
                   {term !== 'month-to-month' && (
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Complimentary months:</span>
+                        <span>Total free months:</span>
                         <span className="font-bold text-green-600">{totalFreeMonths} month{totalFreeMonths !== 1 ? 's' : ''}</span>
                       </div>
                       {/* Itemized breakdown */}
                       <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
-                        <div className="flex justify-between">
-                          <span>• Commitment bonus:</span>
-                          <span>{freeMonthsBreakdown.commitment} mo</span>
-                        </div>
-                        {freeMonthsBreakdown.payInFullBonus > 0 && (
+                        {freeMonthsBreakdown.earlyBirdBonus > 0 && (
                           <div className="flex justify-between">
-                            <span>• Pay in full bonus:</span>
-                            <span>+{freeMonthsBreakdown.payInFullBonus} mo</span>
+                            <span>• 25th Anniversary Early Bird Bonus:</span>
+                            <span>+{freeMonthsBreakdown.earlyBirdBonus} mo</span>
                           </div>
                         )}
-                        {freeMonthsBreakdown.anniversaryBonus > 0 && (
-                          <div className="flex justify-between">
-                            <span>• Anniversary bonus:</span>
-                            <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
+                        <div className="flex justify-between">
+                          <span>• Commitment Bonus:</span>
+                          <span>+{freeMonthsBreakdown.commitmentBonus} mo</span>
+                        </div>
+                        {payInFull && (
+                          <div className="flex justify-between text-green-600">
+                            <span>• Pay-in-Full Accelerator:</span>
+                            <span>×2</span>
                           </div>
                         )}
                       </div>
@@ -1336,7 +1342,7 @@ export default function StreamlinedWizard() {
                   <div className="flex gap-2 flex-wrap text-xs mb-2">
                     {totalFreeMonths > 0 && (
                       <span data-testid="text-free-months-summary" className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                        {totalFreeMonths} Complimentary Month{totalFreeMonths > 1 ? 's' : ''}
+                        {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''}
                       </span>
                     )}
                     <span data-testid="text-yard-size" className="bg-muted px-2 py-0.5 rounded">{selectedYard?.label}</span>
@@ -1359,7 +1365,7 @@ export default function StreamlinedWizard() {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Complimentary months = skipped billing at end of term. You pay for fewer months, not a discount.</p>
+                  <p className="text-xs text-muted-foreground mt-2">Free months = skipped billing at end of term. You pay for fewer months, not a discount.</p>
                 </div>
               )}
 
@@ -1466,7 +1472,7 @@ export default function StreamlinedWizard() {
                       <span data-testid="text-confirm-term" className="font-bold">{selectedTerm?.label}</span>
                     </div>
                     <div>
-                      <span className="text-xs text-muted-foreground block">Complimentary Months</span>
+                      <span className="text-xs text-muted-foreground block">Free Months</span>
                       <span data-testid="text-confirm-free-months" className="font-bold text-green-600">{totalFreeMonths}</span>
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">

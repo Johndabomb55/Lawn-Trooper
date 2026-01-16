@@ -105,7 +105,7 @@ function CountdownTimer() {
     return (
       <div className="bg-destructive/90 text-white py-2 px-4 shadow-lg text-center">
         <div className="font-bold uppercase tracking-widest text-xs md:text-sm">
-          Anniversary Sale Ended
+          Early Bird Bonus Expired
         </div>
       </div>
     );
@@ -154,7 +154,7 @@ export default function LandingPage() {
            <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 h-10">
               <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
            </div>
-           <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Sale + AI Cost Reductions! 🎉</span>
+           <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Early Bird Bonus + AI Cost Reductions! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
            <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 25, 2026</span> to lock in your pricing for up to 3 years!</span>
            <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
@@ -266,7 +266,7 @@ export default function LandingPage() {
             
             <div className="mt-6 flex flex-col items-center gap-4">
                <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
-                 25th Anniversary Sale + AI Cost Reductions: get up to 6 months free
+                 25th Anniversary Early Bird Bonus: get up to 6 months free
                </div>
                
                <div className="flex flex-col items-center gap-4 mt-2">
@@ -341,7 +341,7 @@ export default function LandingPage() {
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
                  <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl text-center">
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
-                   🎉 25th Anniversary Sale + AI Cost Reductions 🎉
+                   🎉 25th Anniversary Early Bird Bonus 🎉
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
@@ -350,35 +350,34 @@ export default function LandingPage() {
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
-                 {/* Deal 1: Early Bird Special */}
+                 {/* Deal 1: 25th Anniversary Early Bird Bonus */}
                  <div className="bg-accent/10 p-3 rounded border border-accent/50 hover:bg-accent/20 transition-colors relative">
                    <div className="absolute -top-2 -right-2">
                      <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">EARLY BIRD</span>
                    </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Sign Up by Apr 25th</span>
+                     <span className="text-accent font-bold uppercase text-xs">Enroll by Jan 25</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">Up to 3 Extra Months Free</div>
-                     <div className="text-white/70 text-xs mt-1 text-center">Hurry - benefit decreases each month!</div>
+                     <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">+1 Free Month</div>
+                     <div className="text-white/70 text-xs mt-1 text-center">First payment by Feb 1</div>
                    </div>
                  </div>
 
-                 {/* Deal 2: Commitment Rewards */}
+                 {/* Deal 2: Commitment Bonus */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Zap className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Commitment Rewards</span>
+                     <span className="text-accent font-bold uppercase text-xs">Commitment Bonus</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between"><span>1-Year:</span> <span className="text-green-400 font-bold">1 Month Free</span></div>
-                     <div className="flex justify-between"><span>2-Year:</span> <span className="text-green-400 font-bold">2 Months Free</span></div>
-                     <div className="flex justify-between"><span>3-Year:</span> <span className="text-green-400 font-bold">3 Months Free</span></div>
+                     <div className="flex justify-between"><span>1-Year:</span> <span className="text-green-400 font-bold">+1 Month Free</span></div>
+                     <div className="flex justify-between"><span>2-Year:</span> <span className="text-green-400 font-bold">+2 Months Free</span></div>
                    </div>
                  </div>
 
-                 {/* Deal 3: Honors */}
+                 {/* Deal 3: Service Honors */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Shield className="w-4 h-4 text-accent" />
@@ -390,14 +389,14 @@ export default function LandingPage() {
                    </div>
                  </div>
 
-                 {/* Deal 4: Pay in Full Bonus */}
+                 {/* Deal 4: Pay-in-Full Accelerator */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Star className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Pay in Full Bonus</span>
+                     <span className="text-accent font-bold uppercase text-xs">Pay-in-Full Accelerator</span>
                    </div>
                    <div className="text-white text-sm font-medium leading-relaxed">
-                     Pay upfront for <span className="text-green-400 font-bold">+1 Additional Month Free</span>
+                     <span className="text-green-400 font-bold">Doubles ALL</span> earned free months
                    </div>
                  </div>
                </div>
