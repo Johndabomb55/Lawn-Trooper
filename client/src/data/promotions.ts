@@ -110,11 +110,18 @@ export function calculateActualMonthly(basePrice: number, term: 'month-to-month'
  * Calculate effective monthly price after free months are applied
  * Free months are applied at END of agreement as service credits
  * 
- * Formula:
+ * Formula (CORRECT):
  * - termMonths = total months in term (12 or 24)
  * - freeMonthsEarned = term bonus + pay-in-full bonus (NOT referral)
- * - paidMonths = max(termMonths - freeMonthsEarned, 1)
- * - effectiveMonthly = (actualMonthly * termMonths) / paidMonths
+ * - paidMonths = termMonths - freeMonthsEarned
+ * - effectiveMonthly = actualMonthly * paidMonths / termMonths
+ * 
+ * This gives a LOWER effective monthly since you pay for fewer months
+ * but receive service for the full term.
+ * 
+ * Example: 1-year with 2 free months
+ * - Pay for 10 months, get service for 12 months
+ * - effectiveMonthly = $100 * 10/12 = $83.33/mo
  * 
  * Note: For month-to-month, effectiveMonthly = actualMonthly (no free months)
  */
@@ -141,8 +148,10 @@ export function calculateEffectiveMonthly(
     freeMonthsEarned += 1;
   }
   
+  // Correct formula: pay for fewer months, spread over full term
+  // effectiveMonthly = actualMonthly * (termMonths - freeMonths) / termMonths
   const paidMonths = Math.max(termMonths - freeMonthsEarned, 1);
-  const effectiveMonthly = (actualMonthly * termMonths) / paidMonths;
+  const effectiveMonthly = (actualMonthly * paidMonths) / termMonths;
   
   return Math.round(effectiveMonthly * 100) / 100;
 }
