@@ -42,7 +42,8 @@ import {
   getYardMultiplier,
   getPlanAllowance,
   calculateOverageCost,
-  getAddonById
+  getAddonById,
+  calculate2026Price
 } from "@/data/plans";
 import { 
   COMMITMENT_TERMS, 
@@ -77,7 +78,7 @@ interface InfoPopupProps {
 function InfoPopup({ open, onClose, title, content }: InfoPopupProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent data-testid="dialog-info" className="max-w-md">
+      <DialogContent data-testid="dialog-info" className="max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle data-testid="dialog-title" className="flex items-center gap-2">
             <Info className="w-5 h-5 text-primary" />
@@ -545,7 +546,7 @@ export default function StreamlinedWizard() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-primary">${p.price}</div>
+                            <div className="text-2xl font-bold text-primary">${calculate2026Price(p.id, yardSize || "1/3")}</div>
                             <div className="text-xs text-muted-foreground">/mo</div>
                           </div>
                         </div>
@@ -553,8 +554,14 @@ export default function StreamlinedWizard() {
                         <div className="mt-2 pt-2 border-t border-border/50 text-xs">
                           <span className="text-muted-foreground">Add-Ons Included: </span>
                           <span className="font-medium">{p.allowance.basic} Basic + {p.allowance.premium} Premium</span>
+                          {p.id === 'executive' && p.executiveExtras && (
+                            <span className="block text-accent mt-0.5 font-medium">
+                              Extras: {p.executiveExtras.slice(0, 2).join(', ')}
+                              {p.executiveExtras.length > 2 && ' & more'}
+                            </span>
+                          )}
                           {p.id === 'executive' && p.allowsSwap && (
-                            <span className="block text-accent mt-0.5">Swap option: 1 Premium = 2 Basic</span>
+                            <span className="block text-accent/80 mt-0.5">Swap option: 1 Premium = 2 Basic</span>
                           )}
                         </div>
                         {isSelected && (
@@ -562,6 +569,59 @@ export default function StreamlinedWizard() {
                             <Check className="w-6 h-6 text-primary" />
                           </div>
                         )}
+                      </button>
+                      {/* See All Details button */}
+                      <button
+                        data-testid={`plan-details-${p.id}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          showInfo(`${p.name} - Full Details`, (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-2 text-sm">
+                                {p.keyStats.map((stat, i) => (
+                                  <div key={i} className="bg-muted/50 p-2 rounded">
+                                    <div className="font-medium text-primary">{stat.value}</div>
+                                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="border-t pt-3">
+                                <div className="font-medium text-sm mb-2">Included Services:</div>
+                                <ul className="space-y-2 text-sm">
+                                  {p.features.map((feature, i) => (
+                                    <li key={i} className="flex gap-2">
+                                      <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                      <span dangerouslySetInnerHTML={{ __html: feature }} />
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                              {p.executiveExtras && (
+                                <div className="border-t pt-3 bg-accent/10 -mx-4 px-4 py-3 rounded-b-lg">
+                                  <div className="font-medium text-sm mb-2 text-accent">Executive Exclusives:</div>
+                                  <ul className="space-y-1 text-sm">
+                                    {p.executiveExtras.map((extra, i) => (
+                                      <li key={i} className="flex gap-2 items-center">
+                                        <Star className="w-4 h-4 text-accent shrink-0" />
+                                        <span>{extra}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              <div className="border-t pt-3 text-center">
+                                <div className="text-lg font-bold text-primary">Add-Ons Included</div>
+                                <div className="text-sm">{p.allowance.basic} Basic + {p.allowance.premium} Premium</div>
+                                {p.allowsSwap && (
+                                  <div className="text-xs text-accent mt-1">Swap: 1 Premium → +2 Basic</div>
+                                )}
+                              </div>
+                            </div>
+                          ));
+                        }}
+                        className="w-full text-center text-xs text-primary underline py-1 hover:text-primary/80"
+                      >
+                        See All Details
                       </button>
                     </div>
                   );
@@ -586,33 +646,40 @@ export default function StreamlinedWizard() {
                 </p>
               </div>
 
-              {/* Executive Swap Selector */}
+              {/* Executive Swap Toggle - Button-based for visibility */}
               {isExecutive && (
                 <div className="bg-accent/10 rounded-lg p-3 border border-accent/30">
-                  <div className="mb-2">
-                    <div className="font-medium text-sm">Swap Premium slots for additional Basic slots</div>
-                    <div className="text-xs text-muted-foreground">Each swap trades 1 Premium for +2 Basic</div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <div className="font-medium text-sm">Premium ↔ Basic Swap</div>
+                      <div className="text-xs text-muted-foreground">Trade 1 Premium for +2 Basic slots</div>
+                    </div>
+                    <div className="text-right text-xs">
+                      <div className="font-bold text-primary">{effectiveBasicAllowance}B</div>
+                      <div className="font-bold text-accent">{effectivePremiumAllowance}P</div>
+                    </div>
                   </div>
-                  <select
-                    data-testid="exec-swap-selector"
-                    value={swapCount}
-                    onChange={(e) => {
-                      const newSwap = parseInt(e.target.value);
-                      setSwapCount(newSwap);
-                      // Clear premium add-ons that exceed new allowance
-                      const newPremiumAllowance = 2 - newSwap;
-                      if (premiumAddons.length > newPremiumAllowance) {
-                        setPremiumAddons(premiumAddons.slice(0, Math.max(0, newPremiumAllowance)));
-                      }
-                    }}
-                    className="w-full p-2 rounded-lg border bg-background text-sm font-medium"
-                  >
+                  <div className="flex gap-2">
                     {SWAP_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      <button
+                        key={opt.value}
+                        data-testid={`swap-btn-${opt.value}`}
+                        onClick={() => {
+                          setSwapCount(opt.value);
+                          const newPremiumAllowance = 2 - opt.value;
+                          if (premiumAddons.length > newPremiumAllowance) {
+                            setPremiumAddons(premiumAddons.slice(0, Math.max(0, newPremiumAllowance)));
+                          }
+                        }}
+                        className={`flex-1 py-2 px-2 text-xs rounded-lg border-2 transition-all font-medium ${
+                          swapCount === opt.value
+                            ? 'border-accent bg-accent text-white'
+                            : 'border-accent/30 bg-background hover:border-accent/50'
+                        }`}
+                      >
+                        {opt.value === 0 ? '3B + 2P' : opt.value === 1 ? '5B + 1P' : '7B + 0P'}
+                      </button>
                     ))}
-                  </select>
-                  <div className="mt-2 text-xs text-muted-foreground text-center">
-                    Current: <span className="font-bold text-primary">{effectiveBasicAllowance} Basic</span> + <span className="font-bold text-accent">{effectivePremiumAllowance} Premium</span> included
                   </div>
                 </div>
               )}
@@ -1072,24 +1139,44 @@ export default function StreamlinedWizard() {
 
               {/* Pricing Summary */}
               {basePrice > 0 && (
-                <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-lg">Your monthly payment:</span>
+                    <span className="font-bold text-lg">Your monthly rate:</span>
                     <span className="text-2xl font-bold text-primary">${actualMonthly}/mo</span>
                   </div>
+                  
+                  {/* Pay in Full total display */}
+                  {paymentMethod === 'pay-in-full' && term !== 'month-to-month' && (
+                    <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-green-700">Pay in Full and Save!</div>
+                        <div className="text-2xl font-bold text-green-800">
+                          ${(actualMonthly * ((selectedTerm?.months || 12) - totalFreeMonths)).toLocaleString()}
+                        </div>
+                        <div className="text-sm text-green-600">
+                          Total for {selectedTerm?.months || 12} months ({totalFreeMonths} months FREE)
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          vs ${(calculateActualMonthly(basePrice, 'month-to-month') * (selectedTerm?.months || 12)).toLocaleString()} month-to-month
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
                   {term !== 'month-to-month' && totalFreeMonths > 0 && (
-                    <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                      <Info className="w-3 h-3" />
-                      <span>Effective monthly after free months: ${effectiveMonthly.toFixed(0)}/mo</span>
+                    <div className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Sparkles className="w-4 h-4 text-green-600" />
+                      <span>Effective monthly: <strong className="text-green-600">${effectiveMonthly.toFixed(0)}/mo</strong></span>
                       <button
                         type="button"
                         onClick={() => showInfo("Effective Monthly", (
                           <div className="space-y-2">
                             <p>Free months are <strong>skipped billing months</strong> at the end of your agreement.</p>
                             <p className="text-sm text-muted-foreground">Example: 2 free months on a 12-month plan = pay for first 10 months, final 2 months not billed.</p>
+                            <p className="font-semibold text-primary mt-2">All free months stack with no cap!</p>
                           </div>
                         ))}
-                        className="text-primary underline"
+                        className="text-primary underline text-xs ml-1"
                       >
                         What's this?
                       </button>
