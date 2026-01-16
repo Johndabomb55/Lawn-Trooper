@@ -8,7 +8,8 @@ import {
   MONTH_TO_MONTH_PREMIUM,
   calculateActualMonthly,
   calculate2YearFreeMonths,
-  isEarlyBird
+  getFreeMonthsBreakdown,
+  getAnniversaryBonus
 } from "@/data/promotions";
 import { Switch } from "@/components/ui/switch";
 
@@ -28,10 +29,12 @@ export default function PromotionsPage() {
 
   const actualMonthly = calculateActualMonthly(basePrice, selectedTerm);
   
-  // Calculate free months based on term and pay-in-full
+  // Calculate complimentary months based on term and pay-in-full
   const freeMonths = selectedTerm === '2-year' 
     ? calculate2YearFreeMonths(payInFull) 
     : 0;
+  const freeMonthsBreakdown = getFreeMonthsBreakdown(payInFull);
+  const anniversaryBonus = getAnniversaryBonus();
   
   const termMonths = selectedTerm === '2-year' ? 24 : 1;
   const billedMonths = Math.max(termMonths - freeMonths, 1);
@@ -98,9 +101,9 @@ export default function PromotionsPage() {
                 <div className="p-4 rounded-lg border-2 border-border bg-muted/30">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium">Pay in Full</div>
+                      <div className="font-medium">Pay in Full (Recommended)</div>
                       <div className="text-sm text-muted-foreground">
-                        Double your free months (2 → 4)
+                        Double your complimentary months (2 → 4)
                       </div>
                     </div>
                     <Switch
@@ -110,9 +113,20 @@ export default function PromotionsPage() {
                     />
                   </div>
                 </div>
-                {isEarlyBird() && (
-                  <div className="p-3 bg-green-50 rounded-lg border border-green-200 text-sm text-green-800">
-                    <strong>Early Bird Bonus:</strong> +1 extra free month for signing up before Jan 25!
+                {anniversaryBonus.months > 0 && (
+                  <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
+                    <strong>25th Anniversary Enrollment Bonus:</strong> +{anniversaryBonus.months} complimentary month{anniversaryBonus.months > 1 ? 's' : ''} included!
+                    <div className="text-xs text-amber-600 mt-1">
+                      {anniversaryBonus.tier === 'tier1' 
+                        ? 'Enroll by Jan 25 to lock in this bonus'
+                        : 'Enroll by Feb 25 to lock in this bonus'
+                      }
+                    </div>
+                  </div>
+                )}
+                {anniversaryBonus.tier === 'concluded' && (
+                  <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-muted-foreground">
+                    <span className="line-through">25th Anniversary Enrollment Bonus</span> (concluded)
                   </div>
                 )}
               </div>
@@ -166,7 +180,7 @@ export default function PromotionsPage() {
             </div>
             <div className="bg-green-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-green-600">{freeMonths}</div>
-              <div className="text-xs text-muted-foreground">Free Months</div>
+              <div className="text-xs text-muted-foreground">Complimentary Months</div>
             </div>
             <div className="bg-accent/10 rounded-lg p-4">
               <div className="text-2xl font-bold text-accent">{billedMonths}</div>
@@ -180,8 +194,8 @@ export default function PromotionsPage() {
 
           {freeMonths > 0 && (
             <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200 text-sm text-green-800">
-              <strong>How it works:</strong> With {freeMonths} free month{freeMonths > 1 ? 's' : ''} on a {termMonths}-month plan, 
-              you pay for {billedMonths} months. Your final {freeMonths} month{freeMonths > 1 ? 's are' : ' is'} not billed.
+              <strong>How it works:</strong> You'll receive {termMonths} months of service while paying for {billedMonths}. 
+              Your final {freeMonths} month{freeMonths > 1 ? 's are' : ' is'} complimentary.
             </div>
           )}
         </div>
@@ -189,22 +203,24 @@ export default function PromotionsPage() {
         <div className="bg-primary/5 rounded-xl p-6 border border-primary/20 mb-8">
           <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" />
-            Understanding Free Months
+            Understanding Complimentary Months
           </h2>
           <div className="space-y-3 text-sm">
             <p>
-              <strong>Free months are skipped billing months at the END of your agreement.</strong>
+              <strong>Complimentary months are skipped billing months at the END of your agreement.</strong>
             </p>
             <p className="text-muted-foreground">
               This is NOT a discount or credit. Your service continues at full quality, but your final months are simply not billed.
             </p>
             <div className="bg-white rounded-lg p-4 border">
-              <p className="font-medium mb-2">Example: 2-Year Price Lock + Pay in Full + Early Bird</p>
+              <p className="font-medium mb-2">Example: 2-Year Subscription + Pay in Full + Anniversary Bonus</p>
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Term: 24 months of service</li>
-                <li>• Free months: 2 (base) × 2 (pay-in-full) + 1 (early bird) = 5</li>
-                <li>• Months billed: 19</li>
-                <li>• Final 5 months: Not billed</li>
+                <li>• Commitment bonus: 2 months</li>
+                <li>• Pay in full (doubles commitment): +2 months = 4 total</li>
+                <li>• 25th Anniversary Bonus: +2 months (if enrolled by Jan 25)</li>
+                <li>• Maximum complimentary months: 6</li>
+                <li>• Months billed: 18</li>
               </ul>
             </div>
           </div>

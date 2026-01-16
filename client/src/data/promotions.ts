@@ -7,18 +7,23 @@
  * COMMITMENT MODEL (January 2026):
  * Only 2 commitment options:
  * - Month-to-Month: +15% premium, no free months, cancel anytime
- * - 2-Year Price Lock: 24 months, base price locked for 2 years
+ * - 2-Year Subscription (Price Lock): 24 months, locks current pricing
  * 
  * FREE MONTH RULES:
- * - Month-to-Month: 0 free months
- * - 2-Year: 2 free months base
- * - 2-Year Pay in Full: doubles to 4 free months
- * - Early Bird (before Jan 25): +1 bonus, max 5 total
+ * - Month-to-Month: 0 complimentary months
+ * - 2-Year: 2 complimentary months (commitment bonus)
+ * - 2-Year Pay in Full: doubles commitment to 4 complimentary months
+ * - 25th Anniversary Bonus (NOT doubled by pay-in-full):
+ *   - Enroll Dec 25 - Jan 25: +2 bonus months
+ *   - Enroll Jan 25 - Feb 25: +1 bonus month
+ *   - After Feb 25: Enrollment concluded
+ * - Max total: 6 complimentary months (4 + 2 bonus)
  * 
  * BILLING:
+ * - termMonths = 24
  * - billedMonths = 24 - freeMonths
  * - effectiveMonthly = (monthlySubscription × billedMonths) / 24
- * - Free months are skipped billing at END of agreement
+ * - Complimentary months are skipped billing at END of agreement
  */
 
 export interface Promotion {
@@ -41,18 +46,40 @@ export interface Promotion {
 // Stacking caps
 export const PROMO_CAPS = {
   maxPercentOff: 30,
-  maxFreeMonths: 5,  // Max with 2-year + pay-in-full + early bird
+  maxFreeMonths: 6,  // Max: 4 (pay-in-full) + 2 (anniversary bonus)
 };
 
 // Month-to-month premium (15% over 2-year base rate)
 export const MONTH_TO_MONTH_PREMIUM = 0.15;
 
-// Early Bird cutoff date for +1 bonus free month
-export const EARLY_BIRD_CUTOFF = new Date('2026-01-25T23:59:59');
+// 25th Anniversary Enrollment Bonus dates
+export const ANNIVERSARY_BONUS = {
+  tier1End: new Date('2026-01-25T23:59:59'),  // +2 bonus months
+  tier2End: new Date('2026-02-25T23:59:59'),  // +1 bonus month
+};
 
-// Check if current date qualifies for early bird bonus
+/**
+ * Get anniversary bonus months based on enrollment date
+ * - Dec 25 - Jan 25: +2 months
+ * - Jan 25 - Feb 25: +1 month
+ * - After Feb 25: 0 (enrollment concluded)
+ * 
+ * NOTE: Bonus months are NOT doubled by pay-in-full
+ */
+export function getAnniversaryBonus(): { months: number; tier: 'tier1' | 'tier2' | 'concluded' } {
+  const now = new Date();
+  
+  if (now < ANNIVERSARY_BONUS.tier1End) {
+    return { months: 2, tier: 'tier1' };
+  } else if (now < ANNIVERSARY_BONUS.tier2End) {
+    return { months: 1, tier: 'tier2' };
+  }
+  return { months: 0, tier: 'concluded' };
+}
+
+// Legacy alias for backward compatibility
 export const isEarlyBird = (): boolean => {
-  return new Date() < EARLY_BIRD_CUTOFF;
+  return getAnniversaryBonus().months > 0;
 };
 
 // Operation Price Drop - Loyalty Pricing
@@ -66,7 +93,7 @@ export const LOYALTY_DISCOUNTS = [
 export const COMMITMENT_TERMS = [
   {
     id: 'month-to-month' as const,
-    label: 'Month-to-Month',
+    label: 'Month-to-Month Subscription',
     months: 1,
     freeMonths: 0,
     badge: 'Flexible',
@@ -75,34 +102,60 @@ export const COMMITMENT_TERMS = [
   },
   {
     id: '2-year' as const,
-    label: '2-Year Price Lock',
+    label: '2-Year Subscription (Price Lock)',
     months: 24,
-    freeMonths: 2,  // Base free months for 2-year
+    freeMonths: 2,  // Base commitment bonus
     badge: 'Best Value',
-    description: 'Lock in your rate for 2 years',
+    description: 'Includes complimentary service months',
     hasPremium: false,
   },
 ];
 
 /**
- * Calculate total free months for 2-year commitment
- * Base: 2 free months
- * Pay in Full: doubles to 4 free months  
- * Early Bird (before Jan 25): +1 bonus, max 5 total
+ * Calculate complimentary service months for 2-year commitment
+ * 
+ * Commitment bonus: 2 months (base)
+ * Pay in Full: doubles COMMITMENT bonus only (2 → 4)
+ * Anniversary bonus: +0 to +2 (NOT doubled)
+ * 
+ * Max possible: 6 months (4 + 2)
  */
 export function calculate2YearFreeMonths(payInFull: boolean): number {
-  let freeMonths = 2; // Base for 2-year
+  // Commitment bonus: 2 months base, doubles to 4 with pay-in-full
+  const commitmentMonths = payInFull ? 4 : 2;
   
-  if (payInFull) {
-    freeMonths = 4; // Pay in full doubles free months
-  }
+  // Anniversary bonus: NOT doubled by pay-in-full
+  const anniversaryBonus = getAnniversaryBonus().months;
   
-  // Early bird bonus: +1 if before Jan 25, max 5 total
-  if (isEarlyBird()) {
-    freeMonths = Math.min(freeMonths + 1, 5);
-  }
+  // Total capped at max
+  return Math.min(commitmentMonths + anniversaryBonus, PROMO_CAPS.maxFreeMonths);
+}
+
+/**
+ * Get itemized breakdown of complimentary months
+ * Useful for displaying in UI
+ */
+export function getFreeMonthsBreakdown(payInFull: boolean): {
+  commitment: number;
+  payInFullBonus: number;
+  anniversaryBonus: number;
+  total: number;
+} {
+  const baseCommitment = 2;
+  const payInFullBonus = payInFull ? 2 : 0;
+  const anniversaryBonus = getAnniversaryBonus().months;
   
-  return freeMonths;
+  const total = Math.min(
+    baseCommitment + payInFullBonus + anniversaryBonus,
+    PROMO_CAPS.maxFreeMonths
+  );
+  
+  return {
+    commitment: baseCommitment,
+    payInFullBonus,
+    anniversaryBonus,
+    total,
+  };
 }
 
 /**
