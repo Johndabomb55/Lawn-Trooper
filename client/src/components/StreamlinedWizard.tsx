@@ -1176,6 +1176,9 @@ export default function StreamlinedWizard() {
                                   <div className="text-[10px] text-center text-amber-700 font-bold mt-1">
                                     Your bonus: +{bonus.months} month{bonus.months > 1 ? 's' : ''}
                                   </div>
+                                  <div className="text-[9px] text-center text-amber-600 mt-0.5">
+                                    Fixed bonus based on enrollment date
+                                  </div>
                                 </div>
                               );
                             } else {
@@ -1211,7 +1214,7 @@ export default function StreamlinedWizard() {
                               </div>
                               <div className="text-left">
                                 <div className="font-medium">Pay-in-Full Option</div>
-                                <div className="text-xs text-muted-foreground">Doubles commitment months (bonus not doubled)</div>
+                                <div className="text-xs text-muted-foreground">Doubles commitment months. Birthday Bonus adds on top.</div>
                               </div>
                             </div>
                             <div className="text-right">
@@ -1257,7 +1260,7 @@ export default function StreamlinedWizard() {
                         </div>
                         {freeMonthsBreakdown.anniversaryBonus > 0 && (
                           <div className="flex justify-between">
-                            <span>• Birthday Bonus:</span>
+                            <span>• Birthday Bonus (fixed):</span>
                             <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
                           </div>
                         )}

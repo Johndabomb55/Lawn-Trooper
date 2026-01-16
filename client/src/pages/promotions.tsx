@@ -124,7 +124,7 @@ export default function PromotionsPage() {
                     <div>
                       <div className="font-medium">Pay-in-Full Option</div>
                       <div className="text-sm text-muted-foreground">
-                        Doubles commitment months ({selectedTerm === '1-year' ? '1 → 2' : '2 → 4'} + bonus)
+                        Doubles commitment months ({selectedTerm === '1-year' ? '1 → 2' : '2 → 4'}). Birthday Bonus adds on top.
                       </div>
                     </div>
                     <Switch
@@ -225,7 +225,7 @@ export default function PromotionsPage() {
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Commitment Bonus (2-year): 2 months</li>
                 <li>• Pay-in-Full doubles commitment: 2 × 2 = 4 months</li>
-                <li>• Birthday Bonus: +2 months (not doubled)</li>
+                <li>• Birthday Bonus (fixed): +2 months</li>
                 <li>• Total: 6 complimentary months</li>
                 <li>• Term: 24 months of service</li>
                 <li>• Months billed: 18</li>
@@ -236,7 +236,7 @@ export default function PromotionsPage() {
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Commitment Bonus (1-year): 1 month</li>
                 <li>• Pay-in-Full doubles commitment: 1 × 2 = 2 months</li>
-                <li>• Birthday Bonus: +1 month (not doubled)</li>
+                <li>• Birthday Bonus (fixed): +1 month</li>
                 <li>• Total: 3 complimentary months</li>
                 <li>• Term: 12 months of service</li>
                 <li>• Months billed: 9</li>
