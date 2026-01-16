@@ -1,0 +1,163 @@
+ROLE:
+You are a senior product engineer working on Lawn Trooper’s live subscription website (lawn-trooper.com).
+RETROFIT ONLY. Do not redesign the site or change its overall look/branding. Implement the rules below exactly, fix confusing wording, and ensure pricing updates correctly after every click.
+
+GOAL:
+1) Make commitment + bonuses crystal clear (premium tone, not salesy).
+2) Keep month-to-month = 0 free months (we reward commitment).
+3) Ensure “free months” are SKIPPED BILLING MONTHS at the end of the term (term still ends on 12/24-month anniversary).
+4) Update add-on catalog copy + structure (pressure wash bundle, fertilizer included in 3-app add-on, lighting, mulch, etc.).
+5) Replace the “weekly growing-season mowing” basic add-on concept with a more sustainable “Growing-Season Boost” that does NOT undercut Premium/Executive.
+6) Fix form submission (it was failing) and test it end-to-end.
+
+========================================
+A) CORE DEFINITIONS (NON-NEGOTIABLE COPY)
+========================================
+- “Complimentary months” = skipped billing months applied at the end of your term.
+- The agreement still ends exactly on the 12-month or 24-month anniversary date.
+Use this exact disclaimer in Step 5 and final summary:
+“Complimentary months are skipped billing months applied at the end of your term. Your agreement still ends on your 12-month or 24-month anniversary date.”
+
+========================================
+B) COMMITMENT OPTIONS (MUST SHOW ALL 3)
+========================================
+Show and support these commitment options everywhere:
+1) Month-to-Month
+   - +15% flexibility premium applied to the entire subscription (plan + add-ons)
+   - ZERO complimentary months
+   - Copy must state:
+     “Month-to-month does not include complimentary months because we reward long-term commitment.”
+
+2) 1-Year Subscription
+   - Commitment Bonus: +1 complimentary month
+
+3) 2-Year Subscription (Price Lock) (featured)
+   - Commitment Bonus: +2 complimentary months
+   - “Price Lock” label
+
+========================================
+C) PAY-IN-FULL TOGGLE (NOT PAYMENT METHOD)
+========================================
+- Remove “How do you want to pay?” buttons if they still exist as separate payment methods.
+- Pay in Full is a toggle under 1-Year and 2-Year.
+Rule:
+- Pay in Full DOUBLES COMMITMENT BONUS ONLY.
+- Enrollment bonus months are NOT doubled.
+So:
+- 1-Year PIF => 2 commitment months
+- 2-Year PIF => 4 commitment months
+
+========================================
+D) TWO BONUSES MUST BE SEPARATE IN UI
+========================================
+There are TWO distinct bonuses:
+1) Commitment Bonus (always on): 1-year = 1 month, 2-year = 2 months (doubled if Pay in Full).
+2) 25-Year Birthday Bonus (Enrollment Bonus): time-based and NOT doubled.
+
+UI requirement:
+- In Step 5 (commitment step), show them as separate line items:
+  “Commitment Bonus”
+  “25-Year Birthday Bonus (Enrollment Bonus)”
+Do NOT display a single “+3 months” badge without the breakdown.
+
+========================================
+E) 25-YEAR BIRTHDAY BONUS (PHASED)
+========================================
+Name: “25-Year Birthday Bonus”
+This is the enrollment bonus and should be introduced on the main page in a premium way (no numbers shouted).
+Homepage/hero line (small but noticeable):
+“Celebrating 25 years — long-term subscribers may qualify for our 25-Year Birthday Bonus.”
+
+In Step 5, show the actual schedule:
+- Enroll by Jan 25: +2 bonus months
+- Enroll by Feb 25: +1 bonus month
+- After Feb 25: +0 (Bonus concluded)
+Keep the same name across phases (do not rename).
+
+========================================
+F) MATH (MUST BE CORRECT)
+========================================
+Definitions:
+- termMonths = 12 or 24
+- commitmentFreeMonths = 1 or 2
+- payInFullMultiplier = 1 or 2 (applies to commitment months only)
+- birthdayBonusMonths = 0 / 1 / 2 (based on enrollment window)
+TotalFreeMonths =
+  (commitmentFreeMonths * payInFullMultiplier) + birthdayBonusMonths
+
+BilledMonths = termMonths - totalFreeMonths
+
+EffectiveMonthly (display only):
+effectiveMonthly = (monthlySubscription * billedMonths) / termMonths
+Rules:
+- effectiveMonthly must ALWAYS be <= monthlySubscription
+- no fractional months
+- savings comparisons must use Month-to-Month baseline (includes +15%)
+
+Also ensure the “vs month-to-month” comparison uses the month-to-month premium price (not base monthly).
+
+========================================
+G) PLAN COPY CONSISTENCY (MATCH EVERYWHERE)
+========================================
+Ensure plan cards, plan picker, summary, and any “Choose your perfect plan” section all match and do not drift.
+
+Basic Patrol:
+- Bi-weekly mowing
+- 2 weed treatments per year
+- Monthly light leaf management
+- 1 Basic add-on included
+
+Premium Patrol:
+- Weekly mowing
+- 4 weed treatments + weed killer
+- Bi-weekly leaf management (fall/winter)
+- Spring & fall cleanups included
+- “Holiday / pre-event leaf cleanup” (word professionally)
+- 2 Basic + 1 Premium add-ons included
+
+Executive Command:
+- Priority weekly mowing
+- 6 weed treatments (+ guarantee if you’re currently using it)
+- Enhanced leaf management
+- Storm visits & winter yard checks included
+- Spring, fall & pre-event cleanups included
+- 3 Basic + 2 Premium add-ons included
+- Swap option: 1 Premium = 2 Basic
+
+========================================
+H) ADD-ONS (UPDATE COPY + STRUCTURE)
+========================================
+Keep existing add-ons unless edited below. Implement these exact changes:
+
+1) Additional Weed Control & Fertilization (Premium Add-On)
+Copy:
+“Adds three additional lawn applications, including fertilizer, pre-emergent weed prevention, and targeted weed-killer applications, beyond what’s included in your plan.”
+Rule: this bumps any plan by +3 treatments/applications.
+
+2) Shrub / Hedge Trimming (Basic Add-On)
+Copy:
+“Light trimming of shrubs or hedges to maintain shape and appearance. All clippings will be collected and properly disposed of.”
+
+3) Pressure / Soft Wash structure:
+- Basic Pressure-Wash Package (Basic):
+  Includes: Porch, Sidewalk, Mailbox
+  Copy:
+  “Light exterior pressure washing to refresh high-visibility areas around your home and maintain a clean, welcoming entrance.”
+- Driveway Pressure Wash (Basic standalone):
+  Copy:
+  “Targeted pressure washing to clean and brighten driveway surfaces, improving curb appeal and removing built-up grime.”
+- Premium Pressure-Wash Package (Premium):
+  Includes: Driveway, Porch, Sidewalk, Mailbox, + other surfaces as appropriate
+  Copy:
+  “Comprehensive exterior pressure washing for a deeper, more complete clean across key areas of your property.”
+- House Soft Wash (Premium):
+  Copy:
+  “Low-pressure soft washing to safely clean exterior siding and surfaces, helping restore appearance while protecting your home’s finish.”
+
+4) Seasonal Lighting (rename, better copy):
+- Basic Seasonal Lighting (Basic):
+  Copy:
+  “Ground-level seasonal lighting focused on shrubs, small trees, and select landscape areas using simple yard pop-up lighting. Final layout to be discussed with the homeowner.”
+- Premium Seasonal Lighting (Premium):
+  Copy:
+  “Expanded seasonal lighting designed for holidays, including roofline lighting, enhanced
