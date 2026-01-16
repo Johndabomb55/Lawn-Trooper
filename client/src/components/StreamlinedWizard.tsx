@@ -30,7 +30,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { PLANS, YARD_SIZES, GLOBAL_CONSTANTS, BASIC_ADDONS, PREMIUM_ADDONS, getYardMultiplier } from "@/data/plans";
+import { 
+  PLANS, 
+  YARD_SIZES, 
+  GLOBAL_CONSTANTS, 
+  ADDON_CATALOG,
+  BASIC_ADDONS, 
+  PREMIUM_ADDONS, 
+  OVERAGE_PRICES,
+  SWAP_OPTIONS,
+  getYardMultiplier,
+  getPlanAllowance,
+  calculateOverageCost,
+  getAddonById
+} from "@/data/plans";
 import { 
   COMMITMENT_TERMS, 
   LOYALTY_DISCOUNTS,
@@ -93,7 +106,7 @@ export default function StreamlinedWizard() {
   const [basicAddons, setBasicAddons] = useState<string[]>([]);
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
-  const [execSwapMode, setExecSwapMode] = useState(false);
+  const [swapCount, setSwapCount] = useState(0);
   const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('1-year');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('monthly');
   const [promoCode, setPromoCode] = useState("");
@@ -124,14 +137,21 @@ export default function StreamlinedWizard() {
   const totalFreeMonths = getTotalFreeMonths(term, payInFull, false);
   
   const isExecutive = plan === 'executive';
-  const effectiveBasicAllowance = selectedPlan ? 
-    (isExecutive && execSwapMode ? selectedPlan.allowance.basic + 2 : selectedPlan.allowance.basic) : 0;
-  const effectivePremiumAllowance = selectedPlan ? 
-    (isExecutive && execSwapMode ? 0 : selectedPlan.allowance.premium) : 0;
+  // Get effective allowances using the canonical function with swap adjustment
+  const allowance = getPlanAllowance(plan, isExecutive ? swapCount : 0);
+  const effectiveBasicAllowance = allowance.basic;
+  const effectivePremiumAllowance = allowance.premium;
   
-  const extraBasicCount = Math.max(0, basicAddons.length - effectiveBasicAllowance);
-  const extraPremiumCount = Math.max(0, premiumAddons.length - effectivePremiumAllowance);
-  const addonExtraCost = (extraBasicCount * 20) + (extraPremiumCount * 40);
+  // Calculate overages
+  const { basicOverage, premiumOverage, totalOverage } = calculateOverageCost(
+    basicAddons.length,
+    premiumAddons.length,
+    effectiveBasicAllowance,
+    effectivePremiumAllowance
+  );
+  const extraBasicCount = basicOverage;
+  const extraPremiumCount = premiumOverage;
+  const addonExtraCost = totalOverage;
 
   const calculateBasePrice = () => {
     if (!selectedPlan || !selectedYard) return 0;
@@ -485,7 +505,7 @@ export default function StreamlinedWizard() {
                         onClick={() => {
                           setPlan(p.id);
                           if (p.id !== 'executive') {
-                            setExecSwapMode(false);
+                            setSwapCount(0);
                           }
                         }}
                         className={`w-full p-4 rounded-xl border-2 transition-all text-left relative ${
@@ -524,31 +544,19 @@ export default function StreamlinedWizard() {
                             <div className="text-xs text-muted-foreground">/mo</div>
                           </div>
                         </div>
+                        {/* Add-on breakdown line */}
+                        <div className="mt-2 pt-2 border-t border-border/50 text-xs">
+                          <span className="text-muted-foreground">Add-Ons Included: </span>
+                          <span className="font-medium">{p.allowance.basic} Basic + {p.allowance.premium} Premium</span>
+                          {p.id === 'executive' && p.allowsSwap && (
+                            <span className="block text-accent mt-0.5">Swap option: 1 Premium = 2 Basic</span>
+                          )}
+                        </div>
                         {isSelected && (
                           <div className="absolute top-4 right-4">
                             <Check className="w-6 h-6 text-primary" />
                           </div>
                         )}
-                      </button>
-                      <button
-                        type="button"
-                        data-testid={`info-plan-${p.id}`}
-                        onClick={() => showInfo(p.name, (
-                          <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-2">
-                              {p.keyStats.map((stat, i) => (
-                                <div key={i} className="bg-muted/50 p-2 rounded text-center">
-                                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                                  <div className="font-bold text-sm">{stat.value}</div>
-                                </div>
-                              ))}
-                            </div>
-                            <p className="text-sm">{p.allowanceLabel}</p>
-                          </div>
-                        ))}
-                        className="text-xs text-primary underline mt-1 ml-4"
-                      >
-                        View details
                       </button>
                     </div>
                   );
@@ -573,50 +581,74 @@ export default function StreamlinedWizard() {
                 </p>
               </div>
 
-              {/* Executive Swap Toggle */}
+              {/* Executive Swap Selector */}
               {isExecutive && (
                 <div className="bg-accent/10 rounded-lg p-3 border border-accent/30">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      data-testid="exec-swap-toggle"
-                      checked={execSwapMode}
-                      onChange={(e) => {
-                        setExecSwapMode(e.target.checked);
-                        if (e.target.checked) {
-                          setPremiumAddons([]);
-                        }
-                      }}
-                      className="w-5 h-5 accent-accent"
-                    />
-                    <div>
-                      <div className="font-medium text-sm">Swap Premium slot for +2 Basic slots</div>
-                      <div className="text-xs text-muted-foreground">
-                        {execSwapMode 
-                          ? "You now have 4 Basic add-ons included (0 Premium)" 
-                          : "Default: 2 Basic + 1 Premium included"
-                        }
-                      </div>
-                    </div>
-                  </label>
+                  <div className="mb-2">
+                    <div className="font-medium text-sm">Swap Premium slots for additional Basic slots</div>
+                    <div className="text-xs text-muted-foreground">Each swap trades 1 Premium for +2 Basic</div>
+                  </div>
+                  <select
+                    data-testid="exec-swap-selector"
+                    value={swapCount}
+                    onChange={(e) => {
+                      const newSwap = parseInt(e.target.value);
+                      setSwapCount(newSwap);
+                      // Clear premium add-ons that exceed new allowance
+                      const newPremiumAllowance = 2 - newSwap;
+                      if (premiumAddons.length > newPremiumAllowance) {
+                        setPremiumAddons(premiumAddons.slice(0, Math.max(0, newPremiumAllowance)));
+                      }
+                    }}
+                    className="w-full p-2 rounded-lg border bg-background text-sm font-medium"
+                  >
+                    {SWAP_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  <div className="mt-2 text-xs text-muted-foreground text-center">
+                    Current: <span className="font-bold text-primary">{effectiveBasicAllowance} Basic</span> + <span className="font-bold text-accent">{effectivePremiumAllowance} Premium</span> included
+                  </div>
                 </div>
               )}
 
               {/* Selection Counter with Live Pricing */}
-              <div data-testid="addon-counter" className="bg-primary/10 rounded-lg p-3 text-center text-sm">
-                <span className="font-medium">Selected: </span>
-                <span className={`font-bold ${basicAddons.length > effectiveBasicAllowance ? 'text-amber-600' : 'text-primary'}`}>
-                  {basicAddons.length} basic
-                </span>
-                {effectivePremiumAllowance > 0 && (
-                  <span>, <span className={`font-bold ${premiumAddons.length > effectivePremiumAllowance ? 'text-amber-600' : 'text-accent'}`}>
-                    {premiumAddons.length} premium
-                  </span></span>
+              <div data-testid="addon-counter" className="bg-muted rounded-lg p-3 text-sm space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Selected:</span>
+                  <span>
+                    <span className={`font-bold ${extraBasicCount > 0 ? 'text-amber-600' : 'text-primary'}`}>
+                      {basicAddons.length} Basic
+                    </span>
+                    <span>, </span>
+                    <span className={`font-bold ${extraPremiumCount > 0 ? 'text-amber-600' : 'text-accent'}`}>
+                      {premiumAddons.length} Premium
+                    </span>
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Included:</span>
+                  <span>
+                    <span className="font-bold text-primary">{effectiveBasicAllowance} Basic</span>
+                    <span> + </span>
+                    <span className="font-bold text-accent">{effectivePremiumAllowance} Premium</span>
+                  </span>
+                </div>
+                {(extraBasicCount > 0 || extraPremiumCount > 0) && (
+                  <div className="flex justify-between items-center pt-1 border-t border-border/50 text-amber-600">
+                    <span>Overage:</span>
+                    <span className="font-bold">
+                      {extraBasicCount > 0 && `+${extraBasicCount} Basic (+$${extraBasicCount * OVERAGE_PRICES.basic}/mo)`}
+                      {extraBasicCount > 0 && extraPremiumCount > 0 && ', '}
+                      {extraPremiumCount > 0 && `+${extraPremiumCount} Premium (+$${extraPremiumCount * OVERAGE_PRICES.premium}/mo)`}
+                    </span>
+                  </div>
                 )}
-                {addonExtraCost > 0 ? (
-                  <span className="text-amber-600 font-bold"> • +${addonExtraCost}/mo for extras</span>
-                ) : (
-                  <span className="text-muted-foreground"> • All included in plan</span>
+                {totalOverage > 0 && (
+                  <div className="flex justify-between items-center font-bold text-amber-700 bg-amber-50 -mx-3 -mb-3 px-3 py-2 rounded-b-lg">
+                    <span>Extra add-on cost:</span>
+                    <span>+${totalOverage}/mo</span>
+                  </div>
                 )}
               </div>
 
@@ -624,7 +656,7 @@ export default function StreamlinedWizard() {
                 <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                   Basic Add-ons ({basicAddons.length}/{effectiveBasicAllowance} included free)
                 </div>
-                {BASIC_ADDONS.slice(0, 6).map((addon) => {
+                {BASIC_ADDONS.map((addon) => {
                   const isSelected = basicAddons.includes(addon.id);
                   return (
                     <div key={addon.id} className="flex items-center gap-2">
@@ -664,7 +696,7 @@ export default function StreamlinedWizard() {
                   );
                 })}
 
-                {selectedPlan && effectivePremiumAllowance > 0 && !execSwapMode && (
+                {selectedPlan && effectivePremiumAllowance > 0 && (
                   <>
                     <button
                       data-testid="toggle-advanced-addons"
@@ -679,7 +711,7 @@ export default function StreamlinedWizard() {
                         <div className="text-xs font-bold text-accent uppercase tracking-wider mt-2 mb-2">
                           Premium Add-ons ({premiumAddons.length}/{effectivePremiumAllowance} included free)
                         </div>
-                        {PREMIUM_ADDONS.slice(0, 4).map((addon) => {
+                        {PREMIUM_ADDONS.map((addon) => {
                           const isSelected = premiumAddons.includes(addon.id);
                           return (
                             <div key={addon.id} className="flex items-center gap-2">
@@ -707,6 +739,14 @@ export default function StreamlinedWizard() {
                                   <div className="font-medium text-sm">{addon.label}</div>
                                 </div>
                                 <Star className="w-4 h-4 text-accent" />
+                              </button>
+                              <button
+                                type="button"
+                                data-testid={`info-addon-${addon.id}`}
+                                onClick={() => showInfo(addon.label, <p>{addon.description}</p>)}
+                                className="text-muted-foreground hover:text-accent p-2"
+                              >
+                                <Info className="w-4 h-4" />
                               </button>
                             </div>
                           );
@@ -893,7 +933,7 @@ export default function StreamlinedWizard() {
                     <span data-testid="text-selected-plan" className="font-bold">{selectedPlan?.name}</span>
                     <span data-testid="text-monthly-price" className="text-xl font-bold text-primary">${actualMonthly}/mo</span>
                   </div>
-                  <div className="flex gap-2 flex-wrap text-xs">
+                  <div className="flex gap-2 flex-wrap text-xs mb-2">
                     {totalFreeMonths > 0 && (
                       <span data-testid="text-free-months-summary" className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                         {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''}
@@ -901,6 +941,23 @@ export default function StreamlinedWizard() {
                     )}
                     <span data-testid="text-yard-size" className="bg-muted px-2 py-0.5 rounded">{selectedYard?.label}</span>
                     <span data-testid="text-term" className="bg-muted px-2 py-0.5 rounded">{selectedTerm?.label}</span>
+                  </div>
+                  {/* Add-ons summary */}
+                  <div className="text-xs border-t border-border/50 pt-2 mt-2 space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Add-ons:</span>
+                      <span>{basicAddons.length} Basic, {premiumAddons.length} Premium</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Included:</span>
+                      <span>{effectiveBasicAllowance} Basic + {effectivePremiumAllowance} Premium</span>
+                    </div>
+                    {totalOverage > 0 && (
+                      <div className="flex justify-between text-amber-600 font-medium">
+                        <span>Add-on overages:</span>
+                        <span>+${totalOverage}/mo</span>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">Free months = skipped billing at end of term. You pay for fewer months, not a discount.</p>
                 </div>
@@ -1011,6 +1068,13 @@ export default function StreamlinedWizard() {
                     <div>
                       <span className="text-xs text-muted-foreground block">Free Months</span>
                       <span data-testid="text-confirm-free-months" className="font-bold text-green-600">{totalFreeMonths}</span>
+                    </div>
+                    <div className="col-span-2 pt-2 border-t border-border/50">
+                      <span className="text-xs text-muted-foreground block">Add-ons</span>
+                      <span data-testid="text-confirm-addons" className="font-bold">
+                        {basicAddons.length} Basic, {premiumAddons.length} Premium
+                        {totalOverage > 0 && <span className="text-amber-600"> (+${totalOverage}/mo overages)</span>}
+                      </span>
                     </div>
                   </div>
                 </div>

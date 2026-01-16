@@ -46,6 +46,7 @@ export const PLANS = [
       basic: 1,
       premium: 0
     },
+    allowsSwap: false,
     allowanceLabel: "1 Basic Add-On"
   },
   {
@@ -78,8 +79,8 @@ export const PLANS = [
       basic: 2,
       premium: 1
     },
-    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
-    promoLabel: "Jan Promo: +1 Free Basic Add-on"
+    allowsSwap: false,
+    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On"
   },
   {
     id: "executive",
@@ -87,12 +88,12 @@ export const PLANS = [
     price: 399,
     oldPrice: 479,
     priceLabel: "Starts at $399/mo",
-    description: "Weekly Mowing. 6 Weed Apps. Includes: 2 Basic Add-ons + 1 Premium Add-on",
+    description: "Weekly Mowing. 6 Weed Apps. Includes: 3 Basic Add-ons + 2 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Priority Weekly" },
       { label: "Weed Control", value: "6 Treatments" },
       { label: "Bush Trimming", value: "3x/Year" },
-      { label: "Add-ons", value: "3 Included" }
+      { label: "Add-ons", value: "5 Included" }
     ],
     features: [
       "<span class='font-bold text-accent'>Priority Mowing: Weekly mowing with top-priority scheduling</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
@@ -110,112 +111,204 @@ export const PLANS = [
       "<span class='font-bold text-accent'>Commander's Club: 1 FREE premium add-on on your service anniversary</span>"
     ],
     allowance: {
-      basic: 2,
-      premium: 1
+      basic: 3,
+      premium: 2
     },
-    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
-    promoLabel: "Jan Promo: +1 Free Basic Add-on",
-    canSwapPremiumForBasic: true
+    allowsSwap: true,
+    executiveExtras: [
+      "Unlimited Mulch",
+      "After-Storm Visits",
+      "Bi-Weekly Winter Visits & Yard Checks"
+    ],
+    allowanceLabel: "3 Basic Add-Ons + 2 Premium Add-Ons",
+    swapLabel: "Swap option: 1 Premium = 2 Basic"
   }
 ];
 
-export const BASIC_ADDONS = [
+// CANONICAL ADD-ON CATALOG
+// All add-ons defined here with: id, name, tier, category, price, description
+// Pricing: Basic = $20/mo overage, Premium = $40/mo overage
+
+export type AddonTier = 'basic' | 'premium';
+export type AddonCategory = 'landscaping' | 'cleaning' | 'seasonal' | 'trash';
+
+export interface Addon {
+  id: string;
+  name: string;
+  tier: AddonTier;
+  category: AddonCategory;
+  price: number;
+  description: string;
+}
+
+export const ADDON_CATALOG: Addon[] = [
+  // BASIC ADD-ONS ($20/mo overage)
   {
     id: "mulch_install_8yards",
-    label: "Mulch Install (Up to 8 Yards)",
+    name: "Mulch Install (Up to 8 Yards)",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
     description: "Fresh mulch delivery and installation with light bed cleanup."
   },
   {
     id: "pine_straw_install_10bales",
-    label: "Pine Straw Install (Up to 10 Bales)",
+    name: "Pine Straw Install (Up to 10 Bales)",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
     description: "Fresh pine straw installed neatly in beds."
   },
   {
     id: "leaf_cleanup",
-    label: "Leaf Cleanup",
+    name: "Leaf Cleanup",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
     description: "Seasonal leaf blowing, mulching, and removal."
   },
   {
     id: "shrub_hedge_trimming",
-    label: "Shrub / Hedge Trimming",
+    name: "Shrub / Hedge Trimming",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
     description: `Additional trimming beyond plan limits. ${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}`
   },
   {
     id: "mailbox_cleaning",
-    label: "Mailbox Cleaning",
+    name: "Mailbox Cleaning",
+    tier: "basic",
+    category: "cleaning",
+    price: 20,
     description: "Clean and polish mailbox for curb appeal."
   },
   {
     id: "front_porch_pressure_wash",
-    label: "Front Sidewalk + Front Porch Pressure Wash",
+    name: "Front Sidewalk + Front Porch Pressure Wash",
+    tier: "basic",
+    category: "cleaning",
+    price: 20,
     description: "Basic exterior clean for front walkway and porch area."
   },
   {
     id: "quarterly_trash_bin_cleaning",
-    label: "Quarterly Trash Bin Cleaning",
+    name: "Quarterly Trash Bin Cleaning",
+    tier: "basic",
+    category: "trash",
+    price: 20,
     description: "Cleaning and sanitizing of trash bins once every quarter."
   },
   {
     id: "monthly_trash_bin_cleaning",
-    label: "Monthly Trash Bin Cleaning (Upgrade)",
+    name: "Monthly Trash Bin Cleaning (Upgrade)",
+    tier: "basic",
+    category: "trash",
+    price: 20,
     description: "Monthly cleaning and sanitizing of trash bins."
   },
   {
     id: "christmas_lights_basic",
-    label: "Christmas Lights (Basic)",
+    name: "Christmas Lights (Basic)",
+    tier: "basic",
+    category: "seasonal",
+    price: 20,
     description: "Simple shrub and small tree decorations. No roofline or yard pop-ups."
-  }
-];
-
-export const PREMIUM_ADDONS = [
+  },
+  
+  // PREMIUM ADD-ONS ($40/mo overage)
   {
     id: "extra_weed_control",
-    label: "Additional Weed Control Treatments",
+    name: "Additional Weed Control Treatments",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
     description: "Extra weed control applications with fertilizer and weed killer."
   },
   {
     id: "lawn_aeration",
-    label: "Lawn Aeration",
+    name: "Lawn Aeration",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
     description: "Relieves soil compaction and improves nutrient flow for healthier grass."
   },
   {
     id: "mulch_install_10yards",
-    label: "Mulch Install (Up to 10 Yards)",
+    name: "Mulch Install (Up to 10 Yards)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
     description: "Premium mulch delivery and installation. 4 colors available."
   },
   {
     id: "pine_straw_install_10yards",
-    label: "Pine Straw Install (Up to 10 Yards)",
+    name: "Pine Straw Install (Up to 10 Yards)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
     description: "Premium pine straw installed neatly in beds."
   },
   {
     id: "driveway_pressure_wash",
-    label: "Driveway Pressure Wash / Soft Wash",
+    name: "Driveway Pressure Wash / Soft Wash",
+    tier: "premium",
+    category: "cleaning",
+    price: 40,
     description: "Professional cleaning of driveway and sidewalks."
   },
   {
     id: "christmas_lights_premium",
-    label: "Christmas Lights (Premium)",
+    name: "Christmas Lights (Premium)",
+    tier: "premium",
+    category: "seasonal",
+    price: 40,
     description: "First floor roofline lighting + flower bed lights + yard pop-ups."
   },
   {
     id: "house_soft_wash",
-    label: "House Soft Wash",
+    name: "House Soft Wash",
+    tier: "premium",
+    category: "cleaning",
+    price: 40,
     description: "Gentle exterior cleaning for siding and surfaces."
   }
 ];
 
-export const SEASONAL_ADDONS = [
-  {
-    id: "christmas_lights_basic",
-    label: "Basic Christmas Light Package",
-    description: "Shrub and small tree decorations. (No roofline lights)."
-  },
-  {
-    id: "christmas_lights_premium",
-    label: "Premium Christmas Light Package",
-    description: "First floor roofline lighting + yard decorations."
-  }
+// Helper to get add-ons by tier
+export const getAddonsByTier = (tier: AddonTier): Addon[] => {
+  return ADDON_CATALOG.filter(addon => addon.tier === tier);
+};
+
+// Helper to get add-on by ID
+export const getAddonById = (id: string): Addon | undefined => {
+  return ADDON_CATALOG.find(addon => addon.id === id);
+};
+
+// Legacy arrays for backward compatibility
+export const BASIC_ADDONS = ADDON_CATALOG.filter(a => a.tier === 'basic').map(a => ({
+  id: a.id,
+  label: a.name,
+  description: a.description
+}));
+
+export const PREMIUM_ADDONS = ADDON_CATALOG.filter(a => a.tier === 'premium').map(a => ({
+  id: a.id,
+  label: a.name,
+  description: a.description
+}));
+
+export const SEASONAL_ADDONS = ADDON_CATALOG.filter(a => a.category === 'seasonal').map(a => ({
+  id: a.id,
+  label: a.name,
+  description: a.description
+}));
+
+// EXECUTIVE EXCLUSIVES (included with Executive plan, not selectable add-ons)
+export const EXECUTIVE_EXTRAS = [
+  "Unlimited Mulch",
+  "After-Storm Visits",
+  "Bi-Weekly Winter Visits & Yard Checks"
 ];
 
 export const EXECUTIVE_PERKS = [
@@ -223,32 +316,63 @@ export const EXECUTIVE_PERKS = [
   "After-storm visits: Small limbs & debris cleanup",
   "Bi-weekly winter visits & yard checks",
   "Commander's Club: 1 FREE premium add-on on anniversary",
-  "Swap toggle: Trade 1 Premium slot for +2 Basic slots"
+  "Swap option: Trade 1 Premium slot for +2 Basic slots"
 ];
 
-// Helper to get allowance including promo
-export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
+// OVERAGE PRICING (LOCKED)
+export const OVERAGE_PRICES = {
+  basic: 20,  // $20/mo per extra basic add-on
+  premium: 40 // $40/mo per extra premium add-on
+};
+
+// Calculate overage cost
+export const calculateOverageCost = (
+  selectedBasic: number,
+  selectedPremium: number,
+  includedBasic: number,
+  includedPremium: number
+): { basicOverage: number; premiumOverage: number; totalOverage: number } => {
+  const basicOverage = Math.max(0, selectedBasic - includedBasic);
+  const premiumOverage = Math.max(0, selectedPremium - includedPremium);
+  return {
+    basicOverage,
+    premiumOverage,
+    totalOverage: (basicOverage * OVERAGE_PRICES.basic) + (premiumOverage * OVERAGE_PRICES.premium)
+  };
+};
+
+// Helper to get allowance with swap adjustment
+// swapCount: 0, 1, or 2 (only applies to Executive)
+// Each swap converts 1 Premium slot to +2 Basic slots
+export const getPlanAllowance = (
+  planId: string, 
+  swapCount: number = 0
+): { basic: number; premium: number } => {
   const plan = PLANS.find(p => p.id === planId);
   if (!plan) return { basic: 0, premium: 0 };
 
   let { basic, premium } = plan.allowance;
 
-  // Executive Bonus Rule: Executive + Pay Upfront -> +1 Premium Add-on
-  if (planId === "executive" && payFull) {
-     premium += 1;
-  }
-  
-  if ((planId === "executive" || planId === "premium") && PROMO_CONFIG.executiveBonusEnabled) {
-    const today = new Date();
-    const cutoff = new Date(PROMO_CONFIG.cutoffDate);
-    if (today < cutoff) {
-       // Jan promo logic: +1 Free Basic Add-on
-       basic += 1;
-    }
+  // Apply swap only for Executive plan
+  if (planId === "executive" && plan.allowsSwap && swapCount > 0) {
+    const validSwap = Math.min(swapCount, premium); // Can't swap more than available premium slots
+    basic += validSwap * 2;
+    premium -= validSwap;
   }
 
   return { basic, premium };
 };
+
+// SWAP RULES (LOCKED)
+// Executive base: 3 Basic + 2 Premium
+// Swap 0: 3B + 2P
+// Swap 1: 5B + 1P (traded 1P for +2B)
+// Swap 2: 7B + 0P (traded 2P for +4B)
+export const SWAP_OPTIONS = [
+  { value: 0, label: "No swap (3 Basic + 2 Premium)" },
+  { value: 1, label: "Swap 1 Premium → +2 Basic (5 Basic + 1 Premium)" },
+  { value: 2, label: "Swap 2 Premium → +4 Basic (7 Basic + 0 Premium)" }
+];
 
 // Acre multipliers for pricing: 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44
 // For future larger sizes: each additional 1/3 acre multiplies by 1.2
