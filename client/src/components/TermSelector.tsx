@@ -5,9 +5,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 interface TermSelectorProps {
-  term: '1-year' | '2-year' | '3-year';
+  term: 'month-to-month' | '1-year' | '2-year';
   payUpfront: boolean;
-  onTermChange: (term: '1-year' | '2-year' | '3-year') => void;
+  onTermChange: (term: 'month-to-month' | '1-year' | '2-year') => void;
   onPayUpfrontChange: (payUpfront: boolean) => void;
   className?: string;
 }
@@ -35,7 +35,7 @@ export default function TermSelector({
               <button
                 key={option.id}
                 type="button"
-                onClick={() => onTermChange(option.id)}
+                onClick={() => onTermChange(option.id as 'month-to-month' | '1-year' | '2-year')}
                 className={`relative p-3 rounded-xl border-2 transition-all text-left ${
                   isSelected
                     ? 'border-primary bg-primary/10 shadow-md'
@@ -53,7 +53,7 @@ export default function TermSelector({
                   <div>
                     <div className="font-bold text-primary text-sm">{option.label}</div>
                     <div className="text-xs text-green-600 font-semibold">
-                      +{option.freeMonths} free month{option.freeMonths > 1 ? 's' : ''}
+                      +{option.freeMonths} complimentary
                     </div>
                   </div>
                   {isSelected && <Check className="w-4 h-4 text-primary" />}
@@ -75,13 +75,13 @@ export default function TermSelector({
           />
           <Label htmlFor="payUpfront" className="cursor-pointer flex-1">
             <div className="font-bold text-primary flex items-center gap-2">
-              Pay Upfront
+              Pay-in-Full Option
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                +1 extra free month
+                Doubles commitment
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Pay your full term upfront and get an additional free month at the end
+              Pay your full term upfront to double your commitment months (bonus not doubled)
             </p>
           </Label>
         </div>

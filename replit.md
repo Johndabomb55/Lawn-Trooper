@@ -102,25 +102,33 @@ The promotions engine is a config-driven stacking discounts system. All promotio
 - If cap is exceeded, the last-applied benefit is reduced first
 
 #### Commitment Model (Updated January 2026)
-- **Month-to-Month**: No free months, 15% flexibility premium over 1-year rate
-- **1-Year Commitment**: Commitment Bonus +1 free month (Save More badge)
-- **2-Year Commitment**: Commitment Bonus +2 free months (Best Value badge)
+- **Month-to-Month**: No complimentary months, 15% flexibility premium over 1-year rate
+- **1-Year Commitment**: Commitment Bonus +1 complimentary month (Save More badge)
+- **2-Year Commitment**: Commitment Bonus +2 complimentary months (Best Value badge)
 - **Payment Options**: Monthly or Pay in Full
 
-#### 25th Anniversary Early Bird Bonus
-- **Bonus**: +1 free month (limited time)
-- **Deadlines**: Enroll by Jan 25, first payment by Feb 1
-- **Stacks with**: Commitment Bonus and Pay-in-Full Accelerator
-- Configure in `EARLY_BIRD_BONUS` in promotions.ts
+#### 25th Anniversary Enrollment Bonus (Tiered)
+- **Dec 25 → Jan 25**: +2 bonus months (Tier 1)
+- **Jan 25 → Feb 25**: +1 bonus month (Tier 2)
+- **After Feb 25**: +0 bonus months (expired)
+- **Important**: Bonus months are NOT doubled by Pay-in-Full
+- Configure in `ANNIVERSARY_BONUS` in promotions.ts
 
-#### Pay-in-Full Accelerator (Optional)
-- **Effect**: Doubles ALL earned free months (Early Bird + Commitment)
-- **Examples**:
-  - 1-Year (monthly): 1 + 1 = 2 free months
-  - 1-Year + PIF: (1 + 1) × 2 = 4 free months
-  - 2-Year (monthly): 2 + 1 = 3 free months
-  - 2-Year + PIF: (2 + 1) × 2 = 6 free months
+#### Pay-in-Full Option
+- **Effect**: Doubles ONLY commitment months (bonus months NOT doubled)
+- **Examples (Dec-Jan enrollment)**:
+  - 1-Year (monthly): 1 + 2 = 3 complimentary months
+  - 1-Year + PIF: 2 + 2 = 4 complimentary months
+  - 2-Year (monthly): 2 + 2 = 4 complimentary months
+  - 2-Year + PIF: 4 + 2 = 6 complimentary months
+- **Max outcomes**: 1-Year PIF + Dec bonus = 4, 2-Year PIF + Dec bonus = 6
 - **Note**: Always optional - monthly payment is always available
+
+#### Complimentary Months Definition
+**Complimentary months are skipped billing months at the END of your term.**
+- Your subscription still ends on your 12-month or 24-month anniversary date
+- You receive the same term length—you simply pay for fewer months
+- This is NOT extra service beyond the contract end date
 
 #### Operation Price Drop - Loyalty Pricing
 Future renewals earn automatic discounts:

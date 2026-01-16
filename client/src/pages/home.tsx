@@ -154,11 +154,11 @@ export default function LandingPage() {
            <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 h-10">
               <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
            </div>
-           <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Early Bird Bonus + AI Cost Reductions! 🎉</span>
+           <span className="uppercase tracking-wide md:pl-16">🎉 Celebrating 25 Years + AI Cost Reductions! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
-           <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 25, 2026</span> to lock in your pricing for up to 3 years!</span>
+           <span>Long-term subscribers can earn complimentary billing months.</span>
            <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
-             + Up to 6 Months Free
+             Learn More ↓
            </span>
         </div>
       </div>
@@ -266,7 +266,7 @@ export default function LandingPage() {
             
             <div className="mt-6 flex flex-col items-center gap-4">
                <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
-                 25th Anniversary Early Bird Bonus: get up to 6 months free
+                 Celebrating 25 years — long-term subscribers can earn complimentary billing months
                </div>
                
                <div className="flex flex-col items-center gap-4 mt-2">
@@ -350,18 +350,18 @@ export default function LandingPage() {
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
-                 {/* Deal 1: 25th Anniversary Early Bird Bonus */}
+                 {/* Deal 1: 25th Anniversary Enrollment Bonus */}
                  <div className="bg-accent/10 p-3 rounded border border-accent/50 hover:bg-accent/20 transition-colors relative">
                    <div className="absolute -top-2 -right-2">
-                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">EARLY BIRD</span>
+                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">BONUS</span>
                    </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Enroll by Jan 25</span>
+                     <span className="text-accent font-bold uppercase text-xs">25th Anniversary</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">+1 Free Month</div>
-                     <div className="text-white/70 text-xs mt-1 text-center">First payment by Feb 1</div>
+                     <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">+2 Bonus Months</div>
+                     <div className="text-white/70 text-xs mt-1 text-center">Ends Jan 25</div>
                    </div>
                  </div>
 
@@ -372,8 +372,8 @@ export default function LandingPage() {
                      <span className="text-accent font-bold uppercase text-xs">Commitment Bonus</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between"><span>1-Year:</span> <span className="text-green-400 font-bold">+1 Month Free</span></div>
-                     <div className="flex justify-between"><span>2-Year:</span> <span className="text-green-400 font-bold">+2 Months Free</span></div>
+                     <div className="flex justify-between"><span>1-Year:</span> <span className="text-green-400 font-bold">+1 Complimentary</span></div>
+                     <div className="flex justify-between"><span>2-Year:</span> <span className="text-green-400 font-bold">+2 Complimentary</span></div>
                    </div>
                  </div>
 
@@ -389,14 +389,14 @@ export default function LandingPage() {
                    </div>
                  </div>
 
-                 {/* Deal 4: Pay-in-Full Accelerator */}
+                 {/* Deal 4: Pay-in-Full Option */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Star className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Pay-in-Full Accelerator</span>
+                     <span className="text-accent font-bold uppercase text-xs">Pay-in-Full Option</span>
                    </div>
                    <div className="text-white text-sm font-medium leading-relaxed">
-                     <span className="text-green-400 font-bold">Doubles ALL</span> earned free months
+                     <span className="text-green-400 font-bold">Doubles commitment</span> months
                    </div>
                  </div>
                </div>
@@ -404,7 +404,7 @@ export default function LandingPage() {
                {/* Existing Customer Message */}
                <div className="mt-4 text-center space-y-2">
                   <p className="text-green-400 font-bold text-base md:text-lg bg-green-900/30 inline-block px-4 py-1 rounded-full border border-green-500/30 shadow-lg">
-                    Stack all rewards for up to 6 FREE months on any plan!
+                    Complimentary billing months may apply based on commitment and enrollment timing
                   </p>
                   <p className="text-xs text-white/60 italic block">{GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY}</p>
                </div>

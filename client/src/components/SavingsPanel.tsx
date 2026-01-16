@@ -72,7 +72,7 @@ export default function SavingsPanel({
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 6 free months).</p>
+                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 6 complimentary months).</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -97,7 +97,7 @@ export default function SavingsPanel({
           <div className="text-center p-3 bg-white/50 rounded-lg">
             <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Effective Monthly</div>
             <div className="text-2xl font-bold text-green-600">${displayedEffectiveMonthly}</div>
-            <div className="text-xs text-muted-foreground">After free months</div>
+            <div className="text-xs text-muted-foreground">After complimentary</div>
           </div>
         </div>
 
@@ -106,7 +106,7 @@ export default function SavingsPanel({
           <div className="flex items-center gap-2 p-2 bg-accent/10 rounded-lg">
             <Calendar className="w-5 h-5 text-accent shrink-0" />
             <div>
-              <div className="text-sm font-bold text-accent">{freeMonthsAtEnd} Free Month{freeMonthsAtEnd !== 1 ? 's' : ''}</div>
+              <div className="text-sm font-bold text-accent">{freeMonthsAtEnd} Complimentary</div>
               <div className="text-xs text-muted-foreground">At end of {termLabel}</div>
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function SavingsPanel({
                       </div>
                       <div className="font-semibold text-green-600">
                         {promo.percentOff > 0 && `${promo.percentOff}% off`}
-                        {promo.freeMonths > 0 && `+${promo.freeMonths} mo free`}
+                        {promo.freeMonths > 0 && `+${promo.freeMonths} mo`}
                       </div>
                     </motion.div>
                   );

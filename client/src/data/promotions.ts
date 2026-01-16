@@ -308,7 +308,7 @@ export const PROMOTIONS: Promotion[] = [
   {
     id: 'commitment_1year',
     title: '1-Year Commitment Bonus',
-    shortDescription: '+1 free month',
+    shortDescription: '+1 complimentary month',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
     value: 1,
@@ -321,7 +321,7 @@ export const PROMOTIONS: Promotion[] = [
   {
     id: 'commitment_2year',
     title: '2-Year Commitment Bonus',
-    shortDescription: '+2 free months',
+    shortDescription: '+2 complimentary months',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
     value: 2,
@@ -330,11 +330,11 @@ export const PROMOTIONS: Promotion[] = [
     active: true,
   },
 
-  // Pay-in-Full Accelerator - doubles ALL earned free months
+  // Pay-in-Full Option - doubles ONLY commitment months (bonus NOT doubled)
   {
-    id: 'pay_full_accelerator',
-    title: 'Pay-in-Full Accelerator',
-    shortDescription: 'Doubles ALL earned free months',
+    id: 'pay_full_option',
+    title: 'Pay-in-Full Option',
+    shortDescription: 'Doubles commitment months (bonus not doubled)',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
     value: 0, // Computed dynamically, not a static value
@@ -382,7 +382,7 @@ export const PROMOTIONS: Promotion[] = [
   {
     id: 'referral_bonus',
     title: 'Referral Bonus',
-    shortDescription: '+1 free month after your friend commits',
+    shortDescription: '+1 complimentary month after your friend commits',
     type: 'referralFreeMonth',
     stackGroup: 'freeMonths',
     value: 1,

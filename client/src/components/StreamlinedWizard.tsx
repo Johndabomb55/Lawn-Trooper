@@ -55,6 +55,7 @@ import {
   calculateTermFreeMonths,
   getFreeMonthsBreakdown,
   getEarlyBirdBonus,
+  getAnniversaryBonus,
   MONTH_TO_MONTH_PREMIUM
 } from "@/data/promotions";
 
@@ -134,9 +135,9 @@ export default function StreamlinedWizard() {
   const promoValid = validatePromoCode(promoCode);
   const promoDiscount = promoValid ? (HOA_PROMO_CODES[promoCode.toUpperCase()]?.discount || 0) : 0;
   
-  // Calculate free service months based on commitment model
-  // Earned free months = Early Bird Bonus (+1 if before Jan 25) + Commitment Bonus (1-year: +1, 2-year: +2)
-  // Pay-in-Full Accelerator: Doubles ALL earned free months (e.g., 1Y: 2→4, 2Y: 3→6)
+  // Calculate complimentary service months based on commitment model
+  // Commitment months: 1 (1-year) or 2 (2-year) — doubled if pay-in-full
+  // Anniversary Enrollment Bonus: +2 (Dec-Jan) or +1 (Jan-Feb) — NOT doubled
   const totalFreeMonths = calculateTermFreeMonths(term, payInFull);
   const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
   
@@ -286,11 +287,11 @@ export default function StreamlinedWizard() {
             {step >= 5 && totalFreeMonths > 0 ? (
               <span data-testid="text-free-months-unlocked" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
                 <Sparkles className="w-3 h-3 inline mr-1" />
-                {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''} Unlocked!
+                {totalFreeMonths} Complimentary Month{totalFreeMonths > 1 ? 's' : ''} Earned!
               </span>
             ) : (
               <span data-testid="text-free-months-available" className="text-sm bg-white/20 px-3 py-1 rounded-full">
-                Earn free months with 1-year or 2-year commitment
+                Complimentary billing months may apply based on commitment
               </span>
             )}
           </div>
@@ -1078,7 +1079,7 @@ export default function StreamlinedWizard() {
             >
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose your commitment</h3>
-                <p className="text-muted-foreground text-sm">We reward loyalty — longer commitment = more free months</p>
+                <p className="text-muted-foreground text-sm">We reward loyalty — longer commitment = more complimentary billing months</p>
               </div>
 
               <div className="space-y-3">
@@ -1131,7 +1132,7 @@ export default function StreamlinedWizard() {
                           {displayFreeMonths > 0 ? (
                             <>
                               <div className="text-xl font-bold text-green-600">+{displayFreeMonths}</div>
-                              <div className="text-xs text-muted-foreground">free months</div>
+                              <div className="text-xs text-muted-foreground">complimentary</div>
                             </>
                           ) : (
                             <div className="text-sm text-muted-foreground">{t.badge}</div>
@@ -1142,17 +1143,17 @@ export default function StreamlinedWizard() {
                       {/* Pay-in-Full Accelerator Toggle - Optional for 1-year and 2-year */}
                       {t.allowsPayInFull && isSelected && (
                         <div className="mt-3 ml-4 space-y-2">
-                          {/* 25th Anniversary Early Bird Bonus Banner */}
+                          {/* 25th Anniversary Enrollment Bonus Banner */}
                           {(() => {
-                            const earlyBird = getEarlyBirdBonus();
-                            if (earlyBird.isActive) {
+                            const bonus = getAnniversaryBonus();
+                            if (bonus.isActive) {
                               return (
                                 <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg text-center">
                                   <div className="text-xs font-bold text-amber-700">
-                                    🎉 25th Anniversary Early Bird Bonus: +{earlyBird.months} free month!
+                                    🎉 25th Anniversary Enrollment Bonus: +{bonus.months} complimentary month{bonus.months > 1 ? 's' : ''}!
                                   </div>
                                   <div className="text-[10px] text-amber-600">
-                                    Enroll by {earlyBird.enrollBy} • First payment by {earlyBird.payBy}
+                                    {bonus.tierLabel}
                                   </div>
                                 </div>
                               );
@@ -1160,7 +1161,7 @@ export default function StreamlinedWizard() {
                               return (
                                 <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-center">
                                   <div className="text-xs text-muted-foreground line-through">
-                                    25th Anniversary Early Bird Bonus (expired)
+                                    25th Anniversary Enrollment Bonus (expired)
                                   </div>
                                 </div>
                               );
@@ -1183,22 +1184,22 @@ export default function StreamlinedWizard() {
                                 {payInFull && <Check className="w-3 h-3 text-white" />}
                               </div>
                               <div className="text-left">
-                                <div className="font-medium">Pay-in-Full Accelerator (Optional)</div>
-                                <div className="text-xs text-muted-foreground">Doubles ALL earned free months</div>
+                                <div className="font-medium">Pay-in-Full Option</div>
+                                <div className="text-xs text-muted-foreground">Doubles commitment months (bonus not doubled)</div>
                               </div>
                             </div>
                             <div className="text-right">
                               <div className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
-                                ×2 BONUS
+                                ×2 COMMITMENT
                               </div>
                               <div className="text-xs text-green-600 font-bold mt-1">
-                                {t.id === '1-year' ? '2 → 4 months' : '3 → 6 months'}
+                                {t.id === '1-year' ? '1 → 2 + bonus' : '2 → 4 + bonus'}
                               </div>
                             </div>
                           </button>
                           
                           <p className="text-[10px] text-center text-muted-foreground">
-                            Pay monthly is always available. Pay in full to double your free months.
+                            Pay monthly is always available. Pay in full to double your commitment months.
                           </p>
                         </div>
                       )}
@@ -1219,25 +1220,19 @@ export default function StreamlinedWizard() {
                   {term !== 'month-to-month' && (
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Total free months:</span>
+                        <span>Complimentary months:</span>
                         <span className="font-bold text-green-600">{totalFreeMonths} month{totalFreeMonths !== 1 ? 's' : ''}</span>
                       </div>
                       {/* Itemized breakdown */}
                       <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
-                        {freeMonthsBreakdown.earlyBirdBonus > 0 && (
-                          <div className="flex justify-between">
-                            <span>• 25th Anniversary Early Bird Bonus:</span>
-                            <span>+{freeMonthsBreakdown.earlyBirdBonus} mo</span>
-                          </div>
-                        )}
                         <div className="flex justify-between">
-                          <span>• Commitment Bonus:</span>
-                          <span>+{freeMonthsBreakdown.commitmentBonus} mo</span>
+                          <span>• Commitment:</span>
+                          <span>{payInFull ? `${freeMonthsBreakdown.commitmentBase} × 2 = ${freeMonthsBreakdown.commitmentMonths}` : `+${freeMonthsBreakdown.commitmentBase}`} mo</span>
                         </div>
-                        {payInFull && (
-                          <div className="flex justify-between text-green-600">
-                            <span>• Pay-in-Full Accelerator:</span>
-                            <span>×2</span>
+                        {freeMonthsBreakdown.anniversaryBonus > 0 && (
+                          <div className="flex justify-between">
+                            <span>• 25th Anniversary Bonus:</span>
+                            <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
                           </div>
                         )}
                       </div>
@@ -1342,7 +1337,7 @@ export default function StreamlinedWizard() {
                   <div className="flex gap-2 flex-wrap text-xs mb-2">
                     {totalFreeMonths > 0 && (
                       <span data-testid="text-free-months-summary" className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                        {totalFreeMonths} Free Month{totalFreeMonths > 1 ? 's' : ''}
+                        {totalFreeMonths} Complimentary Month{totalFreeMonths > 1 ? 's' : ''}
                       </span>
                     )}
                     <span data-testid="text-yard-size" className="bg-muted px-2 py-0.5 rounded">{selectedYard?.label}</span>
@@ -1365,7 +1360,7 @@ export default function StreamlinedWizard() {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Free months = skipped billing at end of term. You pay for fewer months, not a discount.</p>
+                  <p className="text-xs text-muted-foreground mt-2">Complimentary months are skipped billing months at the end of your term. Your subscription still ends on your anniversary date.</p>
                 </div>
               )}
 
@@ -1472,8 +1467,8 @@ export default function StreamlinedWizard() {
                       <span data-testid="text-confirm-term" className="font-bold">{selectedTerm?.label}</span>
                     </div>
                     <div>
-                      <span className="text-xs text-muted-foreground block">Free Months</span>
-                      <span data-testid="text-confirm-free-months" className="font-bold text-green-600">{totalFreeMonths}</span>
+                      <span className="text-xs text-muted-foreground block">Complimentary</span>
+                      <span data-testid="text-confirm-free-months" className="font-bold text-green-600">{totalFreeMonths} mo</span>
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <span className="text-xs text-muted-foreground block">Add-ons</span>
@@ -1497,11 +1492,19 @@ export default function StreamlinedWizard() {
                 </p>
               </div>
 
+              {/* Important Disclaimer - Residential only */}
+              {!isHOA && (
+                <div className="text-left text-xs text-muted-foreground bg-amber-50 rounded-lg p-3 border border-amber-200">
+                  <p className="font-medium mb-1 text-amber-800">About Complimentary Months:</p>
+                  <p className="text-amber-700">Complimentary months are skipped billing months applied at the end of your term. Your subscription still ends on your 12-month or 24-month anniversary date. You receive the same term length—you simply pay for fewer months.</p>
+                </div>
+              )}
+
               {/* Cancellation Policy - Residential only */}
               {!isHOA && (
                 <div className="text-left text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
                   <p className="font-medium mb-1">Cancellation Policy:</p>
-                  <p>Month-to-month plans may be canceled anytime with 30 days notice. Term plans may be canceled early at any time; free months and unused credits are forfeited if canceled before the term ends.</p>
+                  <p>Month-to-month plans may be canceled anytime with 30 days notice. Term plans may be canceled early at any time; complimentary months and unused credits are forfeited if canceled before the term ends.</p>
                 </div>
               )}
 
