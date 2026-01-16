@@ -153,7 +153,7 @@ export const ADDON_CATALOG: Addon[] = [
     tier: "basic",
     category: "landscaping",
     price: 20,
-    description: "Light trimming of shrubs or hedges to maintain shape and appearance. All clippings will be collected and properly disposed of."
+    description: "One-time trimming service for up to 20 small to medium bushes or hedges. Includes shaping to maintain appearance and proper disposal of all clippings."
   },
   {
     id: "basic_pressure_wash",
@@ -219,6 +219,38 @@ export const ADDON_CATALOG: Addon[] = [
     price: 20,
     description: "Get your yard weed-free, in shape, and green faster with 3 additional lawn applications—fertilizer, pre-emergent weed prevention, and targeted weed-killer—beyond what's included in your plan."
   },
+  {
+    id: "pine_straw_basic",
+    name: "Basic Pine Straw Install (Up to 10 Bales)",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 bales of quality pine straw, delivery, and professional installation."
+  },
+  {
+    id: "gutter_cleaning",
+    name: "Gutter Cleaning",
+    tier: "basic",
+    category: "cleaning",
+    price: 20,
+    description: "Thorough cleaning of gutters and downspouts to remove debris and ensure proper drainage. Helps prevent water damage and keeps your home protected."
+  },
+  {
+    id: "flower_bed_maintenance",
+    name: "Flower Bed Maintenance",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Seasonal flower bed care including weeding, edging, and light pruning to keep your beds looking neat and healthy throughout the year."
+  },
+  {
+    id: "one_time_leaf_removal",
+    name: "One-Time Leaf Removal",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Single-visit leaf removal service for heavily covered yards. Includes blowing, raking, and hauling away all leaves from your property."
+  },
   
   // --- PREMIUM ADD-ONS ($40/mo overage) ---
   {
@@ -260,6 +292,38 @@ export const ADDON_CATALOG: Addon[] = [
     category: "seasonal",
     price: 40,
     description: "Expanded seasonal lighting designed for holidays, including roofline lighting, enhanced landscape features, and decorative yard elements as appropriate."
+  },
+  {
+    id: "pine_straw_premium",
+    name: "Premium Pine Straw Install (Up to 25 Bales)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Expanded pine straw installation for larger properties. Includes up to 25 bales of premium pine straw, delivery, and professional installation with attention to detail."
+  },
+  {
+    id: "aeration_dethatching",
+    name: "Aeration & Dethatching",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Professional lawn aeration and dethatching to improve soil health, water absorption, and root development. Ideal for compacted or stressed lawns that need revitalization."
+  },
+  {
+    id: "tree_trimming",
+    name: "Tree Trimming (Small to Medium Trees)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Professional trimming of small to medium trees to improve shape, remove dead branches, and promote healthy growth. Does not include large tree removal or work requiring heavy equipment."
+  },
+  {
+    id: "full_yard_cleanout",
+    name: "Full Yard Cleanout",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Complete yard cleanup including debris removal, bed edging, pruning, and general tidying. Perfect for getting your property back in shape after neglect or seasonal buildup."
   }
 ];
 
