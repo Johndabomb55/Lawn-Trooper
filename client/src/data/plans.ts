@@ -18,7 +18,7 @@ export const PLANS = [
   {
     id: "basic",
     name: "Basic Patrol",
-    price: 169,  // BASE_PRICE × 1.0 (tier) × 1.0 (small yard)
+    price: 169,  // Fixed base price for Basic plan
     oldPrice: 199,
     priceLabel: "Starts at $169/mo",
     description: "Includes: 1 Basic Add-on + 0 Premium Add-ons",
@@ -52,9 +52,9 @@ export const PLANS = [
   {
     id: "premium",
     name: "Premium Patrol",
-    price: 203,  // BASE_PRICE × 1.2 (tier) = $169 × 1.2 = $203
-    oldPrice: 239,
-    priceLabel: "Starts at $203/mo",
+    price: 299,  // Fixed base price for Premium plan
+    oldPrice: 349,
+    priceLabel: "Starts at $299/mo",
     description: "Includes: 2 Basic Add-ons + 1 Premium Add-on",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
@@ -86,9 +86,9 @@ export const PLANS = [
   {
     id: "executive",
     name: "Executive Command",
-    price: 244,  // BASE_PRICE × 1.44 (tier) = $169 × 1.44 = $244
-    oldPrice: 287,
-    priceLabel: "Starts at $244/mo",
+    price: 399,  // Fixed base price for Executive plan
+    oldPrice: 469,
+    priceLabel: "Starts at $399/mo",
     description: "Includes: 3 Basic Add-ons + 2 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Priority Weekly" },
@@ -388,16 +388,8 @@ export const SWAP_OPTIONS = [
   { value: 2, label: "Swap 2 Premium → +4 Basic (7 Basic + 0 Premium)" }
 ];
 
-// Plan tier multipliers: 20% increase per level relative to Basic
-// Basic = 1.0, Premium = 1.2, Executive = 1.44
-export const PLAN_TIER_MULTIPLIERS: Record<string, number> = {
-  "basic": 1.0,
-  "premium": 1.2,
-  "executive": 1.44  // 1.2 × 1.2 = 1.44
-};
-
-// Acre multipliers for pricing: 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44
-// For future larger sizes: each additional 1/3 acre multiplies by 1.2
+// Acre multipliers for pricing: 20% increase per yard size tier
+// 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44
 const ACRE_MULTIPLIERS: Record<string, number> = {
   "1/3": 1.0,
   "2/3": 1.2,
@@ -407,26 +399,24 @@ const ACRE_MULTIPLIERS: Record<string, number> = {
 // AI Savings rate: 15% discount (2025 = 2026 / 0.85)
 const AI_SAVINGS_RATE = 0.15;
 
-// Base price for smallest yard size - used to calculate all other prices
-// All other prices are derived from this using tier and yard multipliers
-export const BASE_PRICE = 169;
-
 // Get multiplier for a given yard size ID
 export const getAcreMultiplier = (yardSizeId: string): number => {
   return ACRE_MULTIPLIERS[yardSizeId] || 1.0;
 };
 
-// Get tier multiplier for plan level (20% increase per tier)
-export const getPlanTierMultiplier = (planId: string): number => {
-  return PLAN_TIER_MULTIPLIERS[planId] || 1.0;
+// Get base price for a plan from PLANS config (single source of truth)
+export const getPlanBasePrice = (planId: string): number => {
+  const plan = PLANS.find(p => p.id === planId);
+  return plan?.price || 169;
 };
 
 // Calculate 2026 AI-Savings price (current promotional price)
-// Price = BASE_PRICE × yardMultiplier × tierMultiplier
+// Price = Plan Base Price × Yard Size Multiplier
+// Add-ons are NOT affected by yard size - they are flat rates
 export const calculate2026Price = (planId: string, yardSizeId: string): number => {
+  const planBasePrice = getPlanBasePrice(planId);
   const yardMultiplier = getAcreMultiplier(yardSizeId);
-  const tierMultiplier = getPlanTierMultiplier(planId);
-  const price = BASE_PRICE * yardMultiplier * tierMultiplier;
+  const price = planBasePrice * yardMultiplier;
   
   // Round to whole dollars
   return Math.round(price);
