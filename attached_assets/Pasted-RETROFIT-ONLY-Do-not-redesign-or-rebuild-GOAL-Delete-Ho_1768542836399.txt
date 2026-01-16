@@ -1,0 +1,84 @@
+RETROFIT ONLY. Do not redesign or rebuild.
+
+GOAL:
+Delete “How do you want to pay?” buttons and implement a commitment-first subscription model with a 2-year price lock and Pay-in-Full bonus.
+
+====================================
+A) REMOVE PAYMENT METHOD UI
+====================================
+1) Completely remove:
+- Monthly / Yearly / Pay in Full payment buttons
+- Any pricing logic tied to those buttons
+
+====================================
+B) COMMITMENT OPTIONS
+====================================
+2) Implement ONLY these options:
+
+**Month-to-Month Subscription**
+- Apply +15% premium to total subscription (plan + add-ons)
+- No free months
+- Cancel anytime
+
+**2-Year Subscription (Price Lock)**
+- Term = 24 months
+- Base free months = 2
+
+====================================
+C) PAY-IN-FULL BONUS (2-YEAR ONLY)
+====================================
+3) Add a toggle under the 2-Year option:
+- Label: “Pay in Full (Best Value)”
+
+4) Pay-in-Full behavior:
+- Doubles base free months
+- 2-Year base = 2 → Pay in Full = 4 free months
+
+5) Early Bonus (campaign-based):
+- If signup date < Jan 25:
+  +1 free month
+- Max free months = 5
+
+====================================
+D) BILLING & MATH
+====================================
+6) Calculate:
+- freeMonths = 2 (+2 if Pay in Full) (+1 if Early Bonus)
+- billedMonths = 24 − freeMonths
+
+7) Pay-in-Full total:
+- totalDueNow = monthlySubscription × billedMonths
+
+8) Effective monthly:
+effectiveMonthly = (monthlySubscription × billedMonths) ÷ 24
+- Must always be ≤ monthlySubscription
+
+====================================
+E) UI REQUIREMENTS
+====================================
+9) Show clearly:
+- Monthly subscription price
+- Free months earned
+- Billed vs total months
+- Effective monthly
+- Total savings vs Month-to-Month
+
+10) Highlight Pay-in-Full:
+- Badge: “Best Value”
+- Copy: “Pay in full and unlock maximum savings.”
+
+====================================
+F) CLEANUP & TESTING
+====================================
+11) Remove legacy pricing comparisons.
+12) Test:
+- Month-to-Month = base × 1.15
+- 2-Year Monthly = base × 22/24
+- 2-Year Pay-in-Full = base × 20/24
+- 2-Year Pay-in-Full + Early Bonus = base × 19/24
+
+Confirm consistency across:
+- Plan picker
+- Commitment step
+- Summary step
+- Savings display
