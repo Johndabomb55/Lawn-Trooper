@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { sendQuoteEmails, type QuoteRequestData } from "./email";
+import { sendQuoteEmails, sendLeadEmails, type QuoteRequestData, type LeadEmailData } from "./email";
 import { z } from "zod";
 import { insertLeadSchema, insertWaitlistSchema } from "@shared/schema";
 
@@ -85,13 +85,38 @@ export async function registerRoutes(
     }
   });
 
-  // Capture lead data
+  // Capture lead data and send email notifications
   app.post("/api/leads", async (req, res) => {
     try {
       const data = insertLeadSchema.parse(req.body);
       
       // Store lead in database
       const lead = await storage.createLead(data);
+      
+      // Send email notifications to business and customer
+      try {
+        const emailData: LeadEmailData = {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          yardSize: data.yardSize,
+          plan: data.plan,
+          basicAddons: data.basicAddons || [],
+          premiumAddons: data.premiumAddons || [],
+          term: data.term,
+          payUpfront: data.payUpfront,
+          freeMonths: data.freeMonths ? (parseInt(data.freeMonths, 10) || 0) : null,
+          totalPrice: data.totalPrice,
+          notes: data.notes,
+        };
+        
+        const emailResult = await sendLeadEmails(emailData);
+        console.log("Lead emails sent:", emailResult);
+      } catch (emailError) {
+        // Log email error but don't fail the lead capture
+        console.error("Failed to send lead emails:", emailError);
+      }
       
       res.json({ 
         success: true, 
