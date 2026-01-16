@@ -1,0 +1,220 @@
+You are a senior full-stack engineer working on an EXISTING Lawn Trooper quote wizard.
+This is a RETROFIT job. Do NOT rebuild or redesign the site. Make minimal, precise changes.
+Preserve current layout, styling, and routing unless explicitly instructed.
+
+PRIMARY GOAL:
+Fix and finalize the add-ons system so it is:
+- Fully source-of-truth driven
+- Clear to customers
+- Impossible to drift again
+- Honest and “addictive” to configure
+- Correctly handles Executive add-on math and swap behavior
+
+====================================
+GLOBAL NON-NEGOTIABLE RULES
+====================================
+- Use only these canonical plan tier keys in code:
+  basic / premium / executive
+- UI labels may say:
+  “Basic Patrol / Premium Patrol / Executive Command”
+  but logic must use canonical keys.
+- NEVER hide add-ons when included slots are used.
+- Add-ons must always be visible; overages add price live.
+- Anywhere add-ons are referenced, always say:
+  “X Basic + Y Premium”
+  Never say “X add-ons included” generically.
+- Step 3 (plan cards) and Step 4 (add-ons) MUST read from the same config object.
+- Remove all “View details” buttons/links in Step 3.
+
+====================================
+PHASE 1 — SOURCE OF TRUTH CLEANUP
+====================================
+1. Locate the REAL add-on data source.
+   - Identify where add-ons are currently defined (stub arrays, partial lists, CMS, etc.).
+   - Stop using any partial or duplicated add-on lists.
+
+2. Create or confirm ONE canonical add-on catalog:
+   - File example: src/config/addons.ts
+   - Each add-on must include:
+     id, name, tier (basic | premium | executive),
+     category, price, description
+
+3. Remove all duplicate/legacy add-on definitions from components.
+   - All add-on UI and pricing logic must import from this catalog.
+
+====================================
+PHASE 2 — PLAN CONFIG (SOURCE OF TRUTH)
+====================================
+4. Create/confirm plan config file:
+   - Example: src/config/plans.ts
+   - Each plan must define:
+     planId, planName,
+     includedBasicAddOns,
+     includedPremiumAddOns,
+     allowsSwap (boolean),
+     executiveExtras (optional array of strings)
+
+FINAL INCLUDED COUNTS (LOCKED):
+- Basic:
+  includedBasicAddOns = 1
+  includedPremiumAddOns = 0
+
+- Premium:
+  includedBasicAddOns = 2
+  includedPremiumAddOns = 1
+  allowsSwap = false
+
+- Executive:
+  includedBasicAddOns = 3
+  includedPremiumAddOns = 2
+  allowsSwap = true
+  executiveExtras = [
+    "Unlimited Mulch",
+    "After-Storm Visits",
+    "Bi-Weekly Winter Visits & Yard Checks"
+  ]
+
+====================================
+PHASE 3 — STEP 3 (PLAN SELECTION UI)
+====================================
+5. Remove ALL “View details” links/buttons in Step 3.
+   - Delete modals or accordions unless they contain critical info.
+   - If critical info exists, migrate it into the plan card text.
+
+6. On each plan card, add a visible add-on breakdown line
+   directly under the feature bullets:
+
+   - Basic:
+     “Add-Ons Included: 1 Basic + 0 Premium”
+
+   - Premium:
+     “Add-Ons Included: 2 Basic + 1 Premium”
+
+   - Executive:
+     “Add-Ons Included: 3 Basic + 2 Premium”
+     Optional second line:
+     “Swap option: 1 Premium = 2 Basic”
+
+7. These values MUST come from the same plan config used by Step 4.
+   - No hardcoded numbers allowed.
+
+====================================
+PHASE 4 — STEP 4 (ADD-ONS STEP CORE LOGIC)
+====================================
+8. Filter visible add-ons by plan tier:
+   - Basic plan → show Basic add-ons
+   - Premium plan → show Basic + Premium
+   - Executive plan → show Basic + Premium + Executive Exclusives
+
+9. Organize the add-ons UI with clear headers:
+   - Basic Add-Ons
+   - Premium Add-Ons
+   - Executive Exclusives
+   - Cleaning & Wash
+   - Trash Can Cleaning
+   - Seasonal / Christmas Lights
+
+   (Categories are for UI grouping only; pricing tier still drives logic.)
+
+10. Remove scroll-trap behavior inside the add-ons container.
+    - If internal scroll is unavoidable, make it obvious and smooth.
+
+11. Add info tooltips for EVERY add-on.
+    - Tooltip text comes from add-on description field.
+    - Include scope/limits (caps, quantities, etc.).
+
+====================================
+PHASE 5 — EXECUTIVE SWAP MECHANIC (CRITICAL)
+====================================
+12. Replace any existing swap checkbox with a SWAP SELECTOR.
+    - Visible ONLY when Executive plan is selected.
+    - Label:
+      “Swap Premium slots for additional Basic slots”
+    - Options:
+      0 / 1 / 2
+    - Default = 0
+
+13. Swap rules (LOCKED):
+    - Executive base included = 3 Basic + 2 Premium
+    - Each swap converts:
+      1 Premium → +2 Basic
+
+    Therefore:
+    - Swap 0 → Included = 3B + 2P
+    - Swap 1 → Included = 5B + 1P
+    - Swap 2 → Included = 7B + 0P
+
+14. Swap affects INCLUDED LIMITS ONLY.
+    - It does NOT change per-item prices.
+
+15. Swap selection must update included counters LIVE.
+
+====================================
+PHASE 6 — LIVE COUNTERS & PRICING
+====================================
+16. Display counters above add-on lists:
+
+    - Selected:
+      “Selected: X Basic, Y Premium”
+
+    - Included (after swap):
+      “Included: A Basic + B Premium”
+
+17. When user exceeds included:
+    - Show overage line:
+      “Overage: +n Basic (+$20/mo each), +m Premium (+$40/mo each)”
+    - Update total price immediately.
+
+18. Overages pricing (LOCKED):
+    - Basic overage = +$20/mo
+    - Premium overage = +$40/mo
+
+19. NEVER prevent selection.
+    - Users may exceed included limits freely.
+    - Pricing must reflect it live.
+
+====================================
+PHASE 7 — SUMMARY & CHECKOUT
+====================================
+20. Step 5 and Step 6 must reflect:
+    - Swap-adjusted included counts
+    - Selected Basic & Premium counts
+    - Any overage charges
+
+21. Fix “effective monthly” calculation if present.
+    - Effective monthly after free months MUST NEVER be higher
+      than actual monthly.
+    - Free months = skipped billing months at end.
+
+====================================
+PHASE 8 — QA REQUIREMENTS
+====================================
+22. Test cases to confirm:
+
+    A) Executive, Swap 0 (3B+2P):
+       Select 4B + 2P →
+       Shows +1 Basic overage = +$20/mo
+
+    B) Executive, Swap 1 (5B+1P):
+       Select 5B + 2P →
+       Shows +1 Premium overage = +$40/mo
+
+    C) Executive, Swap 2 (7B+0P):
+       Select any Premium →
+       Premium overage applies immediately
+
+23. Confirm:
+    - No “View details” links remain
+    - Step 3 and Step 4 never drift
+    - Add-ons never disappear
+    - Pricing updates instantly
+
+====================================
+DELIVERABLES
+====================================
+- Updated add-on catalog (single source of truth)
+- Updated plan config used by Step 3 and Step 4
+- Updated Step 3 plan cards with add-on breakdown
+- Updated Step 4 add-on logic with swap selector
+- List of files changed
+- Confirmation that preview build works end-to-end
