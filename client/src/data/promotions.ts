@@ -4,22 +4,21 @@
  * This file defines all available promotions, their stacking rules, and caps.
  * Marketing team can edit this file to add/modify promotions without touching component code.
  * 
- * PRICING STRUCTURE:
- * - Base monthly price assumes a 1-year agreement
- * - Month-to-month carries a 15% premium over 1-year rate
- * - Free months apply ONLY as service credits at END of agreement
- * - Free months are never cash-equivalent
+ * COMMITMENT MODEL (January 2026):
+ * Only 2 commitment options:
+ * - Month-to-Month: +15% premium, no free months, cancel anytime
+ * - 2-Year Price Lock: 24 months, base price locked for 2 years
  * 
- * FREE MONTH RULES (STACKABLE):
- * - 1-year term → +1 free month
- * - 2-year term → +2 free months
- * - Pay in full → +1 free month
- * - Referral → +1 free month AFTER signup (displayed but NOT in effective monthly)
+ * FREE MONTH RULES:
+ * - Month-to-Month: 0 free months
+ * - 2-Year: 2 free months base
+ * - 2-Year Pay in Full: doubles to 4 free months
+ * - Early Bird (before Jan 25): +1 bonus, max 5 total
  * 
- * PAYMENT OPTIONS:
- * - Monthly (default)
- * - Yearly (one payment per year)
- * - Pay in full (entire term upfront)
+ * BILLING:
+ * - billedMonths = 24 - freeMonths
+ * - effectiveMonthly = (monthlySubscription × billedMonths) / 24
+ * - Free months are skipped billing at END of agreement
  */
 
 export interface Promotion {
@@ -30,7 +29,7 @@ export interface Promotion {
   stackGroup: 'freeMonths' | 'percentOff';
   value: number;
   eligibility: {
-    term?: 'month-to-month' | '1-year' | '2-year';
+    term?: 'month-to-month' | '2-year';
     payUpfront?: boolean;
     segment?: 'renter' | 'veteran' | 'senior';
     hasReferral?: boolean;
@@ -42,20 +41,19 @@ export interface Promotion {
 // Stacking caps
 export const PROMO_CAPS = {
   maxPercentOff: 30,
-  maxFreeMonths: 6,
+  maxFreeMonths: 5,  // Max with 2-year + pay-in-full + early bird
 };
 
-// Month-to-month premium (15% over 1-year rate)
+// Month-to-month premium (15% over 2-year base rate)
 export const MONTH_TO_MONTH_PREMIUM = 0.15;
 
-// Payment method options
-export type PaymentMethod = 'monthly' | 'yearly' | 'pay-in-full';
+// Early Bird cutoff date for +1 bonus free month
+export const EARLY_BIRD_CUTOFF = new Date('2026-01-25T23:59:59');
 
-export const PAYMENT_METHODS = [
-  { id: 'monthly' as const, label: 'Monthly', description: 'Pay each month' },
-  { id: 'yearly' as const, label: 'Yearly', description: 'One payment per year' },
-  { id: 'pay-in-full' as const, label: 'Pay in Full', description: 'Entire term upfront', bonus: '+1 free month' },
-];
+// Check if current date qualifies for early bird bonus
+export const isEarlyBird = (): boolean => {
+  return new Date() < EARLY_BIRD_CUTOFF;
+};
 
 // Operation Price Drop - Loyalty Pricing
 export const LOYALTY_DISCOUNTS = [
@@ -64,7 +62,7 @@ export const LOYALTY_DISCOUNTS = [
   { year: 3, discount: 15, label: "After Year 3" },
 ];
 
-// Contract term options with commitment rewards
+// Contract term options - simplified to 2 options only
 export const COMMITMENT_TERMS = [
   {
     id: 'month-to-month' as const,
@@ -76,141 +74,75 @@ export const COMMITMENT_TERMS = [
     hasPremium: true,
   },
   {
-    id: '1-year' as const,
-    label: '1-Year Commitment',
-    months: 12,
-    freeMonths: 1,
-    badge: 'Save More',
-    description: '+1 free month at end of agreement',
-    hasPremium: false,
-  },
-  {
     id: '2-year' as const,
-    label: '2-Year Commitment',
+    label: '2-Year Price Lock',
     months: 24,
-    freeMonths: 3,
+    freeMonths: 2,  // Base free months for 2-year
     badge: 'Best Value',
-    description: '+3 free months at end of agreement',
+    description: 'Lock in your rate for 2 years',
     hasPremium: false,
   },
 ];
 
 /**
+ * Calculate total free months for 2-year commitment
+ * Base: 2 free months
+ * Pay in Full: doubles to 4 free months  
+ * Early Bird (before Jan 25): +1 bonus, max 5 total
+ */
+export function calculate2YearFreeMonths(payInFull: boolean): number {
+  let freeMonths = 2; // Base for 2-year
+  
+  if (payInFull) {
+    freeMonths = 4; // Pay in full doubles free months
+  }
+  
+  // Early bird bonus: +1 if before Jan 25, max 5 total
+  if (isEarlyBird()) {
+    freeMonths = Math.min(freeMonths + 1, 5);
+  }
+  
+  return freeMonths;
+}
+
+/**
  * Calculate the actual monthly payment based on term and base price
  * Month-to-month includes 15% flexibility pricing
+ * Only 2 term options: month-to-month and 2-year
  */
-export function calculateActualMonthly(basePrice: number, term: 'month-to-month' | '1-year' | '2-year'): number {
+export function calculateActualMonthly(basePrice: number, term: 'month-to-month' | '2-year'): number {
   if (term === 'month-to-month') {
     return Math.round(basePrice * (1 + MONTH_TO_MONTH_PREMIUM));
   }
   return basePrice;
 }
 
-/**
- * Calculate effective monthly price after free months are applied
- * Free months are applied at END of agreement as service credits
- * 
- * Formula (CORRECT):
- * - termMonths = total months in term (12 or 24)
- * - freeMonthsEarned = term bonus + pay-in-full bonus (NOT referral)
- * - paidMonths = termMonths - freeMonthsEarned
- * - effectiveMonthly = actualMonthly * paidMonths / termMonths
- * 
- * This gives a LOWER effective monthly since you pay for fewer months
- * but receive service for the full term.
- * 
- * Example: 1-year with 2 free months
- * - Pay for 10 months, get service for 12 months
- * - effectiveMonthly = $100 * 10/12 = $83.33/mo
- * 
- * Note: For month-to-month, effectiveMonthly = actualMonthly (no free months)
- */
-export function calculateEffectiveMonthly(
-  basePrice: number, 
-  term: 'month-to-month' | '1-year' | '2-year',
-  payInFull: boolean = false
-): number {
-  const actualMonthly = calculateActualMonthly(basePrice, term);
-  
-  // Month-to-month has no free months
-  if (term === 'month-to-month') {
-    return actualMonthly;
-  }
-  
-  const termConfig = COMMITMENT_TERMS.find(t => t.id === term);
-  if (!termConfig) return actualMonthly;
-  
-  const termMonths = termConfig.months;
-  let freeMonthsEarned = termConfig.freeMonths;
-  
-  // Pay in full bonus
-  if (payInFull) {
-    freeMonthsEarned += 1;
-  }
-  
-  // Correct formula: pay for fewer months, spread over full term
-  // effectiveMonthly = actualMonthly * (termMonths - freeMonths) / termMonths
-  const paidMonths = Math.max(termMonths - freeMonthsEarned, 1);
-  const effectiveMonthly = (actualMonthly * paidMonths) / termMonths;
-  
-  return Math.round(effectiveMonthly * 100) / 100;
-}
+// NOTE: Legacy functions below kept for backward compatibility
+// New code should use calculate2YearFreeMonths() directly
 
-/**
- * Get total free months earned (for display)
- * Includes referral bonus for display purposes
- */
-export function getTotalFreeMonths(
-  term: 'month-to-month' | '1-year' | '2-year',
-  payInFull: boolean = false,
-  hasReferral: boolean = false
-): number {
-  if (term === 'month-to-month') return 0;
-  
-  const termConfig = COMMITMENT_TERMS.find(t => t.id === term);
-  if (!termConfig) return 0;
-  
-  let total = termConfig.freeMonths;
-  if (payInFull) total += 1;
-  if (hasReferral) total += 1; // Display only, not in effective monthly calc
-  
-  return Math.min(total, PROMO_CAPS.maxFreeMonths);
-}
-
-// All available promotions
+// All available promotions - SIMPLIFIED for new commitment model
 export const PROMOTIONS: Promotion[] = [
-  // Commitment-based free months (base rewards)
+  // 2-Year commitment with pay-in-full doubling
   {
     id: 'commitment_2year',
-    title: '2-Year Commitment',
-    shortDescription: '3 free months at end of agreement',
+    title: '2-Year Price Lock',
+    shortDescription: '2 free months (4 with pay in full)',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
-    value: 3,
+    value: 2,
     eligibility: { term: '2-year' },
     displayOrder: 1,
     active: true,
   },
-  {
-    id: 'commitment_1year',
-    title: '1-Year Commitment',
-    shortDescription: '1 free month at end of agreement',
-    type: 'termFreeMonths',
-    stackGroup: 'freeMonths',
-    value: 1,
-    eligibility: { term: '1-year' },
-    displayOrder: 2,
-    active: true,
-  },
 
-  // Pay in Full bonus - adds +1 free month
+  // Pay in Full bonus - doubles free months for 2-year
   {
     id: 'pay_full_bonus',
     title: 'Pay in Full Bonus',
-    shortDescription: '+1 additional free month',
+    shortDescription: 'Doubles free months to 4',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
-    value: 1,
+    value: 2,
     eligibility: { payUpfront: true },
     displayOrder: 3,
     active: true,
@@ -267,7 +199,7 @@ export const PROMOTIONS: Promotion[] = [
 
 // User selections interface for promotions engine
 export interface UserSelections {
-  term: 'month-to-month' | '1-year' | '2-year';
+  term: 'month-to-month' | '2-year';
   payUpfront: boolean;
   segments: ('renter' | 'veteran' | 'senior')[];
   hasReferral: boolean;
@@ -489,13 +421,14 @@ export function getApplicablePromotions(
 
 /**
  * Apply promotions to base totals and return display values
+ * Only accepts month-to-month or 2-year terms
  */
 export function applyPromotions(
-  baseTotals: { monthlyTotal: number; term: '1-year' | '2-year' | '3-year' },
+  baseTotals: { monthlyTotal: number; term: 'month-to-month' | '2-year' },
   promotionResult: PromotionResult
 ): AppliedTotals {
-  const termMonthsMap: Record<string, number> = { '1-year': 12, '2-year': 24, '3-year': 36 };
-  const termMonths = termMonthsMap[baseTotals.term] || 12;
+  const termMonthsMap: Record<string, number> = { 'month-to-month': 1, '2-year': 24 };
+  const termMonths = termMonthsMap[baseTotals.term] || 24;
   const { totalPercentOff, totalFreeMonths } = promotionResult;
 
   // Calculate discounted monthly

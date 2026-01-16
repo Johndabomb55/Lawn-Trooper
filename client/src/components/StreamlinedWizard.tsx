@@ -48,14 +48,13 @@ import {
 import { 
   COMMITMENT_TERMS, 
   LOYALTY_DISCOUNTS,
-  PAYMENT_METHODS,
   PROMO_CAPS,
   HOA_PROMO_CODES,
   validatePromoCode,
   calculateActualMonthly,
-  calculateEffectiveMonthly,
-  getTotalFreeMonths,
-  type PaymentMethod
+  calculate2YearFreeMonths,
+  isEarlyBird,
+  MONTH_TO_MONTH_PREMIUM
 } from "@/data/promotions";
 
 const STEPS = [
@@ -108,8 +107,8 @@ export default function StreamlinedWizard() {
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
   const [swapCount, setSwapCount] = useState(0);
-  const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('1-year');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('monthly');
+  const [term, setTerm] = useState<'month-to-month' | '2-year'>('2-year');
+  const [payInFull, setPayInFull] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -131,11 +130,12 @@ export default function StreamlinedWizard() {
   const selectedYard = YARD_SIZES.find(y => y.id === yardSize);
   const selectedTerm = COMMITMENT_TERMS.find(t => t.id === term);
   
-  const payInFull = paymentMethod === 'pay-in-full';
   const promoValid = validatePromoCode(promoCode);
   const promoDiscount = promoValid ? (HOA_PROMO_CODES[promoCode.toUpperCase()]?.discount || 0) : 0;
   
-  const totalFreeMonths = getTotalFreeMonths(term, payInFull, false);
+  // Calculate free months based on new simplified model
+  // Month-to-month: 0, 2-year: 2 base (+2 if pay in full) (+1 early bird if before Jan 25)
+  const totalFreeMonths = term === '2-year' ? calculate2YearFreeMonths(payInFull) : 0;
   
   const isExecutive = plan === 'executive';
   // Get effective allowances using the canonical function with swap adjustment
@@ -166,8 +166,15 @@ export default function StreamlinedWizard() {
   };
 
   const basePrice = calculateBasePrice();
-  const actualMonthly = isHOA ? 0 : calculateActualMonthly(basePrice, term) + addonExtraCost;
-  const effectiveMonthly = isHOA ? 0 : calculateEffectiveMonthly(basePrice + addonExtraCost, term, payInFull);
+  // Monthly subscription = base price + addon extras (with M2M premium if applicable)
+  const monthlySubscription = isHOA ? 0 : calculateActualMonthly(basePrice + addonExtraCost, term);
+  // For 2-year: billedMonths = 24 - freeMonths, effectiveMonthly = (monthly × billedMonths) / 24
+  const billedMonths = term === '2-year' ? 24 - totalFreeMonths : (selectedTerm?.months || 1);
+  const effectiveMonthly = term === '2-year' && totalFreeMonths > 0
+    ? (monthlySubscription * billedMonths) / 24
+    : monthlySubscription;
+  // For backward compatibility
+  const actualMonthly = monthlySubscription;
 
   const handleNext = () => {
     if (isHOA && step === 1) {
@@ -217,7 +224,6 @@ export default function StreamlinedWizard() {
           basicAddons: isHOA ? [] : basicAddons,
           premiumAddons: isHOA ? [] : premiumAddons,
           term: isHOA ? 'custom' : term,
-          paymentMethod: isHOA ? 'custom' : paymentMethod,
           payUpfront: String(isHOA ? false : payInFull),
           promoCode,
           totalPrice: isHOA ? 'custom' : String(actualMonthly),
@@ -280,7 +286,7 @@ export default function StreamlinedWizard() {
               </span>
             ) : (
               <span data-testid="text-free-months-available" className="text-sm bg-white/20 px-3 py-1 rounded-full">
-                Free months available with annual plans
+                Free months available with 2-year price lock
               </span>
             )}
           </div>
@@ -1070,116 +1076,149 @@ export default function StreamlinedWizard() {
                 {COMMITMENT_TERMS.map((t) => {
                   const isSelected = term === t.id;
                   const isBestValue = t.id === '2-year';
+                  const displayFreeMonths = t.id === '2-year' ? calculate2YearFreeMonths(payInFull) : 0;
                   return (
-                    <button
-                      key={t.id}
-                      data-testid={`term-${t.id}`}
-                      onClick={() => setTerm(t.id)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between relative ${
-                        isBestValue
-                          ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
-                          : isSelected
-                            ? 'border-primary bg-primary/10 shadow-lg'
-                            : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      {isBestValue && (
-                        <div className="absolute -top-2 left-4 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                          BEST VALUE
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-bold text-lg">{t.label}</div>
-                        <div className="text-sm text-muted-foreground">{t.description}</div>
-                        {t.hasPremium && (
-                          <div className="text-xs text-amber-600 mt-1">Includes flexibility pricing (+15%)</div>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        {t.freeMonths > 0 ? (
-                          <>
-                            <div className="text-xl font-bold text-green-600">+{t.freeMonths} FREE</div>
-                            <div className="text-xs text-muted-foreground">month{t.freeMonths > 1 ? 's' : ''}</div>
-                          </>
-                        ) : (
-                          <div className="text-sm text-muted-foreground">{t.badge}</div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Payment Method Selection */}
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-center">How would you like to pay?</div>
-                <div className="grid grid-cols-3 gap-2">
-                  {PAYMENT_METHODS.map((pm) => {
-                    const isSelected = paymentMethod === pm.id;
-                    return (
+                    <div key={t.id}>
                       <button
-                        key={pm.id}
-                        data-testid={`payment-${pm.id}`}
-                        onClick={() => setPaymentMethod(pm.id)}
-                        className={`p-3 rounded-lg border-2 transition-all text-center ${
-                          isSelected
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:border-primary/50'
+                        data-testid={`term-${t.id}`}
+                        onClick={() => {
+                          setTerm(t.id as 'month-to-month' | '2-year');
+                          if (t.id === 'month-to-month') setPayInFull(false);
+                        }}
+                        className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between relative ${
+                          isBestValue
+                            ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
+                            : isSelected
+                              ? 'border-primary bg-primary/10 shadow-lg'
+                              : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        <div className="font-medium text-sm">{pm.label}</div>
-                        {pm.bonus && (
-                          <div className="text-xs text-green-600 font-bold">{pm.bonus}</div>
+                        {isBestValue && (
+                          <div className="absolute -top-2 left-4 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            BEST VALUE
+                          </div>
                         )}
+                        <div>
+                          <div className="font-bold text-lg">{t.label}</div>
+                          <div className="text-sm text-muted-foreground">{t.description}</div>
+                          {t.hasPremium && (
+                            <div className="text-xs text-amber-600 mt-1">Includes flexibility pricing (+15%)</div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          {displayFreeMonths > 0 ? (
+                            <>
+                              <div className="text-xl font-bold text-green-600">+{displayFreeMonths} FREE</div>
+                              <div className="text-xs text-muted-foreground">month{displayFreeMonths > 1 ? 's' : ''}</div>
+                            </>
+                          ) : (
+                            <div className="text-sm text-muted-foreground">{t.badge}</div>
+                          )}
+                        </div>
                       </button>
-                    );
-                  })}
-                </div>
+                      
+                      {/* Pay in Full Toggle - Only for 2-year when selected */}
+                      {t.id === '2-year' && isSelected && (
+                        <div className="mt-3 ml-4">
+                          <button
+                            data-testid="toggle-pay-in-full"
+                            onClick={() => setPayInFull(!payInFull)}
+                            className={`w-full p-3 rounded-lg border-2 transition-all flex items-center justify-between ${
+                              payInFull
+                                ? 'border-green-500 bg-green-50'
+                                : 'border-border hover:border-green-500/50'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                payInFull ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                              }`}>
+                                {payInFull && <Check className="w-3 h-3 text-white" />}
+                              </div>
+                              <div className="text-left">
+                                <div className="font-medium">Pay in Full</div>
+                                <div className="text-xs text-muted-foreground">Pay upfront and unlock maximum savings</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
+                                BEST VALUE
+                              </div>
+                              <div className="text-xs text-green-600 font-bold mt-1">
+                                +{calculate2YearFreeMonths(true) - calculate2YearFreeMonths(false)} extra FREE
+                              </div>
+                            </div>
+                          </button>
+                          
+                          {/* Early Bird Banner */}
+                          {isEarlyBird() && (
+                            <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg text-center">
+                              <div className="text-xs font-bold text-amber-700">
+                                🎉 Early Bird Bonus: +1 FREE month included!
+                              </div>
+                              <div className="text-[10px] text-amber-600">
+                                Sign up before Jan 25 to lock in this bonus
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Pricing Summary */}
               {basePrice > 0 && (
                 <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-lg">Your monthly rate:</span>
-                    <span className="text-2xl font-bold text-primary">${actualMonthly}/mo</span>
+                    <span className="font-bold text-lg">Monthly subscription:</span>
+                    <span className="text-2xl font-bold text-primary">${monthlySubscription}/mo</span>
                   </div>
                   
+                  {/* 2-Year Billing Breakdown */}
+                  {term === '2-year' && (
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Free months earned:</span>
+                        <span className="font-bold text-green-600">{totalFreeMonths} months</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Billed months:</span>
+                        <span className="font-medium">{billedMonths} of 24</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t">
+                        <span className="font-medium">Effective monthly:</span>
+                        <span className="text-lg font-bold text-green-600">${effectiveMonthly.toFixed(0)}/mo</span>
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Pay in Full total display */}
-                  {paymentMethod === 'pay-in-full' && term !== 'month-to-month' && (
+                  {payInFull && term === '2-year' && (
                     <div className="bg-green-50 rounded-lg p-3 border border-green-200">
                       <div className="text-center">
-                        <div className="text-lg font-bold text-green-700">Pay in Full and Save!</div>
+                        <div className="text-lg font-bold text-green-700">Pay in Full Total</div>
                         <div className="text-2xl font-bold text-green-800">
-                          ${(actualMonthly * ((selectedTerm?.months || 12) - totalFreeMonths)).toLocaleString()}
+                          ${(monthlySubscription * billedMonths).toLocaleString()}
                         </div>
                         <div className="text-sm text-green-600">
-                          Total for {selectedTerm?.months || 12} months ({totalFreeMonths} months FREE)
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          vs ${(calculateActualMonthly(basePrice, 'month-to-month') * (selectedTerm?.months || 12)).toLocaleString()} month-to-month
+                          Pay for {billedMonths} months, get service for 24 months
                         </div>
                       </div>
                     </div>
                   )}
                   
-                  {term !== 'month-to-month' && totalFreeMonths > 0 && (
-                    <div className="text-sm text-muted-foreground flex items-center gap-1">
-                      <Sparkles className="w-4 h-4 text-green-600" />
-                      <span>Effective monthly: <strong className="text-green-600">${effectiveMonthly.toFixed(0)}/mo</strong></span>
-                      <button
-                        type="button"
-                        onClick={() => showInfo("Effective Monthly", (
-                          <div className="space-y-2">
-                            <p>Free months are <strong>skipped billing months</strong> at the end of your agreement.</p>
-                            <p className="text-sm text-muted-foreground">Example: 2 free months on a 12-month plan = pay for first 10 months, final 2 months not billed.</p>
-                            <p className="font-semibold text-primary mt-2">All free months stack with no cap!</p>
-                          </div>
-                        ))}
-                        className="text-primary underline text-xs ml-1"
-                      >
-                        What's this?
-                      </button>
+                  {/* Savings vs Month-to-Month */}
+                  {term === '2-year' && (
+                    <div className="text-xs text-center text-muted-foreground">
+                      <span>vs Month-to-Month: </span>
+                      <span className="font-bold text-red-500 line-through">
+                        ${(calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * 24).toLocaleString()}
+                      </span>
+                      <span className="font-bold text-green-600 ml-2">
+                        Save ${((calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * 24) - (monthlySubscription * billedMonths)).toLocaleString()}!
+                      </span>
                     </div>
                   )}
                 </div>
@@ -1477,8 +1516,8 @@ export default function StreamlinedWizard() {
                 setPlan("premium");
                 setBasicAddons([]);
                 setPremiumAddons([]);
-                setTerm('1-year');
-                setPaymentMethod('monthly');
+                setTerm('2-year');
+                setPayInFull(false);
                 setName("");
                 setEmail("");
                 setPhone("");
