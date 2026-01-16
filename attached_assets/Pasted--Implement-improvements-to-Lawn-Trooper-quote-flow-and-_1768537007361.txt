@@ -1,0 +1,74 @@
+# Implement improvements to Lawn‑Trooper quote flow and pricing logic
+
+## Plan details & picker
+
+1. **Unify plan information**:
+   - Create a dedicated “Plan Details” page or pop‑up that lists all services, including mowing frequency, weed control, **monthly vs. bi‑weekly leaf jobs**, **spring & fall clean‑ups**, **holiday hustle clean‑up**, and any executive exclusives (e.g., unlimited mulch). Use clear, concise descriptions styled in a military tone.
+   - Update the plan cards in the wizard (Step 3) to show an abbreviated summary: mowing frequency, weed‑control visits, and the included add‑on counts (e.g., “1 Basic + 0 Premium”). Add a “See All Details” link on each card that opens the new detailed page, instead of having duplicate plan sections outside the wizard.
+   - Ensure both the wizard and any external plan section pull from the same **source‑of‑truth** JSON/config so the list of services and add‑on allowances never drift.
+
+2. **Include leaf jobs and clean‑ups**:
+   - For **Basic Patrol**, add “Monthly leaf pick‑ups in fall/winter.”
+   - For **Premium Patrol** and **Executive Command**, add “Bi‑weekly leaf pick‑ups in fall/winter, spring & fall yard clean‑ups, and a holiday hustle leaf clean‑up before major holidays or events.”
+   - Make sure these appear on the plan details page and in the plan summary at checkout.
+
+3. **Update plan names and counts**:
+   - Standardize internal plan IDs and external labels to “Basic,” “Premium,” and “Executive.”
+   - Show “Add‑Ons Included: 1 Basic + 0 Premium” (Basic), “2 Basic + 1 Premium” (Premium), and “3 Basic + 2 Premium” (Executive), with a second line like “Executive Extras: Unlimited mulch” if applicable.
+
+## Pricing logic & free months
+
+4. **Plan upgrade price increments**:
+   - Apply a **20 % increase per plan level** relative to Basic. Example: if Basic is $169 for a given yard size, Premium should be `169 × 1.2 = $203` (rounded), and Executive should be `203 × 1.2 ≈ $244`. Use the same percent across all yard sizes.
+   - Keep individual add‑on prices constant across plans; the higher plan price should reflect built‑in extra services.
+
+5. **Month‑to‑month premium**:
+   - Apply a **+15 %** surcharge to the base plan price (not to add‑ons) when “Month‑to‑Month” is selected. Ensure the UI shows the correct increased monthly payment and hides “free months unlocked” since no commitment is made.
+
+6. **Commitment discounts & pay‑in‑full**:
+   - 1‑Year commitment → +1 free month (11 paid months).
+   - 2‑Year commitment → +3 free months (21 paid months).
+   - **Pay in Full** adds +1 free month to whichever commitment is chosen (e.g., 1‑Year + Pay in Full yields 2 free months; 2‑Year + Pay in Full yields 4 free months). Display both the **total due after discounts** and the **effective monthly cost**.
+   - Make the free‑month progress bar stackable and include a tooltip explaining that free months are skipped billing months at the end of the contract.
+
+7. **Plan total vs. effective monthly**:
+   - When “Pay in Full” is selected, show the total price after subtracting free months and any pay‑in‑full discount. Also show the effective monthly cost and highlight it with a tagline like **“Pay in full and save thousands”**.
+
+## Add‑Ons & executive swap
+
+8. **Complete the add‑on catalog**:
+   - Ensure the site pulls add‑ons from the unified JSON (military‑themed names with descriptions). Add missing items: Trash‑Can Cleaning (Quarterly Basic / Monthly Premium), Soft‑Wash Premium Package (driveway, sidewalk, front porch, steps & mailbox once per year), House Soft‑Wash (premium), Driveway Pressure Wash (premium), Mailbox Cleaning, Pine Straw Install, Shrub/Hedge trimming, Lawn Aeration, Additional Weed Control Treatments, Christmas lights packages (Basic vs. Premium), and “Unlimited Mulch” for Executive.
+   - Differentiate **basic** vs. **premium** versions of add‑ons by service scope (e.g., “Mulch up to 4 yards” vs. “Mulch up to 8 yards + choice of color”).
+   - Use tooltips or info icons to explain what each add‑on includes.
+
+9. **Executive add‑on swap & counters**:
+   - For Executive plan, implement the swap mechanic: allow users to convert **1 premium add‑on slot into 2 basic add‑on slots** via a visible toggle or button. When swapped, update the “included slots” counter (e.g., 5 Basic + 1 Premium becomes 7 Basic + 0 Premium).
+   - Show **Selected: X Basic / Y Premium** vs. **Included: 3 Basic + 2 Premium** and update costs for overages accordingly.
+
+10. **Counters & pricing**:
+    - Display included vs. selected counts clearly: Basic (0/1 Basic), Premium (0/2 Basic + 0/1 Premium), Executive (0/3 Basic + 0/2 Premium). Overages add a fixed monthly cost per extra Basic or Premium item.
+    - Remove scroll‑trap behavior in the add‑on list; instead, group by tier categories (Basic, Premium, Executive Exclusive) and by type (Landscaping, Soft Wash & Cleaning, Seasonal Décor) with single‑column checkboxes for clarity.
+
+## Multi‑Home Community & HOA logic
+
+11. **Collect HOA details**:
+    - When “Multi‑Home Community / Over 1 Acre” is selected in Step 1, dynamically insert fields for HOA/community name, estimated acreage, number of units/lots, and an optional photo upload. Require these before progressing to Step 2. Do not reject any leads; if acreage exceeds the standard limits, mark the lead for custom quote.
+
+## UX & content improvements
+
+12. **Promotions page**:
+    - Create a separate “Promotions & Savings” page or section detailing all ways to save (1‑year & 2‑year free‑month incentives, pay‑in‑full bonus, referral bonus, repeat customer loyalty savings) with examples of effective monthly costs. Link to this from Step 5 (“See your loyalty savings”).
+
+13. **CTA & language consistency**:
+    - Use a single primary CTA (“Build My Subscription” or “Get Your Free Quote”) across hero and plan sections.
+    - Replace “lawn service plan” with “subscription lawn service” where appropriate to emphasize recurring service and align with your branding.
+    - Keep plan names consistent across the site and remove redundant plan sections.
+
+14. **Pay‑in‑full tagline & marketing**:
+    - Highlight the pay‑in‑full benefit with a strong tagline (**“Pay in full and save thousands”**) and show the difference between total paid vs. month‑to‑month in the summary.
+    - Ensure messaging matches your “commit to us and we commit to you” vibe and stress that all free months stack with no cap.
+
+15. **Test & verify**:
+    - After implementing the changes, thoroughly test the wizard: verify that each commitment option updates the price and effective monthly correctly, add‑on counters track selections accurately, swapping works on executive plan, the HOA fields appear when needed, and the plan details page links open in a new tab/modal. Compare monthly prices across Basic, Premium, and Executive plans after each selection to ensure the 20 % increments and 15 % month‑to‑month premium are correct.
+
+By consolidating plan details into a single comprehensive page and simplifying the plan picker to show only key differences with an optional link for more information, you’ll streamline the user experience while still providing all necessary details. Implementing the pricing fixes and add‑on enhancements will align the site with your “subscription lawn service” strategy and make the value propositions clear.
