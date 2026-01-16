@@ -1,0 +1,178 @@
+ROLE:
+You are a senior product engineer working on Lawn Trooper’s subscription quote system.
+This is a RETROFIT, not a redesign. Keep layout, branding, and flow unless explicitly stated.
+Your job is to fix pricing logic, simplify commitment options, and implement a premium, non-salesy savings system that is mathematically correct everywhere.
+
+========================================
+A) CORE SUBSCRIPTION MODEL (LOCKED)
+========================================
+
+1) Subscription structure:
+- Lawn Trooper is a SUBSCRIPTION service.
+- Customers choose commitment length, not “how they want to pay.”
+
+2) Remove completely:
+- “How do you want to pay?” buttons
+- Monthly / Yearly / Pay-in-Full as separate payment methods
+- Any legacy logic tied to those buttons
+
+========================================
+B) COMMITMENT OPTIONS (ONLY TWO)
+========================================
+
+3) Offer ONLY these commitment choices:
+
+**Month-to-Month Subscription**
+- +15% flexibility premium applied to entire subscription (plan + add-ons)
+- No free months
+- Cancel anytime
+
+**2-Year Subscription (Price Lock)**
+- Locks current pricing for 24 months
+- Includes complimentary service months (defined below)
+
+(1-Year may exist internally, but the primary promoted commitment is 2-Year.)
+
+========================================
+C) BASE FREE MONTHS (COMMITMENT BONUS)
+========================================
+
+4) Commitment free months:
+- 1-Year → +1 free month
+- 2-Year → +2 free months
+
+Free months are SKIPPED BILLING MONTHS at the END of the agreement.
+
+========================================
+D) PAY-IN-FULL MULTIPLIER (VERY IMPORTANT)
+========================================
+
+5) Pay-in-Full behavior:
+- Available ONLY on 2-Year subscriptions
+- Implemented as a TOGGLE under the 2-Year option (not a payment selector)
+- Label: “Pay in Full (Recommended)”
+
+6) Rule:
+- Pay in Full DOUBLES the COMMITMENT free months ONLY
+- Promotional bonus months are NOT doubled
+
+Therefore:
+- 2-Year Monthly → 2 free months
+- 2-Year Pay in Full → 4 free months
+
+========================================
+E) 25TH ANNIVERSARY ENROLLMENT BONUS
+========================================
+
+7) Implement a time-based enrollment bonus:
+Name: **25th Anniversary Enrollment Bonus**
+
+8) Bonus schedule:
+- Enroll Dec 25 → Jan 25 → +2 bonus months
+- Enroll Jan 25 → Feb 25 → +1 bonus month
+- Enroll after Feb 25 → +0 bonus months (promotion concluded)
+
+Rules:
+- Bonus months apply once
+- Bonus months are NOT doubled
+- Bonus months stack with commitment + pay-in-full
+
+========================================
+F) FINAL FREE MONTH TOTALS (REFERENCE)
+========================================
+
+2-Year Monthly:
+- Base: 2
+- Bonus: 0–2
+- Total: 2–4
+
+2-Year Pay in Full:
+- Commitment doubled: 4
+- Bonus: 0–2
+- Total possible: UP TO 6 free months
+
+This is the MAX exposure. Do not exceed 6.
+
+========================================
+G) BILLING & MATH (NON-NEGOTIABLE)
+========================================
+
+9) Definitions:
+- termMonths = 24
+- freeMonths = commitment + (pay-in-full multiplier) + (bonus)
+- billedMonths = termMonths − freeMonths
+
+10) Pay-in-Full total:
+totalDueNow = monthlySubscription × billedMonths
+
+11) Effective monthly (displayed only, not billed):
+effectiveMonthly = (monthlySubscription × billedMonths) ÷ 24
+
+Rules:
+- Effective monthly must ALWAYS be ≤ monthlySubscription
+- No fractional free months
+- Round dollars consistently
+
+========================================
+H) UI PRESENTATION (PREMIUM, NOT SALESY)
+========================================
+
+12) Language rules:
+- Do NOT use: “stack and earn”, “huge discounts”, “half a year free”
+- Use: “complimentary service months”, “price lock”, “early enrollment”
+
+13) Commitment screen copy (example structure):
+- “2-Year Subscription (Price Lock)”
+  “Includes complimentary service months.”
+
+- Pay in Full toggle:
+  “Pay in full and double your complimentary months.”
+
+14) Bonus disclosure (expandable / tooltip):
+**25th Anniversary Enrollment Bonus**
+- Enroll by Jan 25 → +2 months
+- Enroll by Feb 25 → +1 month
+- After Mar 25 → Enrollment concluded
+
+After Mar 25, show crossed-out bonuses in muted text (do not remove).
+
+========================================
+I) SUMMARY SCREEN (THE ‘AHA’ MOMENT)
+========================================
+
+15) Final summary must show:
+- Monthly subscription price
+- Commitment length
+- Free months earned (clearly itemized)
+- Billed months vs total months
+- Total due now (if pay in full)
+- Effective monthly
+- Savings vs Month-to-Month
+
+Example:
+“You’ll receive 24 months of service while paying for 18.”
+
+========================================
+J) CLEANUP & TESTING
+========================================
+
+16) Remove:
+- Any legacy savings math
+- Any comparison using non–15% month-to-month baseline
+- Any duplicate plan explanation sections
+
+17) Test ALL scenarios:
+- Month-to-Month (price × 1.15)
+- 2-Year Monthly (22 billed months)
+- 2-Year Pay in Full (20 billed months)
+- 2-Year Pay in Full + Feb bonus (19 billed months)
+- 2-Year Pay in Full + Jan bonus (18 billed months)
+
+Verify consistency across:
+- Commitment screen
+- Savings breakdown
+- Summary page
+
+Deliver a short report listing:
+- Files changed
+- Confirmation that math is correct everywhere
