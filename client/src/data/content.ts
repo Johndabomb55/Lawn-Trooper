@@ -149,6 +149,9 @@ export const FOOTER_CONTENT = {
   serviceArea: "Serving Athens, Huntsville, Madison, Decatur, and all of North Alabama",
 };
 
+// Seasonal scheduling disclaimer - display once site-wide (footer or add-on section)
+export const SEASONAL_DISCLAIMER = "Some add-on services are seasonal in nature and may be scheduled during appropriate times of the year or during off-season periods when Lawn Trooper's service schedule allows. Timing and availability may vary based on weather, workload, and operational considerations.";
+
 export const CTA_BUTTONS = {
   buildMyPlan: "Build My Subscription",
   getStarted: "Get Started",

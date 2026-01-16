@@ -7,7 +7,7 @@ import {
   COMMITMENT_TERMS, 
   MONTH_TO_MONTH_PREMIUM,
   calculateActualMonthly,
-  calculate2YearFreeMonths,
+  calculateTermFreeMonths,
   getFreeMonthsBreakdown,
   getAnniversaryBonus
 } from "@/data/promotions";
@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 export default function PromotionsPage() {
   const [selectedPlan, setSelectedPlan] = useState("premium");
   const [selectedYardSize, setSelectedYardSize] = useState("1/3");
-  const [selectedTerm, setSelectedTerm] = useState<'month-to-month' | '2-year'>('2-year');
+  const [selectedTerm, setSelectedTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
   const [payInFull, setPayInFull] = useState(false);
 
   const plan = PLANS.find(p => p.id === selectedPlan);
@@ -30,16 +30,14 @@ export default function PromotionsPage() {
   const actualMonthly = calculateActualMonthly(basePrice, selectedTerm);
   
   // Calculate complimentary months based on term and pay-in-full
-  const freeMonths = selectedTerm === '2-year' 
-    ? calculate2YearFreeMonths(payInFull) 
-    : 0;
-  const freeMonthsBreakdown = getFreeMonthsBreakdown(payInFull);
+  const freeMonths = calculateTermFreeMonths(selectedTerm, payInFull);
+  const freeMonthsBreakdown = getFreeMonthsBreakdown(selectedTerm, payInFull);
   const anniversaryBonus = getAnniversaryBonus();
   
-  const termMonths = selectedTerm === '2-year' ? 24 : 1;
+  const termMonths = term?.months || 1;
   const billedMonths = Math.max(termMonths - freeMonths, 1);
-  const effectiveMonthly = selectedTerm === '2-year'
-    ? Math.round((actualMonthly * billedMonths) / 24)
+  const effectiveMonthly = selectedTerm !== 'month-to-month'
+    ? Math.round((actualMonthly * billedMonths) / termMonths)
     : actualMonthly;
   const savings = (actualMonthly * termMonths) - (actualMonthly * billedMonths);
 
@@ -69,7 +67,10 @@ export default function PromotionsPage() {
                 <button
                   key={t.id}
                   data-testid={`promo-term-${t.id}`}
-                  onClick={() => setSelectedTerm(t.id)}
+                  onClick={() => {
+                    setSelectedTerm(t.id as 'month-to-month' | '1-year' | '2-year');
+                    if (t.id === 'month-to-month') setPayInFull(false);
+                  }}
                   className={`w-full p-3 rounded-lg border-2 text-left flex justify-between items-center transition-all ${
                     selectedTerm === t.id
                       ? 'border-primary bg-primary/10'
@@ -81,7 +82,7 @@ export default function PromotionsPage() {
                     <div className="text-xs text-muted-foreground">{t.description}</div>
                   </div>
                   {t.freeMonths > 0 && (
-                    <span className="text-green-600 font-bold">+{t.freeMonths} free</span>
+                    <span className="text-green-600 font-bold">+{t.freeMonths} complimentary</span>
                   )}
                   {t.hasPremium && (
                     <span className="text-amber-600 text-sm">+15%</span>
@@ -96,14 +97,14 @@ export default function PromotionsPage() {
               <DollarSign className="w-5 h-5 text-accent" />
               <h2 className="font-bold text-lg">Payment Option</h2>
             </div>
-            {selectedTerm === '2-year' ? (
+            {selectedTerm !== 'month-to-month' ? (
               <div className="space-y-4">
                 <div className="p-4 rounded-lg border-2 border-border bg-muted/30">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium">Pay in Full (Recommended)</div>
                       <div className="text-sm text-muted-foreground">
-                        Double your complimentary months (2 → 4)
+                        Double your complimentary months ({selectedTerm === '1-year' ? '1 → 2' : '2 → 4'})
                       </div>
                     </div>
                     <Switch
@@ -132,7 +133,7 @@ export default function PromotionsPage() {
               </div>
             ) : (
               <div className="p-4 rounded-lg border-2 border-border bg-muted/30 text-center text-muted-foreground">
-                Pay-in-full bonus only available with 2-Year Price Lock
+                Pay-in-full bonus only available with 1-Year or 2-Year subscription
               </div>
             )}
           </div>

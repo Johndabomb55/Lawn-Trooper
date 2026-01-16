@@ -5,12 +5,15 @@
  * Marketing team can edit this file to add/modify promotions without touching component code.
  * 
  * COMMITMENT MODEL (January 2026):
- * Only 2 commitment options:
+ * 3 commitment options:
  * - Month-to-Month: +15% premium, no free months, cancel anytime
- * - 2-Year Subscription (Price Lock): 24 months, locks current pricing
+ * - 1-Year Subscription: 12 months, +1 base free month (2 with PIF)
+ * - 2-Year Subscription (Price Lock): 24 months, +2 base free months (4 with PIF)
  * 
  * FREE MONTH RULES:
  * - Month-to-Month: 0 complimentary months
+ * - 1-Year: 1 complimentary month (commitment bonus)
+ * - 1-Year Pay in Full: doubles commitment to 2 complimentary months
  * - 2-Year: 2 complimentary months (commitment bonus)
  * - 2-Year Pay in Full: doubles commitment to 4 complimentary months
  * - 25th Anniversary Bonus (NOT doubled by pay-in-full):
@@ -20,9 +23,9 @@
  * - Max total: 6 complimentary months (4 + 2 bonus)
  * 
  * BILLING:
- * - termMonths = 24
- * - billedMonths = 24 - freeMonths
- * - effectiveMonthly = (monthlySubscription × billedMonths) / 24
+ * - termMonths = 12 or 24
+ * - billedMonths = termMonths - freeMonths
+ * - effectiveMonthly = (monthlySubscription × billedMonths) / termMonths
  * - Complimentary months are skipped billing at END of agreement
  */
 
@@ -34,7 +37,7 @@ export interface Promotion {
   stackGroup: 'freeMonths' | 'percentOff';
   value: number;
   eligibility: {
-    term?: 'month-to-month' | '2-year';
+    term?: 'month-to-month' | '1-year' | '2-year';
     payUpfront?: boolean;
     segment?: 'renter' | 'veteran' | 'senior';
     hasReferral?: boolean;
@@ -89,16 +92,27 @@ export const LOYALTY_DISCOUNTS = [
   { year: 3, discount: 15, label: "After Year 3" },
 ];
 
-// Contract term options - simplified to 2 options only
+// Contract term options - 3 options
 export const COMMITMENT_TERMS = [
   {
     id: 'month-to-month' as const,
-    label: 'Month-to-Month Subscription',
+    label: 'Month-to-Month',
     months: 1,
     freeMonths: 0,
     badge: 'Flexible',
     description: 'Cancel anytime with 30 days notice',
     hasPremium: true,
+    allowsPayInFull: false,
+  },
+  {
+    id: '1-year' as const,
+    label: '1-Year Subscription',
+    months: 12,
+    freeMonths: 1,  // Base commitment bonus
+    badge: 'Save More',
+    description: '+1 complimentary month (2 with pay-in-full)',
+    hasPremium: false,
+    allowsPayInFull: true,
   },
   {
     id: '2-year' as const,
@@ -106,23 +120,30 @@ export const COMMITMENT_TERMS = [
     months: 24,
     freeMonths: 2,  // Base commitment bonus
     badge: 'Best Value',
-    description: 'Includes complimentary service months',
+    description: '+2 complimentary months (4 with pay-in-full)',
     hasPremium: false,
+    allowsPayInFull: true,
   },
 ];
 
 /**
- * Calculate complimentary service months for 2-year commitment
+ * Calculate complimentary service months for term commitments
  * 
- * Commitment bonus: 2 months (base)
- * Pay in Full: doubles COMMITMENT bonus only (2 → 4)
+ * 1-Year: 1 month base, 2 with pay-in-full
+ * 2-Year: 2 months base, 4 with pay-in-full
+ * Pay in Full: doubles COMMITMENT bonus only
  * Anniversary bonus: +0 to +2 (NOT doubled)
  * 
- * Max possible: 6 months (4 + 2)
+ * Max possible: 6 months
  */
-export function calculate2YearFreeMonths(payInFull: boolean): number {
-  // Commitment bonus: 2 months base, doubles to 4 with pay-in-full
-  const commitmentMonths = payInFull ? 4 : 2;
+export function calculateTermFreeMonths(term: 'month-to-month' | '1-year' | '2-year', payInFull: boolean): number {
+  if (term === 'month-to-month') return 0;
+  
+  // Base commitment bonus by term
+  const baseCommitment = term === '1-year' ? 1 : 2;
+  
+  // Pay in full doubles commitment only
+  const commitmentMonths = payInFull ? baseCommitment * 2 : baseCommitment;
   
   // Anniversary bonus: NOT doubled by pay-in-full
   const anniversaryBonus = getAnniversaryBonus().months;
@@ -131,18 +152,27 @@ export function calculate2YearFreeMonths(payInFull: boolean): number {
   return Math.min(commitmentMonths + anniversaryBonus, PROMO_CAPS.maxFreeMonths);
 }
 
+// Legacy alias for backward compatibility
+export function calculate2YearFreeMonths(payInFull: boolean): number {
+  return calculateTermFreeMonths('2-year', payInFull);
+}
+
 /**
  * Get itemized breakdown of complimentary months
  * Useful for displaying in UI
  */
-export function getFreeMonthsBreakdown(payInFull: boolean): {
+export function getFreeMonthsBreakdown(term: 'month-to-month' | '1-year' | '2-year', payInFull: boolean): {
   commitment: number;
   payInFullBonus: number;
   anniversaryBonus: number;
   total: number;
 } {
-  const baseCommitment = 2;
-  const payInFullBonus = payInFull ? 2 : 0;
+  if (term === 'month-to-month') {
+    return { commitment: 0, payInFullBonus: 0, anniversaryBonus: 0, total: 0 };
+  }
+  
+  const baseCommitment = term === '1-year' ? 1 : 2;
+  const payInFullBonus = payInFull ? baseCommitment : 0;
   const anniversaryBonus = getAnniversaryBonus().months;
   
   const total = Math.min(
@@ -161,9 +191,9 @@ export function getFreeMonthsBreakdown(payInFull: boolean): {
 /**
  * Calculate the actual monthly payment based on term and base price
  * Month-to-month includes 15% flexibility pricing
- * Only 2 term options: month-to-month and 2-year
+ * 1-year and 2-year use base pricing
  */
-export function calculateActualMonthly(basePrice: number, term: 'month-to-month' | '2-year'): number {
+export function calculateActualMonthly(basePrice: number, term: 'month-to-month' | '1-year' | '2-year'): number {
   if (term === 'month-to-month') {
     return Math.round(basePrice * (1 + MONTH_TO_MONTH_PREMIUM));
   }
@@ -252,7 +282,7 @@ export const PROMOTIONS: Promotion[] = [
 
 // User selections interface for promotions engine
 export interface UserSelections {
-  term: 'month-to-month' | '2-year';
+  term: 'month-to-month' | '1-year' | '2-year';
   payUpfront: boolean;
   segments: ('renter' | 'veteran' | 'senior')[];
   hasReferral: boolean;
@@ -474,13 +504,13 @@ export function getApplicablePromotions(
 
 /**
  * Apply promotions to base totals and return display values
- * Only accepts month-to-month or 2-year terms
+ * Accepts month-to-month, 1-year, or 2-year terms
  */
 export function applyPromotions(
-  baseTotals: { monthlyTotal: number; term: 'month-to-month' | '2-year' },
+  baseTotals: { monthlyTotal: number; term: 'month-to-month' | '1-year' | '2-year' },
   promotionResult: PromotionResult
 ): AppliedTotals {
-  const termMonthsMap: Record<string, number> = { 'month-to-month': 1, '2-year': 24 };
+  const termMonthsMap: Record<string, number> = { 'month-to-month': 1, '1-year': 12, '2-year': 24 };
   const termMonths = termMonthsMap[baseTotals.term] || 24;
   const { totalPercentOff, totalFreeMonths } = promotionResult;
 

@@ -52,7 +52,7 @@ import {
   HOA_PROMO_CODES,
   validatePromoCode,
   calculateActualMonthly,
-  calculate2YearFreeMonths,
+  calculateTermFreeMonths,
   getFreeMonthsBreakdown,
   getAnniversaryBonus,
   MONTH_TO_MONTH_PREMIUM
@@ -108,7 +108,7 @@ export default function StreamlinedWizard() {
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
   const [swapCount, setSwapCount] = useState(0);
-  const [term, setTerm] = useState<'month-to-month' | '2-year'>('2-year');
+  const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
   const [payInFull, setPayInFull] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [name, setName] = useState("");
@@ -135,10 +135,10 @@ export default function StreamlinedWizard() {
   const promoDiscount = promoValid ? (HOA_PROMO_CODES[promoCode.toUpperCase()]?.discount || 0) : 0;
   
   // Calculate complimentary service months based on commitment model
-  // Month-to-month: 0, 2-year: 2 base (+2 if pay in full = 4) + anniversary bonus (0-2)
+  // Month-to-month: 0, 1-year: 1 base (+1 if PIF = 2), 2-year: 2 base (+2 if PIF = 4) + anniversary bonus (0-2)
   // Pay-in-full doubles commitment only, NOT anniversary bonus. Max total: 6
-  const totalFreeMonths = term === '2-year' ? calculate2YearFreeMonths(payInFull) : 0;
-  const freeMonthsBreakdown = getFreeMonthsBreakdown(payInFull);
+  const totalFreeMonths = calculateTermFreeMonths(term, payInFull);
+  const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
   const anniversaryBonus = getAnniversaryBonus();
   
   const isExecutive = plan === 'executive';
@@ -172,10 +172,11 @@ export default function StreamlinedWizard() {
   const basePrice = calculateBasePrice();
   // Monthly subscription = base price + addon extras (with M2M premium if applicable)
   const monthlySubscription = isHOA ? 0 : calculateActualMonthly(basePrice + addonExtraCost, term);
-  // For 2-year: billedMonths = 24 - freeMonths, effectiveMonthly = (monthly × billedMonths) / 24
-  const billedMonths = term === '2-year' ? 24 - totalFreeMonths : (selectedTerm?.months || 1);
-  const effectiveMonthly = term === '2-year' && totalFreeMonths > 0
-    ? (monthlySubscription * billedMonths) / 24
+  // For 1-year/2-year: billedMonths = termMonths - freeMonths, effectiveMonthly = (monthly × billedMonths) / termMonths
+  const termMonths = selectedTerm?.months || 1;
+  const billedMonths = term !== 'month-to-month' ? termMonths - totalFreeMonths : 1;
+  const effectiveMonthly = term !== 'month-to-month' && totalFreeMonths > 0
+    ? (monthlySubscription * billedMonths) / termMonths
     : monthlySubscription;
   // For backward compatibility
   const actualMonthly = monthlySubscription;
@@ -1059,6 +1060,11 @@ export default function StreamlinedWizard() {
               <p className="text-xs text-center text-muted-foreground">
                 Tap the info icon for details. You can always adjust add-ons later.
               </p>
+              
+              {/* Seasonal Scheduling Disclaimer */}
+              <p className="text-[10px] text-center text-muted-foreground/70 mt-2">
+                Some add-on services are seasonal and may be scheduled during appropriate times of the year or during off-season periods when our schedule allows.
+              </p>
             </motion.div>
           )}
 
@@ -1080,26 +1086,37 @@ export default function StreamlinedWizard() {
                 {COMMITMENT_TERMS.map((t) => {
                   const isSelected = term === t.id;
                   const isBestValue = t.id === '2-year';
-                  const displayFreeMonths = t.id === '2-year' ? calculate2YearFreeMonths(payInFull) : 0;
+                  const isSaveMore = t.id === '1-year';
+                  // Calculate display free months based on current selection if this term were selected
+                  const displayFreeMonths = t.id !== 'month-to-month' 
+                    ? calculateTermFreeMonths(t.id as '1-year' | '2-year', isSelected ? payInFull : false) 
+                    : 0;
                   return (
                     <div key={t.id}>
                       <button
                         data-testid={`term-${t.id}`}
                         onClick={() => {
-                          setTerm(t.id as 'month-to-month' | '2-year');
+                          setTerm(t.id as 'month-to-month' | '1-year' | '2-year');
                           if (t.id === 'month-to-month') setPayInFull(false);
                         }}
                         className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between relative ${
                           isBestValue
                             ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
-                            : isSelected
-                              ? 'border-primary bg-primary/10 shadow-lg'
-                              : 'border-border hover:border-primary/50'
+                            : isSaveMore
+                              ? `border-primary/70 ${isSelected ? 'bg-primary/10 shadow-lg' : 'bg-primary/5'}`
+                              : isSelected
+                                ? 'border-primary bg-primary/10 shadow-lg'
+                                : 'border-border hover:border-primary/50'
                         }`}
                       >
                         {isBestValue && (
                           <div className="absolute -top-2 left-4 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                             BEST VALUE
+                          </div>
+                        )}
+                        {isSaveMore && (
+                          <div className="absolute -top-2 left-4 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            SAVE MORE
                           </div>
                         )}
                         <div>
@@ -1112,8 +1129,8 @@ export default function StreamlinedWizard() {
                         <div className="text-right">
                           {displayFreeMonths > 0 ? (
                             <>
-                              <div className="text-xl font-bold text-green-600">+{displayFreeMonths} FREE</div>
-                              <div className="text-xs text-muted-foreground">month{displayFreeMonths > 1 ? 's' : ''}</div>
+                              <div className="text-xl font-bold text-green-600">+{displayFreeMonths}</div>
+                              <div className="text-xs text-muted-foreground">complimentary</div>
                             </>
                           ) : (
                             <div className="text-sm text-muted-foreground">{t.badge}</div>
@@ -1121,8 +1138,8 @@ export default function StreamlinedWizard() {
                         </div>
                       </button>
                       
-                      {/* Pay in Full Toggle - Only for 2-year when selected */}
-                      {t.id === '2-year' && isSelected && (
+                      {/* Pay in Full Toggle - For 1-year and 2-year when selected */}
+                      {t.allowsPayInFull && isSelected && (
                         <div className="mt-3 ml-4">
                           <button
                             data-testid="toggle-pay-in-full"
@@ -1146,10 +1163,10 @@ export default function StreamlinedWizard() {
                             </div>
                             <div className="text-right">
                               <div className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
-                                BEST VALUE
+                                {t.id === '2-year' ? 'BEST VALUE' : 'BONUS'}
                               </div>
                               <div className="text-xs text-green-600 font-bold mt-1">
-                                2 → 4 months
+                                {t.id === '1-year' ? '1 → 2 months' : '2 → 4 months'}
                               </div>
                             </div>
                           </button>
@@ -1190,14 +1207,14 @@ export default function StreamlinedWizard() {
                     <span className="text-2xl font-bold text-primary">${monthlySubscription}/mo</span>
                   </div>
                   
-                  {/* 2-Year Billing Breakdown */}
-                  {term === '2-year' && (
+                  {/* 1-Year / 2-Year Billing Breakdown */}
+                  {term !== 'month-to-month' && (
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Complimentary months:</span>
-                        <span className="font-bold text-green-600">{totalFreeMonths} months</span>
+                        <span className="font-bold text-green-600">{totalFreeMonths} month{totalFreeMonths !== 1 ? 's' : ''}</span>
                       </div>
-                      {/* Itemized breakdown on hover/expand */}
+                      {/* Itemized breakdown */}
                       <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
                         <div className="flex justify-between">
                           <span>• Commitment bonus:</span>
@@ -1218,7 +1235,7 @@ export default function StreamlinedWizard() {
                       </div>
                       <div className="flex justify-between">
                         <span>Billed months:</span>
-                        <span className="font-medium">{billedMonths} of 24</span>
+                        <span className="font-medium">{billedMonths} of {termMonths}</span>
                       </div>
                       <div className="flex justify-between items-center pt-2 border-t">
                         <span className="font-medium">Effective monthly:</span>
@@ -1227,8 +1244,8 @@ export default function StreamlinedWizard() {
                     </div>
                   )}
                   
-                  {/* Pay in Full total display */}
-                  {payInFull && term === '2-year' && (
+                  {/* Pay in Full total display - for both 1-year and 2-year */}
+                  {payInFull && term !== 'month-to-month' && (
                     <div className="bg-green-50 rounded-lg p-3 border border-green-200">
                       <div className="text-center">
                         <div className="text-lg font-bold text-green-700">Pay in Full Total</div>
@@ -1236,21 +1253,21 @@ export default function StreamlinedWizard() {
                           ${(monthlySubscription * billedMonths).toLocaleString()}
                         </div>
                         <div className="text-sm text-green-600">
-                          You'll receive 24 months of service while paying for {billedMonths}
+                          You'll receive {termMonths} months of service while paying for {billedMonths}
                         </div>
                       </div>
                     </div>
                   )}
                   
                   {/* Savings vs Month-to-Month */}
-                  {term === '2-year' && (
+                  {term !== 'month-to-month' && (
                     <div className="text-xs text-center text-muted-foreground">
                       <span>vs Month-to-Month: </span>
                       <span className="font-bold text-red-500 line-through">
-                        ${(calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * 24).toLocaleString()}
+                        ${(calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * termMonths).toLocaleString()}
                       </span>
                       <span className="font-bold text-green-600 ml-2">
-                        Save ${((calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * 24) - (monthlySubscription * billedMonths)).toLocaleString()}!
+                        Save ${((calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * termMonths) - (monthlySubscription * billedMonths)).toLocaleString()}!
                       </span>
                     </div>
                   )}

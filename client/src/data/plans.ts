@@ -146,128 +146,80 @@ export interface Addon {
 }
 
 export const ADDON_CATALOG: Addon[] = [
-  // BASIC ADD-ONS ($20/mo overage)
-  {
-    id: "mulch_install_4yards",
-    name: "Mulch Install (Up to 4 Yards)",
-    tier: "basic",
-    category: "landscaping",
-    price: 20,
-    description: "Fresh mulch delivery and installation with light bed cleanup."
-  },
-  {
-    id: "pine_straw_install_8bales",
-    name: "Pine Straw Install (Up to 8 Bales)",
-    tier: "basic",
-    category: "landscaping",
-    price: 20,
-    description: "Fresh pine straw installed neatly in beds."
-  },
-  {
-    id: "leaf_cleanup",
-    name: "Leaf Cleanup",
-    tier: "basic",
-    category: "landscaping",
-    price: 20,
-    description: "Seasonal leaf blowing, mulching, and removal."
-  },
+  // --- BASIC ADD-ONS ($20/mo overage) ---
   {
     id: "shrub_hedge_trimming",
     name: "Shrub / Hedge Trimming",
     tier: "basic",
     category: "landscaping",
     price: 20,
-    description: `Additional trimming beyond plan limits. ${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}`
+    description: "Light trimming of shrubs or hedges to maintain shape and appearance. All clippings will be collected and properly disposed of."
   },
   {
-    id: "mailbox_cleaning",
-    name: "Mailbox Cleaning",
+    id: "basic_pressure_wash",
+    name: "Basic Pressure-Wash Package",
     tier: "basic",
     category: "cleaning",
     price: 20,
-    description: "Clean and polish mailbox for curb appeal."
+    description: "Light exterior pressure washing to refresh high-visibility areas around your home and maintain a clean, welcoming entrance. Includes: Porch, Sidewalk, Mailbox."
   },
   {
-    id: "front_porch_pressure_wash",
-    name: "Front Sidewalk + Front Porch Pressure Wash",
+    id: "driveway_pressure_wash_basic",
+    name: "Driveway Pressure Wash",
     tier: "basic",
     category: "cleaning",
     price: 20,
-    description: "Basic exterior clean for front walkway and porch area."
+    description: "Targeted pressure washing to clean and brighten driveway surfaces, improving curb appeal and removing built-up grime."
+  },
+  {
+    id: "overseeding",
+    name: "Overseeding",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Overseeding services to help improve lawn density and encourage healthier grass growth."
+  },
+  {
+    id: "mulch_install_4yards",
+    name: "Basic Mulch Install (Up to 4 Yards)",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Mulch installation for defined garden or bed areas to refresh appearance and support plant health. Mulch included (brown, red, black hardwood or pine bark). Delivery and installation included."
   },
   {
     id: "quarterly_trash_bin_cleaning",
-    name: "Quarterly Trash Bin Cleaning",
+    name: "Quarterly Trash Can Cleaning",
     tier: "basic",
     category: "trash",
     price: 20,
-    description: "Cleaning and sanitizing of trash bins once every quarter."
-  },
-  {
-    id: "monthly_trash_bin_cleaning",
-    name: "Monthly Trash Bin Cleaning",
-    tier: "premium",
-    category: "trash",
-    price: 40,
-    description: "Monthly cleaning and sanitizing of trash bins. Premium upgrade from quarterly."
+    description: "Periodic cleaning of outdoor trash and recycling bins to reduce odors and buildup."
   },
   {
     id: "christmas_lights_basic",
-    name: "Christmas Lights (Basic)",
+    name: "Basic Seasonal Lighting",
     tier: "basic",
     category: "seasonal",
     price: 20,
-    description: "Simple shrub and small tree decorations. No roofline or yard pop-ups."
+    description: "Ground-level seasonal lighting focused on shrubs, small trees, and select landscape areas using simple yard pop-up lighting. Final layout to be discussed with the homeowner."
   },
   
-  // PREMIUM ADD-ONS ($40/mo overage)
+  // --- PREMIUM ADD-ONS ($40/mo overage) ---
   {
     id: "extra_weed_control",
-    name: "Additional Weed Control Treatments",
+    name: "Additional Weed Control & Fertilization",
     tier: "premium",
     category: "landscaping",
     price: 40,
-    description: "Extra weed control applications with fertilizer and weed killer."
+    description: "Adds three additional lawn applications, including fertilizer, pre-emergent weed prevention, and targeted weed-killer applications, beyond what's included in your plan."
   },
   {
-    id: "lawn_aeration",
-    name: "Lawn Aeration",
-    tier: "premium",
-    category: "landscaping",
-    price: 40,
-    description: "Relieves soil compaction and improves nutrient flow for healthier grass."
-  },
-  {
-    id: "mulch_install_10yards",
-    name: "Mulch Install (Up to 10 Yards)",
-    tier: "premium",
-    category: "landscaping",
-    price: 40,
-    description: "Premium mulch delivery and installation. 4 colors available."
-  },
-  {
-    id: "pine_straw_install_15yards",
-    name: "Pine Straw Install (Up to 15 Yards)",
-    tier: "premium",
-    category: "landscaping",
-    price: 40,
-    description: "Premium pine straw installed neatly in beds."
-  },
-  {
-    id: "driveway_pressure_wash",
-    name: "Driveway Pressure Wash / Soft Wash",
+    id: "premium_pressure_wash",
+    name: "Premium Pressure-Wash Package",
     tier: "premium",
     category: "cleaning",
     price: 40,
-    description: "Professional cleaning of driveway and sidewalks."
-  },
-  {
-    id: "christmas_lights_premium",
-    name: "Christmas Lights (Premium)",
-    tier: "premium",
-    category: "seasonal",
-    price: 40,
-    description: "First floor roofline lighting + flower bed lights + yard pop-ups."
+    description: "Comprehensive exterior pressure washing for a deeper, more complete clean across key areas of your property. Includes: Driveway, Porch, Sidewalk, Mailbox, additional exterior surfaces as appropriate."
   },
   {
     id: "house_soft_wash",
@@ -275,15 +227,31 @@ export const ADDON_CATALOG: Addon[] = [
     tier: "premium",
     category: "cleaning",
     price: 40,
-    description: "Gentle exterior cleaning for siding and surfaces."
+    description: "Low-pressure soft washing to safely clean exterior siding and surfaces, helping restore appearance while protecting your home's finish."
   },
   {
-    id: "soft_wash_premium_package",
-    name: "Soft Wash Premium Package (Annual)",
+    id: "mulch_install_10yards",
+    name: "Premium Mulch Install (Up to 10 Yards)",
     tier: "premium",
-    category: "cleaning",
+    category: "landscaping",
     price: 40,
-    description: "Complete annual soft wash: driveway, sidewalk, front porch, steps, and mailbox."
+    description: "Expanded mulch installation with increased coverage and attention to detail for enhanced curb appeal. Mulch included. Delivery and installation included."
+  },
+  {
+    id: "monthly_trash_bin_cleaning",
+    name: "Monthly Trash Can Cleaning",
+    tier: "premium",
+    category: "trash",
+    price: 40,
+    description: "Monthly cleaning of outdoor trash and recycling bins to help maintain freshness and reduce odor over time."
+  },
+  {
+    id: "christmas_lights_premium",
+    name: "Premium Seasonal Lighting",
+    tier: "premium",
+    category: "seasonal",
+    price: 40,
+    description: "Expanded seasonal lighting designed for holidays, including roofline lighting, enhanced landscape features, and decorative yard elements as appropriate."
   }
 ];
 
