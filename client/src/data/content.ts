@@ -57,9 +57,9 @@ export const PLAN_SUMMARIES = {
       perfectFor: "Homeowners who want reliable maintenance with minimal fuss.",
       highlights: [
         "Bi-weekly mowing",
-        "2 weed control treatments",
-        "1 bush trimming per year",
-        "1 add-on included"
+        "2 weed treatments per year",
+        "Monthly light leaf management",
+        "1 Basic add-on included"
       ]
     },
     {
@@ -68,9 +68,10 @@ export const PLAN_SUMMARIES = {
       perfectFor: "Families who want a consistently great-looking yard all year.",
       highlights: [
         "Weekly mowing",
-        "4 weed treatments + killer",
-        "2 bush trimmings per year",
-        "3 add-ons included"
+        "4 weed treatments + weed killer",
+        "Bi-weekly leaf management (fall/winter)",
+        "Spring & fall cleanups included",
+        "2 Basic + 1 Premium add-ons"
       ]
     },
     {
@@ -78,10 +79,11 @@ export const PLAN_SUMMARIES = {
       name: "Executive Command",
       perfectFor: "Those who want the best lawn on the block without lifting a finger.",
       highlights: [
-        "Weekly mowing (priority)",
+        "Priority weekly mowing",
         "6 weed treatments + guarantee",
-        "3 bush trimmings (unlimited)",
-        "5 add-ons included"
+        "Enhanced leaf management",
+        "Storm visits & winter yard checks",
+        "3 Basic + 2 Premium add-ons"
       ]
     }
   ]

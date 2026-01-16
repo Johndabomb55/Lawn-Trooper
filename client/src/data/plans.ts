@@ -203,6 +203,14 @@ export const ADDON_CATALOG: Addon[] = [
     price: 20,
     description: "Ground-level seasonal lighting focused on shrubs, small trees, and select landscape areas using simple yard pop-up lighting. Final layout to be discussed with the homeowner."
   },
+  {
+    id: "growing_season_boost",
+    name: "Growing-Season Boost",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Enhanced lawn care during peak growing months (spring/summer). Includes additional edging passes, targeted spot treatments, and extra attention to high-growth areas to maintain a crisp, manicured appearance."
+  },
   
   // --- PREMIUM ADD-ONS ($40/mo overage) ---
   {

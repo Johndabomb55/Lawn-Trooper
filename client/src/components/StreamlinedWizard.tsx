@@ -1306,6 +1306,13 @@ export default function StreamlinedWizard() {
                 </div>
               )}
 
+              {/* Complimentary Months Disclaimer */}
+              <div className="p-3 bg-muted/50 rounded-lg border border-border text-center">
+                <p className="text-xs text-muted-foreground">
+                  Complimentary months are skipped billing months applied at the end of your term. Your agreement still ends on your 12-month or 24-month anniversary date.
+                </p>
+              </div>
+
               {/* Loyalty Preview */}
               <button
                 data-testid="info-loyalty"
