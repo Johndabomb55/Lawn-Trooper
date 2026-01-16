@@ -1079,7 +1079,7 @@ export default function StreamlinedWizard() {
             >
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose your commitment</h3>
-                <p className="text-muted-foreground text-sm">Longer commitment = more free months</p>
+                <p className="text-muted-foreground text-sm">We reward loyalty — longer commitment = more complimentary months</p>
               </div>
 
               <div className="space-y-3">
@@ -1121,7 +1121,9 @@ export default function StreamlinedWizard() {
                         )}
                         <div>
                           <div className="font-bold text-lg">{t.label}</div>
-                          <div className="text-sm text-muted-foreground">{t.description}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {(t as any).shortDescription || t.description}
+                          </div>
                           {t.hasPremium && (
                             <div className="text-xs text-amber-600 mt-1">Includes flexibility pricing (+15%)</div>
                           )}

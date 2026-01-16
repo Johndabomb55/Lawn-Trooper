@@ -39,7 +39,11 @@ export default function PromotionsPage() {
   const effectiveMonthly = selectedTerm !== 'month-to-month'
     ? Math.round((actualMonthly * billedMonths) / termMonths)
     : actualMonthly;
-  const savings = (actualMonthly * termMonths) - (actualMonthly * billedMonths);
+  // Savings compared to M2M baseline (15% premium) for the same period
+  const m2mMonthly = Math.round(basePrice * 1.15);
+  const savings = selectedTerm !== 'month-to-month'
+    ? (m2mMonthly * termMonths) - (actualMonthly * billedMonths)
+    : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -79,7 +83,7 @@ export default function PromotionsPage() {
                 >
                   <div>
                     <div className="font-medium">{t.label}</div>
-                    <div className="text-xs text-muted-foreground">{t.description}</div>
+                    <div className="text-xs text-muted-foreground">{(t as any).shortDescription || t.description}</div>
                   </div>
                   {t.freeMonths > 0 && (
                     <span className="text-green-600 font-bold">+{t.freeMonths} complimentary</span>
