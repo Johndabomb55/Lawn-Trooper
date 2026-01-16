@@ -6,32 +6,44 @@
  * 
  * COMMITMENT MODEL (January 2026):
  * 3 commitment options:
- * - Month-to-Month: +15% premium, no free months, cancel anytime
+ * - Month-to-Month: +15% premium, no complimentary months, cancel anytime
  * - 1-Year Subscription: 12 months, can pay monthly or pay in full
  * - 2-Year Subscription (Price Lock): 24 months, can pay monthly or pay in full
  * 
- * FREE MONTH RULES:
- * 1) 25th Anniversary Early Bird Bonus (limited time):
- *    - +1 free month
- *    - Enroll by Jan 25, first payment by Feb 1
- * 2) Commitment Bonus (always available):
- *    - 1-Year: +1 free month
- *    - 2-Year: +2 free months
- * 3) Pay-in-Full Accelerator (optional):
- *    - Doubles ALL earned free months (Early Bird + Commitment)
- *    - No cap on stacking
+ * COMPLIMENTARY MONTH RULES:
+ * "Complimentary months" = skipped billing months at the END of your term.
+ * Your agreement still ends on your 12-month or 24-month anniversary date.
+ * 
+ * 1) Commitment Bonus (always available):
+ *    - 1-Year: +1 complimentary month
+ *    - 2-Year: +2 complimentary months
+ * 2) Pay-in-Full Option:
+ *    - Doubles ONLY commitment months (bonus months NOT doubled)
+ *    - 1-Year PIF: 1×2 = 2 commitment months
+ *    - 2-Year PIF: 2×2 = 4 commitment months
+ * 3) 25th Anniversary Enrollment Bonus (limited time):
+ *    - Dec 25 → Jan 25: +2 bonus months
+ *    - Jan 25 → Feb 25: +1 bonus month
+ *    - After Feb 25: +0 bonus months
+ *    - Bonus months are NOT doubled by pay-in-full
  * 
  * EXAMPLES:
- * - 1-Year (monthly): 1 + 1 = 2 free months
- * - 1-Year + PIF: (1 + 1) × 2 = 4 free months
- * - 2-Year (monthly): 2 + 1 = 3 free months
- * - 2-Year + PIF: (2 + 1) × 2 = 6 free months
+ * - 1-Year (monthly): 1 + 2 = 3 complimentary months (Dec-Jan bonus)
+ * - 1-Year + PIF: 2 + 2 = 4 complimentary months (Dec-Jan bonus)
+ * - 2-Year (monthly): 2 + 2 = 4 complimentary months (Dec-Jan bonus)
+ * - 2-Year + PIF: 4 + 2 = 6 complimentary months (Dec-Jan bonus)
+ * - 1-Year + PIF (Jan-Feb): 2 + 1 = 3 complimentary months
+ * - 2-Year + PIF (Jan-Feb): 4 + 1 = 5 complimentary months
+ * 
+ * MAX OUTCOMES:
+ * - 1-Year Pay in Full + Dec bonus = 4 total
+ * - 2-Year Pay in Full + Dec bonus = 6 total
  * 
  * BILLING:
  * - termMonths = 12 or 24
- * - billedMonths = termMonths - freeMonths
+ * - billedMonths = termMonths - complimentaryMonths
  * - effectiveMonthly = (monthlySubscription × billedMonths) / termMonths
- * - Free months are skipped billing at END of agreement
+ * - Complimentary months are skipped billing at END of agreement
  */
 
 export interface Promotion {
@@ -54,42 +66,77 @@ export interface Promotion {
 // Stacking caps
 export const PROMO_CAPS = {
   maxPercentOff: 30,
-  maxFreeMonths: 6,  // Max: 2-Year (2) + Early Bird (1) = 3 × 2 (PIF) = 6
+  maxFreeMonths: 6,  // Max: 2-Year PIF (4) + Dec bonus (2) = 6
 };
 
 // Month-to-month premium (15% over 2-year base rate)
 export const MONTH_TO_MONTH_PREMIUM = 0.15;
 
-// 25th Anniversary Early Bird Bonus dates
-export const EARLY_BIRD_BONUS = {
-  enrollByDate: new Date('2026-01-25T23:59:59'),  // Must enroll by Jan 25
-  firstPaymentByDate: new Date('2026-02-01T23:59:59'),  // First payment by Feb 1
-  bonusMonths: 1,  // +1 free month
+// 25th Anniversary Enrollment Bonus - Tiered dates
+export const ANNIVERSARY_BONUS = {
+  tier1EndDate: new Date('2026-01-25T23:59:59'),  // Dec 25 → Jan 25: +2 months
+  tier2EndDate: new Date('2026-02-25T23:59:59'),  // Jan 25 → Feb 25: +1 month
+  tier1Months: 2,  // +2 bonus months (Dec 25 - Jan 25)
+  tier2Months: 1,  // +1 bonus month (Jan 25 - Feb 25)
 };
 
 /**
- * Get Early Bird bonus status
- * - Enroll by Jan 25, pay by Feb 1: +1 free month
- * - After Jan 25: Offer expired
+ * Get 25th Anniversary Enrollment Bonus status
+ * - Dec 25 → Jan 25: +2 bonus months (Tier 1)
+ * - Jan 25 → Feb 25: +1 bonus month (Tier 2)
+ * - After Feb 25: +0 bonus months (Concluded)
  * 
- * NOTE: This bonus IS doubled by Pay-in-Full Accelerator
+ * NOTE: Bonus months are NOT doubled by pay-in-full
  */
-export function getEarlyBirdBonus(): { months: number; isActive: boolean; enrollBy: string; payBy: string } {
+export function getAnniversaryBonus(): { 
+  months: number; 
+  tier: 'tier1' | 'tier2' | 'concluded'; 
+  isActive: boolean;
+  tierLabel: string;
+} {
   const now = new Date();
-  const isActive = now < EARLY_BIRD_BONUS.enrollByDate;
   
-  return {
-    months: isActive ? EARLY_BIRD_BONUS.bonusMonths : 0,
-    isActive,
-    enrollBy: 'Jan 25',
-    payBy: 'Feb 1',
-  };
+  if (now < ANNIVERSARY_BONUS.tier1EndDate) {
+    return {
+      months: ANNIVERSARY_BONUS.tier1Months,
+      tier: 'tier1',
+      isActive: true,
+      tierLabel: '+2 bonus months (ends Jan 25)',
+    };
+  } else if (now < ANNIVERSARY_BONUS.tier2EndDate) {
+    return {
+      months: ANNIVERSARY_BONUS.tier2Months,
+      tier: 'tier2',
+      isActive: true,
+      tierLabel: '+1 bonus month (ends Feb 25)',
+    };
+  } else {
+    return {
+      months: 0,
+      tier: 'concluded',
+      isActive: false,
+      tierLabel: 'Enrollment bonus ended',
+    };
+  }
 }
 
-// Check if Early Bird offer is active
-export const isEarlyBird = (): boolean => {
-  return getEarlyBirdBonus().isActive;
+// Check if Anniversary bonus is active (either tier)
+export const isAnniversaryActive = (): boolean => {
+  return getAnniversaryBonus().isActive;
 };
+
+// Legacy alias for backward compatibility
+export const EARLY_BIRD_BONUS = ANNIVERSARY_BONUS;
+export const getEarlyBirdBonus = () => {
+  const bonus = getAnniversaryBonus();
+  return {
+    months: bonus.months,
+    isActive: bonus.isActive,
+    enrollBy: bonus.tier === 'tier1' ? 'Jan 25' : 'Feb 25',
+    payBy: bonus.tier === 'tier1' ? 'Feb 1' : 'Mar 1',
+  };
+};
+export const isEarlyBird = isAnniversaryActive;
 
 // Operation Price Drop - Loyalty Pricing
 export const LOYALTY_DISCOUNTS = [
@@ -106,7 +153,7 @@ export const COMMITMENT_TERMS = [
     months: 1,
     freeMonths: 0,
     badge: 'Flexible',
-    description: 'Month-to-month plans do not include free months because we reward long-term commitment.',
+    description: 'Month-to-month subscriptions do not include complimentary billing months because we reward commitment and long-term relationships.',
     shortDescription: 'Cancel anytime with 30 days notice',
     hasPremium: true,
     allowsPayInFull: false,
@@ -117,8 +164,8 @@ export const COMMITMENT_TERMS = [
     months: 12,
     freeMonths: 1,  // Commitment Bonus
     badge: 'Save More',
-    description: 'Commit to one year and earn +1 free month. Pay monthly or pay in full — your choice.',
-    shortDescription: '+1 free month (Commitment Bonus)',
+    description: 'Commit to one year and earn +1 complimentary billing month. Pay monthly or pay in full.',
+    shortDescription: '+1 complimentary month (Commitment Bonus)',
     hasPremium: false,
     allowsPayInFull: true,
   },
@@ -128,39 +175,45 @@ export const COMMITMENT_TERMS = [
     months: 24,
     freeMonths: 2,  // Commitment Bonus
     badge: 'Best Value',
-    description: 'Lock in your rate for 2 years and earn +2 free months. Pay monthly or pay in full — your choice.',
-    shortDescription: '+2 free months (Commitment Bonus)',
+    description: 'Lock in your rate for 2 years and earn +2 complimentary billing months. Pay monthly or pay in full.',
+    shortDescription: '+2 complimentary months (Commitment Bonus)',
     hasPremium: false,
     allowsPayInFull: true,
   },
 ];
 
 /**
- * Calculate free service months for term commitments
+ * Calculate complimentary service months for term commitments
  * 
- * Earned free months = Early Bird Bonus + Commitment Bonus
- * Pay-in-Full Accelerator: Doubles ALL earned free months
+ * Formula:
+ * - Commitment months: 1 (1-year) or 2 (2-year)
+ * - Pay-in-Full doubles ONLY commitment months (NOT bonus)
+ * - Anniversary Enrollment Bonus: +2 (Dec-Jan) or +1 (Jan-Feb) — NOT doubled
  * 
- * Examples:
- * - 1-Year (monthly): 1 + 1 = 2 free months
- * - 1-Year + PIF: (1 + 1) × 2 = 4 free months
- * - 2-Year (monthly): 2 + 1 = 3 free months
- * - 2-Year + PIF: (2 + 1) × 2 = 6 free months
+ * Examples (Dec-Jan bonus = +2):
+ * - 1-Year (monthly): 1 + 2 = 3 complimentary months
+ * - 1-Year + PIF: 2 + 2 = 4 complimentary months
+ * - 2-Year (monthly): 2 + 2 = 4 complimentary months
+ * - 2-Year + PIF: 4 + 2 = 6 complimentary months
+ * 
+ * Examples (Jan-Feb bonus = +1):
+ * - 1-Year + PIF: 2 + 1 = 3 complimentary months
+ * - 2-Year + PIF: 4 + 1 = 5 complimentary months
  */
 export function calculateTermFreeMonths(term: 'month-to-month' | '1-year' | '2-year', payInFull: boolean): number {
   if (term === 'month-to-month') return 0;
   
   // Commitment Bonus: 1 for 1-year, 2 for 2-year
-  const commitmentBonus = term === '1-year' ? 1 : 2;
+  const commitmentBase = term === '1-year' ? 1 : 2;
   
-  // 25th Anniversary Early Bird Bonus: +1 if active
-  const earlyBirdBonus = getEarlyBirdBonus().months;
+  // Pay-in-Full doubles ONLY commitment months
+  const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
   
-  // Total earned free months BEFORE accelerator
-  const earnedFreeMonths = commitmentBonus + earlyBirdBonus;
+  // 25th Anniversary Enrollment Bonus: NOT doubled by PIF
+  const anniversaryBonus = getAnniversaryBonus().months;
   
-  // Pay-in-Full Accelerator: doubles ALL earned free months
-  const totalFreeMonths = payInFull ? earnedFreeMonths * 2 : earnedFreeMonths;
+  // Total: doubled commitment + undoubled bonus
+  const totalFreeMonths = commitmentMonths + anniversaryBonus;
   
   return totalFreeMonths;
 }
@@ -171,52 +224,66 @@ export function calculate2YearFreeMonths(payInFull: boolean): number {
 }
 
 /**
- * Get itemized breakdown of free months
+ * Get itemized breakdown of complimentary months
  * Useful for displaying in UI
  * 
  * Returns:
- * - earlyBirdBonus: 25th Anniversary Early Bird Bonus (+1 if active)
- * - commitmentBonus: Commitment Bonus (1-year: +1, 2-year: +2)
- * - earnedTotal: Sum of early bird + commitment bonuses
- * - acceleratorMultiplier: 1 (monthly) or 2 (Pay-in-Full)
- * - total: Final free months after accelerator
+ * - commitmentBase: Base commitment months (1 for 1-year, 2 for 2-year)
+ * - commitmentMonths: After PIF doubling (if applicable)
+ * - anniversaryBonus: Enrollment bonus (NOT doubled by PIF)
+ * - total: Final complimentary months
+ * - payInFull: Whether PIF is applied
  */
 export function getFreeMonthsBreakdown(term: 'month-to-month' | '1-year' | '2-year', payInFull: boolean): {
+  commitmentBase: number;
+  commitmentMonths: number;
+  anniversaryBonus: number;
+  total: number;
+  payInFull: boolean;
+  // Legacy aliases for backward compatibility
   earlyBirdBonus: number;
   commitmentBonus: number;
   earnedTotal: number;
   acceleratorMultiplier: number;
-  total: number;
 } {
   if (term === 'month-to-month') {
     return { 
-      earlyBirdBonus: 0, 
-      commitmentBonus: 0, 
+      commitmentBase: 0,
+      commitmentMonths: 0,
+      anniversaryBonus: 0,
+      total: 0,
+      payInFull: false,
+      // Legacy
+      earlyBirdBonus: 0,
+      commitmentBonus: 0,
       earnedTotal: 0,
       acceleratorMultiplier: 1,
-      total: 0,
     };
   }
   
-  // 25th Anniversary Early Bird Bonus: +1 if active
-  const earlyBirdBonus = getEarlyBirdBonus().months;
+  // Commitment Bonus base: 1 for 1-year, 2 for 2-year
+  const commitmentBase = term === '1-year' ? 1 : 2;
   
-  // Commitment Bonus: 1 for 1-year, 2 for 2-year
-  const commitmentBonus = term === '1-year' ? 1 : 2;
+  // Pay-in-Full doubles ONLY commitment months
+  const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
   
-  // Total earned BEFORE accelerator
-  const earnedTotal = earlyBirdBonus + commitmentBonus;
+  // 25th Anniversary Enrollment Bonus: NOT doubled
+  const anniversaryBonus = getAnniversaryBonus().months;
   
-  // Pay-in-Full Accelerator: ×2
-  const acceleratorMultiplier = payInFull ? 2 : 1;
-  const total = earnedTotal * acceleratorMultiplier;
+  // Total = doubled commitment + undoubled bonus
+  const total = commitmentMonths + anniversaryBonus;
   
   return {
-    earlyBirdBonus,
-    commitmentBonus,
-    earnedTotal,
-    acceleratorMultiplier,
+    commitmentBase,
+    commitmentMonths,
+    anniversaryBonus,
     total,
+    payInFull,
+    // Legacy aliases
+    earlyBirdBonus: anniversaryBonus,
+    commitmentBonus: commitmentBase,
+    earnedTotal: commitmentBase + anniversaryBonus,
+    acceleratorMultiplier: payInFull ? 2 : 1,
   };
 }
 
