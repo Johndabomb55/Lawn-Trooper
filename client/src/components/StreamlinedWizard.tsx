@@ -257,7 +257,7 @@ export default function StreamlinedWizard() {
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-primary to-green-700 p-4 text-white">
         <div className="flex items-center justify-between mb-3">
-          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Build My Plan</h2>
+          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Build My Subscription</h2>
           <span data-testid="text-step-badge" className="text-sm bg-white/20 px-3 py-1 rounded-full">
             Step {step} of 7
           </span>
@@ -503,9 +503,14 @@ export default function StreamlinedWizard() {
                       <button
                         data-testid={`plan-${p.id}`}
                         onClick={() => {
+                          const previousPlan = plan;
                           setPlan(p.id);
                           if (p.id !== 'executive') {
                             setSwapCount(0);
+                          }
+                          // Clear premium add-ons when switching to Basic plan (no premium allowance)
+                          if (p.id === 'basic' && previousPlan !== 'basic') {
+                            setPremiumAddons([]);
                           }
                         }}
                         className={`w-full p-4 rounded-xl border-2 transition-all text-left relative ${
@@ -1356,7 +1361,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-primary hover:bg-primary/90"
               data-testid="button-next"
             >
-              {step === 1 ? "Start My Free Quote" : "Continue"}
+              {step === 1 ? "Build My Subscription" : "Continue"}
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           )}

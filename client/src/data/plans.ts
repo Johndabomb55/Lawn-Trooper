@@ -201,11 +201,11 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "monthly_trash_bin_cleaning",
-    name: "Monthly Trash Bin Cleaning (Upgrade)",
-    tier: "basic",
+    name: "Monthly Trash Bin Cleaning",
+    tier: "premium",
     category: "trash",
-    price: 20,
-    description: "Monthly cleaning and sanitizing of trash bins."
+    price: 40,
+    description: "Monthly cleaning and sanitizing of trash bins. Premium upgrade from quarterly."
   },
   {
     id: "christmas_lights_basic",
@@ -272,6 +272,14 @@ export const ADDON_CATALOG: Addon[] = [
     category: "cleaning",
     price: 40,
     description: "Gentle exterior cleaning for siding and surfaces."
+  },
+  {
+    id: "soft_wash_premium_package",
+    name: "Soft Wash Premium Package (Annual)",
+    tier: "premium",
+    category: "cleaning",
+    price: 40,
+    description: "Complete annual soft wash: driveway, sidewalk, front porch, steps, and mailbox."
   }
 ];
 

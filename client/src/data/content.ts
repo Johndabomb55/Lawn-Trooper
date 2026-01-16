@@ -150,7 +150,7 @@ export const FOOTER_CONTENT = {
 };
 
 export const CTA_BUTTONS = {
-  buildMyPlan: "Build My Plan",
+  buildMyPlan: "Build My Subscription",
   getStarted: "Get Started",
   viewPlans: "View Plans",
 };
