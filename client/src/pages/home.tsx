@@ -555,7 +555,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
            <div className="max-w-2xl mx-auto">
              <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
-             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both get 1 month free!</p>
+             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both earn 1 complimentary month!</p>
            </div>
         </div>
       </section>
@@ -572,13 +572,13 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
-              <h3 className="text-2xl font-heading font-bold text-accent mb-2">LIMITED TIME ENLISTMENT OFFERS</h3>
+              <h3 className="text-2xl font-heading font-bold text-accent mb-2">25th ANNIVERSARY ENROLLMENT BONUS</h3>
               <ul className="text-sm md:text-base space-y-1 opacity-90">
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> 1-Year Commitment: <strong>1 Month FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> 2-Year Commitment: <strong>2 Months FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> 3-Year Commitment: <strong>3 Months FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay in Full: <strong>+1 Additional Month FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH get 1 Month FREE!</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Earn <strong>complimentary billing months</strong> with a commitment</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> The longer you commit, the more you save</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay-in-Full doubles your commitment months</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Limited-time 25th Anniversary bonus months</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH earn 1 complimentary month!</strong></li>
               </ul>
             </div>
           </div>

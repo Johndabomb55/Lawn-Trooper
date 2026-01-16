@@ -658,7 +658,7 @@ export const TRUST_MESSAGES = {
   confirmation: "Your information is secure. We never sell your data and will only use it to schedule your FREE Dream Yard Recon.",
   commitment: "Commit to us and we commit to you.",
   miguelNote: "We will contact you via your preferred method (call, email, or text) to schedule your FREE Dream Yard Recon. If you don't attach yard photos, we'll send Miguel to scout your property — no commitment needed.",
-  referralNudge: "Refer a neighbour — you both get 1 month free after your friend commits.",
+  referralNudge: "Refer a neighbour — you both earn 1 complimentary month after your friend commits.",
 };
 
 

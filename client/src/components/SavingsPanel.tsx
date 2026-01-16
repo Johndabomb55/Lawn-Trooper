@@ -21,7 +21,7 @@ interface SavingsPanelProps {
   baseMonthly: number;
   promotionResult: PromotionResult;
   appliedTotals: AppliedTotals;
-  term: '1-year' | '2-year' | '3-year';
+  term: 'month-to-month' | '1-year' | '2-year';
   showUnlockedAnimation?: boolean;
   className?: string;
 }
@@ -47,9 +47,9 @@ export default function SavingsPanel({
 
   const hasDiscounts = applied.length > 0 || pending.length > 0;
   const termLabels: Record<string, string> = {
+    'month-to-month': 'Month-to-Month',
     '1-year': '1-Year Commitment',
     '2-year': '2-Year Commitment',
-    '3-year': '3-Year Commitment',
   };
   const termLabel = termLabels[term] || term;
 
@@ -101,7 +101,7 @@ export default function SavingsPanel({
           </div>
         </div>
 
-        {/* Free Months & Total Savings */}
+        {/* Complimentary Months & Total Savings */}
         <div className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2 p-2 bg-accent/10 rounded-lg">
             <Calendar className="w-5 h-5 text-accent shrink-0" />

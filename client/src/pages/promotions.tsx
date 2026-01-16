@@ -86,7 +86,7 @@ export default function PromotionsPage() {
                     <div className="text-xs text-muted-foreground">{(t as any).shortDescription || t.description}</div>
                   </div>
                   {t.freeMonths > 0 && (
-                    <span className="text-green-600 font-bold">+{t.freeMonths} free</span>
+                    <span className="text-green-600 font-bold">+{t.freeMonths} complimentary</span>
                   )}
                   {t.hasPremium && (
                     <span className="text-amber-600 text-sm">+15%</span>

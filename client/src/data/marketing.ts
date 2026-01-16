@@ -158,7 +158,7 @@ export const SOCIAL_SHARING = {
   facebook: {
     quote: "Getting my yard mission-ready with Lawn Trooper's professional lawn care service!",
   },
-  referralMessage: "Tell a neighbor about Lawn Trooper and you BOTH get 1 month FREE when they sign up!",
+  referralMessage: "Tell a neighbor about Lawn Trooper and you BOTH earn 1 complimentary month when they sign up!",
 };
 
 // Waitlist Configuration
