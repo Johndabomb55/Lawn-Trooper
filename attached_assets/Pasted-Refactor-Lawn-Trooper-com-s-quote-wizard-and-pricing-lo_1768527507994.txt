@@ -1,0 +1,48 @@
+Refactor Lawn‑Trooper.com’s quote wizard and pricing logic for clarity, transparency, and ease of use. Fix outstanding bugs in payment calculations and add‑on summaries, while following best‑practice UX guidelines.
+
+GOAL:
+Deliver a stress‑free, intuitive quote flow that accurately represents the catalog of add‑ons, plan tiers, commitment options, and pricing incentives.
+
+REQUIREMENTS:
+
+📌 Data and Source‑of‑Truth
+1. **Use canonical add‑on data** – Replace any hardcoded or stubbed lists with the official `lawn_trooper_addons.json` source of truth. Ensure every add‑on has tier classification (Basic, Premium, Executive Exclusive), category (Landscaping, Cleaning & Wash, Trash Can, Seasonal/Christmas), description, and pricing info ($20 for each extra Basic, $40 for each extra Premium).
+2. **Plan configuration** – Define a single config object per plan (Basic Patrol, Premium Patrol, Executive Command) with fields:
+   - `planId`, `planName`, `basePrice` (adjusted by yard size), `includedBasicAddOns`, `includedPremiumAddOns`, `executiveExtras`.
+   - `canSwapPremiumForBasic` (true/false), `swapValue` (e.g., 1 Premium → 2 Basic).
+3. **Remove duplicate old definitions** – All plan and add‑on definitions must read from the same config to prevent drift.
+
+🎨 UI & UX updates
+4. **Plan selection (Step 3)**:
+   - Remove all “View details” triggers.
+   - Display a line on each card: “Add‑Ons Included: X Basic + Y Premium”.
+   - If a plan has executive exclusives (e.g., unlimited mulch), show: “Executive Extras: Unlimited Mulch.”
+5. **Add‑on step (Step 4)**:
+   - Group add‑ons into clearly titled sections (Basic Add‑Ons, Premium Add‑Ons, Executive Exclusives, Cleaning & Wash, Trash Can Cleaning, Seasonal/Christmas Lights).
+   - Show included/free slot counters that update live (e.g., “Selected: 2 Basic, 1 Premium”, “Included: 3 Basic + 2 Premium”).
+   - Keep all add‑ons visible even when the included slots are filled; overages should show the extra cost next to the item and update the price summary.
+   - Implement the swap toggle only for Executive and clearly show the resulting allowance (e.g., “No swap (3 Basic + 2 Premium)”, “Swap 1 Premium → +2 Basic (5 Basic + 1 Premium)”, “Swap 2 Premium → +4 Basic (7 Basic + 0 Premium)”).
+   - Use tooltips/info icons on each add‑on to explain what it includes (limits, frequency).
+6. **Commitment & payment (Step 5)**:
+   - Present Month‑to‑Month (+15 % price), 1‑Year (+1 free month), 2‑Year (+2 free months) options.
+   - Offer payment methods (Monthly, Yearly, Pay in Full) with the 1‑year and 2‑year free months and pay‑in‑full free month stacking rules.
+   - Fix **effective monthly calculation**: `effectiveMonthly = baseMonthly * (termMonths - freeMonths) / termMonths`. It must always be lower than or equal to the base monthly.
+   - Add a tooltip link (“What’s this?”) to explain how effective monthly and free months work (e.g., “Free months are skipped billing months at the end of your contract; you pay for fewer months, not a discount.”).
+   - Make the price summary update whenever the user changes term or payment method.
+7. **Summary & contact (Step 6/7)**:
+   - Clearly list “Selected Add‑Ons” vs “Included Slots” vs “Overages” (with per‑month costs) so the user understands why the price is what it is.
+   - Show total monthly payment and effective monthly after free months again for final confirmation.
+   - Provide a concise confirmation message that no payment is collected now, and you’ll contact them to finalize.
+
+🛂 Additional improvements
+8. **HOA/commercial details** – When “Multi‑Home Community / Over 1 Acre” is selected, insert extra fields (HOA name, acreage, number of units, optional photo upload). Use these fields to pre‑populate an internal quote request.
+9. **Narrative & CTA simplification** – Maintain a single primary CTA (“Build My Plan” or “Get Your Free Quote”) throughout the site. If a sub‑CTA is necessary, ensure it’s clearly secondary (e.g., “View plan details” becomes plan card info).
+10. **Accessibility** – Ensure single‑column forms, sufficient contrast, clear alt‑text on icons and images, and descriptive labels for screen readers.
+
+COMMENT:
+Include brief comments in the code noting why certain refactors (single source‑of‑truth config, effective monthly formula, executive swap logic) were added. Ensure all updated components read from the same config and remove any stray, hardcoded values. Test thoroughly after implementing to verify that:
+
+- Free‑month calculations are correct (effective monthly < actual monthly).
+- Add‑on counters and extra‑cost logic reflect selections accurately.
+- Summary page labels are unambiguous (Selected vs Included vs Extra).
+- Plan cards, payment steps, and final summary stay in sync.
