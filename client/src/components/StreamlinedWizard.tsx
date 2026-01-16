@@ -1143,25 +1143,51 @@ export default function StreamlinedWizard() {
                       {/* Pay-in-Full Accelerator Toggle - Optional for 1-year and 2-year */}
                       {t.allowsPayInFull && isSelected && (
                         <div className="mt-3 ml-4 space-y-2">
-                          {/* 25th Anniversary Enrollment Bonus Banner */}
+                          {/* Commitment Bonus Section */}
+                          <div className="p-2 bg-primary/5 border border-primary/20 rounded-lg">
+                            <div className="text-xs font-bold text-primary mb-1">Commitment Bonus</div>
+                            <div className="text-[10px] text-muted-foreground space-y-0.5">
+                              <div className="flex justify-between"><span>1-Year:</span><span>+1 month</span></div>
+                              <div className="flex justify-between"><span>2-Year:</span><span>+2 months</span></div>
+                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>doubles commitment</span></div>
+                            </div>
+                          </div>
+                          
+                          {/* 25-Year Birthday Bonus Section */}
                           {(() => {
                             const bonus = getAnniversaryBonus();
                             if (bonus.isActive) {
                               return (
-                                <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg text-center">
-                                  <div className="text-xs font-bold text-amber-700">
-                                    🎉 25th Anniversary Enrollment Bonus: +{bonus.months} complimentary month{bonus.months > 1 ? 's' : ''}!
+                                <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                                  <div className="text-xs font-bold text-amber-700 mb-1">
+                                    🎉 25-Year Birthday Bonus
                                   </div>
-                                  <div className="text-[10px] text-amber-600">
-                                    {bonus.tierLabel}
+                                  <div className="text-[10px] text-amber-600 space-y-0.5">
+                                    <div className={`flex justify-between ${bonus.tier === 'tier1' ? 'font-bold' : ''}`}>
+                                      <span>Enroll by Jan 25:</span><span>+2 months</span>
+                                    </div>
+                                    <div className={`flex justify-between ${bonus.tier === 'tier2' ? 'font-bold' : ''}`}>
+                                      <span>Enroll by Feb 25:</span><span>+1 month</span>
+                                    </div>
+                                    <div className="flex justify-between text-muted-foreground">
+                                      <span>After Feb 25:</span><span>Bonus concluded</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-[10px] text-center text-amber-700 font-bold mt-1">
+                                    Your bonus: +{bonus.months} month{bonus.months > 1 ? 's' : ''}
                                   </div>
                                 </div>
                               );
                             } else {
                               return (
-                                <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-center">
-                                  <div className="text-xs text-muted-foreground line-through">
-                                    25th Anniversary Enrollment Bonus (expired)
+                                <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg">
+                                  <div className="text-xs font-medium text-muted-foreground mb-1">
+                                    25-Year Birthday Bonus
+                                  </div>
+                                  <div className="text-[10px] text-muted-foreground space-y-0.5">
+                                    <div className="flex justify-between line-through"><span>Enroll by Jan 25:</span><span>+2 months</span></div>
+                                    <div className="flex justify-between line-through"><span>Enroll by Feb 25:</span><span>+1 month</span></div>
+                                    <div className="flex justify-between"><span>After Feb 25:</span><span className="italic">Bonus concluded</span></div>
                                   </div>
                                 </div>
                               );
@@ -1226,12 +1252,12 @@ export default function StreamlinedWizard() {
                       {/* Itemized breakdown */}
                       <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
                         <div className="flex justify-between">
-                          <span>• Commitment:</span>
+                          <span>• Commitment Bonus:</span>
                           <span>{payInFull ? `${freeMonthsBreakdown.commitmentBase} × 2 = ${freeMonthsBreakdown.commitmentMonths}` : `+${freeMonthsBreakdown.commitmentBase}`} mo</span>
                         </div>
                         {freeMonthsBreakdown.anniversaryBonus > 0 && (
                           <div className="flex justify-between">
-                            <span>• 25th Anniversary Bonus:</span>
+                            <span>• Birthday Bonus:</span>
                             <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
                           </div>
                         )}

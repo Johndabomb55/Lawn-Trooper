@@ -116,9 +116,9 @@ export const FUN_FACTS = [
 // Promotional Banners for Rotating Display
 export const PROMO_BANNERS = [
   {
-    id: "anniversary",
-    title: "25th Anniversary Enrollment Bonus",
-    subtitle: "Celebrating 25 years — long-term subscribers can earn complimentary billing months",
+    id: "birthday",
+    title: "25-Year Birthday Bonus",
+    subtitle: "Celebrating 25 years — long-term subscribers may qualify for our Birthday Bonus",
     cta: "Get Your Quote",
     active: true,
     priority: 1

@@ -72,63 +72,78 @@ export const PROMO_CAPS = {
 // Month-to-month premium (15% over 2-year base rate)
 export const MONTH_TO_MONTH_PREMIUM = 0.15;
 
-// 25th Anniversary Enrollment Bonus - Tiered dates
-export const ANNIVERSARY_BONUS = {
+// 25-Year Birthday Bonus (25th Anniversary Enrollment Bonus) - Tiered dates
+export const BIRTHDAY_BONUS = {
   tier1EndDate: new Date('2026-01-25T23:59:59'),  // Dec 25 → Jan 25: +2 months
   tier2EndDate: new Date('2026-02-25T23:59:59'),  // Jan 25 → Feb 25: +1 month
   tier1Months: 2,  // +2 bonus months (Dec 25 - Jan 25)
   tier2Months: 1,  // +1 bonus month (Jan 25 - Feb 25)
+  marketingName: '25-Year Birthday Bonus',
+  formalName: '25th Anniversary Enrollment Bonus',
 };
 
+// Legacy alias
+export const ANNIVERSARY_BONUS = BIRTHDAY_BONUS;
+
 /**
- * Get 25th Anniversary Enrollment Bonus status
+ * Get 25-Year Birthday Bonus status
  * - Dec 25 → Jan 25: +2 bonus months (Tier 1)
  * - Jan 25 → Feb 25: +1 bonus month (Tier 2)
  * - After Feb 25: +0 bonus months (Concluded)
  * 
  * NOTE: Bonus months are NOT doubled by pay-in-full
  */
-export function getAnniversaryBonus(): { 
+export function getBirthdayBonus(): { 
   months: number; 
   tier: 'tier1' | 'tier2' | 'concluded'; 
   isActive: boolean;
   tierLabel: string;
+  name: string;
 } {
   const now = new Date();
   
-  if (now < ANNIVERSARY_BONUS.tier1EndDate) {
+  if (now < BIRTHDAY_BONUS.tier1EndDate) {
     return {
-      months: ANNIVERSARY_BONUS.tier1Months,
+      months: BIRTHDAY_BONUS.tier1Months,
       tier: 'tier1',
       isActive: true,
-      tierLabel: '+2 bonus months (ends Jan 25)',
+      tierLabel: 'Enroll by Jan 25: +2 months',
+      name: BIRTHDAY_BONUS.marketingName,
     };
-  } else if (now < ANNIVERSARY_BONUS.tier2EndDate) {
+  } else if (now < BIRTHDAY_BONUS.tier2EndDate) {
     return {
-      months: ANNIVERSARY_BONUS.tier2Months,
+      months: BIRTHDAY_BONUS.tier2Months,
       tier: 'tier2',
       isActive: true,
-      tierLabel: '+1 bonus month (ends Feb 25)',
+      tierLabel: 'Enroll by Feb 25: +1 month',
+      name: BIRTHDAY_BONUS.marketingName,
     };
   } else {
     return {
       months: 0,
       tier: 'concluded',
       isActive: false,
-      tierLabel: 'Enrollment bonus ended',
+      tierLabel: 'Bonus concluded',
+      name: BIRTHDAY_BONUS.marketingName,
     };
   }
 }
 
-// Check if Anniversary bonus is active (either tier)
-export const isAnniversaryActive = (): boolean => {
-  return getAnniversaryBonus().isActive;
+// Alias for backward compatibility
+export function getAnniversaryBonus() {
+  return getBirthdayBonus();
+}
+
+// Check if Birthday bonus is active (either tier)
+export const isBirthdayBonusActive = (): boolean => {
+  return getBirthdayBonus().isActive;
 };
 
-// Legacy alias for backward compatibility
-export const EARLY_BIRD_BONUS = ANNIVERSARY_BONUS;
+// Legacy aliases for backward compatibility
+export const isAnniversaryActive = isBirthdayBonusActive;
+export const EARLY_BIRD_BONUS = BIRTHDAY_BONUS;
 export const getEarlyBirdBonus = () => {
-  const bonus = getAnniversaryBonus();
+  const bonus = getBirthdayBonus();
   return {
     months: bonus.months,
     isActive: bonus.isActive,
@@ -136,7 +151,7 @@ export const getEarlyBirdBonus = () => {
     payBy: bonus.tier === 'tier1' ? 'Feb 1' : 'Mar 1',
   };
 };
-export const isEarlyBird = isAnniversaryActive;
+export const isEarlyBird = isBirthdayBonusActive;
 
 // Operation Price Drop - Loyalty Pricing
 export const LOYALTY_DISCOUNTS = [

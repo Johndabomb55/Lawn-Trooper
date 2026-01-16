@@ -107,12 +107,19 @@ The promotions engine is a config-driven stacking discounts system. All promotio
 - **2-Year Commitment**: Commitment Bonus +2 complimentary months (Best Value badge)
 - **Payment Options**: Monthly or Pay in Full
 
-#### 25th Anniversary Enrollment Bonus (Tiered)
-- **Dec 25 → Jan 25**: +2 bonus months (Tier 1)
-- **Jan 25 → Feb 25**: +1 bonus month (Tier 2)
-- **After Feb 25**: +0 bonus months (expired)
+#### 25-Year Birthday Bonus (Phased Enrollment Bonus)
+- **Marketing name**: "25-Year Birthday Bonus"
+- **Formal name**: "25th Anniversary Enrollment Bonus"
+- **Enroll by Jan 25**: +2 bonus months (Tier 1)
+- **Enroll by Feb 25**: +1 bonus month (Tier 2)
+- **After Feb 25**: +0 bonus months (Bonus concluded - show muted text, don't hide)
 - **Important**: Bonus months are NOT doubled by Pay-in-Full
-- Configure in `ANNIVERSARY_BONUS` in promotions.ts
+- Configure in `BIRTHDAY_BONUS` in promotions.ts
+
+#### Step 5 Layout (Commitment Step)
+Step 5 now shows two clearly separated sections:
+1. **Commitment Bonus** section - shows 1Y/2Y base months and PIF doubling
+2. **25-Year Birthday Bonus** section - shows phased enrollment schedule with dates
 
 #### Pay-in-Full Option
 - **Effect**: Doubles ONLY commitment months (bonus months NOT doubled)

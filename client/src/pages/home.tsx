@@ -572,12 +572,12 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
-              <h3 className="text-2xl font-heading font-bold text-accent mb-2">25th ANNIVERSARY ENROLLMENT BONUS</h3>
+              <h3 className="text-2xl font-heading font-bold text-accent mb-2">25-YEAR BIRTHDAY BONUS</h3>
               <ul className="text-sm md:text-base space-y-1 opacity-90">
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Earn <strong>complimentary billing months</strong> with a commitment</li>
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> The longer you commit, the more you save</li>
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay-in-Full doubles your commitment months</li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Limited-time 25th Anniversary bonus months</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Celebrating 25 years — long-term subscribers may qualify for our 25-Year Birthday Bonus</li>
                 <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH earn 1 complimentary month!</strong></li>
               </ul>
             </div>

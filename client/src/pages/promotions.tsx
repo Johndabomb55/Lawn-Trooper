@@ -103,10 +103,10 @@ export default function PromotionsPage() {
             </div>
             {selectedTerm !== 'month-to-month' ? (
               <div className="space-y-4">
-                {/* 25th Anniversary Enrollment Bonus */}
+                {/* 25-Year Birthday Bonus */}
                 {earlyBirdBonus.isActive && (
                   <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
-                    <strong>25th Anniversary Enrollment Bonus:</strong> +{earlyBirdBonus.months} complimentary month{earlyBirdBonus.months > 1 ? 's' : ''} included!
+                    <strong>🎉 25-Year Birthday Bonus:</strong> +{earlyBirdBonus.months} complimentary month{earlyBirdBonus.months > 1 ? 's' : ''} included!
                     <div className="text-xs text-amber-600 mt-1">
                       Enroll by {earlyBirdBonus.enrollBy} • First payment by {earlyBirdBonus.payBy}
                     </div>
@@ -114,7 +114,7 @@ export default function PromotionsPage() {
                 )}
                 {!earlyBirdBonus.isActive && (
                   <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-muted-foreground">
-                    <span className="line-through">25th Anniversary Enrollment Bonus</span> (expired)
+                    <span>25-Year Birthday Bonus</span> <span className="italic">(Bonus concluded)</span>
                   </div>
                 )}
                 
@@ -223,9 +223,9 @@ export default function PromotionsPage() {
             <div className="bg-white rounded-lg p-4 border">
               <p className="font-medium mb-2">Example: 2-Year + Pay-in-Full (Dec-Jan enrollment)</p>
               <ul className="space-y-1 text-muted-foreground">
-                <li>• Commitment (2-year): 2 months</li>
+                <li>• Commitment Bonus (2-year): 2 months</li>
                 <li>• Pay-in-Full doubles commitment: 2 × 2 = 4 months</li>
-                <li>• 25th Anniversary Bonus: +2 months (not doubled)</li>
+                <li>• Birthday Bonus: +2 months (not doubled)</li>
                 <li>• Total: 6 complimentary months</li>
                 <li>• Term: 24 months of service</li>
                 <li>• Months billed: 18</li>
@@ -234,9 +234,9 @@ export default function PromotionsPage() {
             <div className="bg-white rounded-lg p-4 border mt-3">
               <p className="font-medium mb-2">Example: 1-Year + Pay-in-Full (Jan-Feb enrollment)</p>
               <ul className="space-y-1 text-muted-foreground">
-                <li>• Commitment (1-year): 1 month</li>
+                <li>• Commitment Bonus (1-year): 1 month</li>
                 <li>• Pay-in-Full doubles commitment: 1 × 2 = 2 months</li>
-                <li>• 25th Anniversary Bonus: +1 month (not doubled)</li>
+                <li>• Birthday Bonus: +1 month (not doubled)</li>
                 <li>• Total: 3 complimentary months</li>
                 <li>• Term: 12 months of service</li>
                 <li>• Months billed: 9</li>
