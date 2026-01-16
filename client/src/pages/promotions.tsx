@@ -5,17 +5,17 @@ import { useState } from "react";
 import { PLANS, YARD_SIZES, getYardMultiplier } from "@/data/plans";
 import { 
   COMMITMENT_TERMS, 
-  PAYMENT_METHODS,
   MONTH_TO_MONTH_PREMIUM,
   calculateActualMonthly,
-  calculateEffectiveMonthly,
-  getTotalFreeMonths
+  calculate2YearFreeMonths,
+  isEarlyBird
 } from "@/data/promotions";
+import { Switch } from "@/components/ui/switch";
 
 export default function PromotionsPage() {
   const [selectedPlan, setSelectedPlan] = useState("premium");
   const [selectedYardSize, setSelectedYardSize] = useState("1/3");
-  const [selectedTerm, setSelectedTerm] = useState<'month-to-month' | '1-year' | '2-year'>('1-year');
+  const [selectedTerm, setSelectedTerm] = useState<'month-to-month' | '2-year'>('2-year');
   const [payInFull, setPayInFull] = useState(false);
 
   const plan = PLANS.find(p => p.id === selectedPlan);
@@ -27,14 +27,18 @@ export default function PromotionsPage() {
     : 0;
 
   const actualMonthly = calculateActualMonthly(basePrice, selectedTerm);
-  const effectiveMonthly = calculateEffectiveMonthly(basePrice, selectedTerm, payInFull);
-  const freeMonths = getTotalFreeMonths(selectedTerm, payInFull, false);
   
-  const termMonths = term?.months || 12;
-  const paidMonths = Math.max(termMonths - freeMonths, 1);
-  const totalCost = actualMonthly * paidMonths;
-  const fullCost = actualMonthly * termMonths;
-  const savings = fullCost - totalCost;
+  // Calculate free months based on term and pay-in-full
+  const freeMonths = selectedTerm === '2-year' 
+    ? calculate2YearFreeMonths(payInFull) 
+    : 0;
+  
+  const termMonths = selectedTerm === '2-year' ? 24 : 1;
+  const billedMonths = Math.max(termMonths - freeMonths, 1);
+  const effectiveMonthly = selectedTerm === '2-year'
+    ? Math.round((actualMonthly * billedMonths) / 24)
+    : actualMonthly;
+  const savings = (actualMonthly * termMonths) - (actualMonthly * billedMonths);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -87,28 +91,36 @@ export default function PromotionsPage() {
           <div className="bg-card rounded-xl p-6 border shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <DollarSign className="w-5 h-5 text-accent" />
-              <h2 className="font-bold text-lg">Payment Method</h2>
+              <h2 className="font-bold text-lg">Payment Option</h2>
             </div>
-            <div className="space-y-3">
-              {PAYMENT_METHODS.map((pm) => (
-                <button
-                  key={pm.id}
-                  data-testid={`promo-payment-${pm.id}`}
-                  onClick={() => setPayInFull(pm.id === 'pay-in-full')}
-                  className={`w-full p-3 rounded-lg border-2 text-left flex justify-between items-center transition-all ${
-                    (pm.id === 'pay-in-full' ? payInFull : !payInFull && pm.id === 'monthly')
-                      ? 'border-accent bg-accent/10'
-                      : 'border-border hover:border-accent/50'
-                  }`}
-                >
-                  <div>
-                    <div className="font-medium">{pm.label}</div>
-                    <div className="text-xs text-muted-foreground">{pm.description}</div>
+            {selectedTerm === '2-year' ? (
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg border-2 border-border bg-muted/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">Pay in Full</div>
+                      <div className="text-sm text-muted-foreground">
+                        Double your free months (2 → 4)
+                      </div>
+                    </div>
+                    <Switch
+                      data-testid="promo-pay-in-full-toggle"
+                      checked={payInFull}
+                      onCheckedChange={setPayInFull}
+                    />
                   </div>
-                  {pm.bonus && <span className="text-green-600 font-bold">{pm.bonus}</span>}
-                </button>
-              ))}
-            </div>
+                </div>
+                {isEarlyBird() && (
+                  <div className="p-3 bg-green-50 rounded-lg border border-green-200 text-sm text-green-800">
+                    <strong>Early Bird Bonus:</strong> +1 extra free month for signing up before Jan 25!
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-4 rounded-lg border-2 border-border bg-muted/30 text-center text-muted-foreground">
+                Pay-in-full bonus only available with 2-Year Price Lock
+              </div>
+            )}
           </div>
         </div>
 
@@ -157,7 +169,7 @@ export default function PromotionsPage() {
               <div className="text-xs text-muted-foreground">Free Months</div>
             </div>
             <div className="bg-accent/10 rounded-lg p-4">
-              <div className="text-2xl font-bold text-accent">{paidMonths}</div>
+              <div className="text-2xl font-bold text-accent">{billedMonths}</div>
               <div className="text-xs text-muted-foreground">Months Billed</div>
             </div>
             <div className="bg-green-100 rounded-lg p-4">
@@ -169,7 +181,7 @@ export default function PromotionsPage() {
           {freeMonths > 0 && (
             <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200 text-sm text-green-800">
               <strong>How it works:</strong> With {freeMonths} free month{freeMonths > 1 ? 's' : ''} on a {termMonths}-month plan, 
-              you pay for the first {paidMonths} months. Your final {freeMonths} month{freeMonths > 1 ? 's are' : ' is'} not billed.
+              you pay for {billedMonths} months. Your final {freeMonths} month{freeMonths > 1 ? 's are' : ' is'} not billed.
             </div>
           )}
         </div>
@@ -187,12 +199,12 @@ export default function PromotionsPage() {
               This is NOT a discount or credit. Your service continues at full quality, but your final months are simply not billed.
             </p>
             <div className="bg-white rounded-lg p-4 border">
-              <p className="font-medium mb-2">Example: 2-Year Commitment + Pay in Full</p>
+              <p className="font-medium mb-2">Example: 2-Year Price Lock + Pay in Full + Early Bird</p>
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Term: 24 months of service</li>
-                <li>• Free months earned: 2 (from term) + 1 (pay in full) = 3</li>
-                <li>• Months billed: 21</li>
-                <li>• Final 3 months: Not billed</li>
+                <li>• Free months: 2 (base) × 2 (pay-in-full) + 1 (early bird) = 5</li>
+                <li>• Months billed: 19</li>
+                <li>• Final 5 months: Not billed</li>
               </ul>
             </div>
           </div>
