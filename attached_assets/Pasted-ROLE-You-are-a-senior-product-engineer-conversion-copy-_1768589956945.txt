@@ -1,0 +1,126 @@
+ROLE:
+You are a senior product engineer + conversion copy editor improving lawn-trooper.com.
+RETROFIT ONLY. Do not redesign the site. Keep layout and styling. Update copy and logic to match the source-of-truth rules below and ensure clarity + premium tone.
+
+PRIMARY GOAL:
+Market the 25th Anniversary offer in a premium “two-layer reveal” way (hint → explain → show), and make it crystal clear that “free months” are SKIPPED BILLING MONTHS AT THE END OF THE TERM (the agreement still ends on its normal anniversary date).
+
+========================================
+A) DEFINITIONS (NON-NEGOTIABLE COPY RULE)
+========================================
+
+1) Replace any wording that implies customers receive “extra months of service” beyond the contract end date.
+2) Use ONLY this concept:
+- “Complimentary months” = months NOT BILLED at the end of the term
+- Term still ends exactly 12 or 24 months from signup
+
+Approved phrasing to use in the builder and summary:
+- “Complimentary months are skipped billing months at the end of your term.”
+- “Your agreement still ends on your 12-month or 24-month anniversary date.”
+- “You pay for fewer months, but your subscription term remains the same length.”
+
+========================================
+B) PREMIUM MARKETING STRUCTURE (TWO-LAYER REVEAL)
+========================================
+
+3) Homepage / hero area:
+- Do NOT shout numbers.
+- Add a calm line:
+  “Celebrating 25 years—long-term subscribers can earn complimentary billing months.”
+
+4) Plan cards / plan picker (pre-builder):
+- Do NOT show “up to 6” here.
+- Add a subtle line or tooltip:
+  “Complimentary billing months may apply based on commitment and enrollment timing.”
+
+5) Inside the plan builder:
+- Add a “Savings Breakdown” panel or expandable area titled:
+  “Earn Complimentary Billing Months”
+- This is where you may reveal “up to 6 months” with calm language:
+  “During our 25th Anniversary enrollment period, you may earn up to 6 skipped billing months.”
+
+6) Final summary screen:
+- Show the earned months and the breakdown.
+- Include the “skipped billing months at the end” disclaimer prominently (see section F).
+
+========================================
+C) COMMITMENT OPTIONS (LOCKED)
+========================================
+
+7) Show THREE commitment options:
+- Month-to-Month (15% flexibility premium, 0 complimentary months)
+- 1-Year Subscription
+- 2-Year Subscription (Price Lock – featured)
+
+8) Month-to-Month must clearly say:
+“Month-to-month subscriptions do not include complimentary billing months because we reward commitment and long-term relationships.”
+
+========================================
+D) FREE MONTH RULES (LOCKED)
+========================================
+
+9) Commitment bonus:
+- 1-Year = +1 complimentary billing month
+- 2-Year = +2 complimentary billing months
+
+10) Pay-in-full toggle:
+- Doubles commitment months ONLY (promo bonus months not doubled)
+- 1-Year Pay in Full => 2 commitment months (before bonus)
+- 2-Year Pay in Full => 4 commitment months (before bonus)
+
+11) 25th Anniversary Enrollment Bonus:
+- Dec 25 → Jan 25 = +2 bonus months
+- Jan 25 → Feb 25 = +1 bonus month
+- After Feb 25 = +0
+- Bonus months are NOT doubled
+
+12) Max outcomes:
+- 1-Year Pay in Full + Jan bonus => 3 total months
+- 2-Year Pay in Full + Jan bonus => 6 total months
+
+========================================
+E) MATH (NON-NEGOTIABLE)
+========================================
+
+13) Use these definitions:
+- termMonths = 12 or 24
+- freeMonths = commitment + (pay-in-full multiplier) + enrollment bonus
+- billedMonths = termMonths − freeMonths
+
+14) Effective monthly display:
+effectiveMonthly = (monthlySubscription × billedMonths) ÷ termMonths
+
+Rules:
+- effectiveMonthly must always be <= monthlySubscription
+- no fractional months
+- use Month-to-Month (15% premium baseline) for “savings vs month-to-month” comparisons
+
+========================================
+F) REQUIRED DISCLAIMER (PROMINENT)
+========================================
+
+15) Add this disclaimer at the end of the plan builder (Step 5 or Step 6) and again on final summary:
+
+“Complimentary months are skipped billing months applied at the end of your term. Your subscription still ends on your 12-month or 24-month anniversary date.”
+
+Optional second line:
+“You receive the same term length—you simply pay for fewer months.”
+
+========================================
+G) QA / TESTING (REQUIRED)
+========================================
+
+16) Test every button and reaction:
+- switching plans changes totals correctly
+- toggling pay-in-full updates free months + totals
+- changing enrollment window updates bonus months correctly
+- month-to-month always shows 0 free months and 15% premium applied
+- 1-year and 2-year show correct max totals (3 and 6)
+- effective monthly never exceeds monthly payment
+- summary matches what was selected
+
+17) Output a short report:
+- files changed
+- which screens got copy changes
+- confirmation that “skipped billing months” is clearly stated and consistent
+- confirmation math is correct everywhere
