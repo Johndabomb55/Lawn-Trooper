@@ -117,6 +117,8 @@ export const PLANS = [
     allowsSwap: true,
     executiveExtras: [
       "Unlimited Mulch",
+      "Unlimited Pine Straw",
+      "Bi-Monthly Shrub Trimmings (every 2 months year-round)",
       "After-Storm Visits",
       "Bi-Weekly Winter Visits & Yard Checks"
     ],
@@ -144,16 +146,16 @@ export interface Addon {
 export const ADDON_CATALOG: Addon[] = [
   // BASIC ADD-ONS ($20/mo overage)
   {
-    id: "mulch_install_8yards",
-    name: "Mulch Install (Up to 8 Yards)",
+    id: "mulch_install_4yards",
+    name: "Mulch Install (Up to 4 Yards)",
     tier: "basic",
     category: "landscaping",
     price: 20,
     description: "Fresh mulch delivery and installation with light bed cleanup."
   },
   {
-    id: "pine_straw_install_10bales",
-    name: "Pine Straw Install (Up to 10 Bales)",
+    id: "pine_straw_install_8bales",
+    name: "Pine Straw Install (Up to 8 Bales)",
     tier: "basic",
     category: "landscaping",
     price: 20,
@@ -242,8 +244,8 @@ export const ADDON_CATALOG: Addon[] = [
     description: "Premium mulch delivery and installation. 4 colors available."
   },
   {
-    id: "pine_straw_install_10yards",
-    name: "Pine Straw Install (Up to 10 Yards)",
+    id: "pine_straw_install_15yards",
+    name: "Pine Straw Install (Up to 15 Yards)",
     tier: "premium",
     category: "landscaping",
     price: 40,
@@ -315,6 +317,8 @@ export const SEASONAL_ADDONS = ADDON_CATALOG.filter(a => a.category === 'seasona
 // EXECUTIVE EXCLUSIVES (included with Executive plan, not selectable add-ons)
 export const EXECUTIVE_EXTRAS = [
   "Unlimited Mulch",
+  "Unlimited Pine Straw",
+  "Bi-Monthly Shrub Trimmings (every 2 months year-round)",
   "After-Storm Visits",
   "Bi-Weekly Winter Visits & Yard Checks"
 ];
