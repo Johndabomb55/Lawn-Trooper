@@ -205,22 +205,22 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "growing_season_boost",
-    name: "Growing-Season Boost",
+    name: "Spring/Summer Mowing Boost",
     tier: "basic",
     category: "landscaping",
     price: 20,
-    description: "Enhanced lawn care during peak growing months (spring/summer). Includes additional edging passes, targeted spot treatments, and extra attention to high-growth areas to maintain a crisp, manicured appearance."
+    description: "Upgrade to weekly mowing service for 3 months during peak growing season (spring/summer). Keep your lawn looking its best when growth is at its highest. Available after 3 months of active service."
   },
-  
-  // --- PREMIUM ADD-ONS ($40/mo overage) ---
   {
     id: "extra_weed_control",
     name: "Additional Weed Control & Fertilization",
-    tier: "premium",
+    tier: "basic",
     category: "landscaping",
-    price: 40,
-    description: "Adds three additional lawn applications, including fertilizer, pre-emergent weed prevention, and targeted weed-killer applications, beyond what's included in your plan."
+    price: 20,
+    description: "Get your yard weed-free, in shape, and green faster with 3 additional lawn applications—fertilizer, pre-emergent weed prevention, and targeted weed-killer—beyond what's included in your plan."
   },
+  
+  // --- PREMIUM ADD-ONS ($40/mo overage) ---
   {
     id: "premium_pressure_wash",
     name: "Premium Pressure-Wash Package",
