@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import SimpleHome from "@/pages/simple-home";
 import LandingPage from "@/pages/home";
 import PromotionsPage from "@/pages/promotions";
+import EmbedWizard from "@/pages/embed-wizard";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={SimpleHome} />
       <Route path="/full" component={LandingPage} />
       <Route path="/promotions" component={PromotionsPage} />
+      <Route path="/embed" component={EmbedWizard} />
       <Route component={NotFound} />
     </Switch>
   );
