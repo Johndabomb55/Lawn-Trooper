@@ -5,6 +5,58 @@ import { sendQuoteEmails, sendLeadEmails, type QuoteRequestData, type LeadEmailD
 import { z } from "zod";
 import { insertLeadSchema, insertWaitlistSchema } from "@shared/schema";
 
+async function sendToGHL(leadData: Record<string, any>) {
+  const webhookUrl = process.env.GHL_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.warn("GHL_WEBHOOK_URL not set, skipping webhook");
+    return;
+  }
+
+  try {
+    const payload = {
+      first_name: leadData.name?.split(" ")[0] || "",
+      last_name: leadData.name?.split(" ").slice(1).join(" ") || "",
+      full_name: leadData.name || "",
+      email: leadData.email || "",
+      phone: leadData.phone || "",
+      address: leadData.address || "",
+      yard_size: leadData.yardSize || "",
+      plan: leadData.plan || "",
+      basic_addons: Array.isArray(leadData.basicAddons) ? leadData.basicAddons.join(", ") : "",
+      premium_addons: Array.isArray(leadData.premiumAddons) ? leadData.premiumAddons.join(", ") : "",
+      term: leadData.term || "",
+      pay_upfront: leadData.payUpfront || "false",
+      payment_method: leadData.paymentMethod || "",
+      free_months: leadData.freeMonths || "0",
+      total_price: leadData.totalPrice || "",
+      promo_code: leadData.promoCode || "",
+      property_type: leadData.propertyType || "residential",
+      segments: Array.isArray(leadData.segments) ? leadData.segments.join(", ") : "",
+      applied_promos: Array.isArray(leadData.appliedPromos) ? leadData.appliedPromos.join(", ") : "",
+      notes: leadData.notes || "",
+      hoa_name: leadData.hoaName || "",
+      hoa_acreage: leadData.hoaAcreage || "",
+      hoa_units: leadData.hoaUnits || "",
+      hoa_notes: leadData.hoaNotes || "",
+      source: "lawn-trooper-website",
+    };
+
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      console.error("GHL webhook failed:", response.status, await response.text());
+    } else {
+      console.log("GHL webhook sent successfully");
+    }
+  } catch (error) {
+    console.error("GHL webhook error:", error);
+  }
+}
+
 // Photo schema for uploaded images
 const photoSchema = z.object({
   name: z.string(),
@@ -92,6 +144,9 @@ export async function registerRoutes(
       
       // Store lead in database
       const lead = await storage.createLead(data);
+      
+      // Send lead data to GoHighLevel via webhook
+      sendToGHL(data).catch(err => console.error("GHL webhook background error:", err));
       
       // Send email notifications to business and customer
       try {
