@@ -31,7 +31,7 @@ Preferred communication style: Simple, everyday language.
 - **ORM**: Drizzle ORM with PostgreSQL dialect
 - **Schema Location**: `shared/schema.ts` for shared types between client and server
 - **Validation**: Zod schemas with drizzle-zod integration
-- **Storage**: Currently uses in-memory storage (`MemStorage`) with database schema ready for PostgreSQL
+- **Storage**: Graceful degradation — PostgreSQL via Drizzle when `DATABASE_URL` is set, automatic fallback to in-memory `MemStorage` when unavailable
 
 ### Project Structure
 ```
@@ -52,6 +52,8 @@ Preferred communication style: Simple, everyday language.
 2. **Path Aliases**: TypeScript path aliases (`@/`, `@shared/`, `@assets/`) for clean imports
 3. **Single Page Application**: Client-side routing with server fallback to `index.html`
 4. **Conditional Validation**: Quote form validates contact info based on preferred contact method selection
+5. **Graceful Degradation**: App starts without DATABASE_URL (in-memory storage) and without Resend connector (emails skipped, leads still captured)
+6. **Email Fallback**: Resend connector → degraded mode (no crash, lead still saved + GHL webhook still fires)
 
 ## External Dependencies
 

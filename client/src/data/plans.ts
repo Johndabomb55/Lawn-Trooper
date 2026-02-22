@@ -14,7 +14,26 @@ export const GLOBAL_CONSTANTS = {
   AI_TECH_EXPLANATION: "We sometimes will deploy robotic AI vision, LiDAR sensor, satellite-linked mowing units to achieve the best cut quality and highest efficiency at no additional expense to the customer. Lawn Trooper reserves the right to choose which robot will be best for each property, although customer can weigh in of course."
 };
 
-export const PLANS = [
+export type PlanId = "basic" | "premium" | "executive";
+
+export interface PlanDefinition {
+  id: PlanId;
+  name: string;
+  price: number;
+  oldPrice: number;
+  priceLabel: string;
+  description: string;
+  keyStats: Array<{ label: string; value: string }>;
+  features: string[];
+  allowance: { basic: number; premium: number };
+  allowsSwap: boolean;
+  allowanceLabel: string;
+  promoLabel?: string;
+  executiveExtras?: string[];
+  swapLabel?: string;
+}
+
+export const PLANS: PlanDefinition[] = [
   {
     id: "basic",
     name: "Basic Patrol",
@@ -81,7 +100,8 @@ export const PLANS = [
       premium: 1
     },
     allowsSwap: false,
-    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On"
+    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
+    promoLabel: "March Promo: +1 Free Basic Add-on"
   },
   {
     id: "executive",
@@ -125,7 +145,8 @@ export const PLANS = [
       "Bi-Weekly Winter Visits & Yard Checks"
     ],
     allowanceLabel: "3 Basic Add-Ons + 2 Premium Add-Ons",
-    swapLabel: "Swap option: 1 Premium = 2 Basic"
+    swapLabel: "Swap option: 1 Premium = 2 Basic",
+    promoLabel: "March Promo: +1 Free Basic Add-on"
   }
 ];
 
@@ -400,7 +421,8 @@ export const calculateOverageCost = (
 // Each swap converts 1 Premium slot to +2 Basic slots
 export const getPlanAllowance = (
   planId: string, 
-  swapCount: number = 0
+  swapCount: number = 0,
+  payFull: boolean = false
 ): { basic: number; premium: number } => {
   const plan = PLANS.find(p => p.id === planId);
   if (!plan) return { basic: 0, premium: 0 };

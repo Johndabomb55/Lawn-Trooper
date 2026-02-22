@@ -61,6 +61,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  const { initializeStorage } = await import("./storage");
+  await initializeStorage();
+
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

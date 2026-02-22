@@ -43,7 +43,7 @@ interface MissionAccomplishedProps {
     basicAddons: string[];
     premiumAddons: string[];
     totalPrice: number;
-    term?: '1-year' | '2-year' | '3-year';
+    term?: 'month-to-month' | '1-year' | '2-year';
     payUpfront?: boolean;
     segments?: string[];
     appliedPromos?: string[];
@@ -280,7 +280,7 @@ Contact: info@lawntrooper.com | (256) 555-LAWN
               <div>
                 <span className="text-xs text-muted-foreground uppercase font-bold">Contract Term</span>
                 <p className="font-bold text-primary">
-                  {quoteData.term === '3-year' ? '3-Year Pact' : quoteData.term === '2-year' ? '2-Year Pact' : '1-Year Pact'}
+                  {quoteData.term === '2-year' ? '2-Year Pact' : quoteData.term === '1-year' ? '1-Year Pact' : 'Month-to-Month'}
                 </p>
               </div>
               <div>

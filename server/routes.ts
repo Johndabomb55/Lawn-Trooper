@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { getStorage } from "./storage";
 import { sendQuoteEmails, sendLeadEmails, type QuoteRequestData, type LeadEmailData } from "./email";
 import { z } from "zod";
 import { insertLeadSchema, insertWaitlistSchema } from "@shared/schema";
@@ -57,14 +57,12 @@ async function sendToGHL(leadData: Record<string, any>) {
   }
 }
 
-// Photo schema for uploaded images
 const photoSchema = z.object({
   name: z.string(),
-  data: z.string(), // base64 encoded
+  data: z.string(),
   type: z.string(),
 });
 
-// Quote request validation schema (includes plan selection)
 const quoteRequestSchema = z.object({
   name: z.string().min(2),
   email: z.string().email().or(z.literal("")),
@@ -72,12 +70,10 @@ const quoteRequestSchema = z.object({
   address: z.string().min(5),
   contactMethod: z.enum(["text", "phone", "email", "either"]),
   notes: z.string().optional(),
-  // Plan selection fields
   yardSize: z.string(),
   plan: z.string(),
   basicAddons: z.array(z.string()),
   premiumAddons: z.array(z.string()),
-  // Optional photos
   photos: z.array(photoSchema).optional(),
 }).superRefine((data, ctx) => {
   if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {
@@ -107,17 +103,12 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Submit quote request
   app.post("/api/quote", async (req, res) => {
     try {
-      // Validate request body
       const data = quoteRequestSchema.parse(req.body);
-
-      // Send emails via Resend
       const result = await sendQuoteEmails(data as QuoteRequestData);
 
-      // Success if business email was sent (customer email is optional)
-      if (result.businessEmailSent) {
+      if (result.businessEmailSent || (result as any).degraded) {
         res.json({ 
           success: true, 
           message: "Quote request sent successfully" 
@@ -137,18 +128,15 @@ export async function registerRoutes(
     }
   });
 
-  // Capture lead data and send email notifications
   app.post("/api/leads", async (req, res) => {
     try {
       const data = insertLeadSchema.parse(req.body);
+      const storage = getStorage();
       
-      // Store lead in database
       const lead = await storage.createLead(data);
       
-      // Send lead data to GoHighLevel via webhook
       sendToGHL(data).catch(err => console.error("GHL webhook background error:", err));
       
-      // Send email notifications to business and customer
       try {
         const emailData: LeadEmailData = {
           name: data.name,
@@ -169,7 +157,6 @@ export async function registerRoutes(
         const emailResult = await sendLeadEmails(emailData);
         console.log("Lead emails sent:", emailResult);
       } catch (emailError) {
-        // Log email error but don't fail the lead capture
         console.error("Failed to send lead emails:", emailError);
       }
       
@@ -180,7 +167,6 @@ export async function registerRoutes(
       });
     } catch (error) {
       console.error("Error capturing lead:", error);
-      // Return error for monitoring but don't block user experience on frontend
       res.status(500).json({ 
         success: false, 
         message: error instanceof Error ? error.message : "Failed to capture lead",
@@ -189,12 +175,11 @@ export async function registerRoutes(
     }
   });
 
-  // Waitlist signup
   app.post("/api/waitlist", async (req, res) => {
     try {
       const data = insertWaitlistSchema.parse(req.body);
+      const storage = getStorage();
       
-      // Check if email already exists
       const existing = await storage.getWaitlistByEmail(data.email);
       if (existing) {
         res.json({ 
@@ -205,7 +190,6 @@ export async function registerRoutes(
         return;
       }
       
-      // Store waitlist entry
       await storage.createWaitlistEntry(data);
       
       res.json({ 

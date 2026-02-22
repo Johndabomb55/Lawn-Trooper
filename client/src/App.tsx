@@ -12,7 +12,8 @@ import EmbedWizard from "@/pages/embed-wizard";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={SimpleHome} />
+      <Route path="/" component={LandingPage} />
+      <Route path="/simple" component={SimpleHome} />
       <Route path="/full" component={LandingPage} />
       <Route path="/promotions" component={PromotionsPage} />
       <Route path="/embed" component={EmbedWizard} />

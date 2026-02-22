@@ -165,7 +165,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
   
   // New state for promotions engine
-  const [term, setTerm] = useState<'1-year' | '2-year' | '3-year'>('2-year');
+  const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
   const [showPromoUnlocked, setShowPromoUnlocked] = useState(false);
@@ -183,7 +183,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     basicAddons: string[];
     premiumAddons: string[];
     totalPrice: number;
-    term: '1-year' | '2-year' | '3-year';
+    term: 'month-to-month' | '1-year' | '2-year';
     payUpfront: boolean;
     segments: string[];
     appliedPromos: string[];
