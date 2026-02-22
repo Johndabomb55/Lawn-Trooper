@@ -3,7 +3,7 @@ import StreamlinedWizard from "@/components/StreamlinedWizard";
 import { Shield, Mail, Phone, Leaf, Award, Cpu, Star, ChevronRight } from "lucide-react";
 import { HERO_CONTENT, TRUST_BAR_COMPACT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
 import { PLANS } from "@/data/plans";
-import heroMascot from "@assets/generated_images/camo_soldier_mascot_weedeating.png";
+import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_1771794280044.png";
 
 const iconMap: Record<string, React.ElementType> = {
   Leaf,
