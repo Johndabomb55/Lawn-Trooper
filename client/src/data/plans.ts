@@ -1,6 +1,6 @@
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
-  cutoffDate: "2026-03-25T23:59:59", // Sale ends Mar 25th at 11:59 PM (end of day)
+  cutoffDate: "2026-03-25T23:59:59", // Sale ends March 25th at 11:59 PM (end of day)
   saleLabel: "25th Anniversary Sale + AI Cost Reductions Ends March 25th"
 };
 
@@ -77,7 +77,7 @@ export const PLANS = [
       premium: 1
     },
     allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
-    promoLabel: "Feb Promo: +1 Free Basic Add-on"
+    promoLabel: "March Promo: +1 Free Basic Add-on"
   },
   {
     id: "executive",
@@ -109,7 +109,7 @@ export const PLANS = [
       premium: 3
     },
     allowanceLabel: "2 Basic Add-Ons + 3 Premium Add-Ons",
-    promoLabel: "Feb Promo: +1 Free Basic Add-on"
+    promoLabel: "March Promo: +1 Free Basic Add-on"
   }
 ];
 
@@ -230,7 +230,7 @@ export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
     const today = new Date();
     const cutoff = new Date(PROMO_CONFIG.cutoffDate);
     if (today < cutoff) {
-       // Feb promo logic: +1 Free Basic Add-on
+       // March promo logic: +1 Free Basic Add-on
        basic += 1;
     }
   }
