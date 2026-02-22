@@ -221,7 +221,7 @@ export default function PromotionsPage() {
               Your subscription still ends on your 12-month or 24-month anniversary date. You receive the same term length—you simply pay for fewer months.
             </p>
             <div className="bg-white rounded-lg p-4 border">
-              <p className="font-medium mb-2">Example: 2-Year + Pay-in-Full (Dec-Jan enrollment)</p>
+              <p className="font-medium mb-2">Example: 2-Year + Pay-in-Full (Jan-Feb enrollment)</p>
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Commitment Bonus (2-year): 2 months</li>
                 <li>• Pay-in-Full doubles commitment: 2 × 2 = 4 months</li>

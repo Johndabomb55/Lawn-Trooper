@@ -137,7 +137,7 @@ export default function StreamlinedWizard() {
   
   // Calculate complimentary service months based on commitment model
   // Commitment months: 1 (1-year) or 2 (2-year) — doubled if pay-in-full
-  // Anniversary Enrollment Bonus: +2 (Dec-Jan) or +1 (Jan-Feb) — NOT doubled
+  // Anniversary Enrollment Bonus: +2 (Jan-Feb) or +1 (Feb-Mar) — NOT doubled
   const totalFreeMonths = calculateTermFreeMonths(term, payInFull);
   const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
   
@@ -1164,13 +1164,13 @@ export default function StreamlinedWizard() {
                                   </div>
                                   <div className="text-[10px] text-amber-600 space-y-0.5">
                                     <div className={`flex justify-between ${bonus.tier === 'tier1' ? 'font-bold' : ''}`}>
-                                      <span>Enroll by Jan 25:</span><span>+2 months</span>
+                                      <span>Enroll by Feb 25:</span><span>+2 months</span>
                                     </div>
                                     <div className={`flex justify-between ${bonus.tier === 'tier2' ? 'font-bold' : ''}`}>
-                                      <span>Enroll by Feb 25:</span><span>+1 month</span>
+                                      <span>Enroll by Mar 25:</span><span>+1 month</span>
                                     </div>
                                     <div className="flex justify-between text-muted-foreground">
-                                      <span>After Feb 25:</span><span>Bonus concluded</span>
+                                      <span>After Mar 25:</span><span>Bonus concluded</span>
                                     </div>
                                   </div>
                                   <div className="text-[10px] text-center text-amber-700 font-bold mt-1">
@@ -1188,9 +1188,9 @@ export default function StreamlinedWizard() {
                                     25-Year Birthday Bonus
                                   </div>
                                   <div className="text-[10px] text-muted-foreground space-y-0.5">
-                                    <div className="flex justify-between line-through"><span>Enroll by Jan 25:</span><span>+2 months</span></div>
-                                    <div className="flex justify-between line-through"><span>Enroll by Feb 25:</span><span>+1 month</span></div>
-                                    <div className="flex justify-between"><span>After Feb 25:</span><span className="italic">Bonus concluded</span></div>
+                                    <div className="flex justify-between line-through"><span>Enroll by Feb 25:</span><span>+2 months</span></div>
+                                    <div className="flex justify-between line-through"><span>Enroll by Mar 25:</span><span>+1 month</span></div>
+                                    <div className="flex justify-between"><span>After Mar 25:</span><span className="italic">Bonus concluded</span></div>
                                   </div>
                                 </div>
                               );

@@ -335,7 +335,7 @@ export default function LandingPage() {
             <div className="mb-10 bg-black/70 backdrop-blur-md border-2 border-accent/50 p-6 rounded-xl shadow-2xl relative overflow-hidden">
                {/* Diagonal "Ending Soon" Banner */}
                <div className="absolute top-0 right-0 bg-destructive text-white text-[10px] font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm">
-                 ENDS JAN 25TH
+                 ENDS MARCH 25TH
                </div>
 
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
@@ -345,7 +345,7 @@ export default function LandingPage() {
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                   ⚠️ Lock in lowest pricing for up to 3 years - Ends Jan 25th!
+                   ⚠️ Lock in lowest pricing for up to 3 years - Ends March 25th!
                  </p>
                </div>
                
@@ -361,7 +361,7 @@ export default function LandingPage() {
                    </div>
                    <div className="text-white text-sm font-medium">
                      <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">+2 Bonus Months</div>
-                     <div className="text-white/70 text-xs mt-1 text-center">Ends Jan 25</div>
+                     <div className="text-white/70 text-xs mt-1 text-center">Ends March 25</div>
                    </div>
                  </div>
 

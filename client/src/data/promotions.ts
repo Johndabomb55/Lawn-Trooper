@@ -22,22 +22,22 @@
  *    - 1-Year PIF: 1×2 = 2 commitment months
  *    - 2-Year PIF: 2×2 = 4 commitment months
  * 3) 25th Anniversary Enrollment Bonus (limited time):
- *    - Dec 25 → Jan 25: +2 bonus months
- *    - Jan 25 → Feb 25: +1 bonus month
- *    - After Feb 25: +0 bonus months
+ *    - Jan 25 → Feb 25: +2 bonus months
+ *    - Feb 25 → Mar 25: +1 bonus month
+ *    - After Mar 25: +0 bonus months
  *    - Bonus months are NOT doubled by pay-in-full
  * 
  * EXAMPLES:
- * - 1-Year (monthly): 1 + 2 = 3 complimentary months (Dec-Jan bonus)
- * - 1-Year + PIF: 2 + 2 = 4 complimentary months (Dec-Jan bonus)
- * - 2-Year (monthly): 2 + 2 = 4 complimentary months (Dec-Jan bonus)
- * - 2-Year + PIF: 4 + 2 = 6 complimentary months (Dec-Jan bonus)
- * - 1-Year + PIF (Jan-Feb): 2 + 1 = 3 complimentary months
- * - 2-Year + PIF (Jan-Feb): 4 + 1 = 5 complimentary months
+ * - 1-Year (monthly): 1 + 2 = 3 complimentary months (Jan-Feb bonus)
+ * - 1-Year + PIF: 2 + 2 = 4 complimentary months (Jan-Feb bonus)
+ * - 2-Year (monthly): 2 + 2 = 4 complimentary months (Jan-Feb bonus)
+ * - 2-Year + PIF: 4 + 2 = 6 complimentary months (Jan-Feb bonus)
+ * - 1-Year + PIF (Feb-Mar): 2 + 1 = 3 complimentary months
+ * - 2-Year + PIF (Feb-Mar): 4 + 1 = 5 complimentary months
  * 
  * MAX OUTCOMES:
- * - 1-Year Pay in Full + Dec bonus = 4 total
- * - 2-Year Pay in Full + Dec bonus = 6 total
+ * - 1-Year Pay in Full + Jan-Feb bonus = 4 total
+ * - 2-Year Pay in Full + Jan-Feb bonus = 6 total
  * 
  * BILLING:
  * - termMonths = 12 or 24
@@ -66,7 +66,7 @@ export interface Promotion {
 // Stacking caps
 export const PROMO_CAPS = {
   maxPercentOff: 30,
-  maxFreeMonths: 6,  // Max: 2-Year PIF (4) + Dec bonus (2) = 6
+  maxFreeMonths: 6,  // Max: 2-Year PIF (4) + Jan-Feb bonus (2) = 6
 };
 
 // Month-to-month premium (15% over 2-year base rate)
@@ -74,10 +74,10 @@ export const MONTH_TO_MONTH_PREMIUM = 0.15;
 
 // 25-Year Birthday Bonus (25th Anniversary Enrollment Bonus) - Tiered dates
 export const BIRTHDAY_BONUS = {
-  tier1EndDate: new Date('2026-01-25T23:59:59'),  // Dec 25 → Jan 25: +2 months
-  tier2EndDate: new Date('2026-02-25T23:59:59'),  // Jan 25 → Feb 25: +1 month
-  tier1Months: 2,  // +2 bonus months (Dec 25 - Jan 25)
-  tier2Months: 1,  // +1 bonus month (Jan 25 - Feb 25)
+  tier1EndDate: new Date('2026-02-25T23:59:59'),  // Jan 25 → Feb 25: +2 months
+  tier2EndDate: new Date('2026-03-25T23:59:59'),  // Feb 25 → Mar 25: +1 month
+  tier1Months: 2,  // +2 bonus months (Jan 25 - Feb 25)
+  tier2Months: 1,  // +1 bonus month (Feb 25 - Mar 25)
   marketingName: '25-Year Birthday Bonus',
   formalName: '25th Anniversary Enrollment Bonus',
 };
@@ -87,9 +87,9 @@ export const ANNIVERSARY_BONUS = BIRTHDAY_BONUS;
 
 /**
  * Get 25-Year Birthday Bonus status
- * - Dec 25 → Jan 25: +2 bonus months (Tier 1)
- * - Jan 25 → Feb 25: +1 bonus month (Tier 2)
- * - After Feb 25: +0 bonus months (Concluded)
+ * - Jan 25 → Feb 25: +2 bonus months (Tier 1)
+ * - Feb 25 → Mar 25: +1 bonus month (Tier 2)
+ * - After Mar 25: +0 bonus months (Concluded)
  * 
  * NOTE: Bonus months are NOT doubled by pay-in-full
  */
@@ -107,7 +107,7 @@ export function getBirthdayBonus(): {
       months: BIRTHDAY_BONUS.tier1Months,
       tier: 'tier1',
       isActive: true,
-      tierLabel: 'Enroll by Jan 25: +2 months',
+      tierLabel: 'Enroll by Feb 25: +2 months',
       name: BIRTHDAY_BONUS.marketingName,
     };
   } else if (now < BIRTHDAY_BONUS.tier2EndDate) {
@@ -115,7 +115,7 @@ export function getBirthdayBonus(): {
       months: BIRTHDAY_BONUS.tier2Months,
       tier: 'tier2',
       isActive: true,
-      tierLabel: 'Enroll by Feb 25: +1 month',
+      tierLabel: 'Enroll by Mar 25: +1 month',
       name: BIRTHDAY_BONUS.marketingName,
     };
   } else {
@@ -147,8 +147,8 @@ export const getEarlyBirdBonus = () => {
   return {
     months: bonus.months,
     isActive: bonus.isActive,
-    enrollBy: bonus.tier === 'tier1' ? 'Jan 25' : 'Feb 25',
-    payBy: bonus.tier === 'tier1' ? 'Feb 1' : 'Mar 1',
+    enrollBy: bonus.tier === 'tier1' ? 'Feb 25' : 'Mar 25',
+    payBy: bonus.tier === 'tier1' ? 'Mar 1' : 'Apr 1',
   };
 };
 export const isEarlyBird = isBirthdayBonusActive;
@@ -203,15 +203,15 @@ export const COMMITMENT_TERMS = [
  * Formula:
  * - Commitment months: 1 (1-year) or 2 (2-year)
  * - Pay-in-Full doubles ONLY commitment months (NOT bonus)
- * - Anniversary Enrollment Bonus: +2 (Dec-Jan) or +1 (Jan-Feb) — NOT doubled
+ * - Anniversary Enrollment Bonus: +2 (Jan-Feb) or +1 (Feb-Mar) — NOT doubled
  * 
- * Examples (Dec-Jan bonus = +2):
+ * Examples (Jan-Feb bonus = +2):
  * - 1-Year (monthly): 1 + 2 = 3 complimentary months
  * - 1-Year + PIF: 2 + 2 = 4 complimentary months
  * - 2-Year (monthly): 2 + 2 = 4 complimentary months
  * - 2-Year + PIF: 4 + 2 = 6 complimentary months
  * 
- * Examples (Jan-Feb bonus = +1):
+ * Examples (Feb-Mar bonus = +1):
  * - 1-Year + PIF: 2 + 1 = 3 complimentary months
  * - 2-Year + PIF: 4 + 1 = 5 complimentary months
  */
