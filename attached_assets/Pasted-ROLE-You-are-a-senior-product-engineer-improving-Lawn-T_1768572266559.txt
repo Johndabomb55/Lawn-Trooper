@@ -1,0 +1,227 @@
+ROLE:
+You are a senior product engineer improving Lawn Trooper’s live subscription website.
+This is a RETROFIT. Do NOT redesign the site or change branding. Fix logic, restore missing options, correct copy, and ensure all math and UI behavior is correct and consistent.
+
+========================================
+A) CORE POSITIONING
+========================================
+
+1) Lawn Trooper is a SUBSCRIPTION lawn service.
+2) Customers choose commitment length, not payment method.
+3) Savings are earned through:
+   - Commitment
+   - Pay in full
+   - Early enrollment
+4) Language must be calm, premium, and non-salesy.
+
+========================================
+B) COMMITMENT OPTIONS (CRITICAL FIX)
+========================================
+
+5) Restore and clearly show THREE commitment options everywhere commitment is referenced:
+   - Month-to-Month
+   - 1-Year Subscription
+   - 2-Year Subscription (Price Lock – featured)
+
+6) Month-to-Month:
+   - Apply +15% flexibility premium to the entire subscription (plan + add-ons)
+   - No free months
+   - Cancel anytime
+
+7) 1-Year Subscription:
+   - Base commitment bonus: +1 free month
+
+8) 2-Year Subscription (Price Lock):
+   - Base commitment bonus: +2 free months
+   - Visually featured and labeled “Price Lock”
+
+The 1-Year option MUST be visible, selectable, and fully functional.
+Do not hide it or treat it as internal-only.
+
+========================================
+C) PAY-IN-FULL LOGIC (TOGGLE, NOT PAYMENT METHOD)
+========================================
+
+9) Remove ALL “How do you want to pay?” buttons.
+   - No Monthly / Yearly / Pay in Full selectors.
+
+10) Implement Pay in Full as a TOGGLE under:
+    - 1-Year Subscription
+    - 2-Year Subscription
+
+11) Pay-in-Full rule:
+    - Pay in Full DOUBLES COMMITMENT FREE MONTHS ONLY
+    - Promotional/early bonus months are NOT doubled
+
+Results:
+- 1-Year Pay in Full → 2 free months
+- 2-Year Pay in Full → 4 free months
+
+========================================
+D) 25TH ANNIVERSARY ENROLLMENT BONUS
+========================================
+
+12) Implement a time-based bonus named:
+    “25th Anniversary Enrollment Bonus”
+
+13) Bonus schedule:
+    - Enroll Dec 25 → Jan 25 → +2 bonus free months
+    - Enroll Jan 25 → Feb 25 → +1 bonus free month
+    - Enroll after Feb 25 → +0 (promotion concluded)
+
+Rules:
+- Bonus months apply once
+- Bonus months are NOT doubled
+- Bonus months stack with commitment + pay-in-full
+
+Maximum outcomes:
+- 1-Year Pay in Full + Jan bonus → 3 free months
+- 2-Year Pay in Full + Jan bonus → 6 free months
+
+========================================
+E) BILLING & SAVINGS MATH (NON-NEGOTIABLE)
+========================================
+
+14) Definitions:
+    - termMonths = 12 or 24
+    - freeMonths = commitment bonus + (pay-in-full multiplier) + (enrollment bonus)
+    - billedMonths = termMonths − freeMonths
+
+15) Pay-in-Full total:
+    totalDueNow = monthlySubscription × billedMonths
+
+16) Effective monthly (display only):
+    effectiveMonthly = (monthlySubscription × billedMonths) ÷ termMonths
+
+Rules:
+- Effective monthly must ALWAYS be ≤ base monthly
+- No fractional months
+- Savings comparisons MUST use the Month-to-Month price (15% premium baseline)
+
+========================================
+F) PLAN COPY CONSISTENCY
+========================================
+
+17) Ensure plan cards, plan picker, summaries, and marketing sections ALL match the same source-of-truth copy.
+
+Plans must consistently include:
+
+Basic Patrol:
+- Bi-weekly mowing
+- 2 weed treatments per year
+- Monthly light leaf management
+- 1 Basic add-on included
+
+Premium Patrol:
+- Weekly mowing
+- 4 weed treatments + weed killer
+- Bi-weekly leaf management (fall/winter)
+- Spring & fall cleanups included
+- Holiday / pre-event leaf cleanup
+- 2 Basic + 1 Premium add-ons included
+
+Executive Command:
+- Priority weekly mowing
+- 6 weed treatments
+- Enhanced leaf management
+- Storm visits & winter yard checks
+- Spring, fall & pre-event cleanups
+- 3 Basic + 2 Premium add-ons included
+- Swap option: 1 Premium → 2 Basic
+
+========================================
+G) ADD-ONS (LOCKED SOURCE OF TRUTH)
+========================================
+
+--- BASIC ADD-ONS ---
+
+Shrub / Hedge Trimming:
+“Light trimming of shrubs or hedges to maintain shape and appearance. All clippings will be collected and properly disposed of.”
+
+Basic Pressure-Wash Package:
+Includes: Porch, Sidewalk, Mailbox
+“Light exterior pressure washing to refresh high-visibility areas around your home and maintain a clean, welcoming entrance.”
+
+Driveway Pressure Wash:
+“Targeted pressure washing to clean and brighten driveway surfaces, improving curb appeal and removing built-up grime.”
+
+Overseeding:
+“Overseeding services to help improve lawn density and encourage healthier grass growth.”
+
+Basic Mulch Install:
+- Up to 4 yards
+- Mulch included (brown, red, black hardwood or pine bark)
+- Delivery and installation included
+“Mulch installation for defined garden or bed areas to refresh appearance and support plant health.”
+
+Quarterly Trash Can Cleaning:
+“Periodic cleaning of outdoor trash and recycling bins to reduce odors and buildup.”
+
+Basic Seasonal Lighting:
+“Ground-level seasonal lighting focused on shrubs, small trees, and select landscape areas using simple yard pop-up lighting. Final layout to be discussed with the homeowner.”
+
+--- PREMIUM ADD-ONS ---
+
+Additional Weed Control & Fertilization:
+“Adds three additional lawn applications, including fertilizer, pre-emergent weed prevention, and targeted weed-killer applications, beyond what’s included in your plan.”
+
+Premium Pressure-Wash Package:
+Includes: Driveway, Porch, Sidewalk, Mailbox, additional exterior surfaces as appropriate
+“Comprehensive exterior pressure washing for a deeper, more complete clean across key areas of your property.”
+
+House Soft Wash:
+“Low-pressure soft washing to safely clean exterior siding and surfaces, helping restore appearance while protecting your home’s finish.”
+
+Premium Mulch Install:
+- Up to 10 yards
+- Mulch included
+- Delivery and installation included
+“Expanded mulch installation with increased coverage and attention to detail for enhanced curb appeal.”
+
+Monthly Trash Can Cleaning:
+“Monthly cleaning of outdoor trash and recycling bins to help maintain freshness and reduce odor over time.”
+
+Premium Seasonal Lighting:
+“Expanded seasonal lighting designed for holidays, including roofline lighting, enhanced landscape features, and decorative yard elements as appropriate.”
+
+--- EXECUTIVE BENEFIT ---
+
+Executive Mulch Benefit:
+“Executive plans may exceed standard mulch limits when paired with a premium mulch installation.”
+
+========================================
+H) SEASONAL SCHEDULING (GLOBAL COPY)
+========================================
+
+18) Add this disclaimer ONCE site-wide:
+
+“Some add-on services are seasonal in nature and may be scheduled during appropriate times of the year or during off-season periods when Lawn Trooper’s service schedule allows. Timing and availability may vary based on weather, workload, and operational considerations.”
+
+========================================
+I) UI & QA REQUIREMENTS
+========================================
+
+19) Add-ons must never disappear.
+    - Show included vs selected counters clearly.
+    - Show overages clearly.
+
+20) Executive swap (1 Premium → 2 Basic) must always be visible and update counters live.
+
+21) Test EVERY interaction:
+    - All commitment options
+    - Pay-in-full toggle
+    - Enrollment bonus by date
+    - Every add-on on/off
+    - Price updates on every click
+    - Summary accuracy
+
+22) Remove all duplicate, conflicting, or outdated copy.
+
+========================================
+J) DELIVERY
+========================================
+
+23) Provide a short report:
+    - Files changed
+    - Confirmation that the 1-Year commitment is restored
+    - Confirmation that pricing math is correct everywhere

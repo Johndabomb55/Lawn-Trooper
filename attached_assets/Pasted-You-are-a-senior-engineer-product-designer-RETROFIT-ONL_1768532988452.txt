@@ -1,0 +1,115 @@
+You are a senior engineer + product designer. RETROFIT ONLY. Do not redesign or rebuild.
+Your goal is to fix pricing math, add-on logic, and terminology so the Lawn Trooper site behaves like a clean subscription configurator.
+
+====================================
+A) TERMINOLOGY
+====================================
+1) Update wording across the site to reflect “subscription lawn service” where appropriate:
+- “Subscription Plan”
+- “Build My Subscription”
+- “Subscription add-ons”
+Do not overdo it. Keep tone friendly and residential.
+
+====================================
+B) PLAN PRICING LOGIC
+====================================
+2) Preserve marketing anchors:
+- Basic from $169
+- Premium from $299
+- Executive from $399
+These remain visible until yard size is selected.
+
+3) Internally, plan value increases ~20% per tier.
+If this conflicts with displayed anchors, apply the 20% logic to the service/labor component only.
+Do NOT override the visible “from $” prices.
+
+4) Yard size modifies base plan pricing as currently implemented.
+
+====================================
+C) ADD-ONS SOURCE OF TRUTH
+====================================
+5) Use one canonical add-on catalog everywhere.
+Remove any stub or duplicate lists.
+
+6) Add-on pairing rule:
+- Basic add-on = smaller / limited version
+- Premium add-on = larger / bundled version
+Judge by wording, not by plan.
+
+Add these premium add-ons:
+- “Soft Wash Premium Package (Annual): driveway, sidewalk, front porch, steps, mailbox”
+- “House Soft Wash”
+
+Trash can:
+- Quarterly = Basic
+- Monthly = Premium
+
+Do not label add-ons as monthly/seasonal in UI.
+
+====================================
+D) EXECUTIVE ADD-ON LOGIC
+====================================
+7) Executive included add-ons:
+- 3 Basic + 2 Premium
+
+8) Executive swap buttons (always visible, Executive only):
+- No Swap → 3B + 2P
+- Swap 1 Premium → +2 Basic → 5B + 1P
+- Swap 2 Premium → +4 Basic → 7B + 0P
+
+Swap affects INCLUDED LIMITS only.
+
+====================================
+E) ADD-ON COUNTERS & REMAPPING
+====================================
+9) Show counters everywhere:
+- Selected: X Basic, Y Premium
+- Included: A Basic + B Premium
+- Overages: +$20 per Basic, +$40 per Premium
+
+10) Never hide add-ons.
+Overages update price live.
+
+11) When switching plans, intelligently remap selections.
+If something becomes ineligible, auto-remove with a clear notice.
+
+====================================
+F) COMMITMENT, FREE MONTHS & PAYMENT
+====================================
+12) Free months:
+- 1-year = +1
+- 2-year = +3
+No cap. All stackable.
+
+13) Month-to-month:
+- Apply +15% to plan + add-ons.
+
+14) Pay in full:
+- Apply all free months immediately.
+- billedMonths = termMonths - freeMonths
+- totalPayNow = monthlySubscription * billedMonths
+Show:
+- “Pay in full — unlock maximum savings”
+- Total savings vs month-to-month.
+
+15) Effective monthly formula (must be correct everywhere):
+effectiveMonthly = (monthlySubscription * billedMonths) / termMonths
+Guard against inverted math.
+
+====================================
+G) REQUIRED FIXES
+====================================
+16) Fix Basic plan incorrectly showing Premium selection.
+17) Ensure every selection updates price immediately at:
+- Step 3
+- Step 4
+- Step 5
+- Step 6 summary
+
+====================================
+H) DELIVERABLES
+====================================
+18) Provide:
+- Files changed
+- Source-of-truth files
+- Confirmation all test cases pass

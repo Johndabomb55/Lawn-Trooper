@@ -1,0 +1,181 @@
+You are updating the Lawn Trooper instant quote system and checkout experience.
+This prompt replaces all previous pricing, add-on, and promo logic.
+Follow this exactly.
+
+================================================
+A) CORE PRICING & PAYMENT STRUCTURE
+================================================
+
+1) BASE PRICING
+- Define a base monthly price for each plan (Basic, Premium, Executive).
+- The base monthly price assumes a 1-year agreement.
+
+2) MONTH-TO-MONTH PREMIUM
+- Month-to-month pricing carries a 15% premium over the 1-year rate.
+- Formula:
+  monthToMonthPrice = baseYearlyMonthly * 1.15
+- Copy shown to users:
+  “Month-to-month includes flexibility pricing.”
+
+3) PAYMENT OPTIONS
+Offer three payment methods:
+- Monthly (default)
+- Yearly (one payment per year)
+- Pay in full (entire term upfront)
+
+Payment method does NOT change service cadence.
+
+================================================
+B) AGREEMENT TERMS & FREE MONTH LOGIC
+================================================
+
+1) TERM OPTIONS
+- Month-to-month
+- 1-year
+- 2-year
+
+2) FREE MONTH RULES (STACKABLE)
+- 1-year term → +1 free month
+- 2-year term → +2 free months
+- Pay in full → +1 free month
+- Referral → +1 free month AFTER signup (displayed but NOT included in effective monthly)
+
+3) FREE MONTH DISPLAY
+- Show “You’ve unlocked X free months”
+- Free months apply ONLY as service credits at the END of the agreement.
+- Free months are never cash-equivalent.
+
+================================================
+C) EFFECTIVE MONTHLY vs ACTUAL MONTHLY
+================================================
+
+1) DISPLAY RULES
+- During quote flow:
+  SMALL / MUTED:
+  “Effective monthly after free months: $X/mo”
+- Tooltip text:
+  “Effective monthly shows the average cost after your free months are applied at the end of your agreement.”
+
+- Final checkout page:
+  LARGE / PRIMARY:
+  “Your monthly payment: $Y/mo”
+  SMALL SUBTEXT:
+  “Free months are applied as service credits at the end of your agreement.”
+
+2) EFFECTIVE MONTHLY FORMULA
+- baseMonthly = selected plan price (with 15% premium applied if month-to-month)
+- termMonths = 12 or 24 (term plans)
+- freeMonthsEarned = term bonus + pay-in-full bonus
+- paidMonths = max(termMonths - freeMonthsEarned, 1)
+- effectiveMonthly = (baseMonthly * termMonths) / paidMonths
+
+IMPORTANT:
+- If month-to-month is selected, effectiveMonthly = actualMonthly
+- Do NOT include referral bonus in effectiveMonthly calculation
+
+================================================
+D) CANCELLATION RULES (DISPLAY CLEARLY)
+================================================
+
+1) MONTH-TO-MONTH
+- Cancel anytime with 30 days notice
+- No free months earned
+
+2) TERM PLANS (1-YEAR / 2-YEAR)
+- Cancel anytime
+- Free months and unused credits are forfeited if canceled early
+
+DISPLAY THIS COPY ON CHECKOUT:
+“Month-to-month plans may be canceled anytime with 30 days notice.  
+Term plans may be canceled early at any time; free months and unused credits are forfeited if canceled before the term ends.”
+
+================================================
+E) PROPERTY TYPE LOGIC
+================================================
+
+First step of form:
+“What are you servicing?”
+- Residential
+- HOA / Community / Commercial
+
+HOA selection unlocks:
+- HOA / Property name
+- Estimated acreage
+- Unit count (optional)
+- Image upload (optional but encouraged)
+- Notes
+
+================================================
+F) IMAGE UPLOAD & ADDRESS
+================================================
+
+- Address is REQUIRED before final pricing
+- Optional image upload appears when:
+  - HOA is selected
+  - Yard size > 1 acre
+  - Custom quote path
+
+Helper text:
+“Photos help us quote faster and avoid follow-up calls.”
+
+================================================
+G) ADD-ON CATALOG (RESTORE FULL LIST)
+================================================
+
+Add-ons are grouped and conditional by plan.
+
+-------------------
+BASIC ADD-ONS
+-------------------
+- Mulch install (up to 8 yards)
+- Pine straw install (up to 10 bales)
+- Leaf cleanup
+- Shrub / hedge trimming
+- Mailbox cleaning
+- Front sidewalk + front porch pressure wash (basic exterior clean)
+- Trash can cleaning:
+  - Quarterly (upgrade)
+  - Monthly (upgrade)
+
+-------------------
+PREMIUM ADD-ONS
+-------------------
+- Additional weed control treatments
+- Lawn aeration
+- Mulch install (up to 10 yards)
+- Pine straw install (up to 10 yards)
+- Driveway pressure wash / soft wash
+- Premium Christmas light package
+- House soft wash
+
+-------------------
+EXECUTIVE PLAN RULES
+-------------------
+- Unlimited mulch installs (no yardage cap)
+- Priority scheduling
+- After-storm debris cleanup included
+- All premium add-ons available
+
+-------------------
+SEASONAL ADD-ONS
+-------------------
+- Basic Christmas light package
+- Premium Christmas light package
+
+================================================
+H) UI & LOGIC NOTES
+================================================
+
+- Add-ons should dynamically show/hide based on plan tier
+- HOA pricing bypasses instant totals and routes to review workflow
+- All pricing recalculates live when:
+  - Plan changes
+  - Term changes
+  - Payment method changes
+  - Add-ons change
+
+Add clear code comments explaining:
+- Month-to-month premium
+- Effective monthly math
+- Free month credit logic
+- Add-on tier restrictions

@@ -1,0 +1,166 @@
+You are a senior product engineer and conversion-focused UX strategist.
+
+Context:
+lawn-trooper.com already has a working multi-step quote wizard.
+Recent work has introduced some inconsistencies and unfinished logic.
+This task is to CLEAN, UNIFY, and FINALIZE the system into a single,
+cohesive marketing and sales experience.
+
+You must be careful, deliberate, and incremental.
+Do NOT break existing functionality.
+
+GOAL:
+Turn the plan picker (multi-step quote wizard) into a clear, premium,
+commitment-driven sales system that:
+- Rewards early commitment with free months
+- Rewards long-term loyalty with price reduction over time
+- Keeps monthly prices anchored and premium
+- Hides internal pricing logic
+- Protects intellectual property
+- Feels trustworthy, calm, and confident
+
+------------------------------------------------
+GLOBAL RULES
+------------------------------------------------
+- Do NOT change base monthly prices
+- Do NOT introduce payment collection
+- Do NOT expose internal formulas or cost math
+- Do NOT mention “neighborhood marketing” publicly
+- Customers may quit anytime; free months are forfeited if they do
+- All free months are applied at the END of the contract
+- Use simple language; avoid hype
+
+------------------------------------------------
+STEP 0 — AUDIT FIRST (NO CHANGES)
+------------------------------------------------
+Before changing anything:
+- List all files involved in:
+  - The plan picker / wizard
+  - Promotions logic
+  - Plan definitions
+  - CTAs
+- Identify:
+  - Duplicate CTAs
+  - Obsolete promotions
+  - Any exposed pricing math
+STOP and confirm understanding before proceeding.
+
+------------------------------------------------
+STEP 1 — CLEANUP & CONSISTENCY
+------------------------------------------------
+- Remove the extra “Get Instant Quote” buttons that do not add value.
+  Keep only:
+  - The primary navigation CTA
+  - The inline plan picker
+- Remove any overlapping or partially hidden hero text.
+- Ensure only ONE plan picker exists.
+- Remove obsolete promotions (e.g. “pay in full extra 2 months free”).
+
+------------------------------------------------
+STEP 2 — ADD A SMALL “ABOUT US” INTRO
+------------------------------------------------
+Add a short paragraph near the top of the homepage:
+
+“Lawn Trooper is built on commitment, efficiency, and loyalty.
+We’ve spent decades putting relationships before scale.
+As we adopt new automation, technology, and processes,
+we’re now passing those savings back to our customers.
+Commit to us, and we commit to you.”
+
+Keep it short. No wall of text.
+
+------------------------------------------------
+STEP 3 — PLAN TIERS (DO NOT CHANGE STRUCTURE)
+------------------------------------------------
+- Keep existing plan tiers and services.
+- Add a compact comparison view that shows:
+  - Mowing frequency
+  - Weed treatment frequency
+  - Bush trimming frequency
+  - Included add-ons count
+- Do NOT list every add-on.
+- Make Basic feel solid, Premium smart, Executive elite.
+
+------------------------------------------------
+STEP 4 — COMMITMENT & PROMOTIONS (CORE LOGIC)
+------------------------------------------------
+Implement the following commitment model:
+
+EARLY BIRD PROMOTION (LIMITED TIME)
+- Promotion runs Jan 25 → Apr 25
+- Each month that passes removes 1 free month
+- Display urgency visually (timeline or countdown)
+- After promotion ends, no early bird free months remain
+
+COMMITMENT REWARDS
+- 1-Year commitment → 1 free month
+- 2-Year commitment → 2 free months
+- 3-Year commitment → 3 free months
+
+PAY IN FULL BONUS
+- Paying in full adds +1 additional free month
+- Applies to all terms
+
+MAX FREE MONTHS CAP
+- Maximum total free months: 6
+
+------------------------------------------------
+STEP 5 — OPERATION PRICE DROP (LOYALTY)
+------------------------------------------------
+Implement “Operation Price Drop”:
+
+- After Year 1: 5% price reduction on renewal
+- After Year 2: 10% price reduction on renewal
+- After Year 3: 15% price reduction on renewal
+
+Rules:
+- This applies ONLY on renewal
+- This is not a discount today
+- Show as a future benefit, not current savings
+- Display visually as a timeline, not math
+
+------------------------------------------------
+STEP 6 — PROMOTION CODE (HIDDEN POWER)
+------------------------------------------------
+- Add a generic field:
+  “Have a promotion code?”
+- No explanation of how codes are distributed
+- Codes may unlock:
+  - HOA partnership discount (10%)
+- Copy should say:
+  “If your HOA is partnered with Lawn Trooper,
+   you may qualify for additional savings.”
+
+------------------------------------------------
+STEP 7 — HOA PARTNERSHIP FORM
+------------------------------------------------
+Add a separate HOA inquiry section:
+- HOA name
+- Contact name
+- Phone number
+- Email
+- Notes / directions
+Text:
+“If your HOA partners with Lawn Trooper,
+residents receive additional benefits.”
+
+------------------------------------------------
+STEP 8 — FINAL SUMMARY & CONFIRMATION
+------------------------------------------------
+Before submission, show:
+- Selected plan
+- Commitment length
+- Free months earned
+- Future loyalty benefits (Operation Price Drop)
+- Clear message:
+  “No payment required.
+   No obligation.
+   Free Dream Yard Recon.”
+
+------------------------------------------------
+DELIVERABLES
+------------------------------------------------
+- Step-by-step implementation plan
+- File list with changes
+- Confirmation nothing breaks
+- Confirmation pricing remains anchored

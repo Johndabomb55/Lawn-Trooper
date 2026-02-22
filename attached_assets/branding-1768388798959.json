@@ -1,0 +1,107 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "sans-serif",
+      "count": 82
+    },
+    {
+      "family": "Inter",
+      "count": 49
+    },
+    {
+      "family": "Oswald",
+      "count": 33
+    },
+    {
+      "family": "ui-serif",
+      "count": 1
+    },
+    {
+      "family": "Georgia",
+      "count": 1
+    },
+    {
+      "family": "Cambria",
+      "count": 1
+    },
+    {
+      "family": "Times New Roman",
+      "count": 1
+    },
+    {
+      "family": "Times",
+      "count": 1
+    },
+    {
+      "family": "serif",
+      "count": 1
+    }
+  ],
+  "colors": {
+    "primary": "#D9A326",
+    "accent": "#455C23",
+    "background": "#F4F1EC",
+    "textPrimary": "#455C23",
+    "link": "#455C23"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Inter",
+      "heading": "Oswald"
+    },
+    "fontStacks": {
+      "body": [
+        "Inter",
+        "sans-serif"
+      ],
+      "heading": [
+        "Oswald",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "Inter",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "72px",
+      "h2": "48px",
+      "body": "14px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 8,
+    "borderRadius": "0px"
+  },
+  "components": {},
+  "images": {
+    "logo": "https://lawn-trooper.com/assets/camo_soldier_mascot_weedeating-ChrnwiMC.png",
+    "favicon": "https://lawn-trooper.com/favicon.png",
+    "ogImage": "https://lawn-trooper--jclaxtonlandsca.replit.app/opengraph.jpg"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Strong indicators: in header, no link (brand logos usually link to homepage, penalty), header location, visible, top-left position, highest logo on page, alt exactly matches brand name \"Lawn Trooper\", reasonable size. Score: 92 (clear winner by 92 points)",
+    "confidence": 0.9
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}

@@ -18,13 +18,14 @@ export const PLANS = [
   {
     id: "basic",
     name: "Basic Patrol",
-    price: 169,
+    price: 169,  // Fixed base price for Basic plan
     oldPrice: 199,
     priceLabel: "Starts at $169/mo",
-    description: "Includes: 1 Basic Add-on - 0 Premium Add-ons",
+    description: "Includes: 1 Basic Add-on + 0 Premium Add-ons",
     keyStats: [
       { label: "Mowing", value: "Bi-Weekly" },
       { label: "Weed Control", value: "2 Treatments" },
+      { label: "Bush Trimming", value: "1x/Year" },
       { label: "Add-ons", value: "1 Included" }
     ],
     features: [
@@ -45,30 +46,33 @@ export const PLANS = [
       basic: 1,
       premium: 0
     },
+    allowsSwap: false,
     allowanceLabel: "1 Basic Add-On"
   },
   {
     id: "premium",
     name: "Premium Patrol",
-    price: 299,
+    price: 299,  // Fixed base price for Premium plan
     oldPrice: 349,
     priceLabel: "Starts at $299/mo",
-    description: "Plus weed control & beds. Includes: 2 Basic Add-ons - 1 Premium Add-on",
+    description: "Includes: 2 Basic Add-ons + 1 Premium Add-on",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
-      { label: "Weed Control", value: "2 Treatments" },
+      { label: "Weed Control", value: "4 Treatments" },
+      { label: "Bush Trimming", value: "2x/Year" },
       { label: "Add-ons", value: "3 Included" }
     ],
     features: [
       "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Weed Control: 2 pre-emergent weed control treatments + weed killer",
+      "Weed Control: 4 weed control treatments + weed killer",
       "Weed Control (Beds): Weed control in all flower beds included",
       "Weed-Free Guarantee: Not Included",
       `<span class='font-bold text-primary'>Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
-      "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "<span class='font-bold text-primary'>Spring & Fall Cleanup</span><br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "<span class='font-bold text-primary'>Holiday Hustle Cleanup</span><br/><span class='text-xs text-muted-foreground'>Pre-holiday leaf and debris cleanup before major holidays or events.</span>",
       "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
-      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
+      "<span class='font-bold text-primary'>Leaf Service (Fall & Winter): Bi-weekly leaf cleanup</span> - Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
       "Multiple Trash Cans Cleaning: Not Included (Executive only)"
     ],
@@ -82,140 +86,314 @@ export const PLANS = [
   {
     id: "executive",
     name: "Executive Command",
-    price: 399,
-    oldPrice: 479,
+    price: 399,  // Fixed base price for Executive plan
+    oldPrice: 469,
     priceLabel: "Starts at $399/mo",
-    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons - 3 Premium Add-ons",
+    description: "Includes: 3 Basic Add-ons + 2 Premium Add-ons",
     keyStats: [
-      { label: "Mowing", value: "Weekly" },
+      { label: "Mowing", value: "Priority Weekly" },
       { label: "Weed Control", value: "6 Treatments" },
+      { label: "Bush Trimming", value: "3x/Year" },
       { label: "Add-ons", value: "5 Included" }
     ],
     features: [
-      "Mowing: Weekly mowing (top priority)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+      "<span class='font-bold text-accent'>Priority Mowing: Weekly mowing with top-priority scheduling</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
       "Weed Control: 6 weed treatments per year",
       "Weed Control (Beds): Weed control in all flower beds included",
-      "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
+      "<span class='font-bold text-accent'>Weed-Free Guarantee</span>: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge.",
       `<span class='font-bold text-accent'>Bush Trimming: 3 bush trimmings per year (Unlimited Bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
-      "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
-      "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
+      "<span class='font-bold text-accent'>Spring & Fall Cleanup</span><br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "<span class='font-bold text-accent'>Holiday Hustle Cleanup</span><br/><span class='text-xs text-muted-foreground'>Pre-holiday leaf and debris cleanup before major holidays or events.</span>",
+      "<span class='font-bold text-accent'>After-Storm Visits: Small limbs and debris cleanup included</span>",
+      "<span class='font-bold text-accent'>Bi-weekly Winter Visits & Yard Checks</span><br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
       "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
-      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
+      "<span class='font-bold text-accent'>Leaf Service (Fall & Winter): Bi-weekly leaf cleanup</span> - Leaf blowing / Mulching / Removal",
       "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
-      "<span class='font-bold text-accent'>Multiple Trash Cans: Included with any trash bin cleaning add-on (up to 3 cans)</span>"
+      "<span class='font-bold text-accent'>Multiple Trash Cans: Included with any trash bin cleaning add-on (up to 3 cans)</span>",
+      "<span class='font-bold text-accent'>Commander's Club: 1 FREE premium add-on on your service anniversary</span>"
     ],
     allowance: {
-      basic: 2,
-      premium: 3
+      basic: 3,
+      premium: 2
     },
     allowanceLabel: "2 Basic Add-Ons + 3 Premium Add-Ons",
     promoLabel: "March Promo: +1 Free Basic Add-on"
   }
 ];
 
-export const BASIC_ADDONS = [
+// CANONICAL ADD-ON CATALOG
+// All add-ons defined here with: id, name, tier, category, price, description
+// Pricing: Basic = $20/mo overage, Premium = $40/mo overage
+
+export type AddonTier = 'basic' | 'premium';
+export type AddonCategory = 'landscaping' | 'cleaning' | 'seasonal' | 'trash';
+
+export interface Addon {
+  id: string;
+  name: string;
+  tier: AddonTier;
+  category: AddonCategory;
+  price: number;
+  description: string;
+}
+
+export const ADDON_CATALOG: Addon[] = [
+  // --- BASIC ADD-ONS ($20/mo overage) ---
   {
-    id: "extra_bush_trimming",
-    label: "Extra Bush Trimming",
-    description: `Additional trimming beyond plan limits. ${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}`
+    id: "shrub_hedge_trimming",
+    name: "Shrub / Hedge Trimming",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "One-time trimming service for up to 20 small to medium bushes or hedges. Includes shaping to maintain appearance and proper disposal of all clippings."
   },
   {
-    id: "shrub_fertilization",
-    label: "Shrub Fertilization / Diseased Plant Application",
-    description: "Targeted nutrient boost and disease control for healthier shrubs."
+    id: "basic_pressure_wash",
+    name: "Basic Pressure-Wash Package",
+    tier: "basic",
+    category: "cleaning",
+    price: 20,
+    description: "Light exterior pressure washing to refresh high-visibility areas around your home and maintain a clean, welcoming entrance. Includes: Porch, Sidewalk, Mailbox."
   },
   {
-    id: "irrigation_check",
-    label: "Full Irrigation Check/Diagnosis + Seasonal Activation & Winterization",
-    description: "System diagnostics and seasonal preparation."
+    id: "driveway_pressure_wash_basic",
+    name: "Driveway Pressure Wash",
+    tier: "basic",
+    category: "cleaning",
+    price: 20,
+    description: "Targeted pressure washing to clean and brighten driveway surfaces, improving curb appeal and removing built-up grime."
   },
   {
-    id: "fire_ant_app",
-    label: "Quarterly Fire Ant Applications",
-    description: "Quarterly treatments to control fire ant mounds."
+    id: "overseeding",
+    name: "Overseeding",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Overseeding services to help improve lawn density and encourage healthier grass growth."
+  },
+  {
+    id: "mulch_install_4yards",
+    name: "Basic Mulch Install (Up to 4 Yards)",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Mulch installation for defined garden or bed areas to refresh appearance and support plant health. Mulch included (brown, red, black hardwood or pine bark). Delivery and installation included."
   },
   {
     id: "quarterly_trash_bin_cleaning",
-    label: "Quarterly Trash Bin Cleaning",
-    description: "Cleaning and sanitizing of trash bins once every quarter. Executive Plan: Multiple cans (up to 3) included."
+    name: "Quarterly Trash Can Cleaning",
+    tier: "basic",
+    category: "trash",
+    price: 20,
+    description: "Periodic cleaning of outdoor trash and recycling bins to reduce odors and buildup."
   },
   {
-    id: "gutter_cleaning_first_floor",
-    label: "Gutter Cleaning (First Floor Only)",
-    description: "First-floor / single-story gutters only (no multi-story work)"
+    id: "christmas_lights_basic",
+    name: "Basic Seasonal Lighting",
+    tier: "basic",
+    category: "seasonal",
+    price: 20,
+    description: "Ground-level seasonal lighting focused on shrubs, small trees, and select landscape areas using simple yard pop-up lighting. Final layout to be discussed with the homeowner."
   },
   {
-    id: "mulch_delivery_install_2yards",
-    label: "Mulch Delivery + Installation (Up to 3 Yards)",
-    description: "Fresh mulch install + light bed cleanup (Up to 3 Yards)"
-  },
-  {
-    id: "pine_straw_delivery_install_3yards",
-    label: "Pine Straw Delivery + Installation (Up to 4 Yards)",
-    description: "Fresh pine straw installed neatly in beds (Up to 4 Yards)"
-  },
-  {
-    id: "basic_flower_install",
-    label: "Basic Flower Install (Fall Only)",
-    description: "Up to 4 flats of flowers (Fall Only). Upgrade to Premium for Spring."
-  },
-  {
-    id: "basic_christmas_lights",
-    label: "Basic Christmas Light Package",
-    description: "Basic shrub and small tree decorations only. (No roofline lights)."
+    id: "growing_season_boost",
+    name: "Spring/Summer Mowing Boost",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Upgrade to weekly mowing service for 3 months during peak growing season (spring/summer). Keep your lawn looking its best when growth is at its highest. Available after 3 months of active service."
   },
   {
     id: "extra_weed_control",
-    label: "Extra Weed Control + Fire Ant",
-    description: "2 extra weed control apps w/ fertilizer & weed killer + 1 fire ant treatment."
-  }
-];
-
-export const PREMIUM_ADDONS = [
-  {
-    id: "pest_control",
-    label: "Quarterly Pest Control Applications",
-    description: "Exterior pest barrier treatments + spray for mosquitos and bugs around perimeter (4x/year)."
+    name: "Additional Weed Control & Fertilization",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Get your yard weed-free, in shape, and green faster with 3 additional lawn applications—fertilizer, pre-emergent weed prevention, and targeted weed-killer—beyond what's included in your plan."
   },
   {
-    id: "aeration_overseeding",
-    label: "Aeration + Overseeding",
-    description: "Relieves soil compaction / improves nutrient flow / thickens turf"
+    id: "pine_straw_basic",
+    name: "Basic Pine Straw Install (Up to 10 Bales)",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 bales of quality pine straw, delivery, and professional installation."
   },
   {
-    id: "pressure_washing",
-    label: "Driveway & Sidewalk Pressure Washing",
-    description: "Professional cleaning of driveway and front sidewalks."
+    id: "gutter_cleaning",
+    name: "Gutter Cleaning",
+    tier: "basic",
+    category: "cleaning",
+    price: 20,
+    description: "Thorough cleaning of gutters and downspouts to remove debris and ensure proper drainage. Helps prevent water damage and keeps your home protected."
   },
   {
-    id: "mulch_delivery_install_over2yards",
-    label: "Mulch Delivery + Installation (Up to 8 Yards)",
-    description: "Fresh mulch install + light bed cleanup. 4 colors avail (Brown Hardwood recommended)."
+    id: "flower_bed_maintenance",
+    name: "Flower Bed Maintenance",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Seasonal flower bed care including weeding, edging, and light pruning to keep your beds looking neat and healthy throughout the year."
   },
   {
-    id: "pine_straw_delivery_install_over3yards",
-    label: "Pine Straw Delivery + Installation (Up to 10 Yards)",
-    description: "Fresh pine straw installed neatly in beds (Up to 10 Yards)."
+    id: "one_time_leaf_removal",
+    name: "One-Time Leaf Removal",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Single-visit leaf removal service for heavily covered yards. Includes blowing, raking, and hauling away all leaves from your property."
+  },
+  
+  // --- PREMIUM ADD-ONS ($40/mo overage) ---
+  {
+    id: "premium_pressure_wash",
+    name: "Premium Pressure-Wash Package",
+    tier: "premium",
+    category: "cleaning",
+    price: 40,
+    description: "Comprehensive exterior pressure washing for a deeper, more complete clean across key areas of your property. Includes: Driveway, Porch, Sidewalk, Mailbox, additional exterior surfaces as appropriate."
   },
   {
-    id: "premium_flower_install",
-    label: "Premium Flower Install (Spring or 2 Seasons)",
-    description: "Spring flowers (or Spring AND Fall). Up to 5 flats per season."
+    id: "house_soft_wash",
+    name: "House Soft Wash",
+    tier: "premium",
+    category: "cleaning",
+    price: 40,
+    description: "Low-pressure soft washing to safely clean exterior siding and surfaces, helping restore appearance while protecting your home's finish."
   },
   {
-    id: "bimonthly_trash_bin_cleaning",
-    label: "Monthly Trash Bin Cleaning",
-    description: "Cleaning and sanitizing of trash bins every month. Executive Plan: Multiple cans (up to 3) included."
+    id: "mulch_install_10yards",
+    name: "Premium Mulch Install (Up to 10 Yards)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Expanded mulch installation with increased coverage and attention to detail for enhanced curb appeal. Mulch included. Delivery and installation included."
+  },
+  {
+    id: "monthly_trash_bin_cleaning",
+    name: "Monthly Trash Can Cleaning",
+    tier: "premium",
+    category: "trash",
+    price: 40,
+    description: "Monthly cleaning of outdoor trash and recycling bins to help maintain freshness and reduce odor over time."
   },
   {
     id: "christmas_lights_premium",
-    label: "Christmas Light Premium Package",
-    description: "First floor roofline lighting + yard decorations."
+    name: "Premium Seasonal Lighting",
+    tier: "premium",
+    category: "seasonal",
+    price: 40,
+    description: "Expanded seasonal lighting designed for holidays, including roofline lighting, enhanced landscape features, and decorative yard elements as appropriate."
+  },
+  {
+    id: "pine_straw_premium",
+    name: "Premium Pine Straw Install (Up to 25 Bales)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Expanded pine straw installation for larger properties. Includes up to 25 bales of premium pine straw, delivery, and professional installation with attention to detail."
+  },
+  {
+    id: "aeration_dethatching",
+    name: "Aeration & Dethatching",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Professional lawn aeration and dethatching to improve soil health, water absorption, and root development. Ideal for compacted or stressed lawns that need revitalization."
+  },
+  {
+    id: "tree_trimming",
+    name: "Tree Trimming (Small to Medium Trees)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Professional trimming of small to medium trees to improve shape, remove dead branches, and promote healthy growth. Does not include large tree removal or work requiring heavy equipment."
+  },
+  {
+    id: "full_yard_cleanout",
+    name: "Full Yard Cleanout",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Complete yard cleanup including debris removal, bed edging, pruning, and general tidying. Perfect for getting your property back in shape after neglect or seasonal buildup."
   }
 ];
 
-// Helper to get allowance including promo
-export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
+// Helper to get add-ons by tier
+export const getAddonsByTier = (tier: AddonTier): Addon[] => {
+  return ADDON_CATALOG.filter(addon => addon.tier === tier);
+};
+
+// Helper to get add-on by ID
+export const getAddonById = (id: string): Addon | undefined => {
+  return ADDON_CATALOG.find(addon => addon.id === id);
+};
+
+// Legacy arrays for backward compatibility
+export const BASIC_ADDONS = ADDON_CATALOG.filter(a => a.tier === 'basic').map(a => ({
+  id: a.id,
+  label: a.name,
+  description: a.description
+}));
+
+export const PREMIUM_ADDONS = ADDON_CATALOG.filter(a => a.tier === 'premium').map(a => ({
+  id: a.id,
+  label: a.name,
+  description: a.description
+}));
+
+export const SEASONAL_ADDONS = ADDON_CATALOG.filter(a => a.category === 'seasonal').map(a => ({
+  id: a.id,
+  label: a.name,
+  description: a.description
+}));
+
+// EXECUTIVE EXCLUSIVES (included with Executive plan, not selectable add-ons)
+export const EXECUTIVE_EXTRAS = [
+  "Unlimited Mulch",
+  "Unlimited Pine Straw",
+  "Bi-Monthly Shrub Trimmings (every 2 months year-round)",
+  "After-Storm Visits",
+  "Bi-Weekly Winter Visits & Yard Checks"
+];
+
+export const EXECUTIVE_PERKS = [
+  "Priority mowing scheduling",
+  "After-storm visits: Small limbs & debris cleanup",
+  "Bi-weekly winter visits & yard checks",
+  "Commander's Club: 1 FREE premium add-on on anniversary",
+  "Swap option: Trade 1 Premium slot for +2 Basic slots"
+];
+
+// OVERAGE PRICING (LOCKED)
+export const OVERAGE_PRICES = {
+  basic: 20,  // $20/mo per extra basic add-on
+  premium: 40 // $40/mo per extra premium add-on
+};
+
+// Calculate overage cost
+export const calculateOverageCost = (
+  selectedBasic: number,
+  selectedPremium: number,
+  includedBasic: number,
+  includedPremium: number
+): { basicOverage: number; premiumOverage: number; totalOverage: number } => {
+  const basicOverage = Math.max(0, selectedBasic - includedBasic);
+  const premiumOverage = Math.max(0, selectedPremium - includedPremium);
+  return {
+    basicOverage,
+    premiumOverage,
+    totalOverage: (basicOverage * OVERAGE_PRICES.basic) + (premiumOverage * OVERAGE_PRICES.premium)
+  };
+};
+
+// Helper to get allowance with swap adjustment
+// swapCount: 0, 1, or 2 (only applies to Executive)
+// Each swap converts 1 Premium slot to +2 Basic slots
+export const getPlanAllowance = (
+  planId: string, 
+  swapCount: number = 0
+): { basic: number; premium: number } => {
   const plan = PLANS.find(p => p.id === planId);
   if (!plan) return { basic: 0, premium: 0 };
 
@@ -238,8 +416,19 @@ export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
   return { basic, premium };
 };
 
-// Acre multipliers for pricing: 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44
-// For future larger sizes: each additional 1/3 acre multiplies by 1.2
+// SWAP RULES (LOCKED)
+// Executive base: 3 Basic + 2 Premium
+// Swap 0: 3B + 2P
+// Swap 1: 5B + 1P (traded 1P for +2B)
+// Swap 2: 7B + 0P (traded 2P for +4B)
+export const SWAP_OPTIONS = [
+  { value: 0, label: "No swap (3 Basic + 2 Premium)" },
+  { value: 1, label: "Swap 1 Premium → +2 Basic (5 Basic + 1 Premium)" },
+  { value: 2, label: "Swap 2 Premium → +4 Basic (7 Basic + 0 Premium)" }
+];
+
+// Acre multipliers for pricing: 20% increase per yard size tier
+// 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44
 const ACRE_MULTIPLIERS: Record<string, number> = {
   "1/3": 1.0,
   "2/3": 1.2,
@@ -254,13 +443,19 @@ export const getAcreMultiplier = (yardSizeId: string): number => {
   return ACRE_MULTIPLIERS[yardSizeId] || 1.0;
 };
 
-// Calculate 2026 AI-Savings price (current promotional price)
-export const calculate2026Price = (planId: string, yardSizeId: string): number => {
+// Get base price for a plan from PLANS config (single source of truth)
+export const getPlanBasePrice = (planId: string): number => {
   const plan = PLANS.find(p => p.id === planId);
-  if (!plan) return 0;
-  
-  const multiplier = getAcreMultiplier(yardSizeId);
-  const price = plan.price * multiplier;
+  return plan?.price || 169;
+};
+
+// Calculate 2026 AI-Savings price (current promotional price)
+// Price = Plan Base Price × Yard Size Multiplier
+// Add-ons are NOT affected by yard size - they are flat rates
+export const calculate2026Price = (planId: string, yardSizeId: string): number => {
+  const planBasePrice = getPlanBasePrice(planId);
+  const yardMultiplier = getAcreMultiplier(yardSizeId);
+  const price = planBasePrice * yardMultiplier;
   
   // Round to whole dollars
   return Math.round(price);
@@ -288,7 +483,12 @@ export const calculatePlanPrice = (planId: string, acres: number): number => {
 
 // Yard size options for Plan Builder
 export const YARD_SIZES = [
-  { id: "1/3", label: "Small", subtitle: "Up to 1/3 acre", acres: 0.33 },
-  { id: "2/3", label: "Medium", subtitle: "1/3 - 2/3 acre", acres: 0.66 },
-  { id: "1", label: "Large", subtitle: "2/3 - 1 acre", acres: 1.0 }
+  { id: "1/3", label: "Small", subtitle: "Up to 1/3 acre", acres: 0.33, multiplier: 1.0 },
+  { id: "2/3", label: "Medium", subtitle: "1/3 - 2/3 acre", acres: 0.66, multiplier: 1.2 },
+  { id: "1", label: "Large", subtitle: "2/3 - 1 acre", acres: 1.0, multiplier: 1.44 }
 ];
+
+export const getYardMultiplier = (yardSizeId: string): number => {
+  const yard = YARD_SIZES.find(y => y.id === yardSizeId);
+  return yard?.multiplier ?? 1.0;
+};

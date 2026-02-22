@@ -1,0 +1,85 @@
+ROLE: You are a meticulous senior frontend engineer + product copy editor. Your job is to update Lawn Trooper’s subscription/bonus copy and (only where necessary) the bonus calculation labels so the site matches the NEW “25th Anniversary Early Bird Bonus” rules. Make the smallest possible code changes. Do NOT change base plan pricing, plan features, or add-on counts unless explicitly required by this prompt.
+
+SITE CONTEXT (what’s wrong today)
+- The UI currently makes it feel like “Pay in Full” is required for yearly.
+- The “25th Anniversary Enrollment Bonus” wording/amount is wrong (it shows +2 months in places).
+- The complimentary months math/labels are confusing and not framed as “earned bonuses.”
+
+GOAL: Update verbiage everywhere (and only minimal logic if needed) so the system is:
+1) 25th Anniversary Early Bird Bonus (limited time)
+   - +1 FREE month
+   - Customer qualifies if they submit the enrollment form by Jan 25
+   - They must make their first payment by Feb 1 to lock the bonus
+2) Commitment Bonus (always available)
+   - 1-Year commitment → +1 FREE month
+   - 2-Year commitment → +2 FREE months
+3) Pay-in-Full Accelerator (optional)
+   - Doubles ALL earned free months (Early Bird + Commitment)
+   - Stacks with no cap
+   - Pay monthly is still allowed on 1-Year and 2-Year commitments (Pay in Full is NOT required)
+
+IMPLEMENTATION REQUIREMENTS
+A) COPY / UI LABEL UPDATES (most important)
+- Replace ALL occurrences of:
+  - “Enrollment Bonus” (old wording) → “25th Anniversary Early Bird Bonus”
+  - Any “+2 complimentary months” anniversary copy → “+1 free month”
+  - Any “Pay in Full (Recommended)” language that implies requirement → must clearly say OPTIONAL
+- Use this exact naming (consistent everywhere):
+  - “25th Anniversary Early Bird Bonus”
+  - “Commitment Bonus”
+  - “Pay-in-Full Accelerator (Optional)”
+- Make sure the UI explicitly communicates:
+  - “1-Year Subscription” = annual commitment (can be billed monthly)
+  - “2-Year Subscription (Price Lock)” = 2-year commitment (can be billed monthly)
+  - Pay in full is an optional upgrade that doubles earned free months
+
+B) BONUS MATH (minimal changes allowed ONLY if needed)
+- Keep existing pricing and billing behavior.
+- If there is a “complimentary months” calculation, ensure it follows:
+  earned_free_months = earlyBirdMonths + commitmentMonths
+  if payInFullChecked: earned_free_months = earned_free_months * 2
+- earlyBirdMonths should be 1 (not 2) when the early bird offer is active/selected/shown.
+- commitmentMonths must be:
+  - 1-year: 1
+  - 2-year: 2
+- If the site currently hardcodes old bonus numbers, update them to match above.
+
+C) SUMMARY PANEL / BREAKDOWN (clarity)
+Wherever you show “Complimentary months” or a breakdown, format it like:
+- 25th Anniversary Early Bird Bonus: +1 mo (Enroll by Jan 25, pay by Feb 1)
+- Commitment Bonus: +1 mo (1-Year) OR +2 mo (2-Year)
+- Pay-in-Full Accelerator: ×2 (optional)
+Then show:
+- Total Free Months: X
+- Billed Months: (termMonths - freeMonths)
+- Effective monthly: (totalPaid / termMonths) or whatever the current model uses — but do not break existing logic.
+
+D) DEADLINES (copy only; no need for countdown logic)
+- Display these dates wherever the Early Bird Bonus is mentioned:
+  - “Enroll by Jan 25”
+  - “First payment due by Feb 1”
+
+E) SEARCH + FIX LOCATIONS
+- Search the entire codebase for:
+  “Enrollment Bonus”, “Anniversary bonus”, “25th Anniversary Enrollment Bonus”, “+2 complimentary”, “Double your complimentary months”, “Pay in Full (Recommended)”
+- Update every place consistently: pricing cards, toggles, tooltips, summary breakdown, FAQ, anywhere else.
+
+TONE / BRAND VOICE
+- Keep it professional, military vibe, clear and confident.
+- Use “free month(s)” instead of “complimentary” unless the UI already uses complimentary everywhere; if mixed, standardize to “free month(s)” across the subscription section for clarity.
+
+ACCEPTANCE CHECKLIST (must pass)
+1) A customer can read the page and understand they can commit to 1-year or 2-year and still pay monthly.
+2) The Early Bird Bonus is clearly “25th Anniversary Early Bird Bonus” and is +1 month with the Jan 25 / Feb 1 rules.
+3) Commitment bonus is exactly 1 month (1-year) or 2 months (2-year).
+4) Pay-in-Full is clearly optional and doubles ALL earned free months with no cap.
+5) No remaining old bonus copy or mismatched numbers anywhere on the site.
+6) No pricing changes, no broken layout, no broken buttons.
+
+DELIVERABLE
+- Implement changes directly in the code.
+- After changes, provide a short report:
+  - Files changed
+  - Key copy blocks updated
+  - Confirm the acceptance checklist is met
+  - Call out any ambiguous area you couldn’t fully verify from code alone

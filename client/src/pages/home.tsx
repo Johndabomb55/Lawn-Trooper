@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
+import MultiStepQuoteWizard from "@/components/MultiStepQuoteWizard";
+import CTAButton from "@/components/CTAButton";
 import { motion, AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { 
   Check, 
   Shield, 
@@ -32,38 +31,8 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage,
-  FormDescription
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { Label } from "@/components/ui/label";
-import { 
-  PLANS, 
-  BASIC_ADDONS, 
-  PREMIUM_ADDONS, 
   GLOBAL_CONSTANTS, 
-  getPlanAllowance,
-  PROMO_CONFIG,
-  calculatePlanPrice,
-  calculate2026Price,
-  calculate2025Price,
-  YARD_SIZES
+  PROMO_CONFIG
 } from "@/data/plans";
 
 // Assets
@@ -136,7 +105,7 @@ function CountdownTimer() {
     return (
       <div className="bg-destructive/90 text-white py-2 px-4 shadow-lg text-center">
         <div className="font-bold uppercase tracking-widest text-xs md:text-sm">
-          Anniversary Sale Ended
+          Early Bird Bonus Expired
         </div>
       </div>
     );
@@ -162,190 +131,8 @@ function CountdownTimer() {
   );
 }
 
-// Schema for the quote form
-const formSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  address: z.string().min(5, "Full street address is required"),
-  contactMethod: z.enum(["text", "phone", "email", "either"], {
-    required_error: "Please select a contact method",
-  }),
-  phone: z.string().optional(),
-  email: z.string().email("Please enter a valid email address").or(z.literal("")),
-  notes: z.string().optional(),
-  // Plan selection fields
-  yardSize: z.string(),
-  plan: z.string(),
-  basicAddons: z.array(z.string()),
-  premiumAddons: z.array(z.string()),
-}).superRefine((data, ctx) => {
-  if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Phone number is required for this contact method",
-      path: ["phone"],
-    });
-  }
-  if (data.contactMethod === "email" && !data.email) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Email is required for this contact method",
-      path: ["email"],
-    });
-  }
-  if (data.contactMethod === "either" && !data.phone && !data.email) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Please provide either phone or email",
-      path: ["email"],
-    });
-  }
-});
-
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  // Plan Builder state (for interactive preview)
-  const [builderYardSize, setBuilderYardSize] = useState("1/3");
-  const [builderPlan, setBuilderPlan] = useState("basic");
-  const [builderBasicAddons, setBuilderBasicAddons] = useState<string[]>([]);
-  const [builderPremiumAddons, setBuilderPremiumAddons] = useState<string[]>([]);
-  
-  // Photo upload state
-  const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
-  const [photoError, setPhotoError] = useState<string | null>(null);
-  
-  const { toast } = useToast();
-  
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      contactMethod: "email",
-      notes: "",
-      yardSize: builderYardSize,
-      plan: builderPlan,
-      basicAddons: builderBasicAddons,
-      premiumAddons: builderPremiumAddons,
-    },
-  });
-  
-  // Keep form in sync with plan builder selections
-  React.useEffect(() => {
-    form.setValue("yardSize", builderYardSize);
-    form.setValue("plan", builderPlan);
-    form.setValue("basicAddons", builderBasicAddons);
-    form.setValue("premiumAddons", builderPremiumAddons);
-  }, [builderYardSize, builderPlan, builderBasicAddons, builderPremiumAddons, form]);
-
-  const selectedContactMethod = form.watch("contactMethod");
-
-  // Handle photo file selection
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    
-    const validFiles: File[] = [];
-    const maxSize = 5 * 1024 * 1024; // 5MB per file
-    const maxFiles = 5;
-    
-    for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
-      if (files[i].size <= maxSize) {
-        validFiles.push(files[i]);
-      }
-    }
-    
-    if (files.length > maxFiles) {
-      setPhotoError(`Maximum ${maxFiles} photos allowed. Only first ${maxFiles} will be uploaded.`);
-    } else if (validFiles.length < files.length) {
-      setPhotoError("Some files were too large (max 5MB each) and were skipped.");
-    } else {
-      setPhotoError(null);
-    }
-    
-    setSelectedPhotos(validFiles);
-  };
-
-  // Convert files to base64 for submission
-  const filesToBase64 = async (files: File[]): Promise<{name: string, data: string, type: string}[]> => {
-    return Promise.all(files.map(file => {
-      return new Promise<{name: string, data: string, type: string}>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve({
-            name: file.name,
-            data: reader.result as string,
-            type: file.type
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-    }));
-  };
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      // Convert photos to base64 if any
-      const photos = selectedPhotos.length > 0 ? await filesToBase64(selectedPhotos) : [];
-      
-      const response = await fetch('/api/quote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...values, photos }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast({
-          title: "Request Sent! 🫡",
-          description: values.email 
-            ? `Your quote request has been received and a confirmation was sent to ${values.email}. We'll contact you shortly!`
-            : "Your quote request has been received. We'll contact you shortly via your preferred method!",
-          duration: 6000,
-        });
-        
-        form.reset({
-          name: "",
-          email: "",
-          phone: "",
-          address: "",
-          contactMethod: "email",
-          notes: "",
-          yardSize: "1/3",
-          plan: "basic",
-          basicAddons: [],
-          premiumAddons: [],
-        });
-        // Reset plan builder state and photos
-        setBuilderYardSize("1/3");
-        setBuilderPlan("basic");
-        setBuilderBasicAddons([]);
-        setBuilderPremiumAddons([]);
-        setSelectedPhotos([]);
-        setPhotoError(null);
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to send quote request. Please try again or contact us directly.",
-          variant: "destructive",
-          duration: 5000,
-        });
-      }
-    } catch (error) {
-      console.error('Error submitting quote:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send quote request. Please check your connection and try again.",
-        variant: "destructive",
-        duration: 5000,
-      });
-    }
-  }
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -360,18 +147,18 @@ export default function LandingPage() {
 
   return (
     <TooltipProvider>
-    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
       {/* Top Announcement Banner */}
       <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
         <div className="container mx-auto relative flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
            <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 h-10">
               <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
            </div>
-           <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Sale + AI Cost Reductions! 🎉</span>
+           <span className="uppercase tracking-wide md:pl-16">🎉 Celebrating 25 Years + AI Cost Reductions! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
            <span>Act by <span className="underline decoration-white/50 underline-offset-4">March 25, 2026</span> to lock in your pricing for up to 2 years!</span>
            <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
-             + Up to 3 Months Free
+             Learn More ↓
            </span>
         </div>
       </div>
@@ -389,8 +176,8 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
-            <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
-              Get Quote
+            <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
+              Get Instant Quote
             </Button>
           </div>
 
@@ -413,7 +200,7 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white">Get Quote</Button>
+                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Quote</Button>
               </div>
             </motion.div>
           )}
@@ -447,8 +234,8 @@ export default function LandingPage() {
             transition={{ duration: 0.8, type: "spring" }}
             className="mb-8 relative w-full max-w-4xl"
           >
-            <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150"></div>
-            <img src={mascotLogo} alt="Lawn Trooper" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
+            <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
+            <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
             
             {/* Big Intimidating Camo Banner */}
             <div className="mt-4 relative z-20 w-full">
@@ -479,13 +266,16 @@ export default function LandingPage() {
             
             <div className="mt-6 flex flex-col items-center gap-4">
                <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
-                 25th Anniversary Sale + AI Cost Reductions: get up to 3 months free
+                 Celebrating 25 years — long-term subscribers can earn complimentary billing months
                </div>
                
-               <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md mx-auto justify-center">
-                 <Button onClick={() => scrollToSection('plans')} variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10 font-bold uppercase tracking-wider py-6 text-lg bg-black/40 backdrop-blur-sm">
-                   See What’s Included
-                 </Button>
+               <div className="flex flex-col items-center gap-4 mt-2">
+                 <button 
+                   onClick={() => scrollToSection('quote')} 
+                   className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
+                 >
+                   Get your free quote below
+                 </button>
                </div>
             </div>
           </motion.div>
@@ -551,7 +341,7 @@ export default function LandingPage() {
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
                  <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl text-center">
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
-                   🎉 25th Anniversary Sale + AI Cost Reductions 🎉
+                   🎉 25th Anniversary Early Bird Bonus 🎉
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
@@ -560,35 +350,34 @@ export default function LandingPage() {
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
-                 {/* Deal 1: Early Bird Special */}
+                 {/* Deal 1: 25th Anniversary Enrollment Bonus */}
                  <div className="bg-accent/10 p-3 rounded border border-accent/50 hover:bg-accent/20 transition-colors relative">
                    <div className="absolute -top-2 -right-2">
-                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">EARLY BIRD ONLY</span>
+                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">BONUS</span>
                    </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
                      <span className="text-accent font-bold uppercase text-xs">Sign Up By March 25th</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between items-center mb-1"><span>2-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">3 Months Free</span></div>
-                     <div className="flex justify-between items-center mb-1"><span>1-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">1 Month Free</span></div>
-                     <div className="flex justify-between items-center"><span>Renters:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">5% OFF</span></div>
+                     <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">+2 Bonus Months</div>
+                     <div className="text-white/70 text-xs mt-1 text-center">Ends Jan 25</div>
                    </div>
                  </div>
 
-                 {/* Deal 2: Pay Upfront */}
+                 {/* Deal 2: Commitment Bonus */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Zap className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Pay Upfront (Full Term)</span>
+                     <span className="text-accent font-bold uppercase text-xs">Commitment Bonus</span>
                    </div>
                    <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between"><span>2-Year Term:</span> <span className="text-green-400 font-bold">15% OFF</span></div>
-                     <div className="flex justify-between"><span>1-Year Term:</span> <span className="text-green-400 font-bold">10% OFF</span></div>
+                     <div className="flex justify-between"><span>1-Year:</span> <span className="text-green-400 font-bold">+1 Complimentary</span></div>
+                     <div className="flex justify-between"><span>2-Year:</span> <span className="text-green-400 font-bold">+2 Complimentary</span></div>
                    </div>
                  </div>
 
-                 {/* Deal 3: Honors */}
+                 {/* Deal 3: Service Honors */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Shield className="w-4 h-4 text-accent" />
@@ -600,14 +389,14 @@ export default function LandingPage() {
                    </div>
                  </div>
 
-                 {/* Deal 4: Stackable */}
+                 {/* Deal 4: Pay-in-Full Option */}
                  <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
                    <div className="flex items-center gap-2 mb-1">
                      <Star className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Total Savings</span>
+                     <span className="text-accent font-bold uppercase text-xs">Pay-in-Full Option</span>
                    </div>
                    <div className="text-white text-sm font-medium leading-relaxed">
-                     Stack incentives for up to <span className="text-green-400 font-bold">30% OFF</span> and 3 free months.
+                     <span className="text-green-400 font-bold">Doubles commitment</span> months
                    </div>
                  </div>
                </div>
@@ -615,21 +404,36 @@ export default function LandingPage() {
                {/* Existing Customer Message */}
                <div className="mt-4 text-center space-y-2">
                   <p className="text-green-400 font-bold text-base md:text-lg bg-green-900/30 inline-block px-4 py-1 rounded-full border border-green-500/30 shadow-lg">
-                    Save up to $2,000+/year with stacked promotions on Executive plans.
+                    Complimentary billing months may apply based on commitment and enrollment timing
                   </p>
                   <p className="text-xs text-white/60 italic block">{GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY}</p>
                </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold uppercase tracking-wider text-lg h-16 px-10 shadow-xl shadow-accent/20 transform hover:-translate-y-1 transition-all">
-                Get Instant Quote
-              </Button>
-              <Button onClick={() => scrollToSection('plans')} variant="outline" size="lg" className="border-white/30 bg-black/30 backdrop-blur-sm text-white hover:bg-white/10 font-bold uppercase tracking-wider text-lg h-16 px-10">
-                View Service Tiers
-              </Button>
-            </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* About Us Section */}
+      <section className="py-12 bg-background border-b border-border">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            <span className="text-primary font-bold">Lawn Trooper</span> is built on commitment, efficiency, and loyalty. 
+            We've spent decades putting relationships before scale. 
+            As we adopt new automation, technology, and processes, 
+            we're passing those savings back to our customers. 
+            <span className="font-semibold text-primary">Commit to us, and we commit to you.</span>
+          </p>
+        </div>
+      </section>
+
+      {/* Quote Wizard Section - Primary CTA */}
+      <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
+        <div className="absolute top-1/2 -right-8 z-0 opacity-40">
+          <Mascot pose="trooper4" size="lg" hideOnMobile />
+        </div>
+        <div className="container mx-auto px-4 max-w-4xl relative z-10">
+          <MultiStepQuoteWizard />
         </div>
       </section>
 
@@ -728,309 +532,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Plan Builder Component */}
-          {(() => {
-            const builderPlanData = PLANS.find(p => p.id === builderPlan);
-            const builderYardData = YARD_SIZES.find(y => y.id === builderYardSize);
-            const builderPlanPrice = calculate2026Price(builderPlan, builderYardSize);
-            
-            const builderAllowance = getPlanAllowance(builderPlan, false);
-            const builderBasicRemaining = Math.max(0, builderAllowance.basic - builderBasicAddons.length);
-            const builderPremiumRemaining = Math.max(0, builderAllowance.premium - builderPremiumAddons.length);
-            
-            const builderExtraBasicCount = Math.max(0, builderBasicAddons.length - builderAllowance.basic);
-            const builderExtraPremiumCount = Math.max(0, builderPremiumAddons.length - builderAllowance.premium);
-            const builderExtraAddonsCost = (builderExtraBasicCount * 20) + (builderExtraPremiumCount * 40);
-            const builderTotalPrice = builderPlanPrice + builderExtraAddonsCost;
-
-            const handleBuilderBasicAddonToggle = (addonId: string) => {
-              setBuilderBasicAddons(prev => 
-                prev.includes(addonId) 
-                  ? prev.filter(id => id !== addonId)
-                  : [...prev, addonId]
-              );
-            };
-
-            const handleBuilderPremiumAddonToggle = (addonId: string) => {
-              setBuilderPremiumAddons(prev => 
-                prev.includes(addonId) 
-                  ? prev.filter(id => id !== addonId)
-                  : [...prev, addonId]
-              );
-            };
-
-            const resetBuilderAddons = () => {
-              setBuilderBasicAddons([]);
-              setBuilderPremiumAddons([]);
-            };
-
-            return (
-              <div className="bg-card rounded-2xl shadow-2xl border-2 border-primary/30 overflow-hidden">
-                {/* Header */}
-                <div className="bg-primary text-primary-foreground p-6 text-center">
-                  <h3 className="text-2xl font-heading font-bold uppercase tracking-wider">Build Your Plan</h3>
-                  <p className="text-sm opacity-90 mt-1">Configure your perfect lawn care package</p>
-                </div>
-
-                <div className="p-6 md:p-8 space-y-8">
-                  {/* Step 1: Yard Size */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">1</span>
-                      Select Your Yard Size
-                    </h4>
-                    <div className="grid grid-cols-3 gap-3">
-                      {YARD_SIZES.map((size) => (
-                        <button
-                          key={size.id}
-                          data-testid={`yard-size-${size.id}`}
-                          onClick={() => setBuilderYardSize(size.id)}
-                          className={`p-4 rounded-xl border-2 transition-all text-center ${
-                            builderYardSize === size.id
-                              ? 'border-primary bg-primary/10 shadow-lg'
-                              : 'border-border hover:border-primary/50 bg-muted/30'
-                          }`}
-                        >
-                          <div className="text-lg font-bold">{size.label}</div>
-                          <div className="text-xs text-muted-foreground">{size.subtitle}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Step 2: Plan Tier */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">2</span>
-                      Select Your Plan Tier
-                    </h4>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      {PLANS.map((plan) => {
-                        const price2026 = calculate2026Price(plan.id, builderYardSize);
-                        const price2025 = calculate2025Price(plan.id, builderYardSize);
-                        const isExecutive = plan.id === 'executive';
-                        const isSelected = builderPlan === plan.id;
-                        
-                        return (
-                          <button
-                            key={plan.id}
-                            data-testid={`plan-tier-${plan.id}`}
-                            onClick={() => {
-                              setBuilderPlan(plan.id);
-                              resetBuilderAddons();
-                            }}
-                            className={`p-4 rounded-xl transition-all text-left relative ${
-                              isExecutive 
-                                ? `border-3 border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`
-                                : isSelected
-                                  ? 'border-2 border-primary bg-primary/10 shadow-lg'
-                                  : 'border-2 border-border hover:border-primary/50 bg-muted/30'
-                            }`}
-                          >
-                            {isExecutive && (
-                              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                                Command Tier
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <h5 className={`font-bold ${isExecutive ? 'text-xl' : 'text-lg'}`}>{plan.name}</h5>
-                              {isExecutive && <Star className="w-5 h-5 fill-accent text-accent" />}
-                            </div>
-                            <div className="mt-2">
-                              <div className="text-xs text-muted-foreground line-through">
-                                2025 Standard: ${price2025}/mo
-                              </div>
-                              <div className={`font-bold text-primary ${isExecutive ? 'text-3xl' : 'text-2xl'}`}>
-                                ${price2026}
-                                <span className="text-sm font-normal text-muted-foreground">/mo</span>
-                              </div>
-                              <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-2">{plan.allowanceLabel}</div>
-                            {isSelected && (
-                              <div className="absolute top-2 right-2">
-                                <Check className="w-5 h-5 text-primary" />
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Step 3: Plan Features */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">3</span>
-                      {builderPlanData?.name} Features
-                    </h4>
-                    <div className="bg-muted/30 rounded-xl p-4 border border-border">
-                      {/* Key Stats */}
-                      <div className="grid grid-cols-3 gap-3 mb-4">
-                        {builderPlanData?.keyStats?.map((stat, idx) => (
-                          <div key={idx} className="bg-background rounded-lg p-3 text-center border border-border/50">
-                            <div className="text-[10px] uppercase text-muted-foreground font-bold">{stat.label}</div>
-                            <div className="text-sm font-bold text-primary mt-0.5">
-                              {stat.value === 'Weekly' || stat.value === 'Bi-Weekly' ? (
-                                <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">{stat.value}</span>
-                              ) : (
-                                stat.value
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <ul className="space-y-2">
-                        {/* Sort features: included first, then not included */}
-                        {builderPlanData?.features
-                          .slice()
-                          .sort((a, b) => {
-                            const aNotIncluded = a.includes("Not Included");
-                            const bNotIncluded = b.includes("Not Included");
-                            if (aNotIncluded && !bNotIncluded) return 1;
-                            if (!aNotIncluded && bNotIncluded) return -1;
-                            return 0;
-                          })
-                          .map((feature, i) => {
-                          const isNotIncluded = feature.includes("Not Included");
-                          return (
-                            <li key={i} className={`flex items-start gap-2 text-sm ${isNotIncluded ? 'opacity-50' : ''}`}>
-                              {isNotIncluded ? (
-                                <X className="w-4 h-4 shrink-0 text-muted-foreground mt-0.5" />
-                              ) : (
-                                <Check className="w-4 h-4 shrink-0 text-primary mt-0.5" />
-                              )}
-                              <span dangerouslySetInnerHTML={{ __html: feature }} />
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Step 4: Add-ons */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm">4</span>
-                      Select Add-ons
-                    </h4>
-                    
-                    {/* Add-on Counters */}
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <div className={`px-4 py-2 rounded-lg border ${builderBasicRemaining > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-muted border-border'}`}>
-                        Basic add-ons remaining: <strong>{builderBasicRemaining}</strong>
-                      </div>
-                      {(builderPlan === 'premium' || builderPlan === 'executive') && (
-                        <div className={`px-4 py-2 rounded-lg border ${builderPremiumRemaining > 0 ? 'bg-accent/20 border-accent/40 text-accent-foreground' : 'bg-muted border-border'}`}>
-                          Premium add-ons remaining: <strong>{builderPremiumRemaining}</strong>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Basic Add-ons */}
-                    <div className="space-y-3">
-                      <h5 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Basic Add-ons ($20/mo each if over limit)</h5>
-                      <div className="grid md:grid-cols-2 gap-2">
-                        {BASIC_ADDONS.map((addon) => (
-                          <label
-                            key={addon.id}
-                            data-testid={`addon-basic-${addon.id}`}
-                            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                              builderBasicAddons.includes(addon.id)
-                                ? 'border-primary bg-primary/5'
-                                : 'border-border hover:border-primary/30'
-                            }`}
-                          >
-                            <Checkbox
-                              checked={builderBasicAddons.includes(addon.id)}
-                              onCheckedChange={() => handleBuilderBasicAddonToggle(addon.id)}
-                              className="mt-0.5"
-                            />
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{addon.label}</div>
-                              <div className="text-xs text-muted-foreground">{addon.description}</div>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Premium Add-ons (only for Premium and Executive) */}
-                    {(builderPlan === 'premium' || builderPlan === 'executive') && (
-                      <div className="space-y-3">
-                        <h5 className="font-bold text-sm uppercase tracking-wider text-accent">Premium Add-ons ($40/mo each if over limit)</h5>
-                        <div className="grid md:grid-cols-2 gap-2">
-                          {PREMIUM_ADDONS.map((addon) => (
-                            <label
-                              key={addon.id}
-                              data-testid={`addon-premium-${addon.id}`}
-                              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                                builderPremiumAddons.includes(addon.id)
-                                  ? 'border-accent bg-accent/10'
-                                  : 'border-border hover:border-accent/30'
-                              }`}
-                            >
-                              <Checkbox
-                                checked={builderPremiumAddons.includes(addon.id)}
-                                onCheckedChange={() => handleBuilderPremiumAddonToggle(addon.id)}
-                                className="mt-0.5"
-                              />
-                              <div className="flex-1">
-                                <div className="font-medium text-sm">{addon.label}</div>
-                                <div className="text-xs text-muted-foreground">{addon.description}</div>
-                              </div>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Price Summary */}
-                  <div className="bg-muted/50 rounded-xl p-6 border border-border space-y-3">
-                    <h4 className="font-bold text-lg text-primary">Price Summary</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>{builderPlanData?.name} Base Price ({builderYardData?.label})</span>
-                        <span className="font-bold">${builderPlanPrice}/mo</span>
-                      </div>
-                      
-                      {builderBasicAddons.length > 0 && (
-                        <div className="flex justify-between text-muted-foreground">
-                          <span>
-                            Basic Add-ons ({builderBasicAddons.length}) 
-                            {builderBasicAddons.length <= builderAllowance.basic && ' - Included'}
-                          </span>
-                          <span className={builderBasicAddons.length <= builderAllowance.basic ? 'text-green-600' : ''}>
-                            {builderBasicAddons.length <= builderAllowance.basic ? 'Free' : `+$${builderExtraBasicCount * 20}/mo`}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {builderPremiumAddons.length > 0 && (
-                        <div className="flex justify-between text-muted-foreground">
-                          <span>
-                            Premium Add-ons ({builderPremiumAddons.length})
-                            {builderPremiumAddons.length <= builderAllowance.premium && ' - Included'}
-                          </span>
-                          <span className={builderPremiumAddons.length <= builderAllowance.premium ? 'text-green-600' : ''}>
-                            {builderPremiumAddons.length <= builderAllowance.premium ? 'Free' : `+$${builderExtraPremiumCount * 40}/mo`}
-                          </span>
-                        </div>
-                      )}
-                      
-                      <div className="border-t border-border pt-3 flex justify-between text-lg font-bold">
-                        <span>Total Monthly</span>
-                        <span className="text-primary">${builderTotalPrice}/mo</span>
-                      </div>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
           {/* Service Method Disclaimer */}
           <div className="mt-8 text-center">
             <div className="bg-white/80 border border-border rounded-lg p-4 max-w-3xl mx-auto">
@@ -1054,7 +555,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
            <div className="max-w-2xl mx-auto">
              <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
-             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both get 1 month free!</p>
+             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both earn 1 complimentary month!</p>
            </div>
         </div>
       </section>
@@ -1071,17 +572,15 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
-              <h3 className="text-2xl font-heading font-bold text-accent mb-2">LIMITED TIME ENLISTMENT OFFERS</h3>
+              <h3 className="text-2xl font-heading font-bold text-accent mb-2">25-YEAR BIRTHDAY BONUS</h3>
               <ul className="text-sm md:text-base space-y-1 opacity-90">
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 1-year agreement: <strong>1 Month FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Sign a 2-year agreement: <strong>3 Months FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay in Full: <strong>Extra 2 Months FREE</strong></li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH get 1 Month FREE!</strong></li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Earn <strong>complimentary billing months</strong> with a commitment</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> The longer you commit, the more you save</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay-in-Full doubles your commitment months</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Celebrating 25 years — long-term subscribers may qualify for our 25-Year Birthday Bonus</li>
+                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH earn 1 complimentary month!</strong></li>
               </ul>
             </div>
-            <Button onClick={() => scrollToSection('quote')} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold whitespace-nowrap px-8">
-              Claim Offer Now
-            </Button>
           </div>
         </div>
       </section>
@@ -1195,6 +694,73 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* HOA Partnership Section */}
+      <section id="hoa-partnership" className="py-16 bg-muted/30 border-t border-border">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2">HOA Partnership Program</h2>
+            <p className="text-muted-foreground">
+              If your HOA partners with Lawn Trooper, residents receive additional benefits.
+            </p>
+          </div>
+          
+          <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); }}>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">HOA Name</label>
+                <input 
+                  type="text" 
+                  data-testid="input-hoa-name"
+                  placeholder="e.g., Oakwood Estates HOA"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Contact Name</label>
+                  <input 
+                    type="text" 
+                    data-testid="input-hoa-contact-name"
+                    placeholder="Your name"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Phone</label>
+                  <input 
+                    type="tel" 
+                    data-testid="input-hoa-phone"
+                    placeholder="(256) 555-0000"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Email</label>
+                <input 
+                  type="email" 
+                  data-testid="input-hoa-email"
+                  placeholder="contact@hoa.com"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Notes / Directions</label>
+                <textarea 
+                  data-testid="input-hoa-notes"
+                  placeholder="Any additional information about your HOA..."
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                />
+              </div>
+              <Button type="submit" data-testid="button-submit-hoa" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+                Submit HOA Inquiry
+              </Button>
+            </form>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials - Field Reports */}
       <section className="py-20 bg-background relative border-t border-border">
         <div className="absolute top-1/3 -left-8 z-10 opacity-60">
@@ -1299,218 +865,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Quote Form Section */}
-      <section id="quote" className="py-24 bg-background relative overflow-hidden">
-        <div className="absolute top-1/2 -right-8 z-0 opacity-40">
-          <Mascot pose="trooper4" size="lg" hideOnMobile />
-        </div>
-        <div className="container mx-auto px-4 max-w-3xl relative z-10">
-          <div className="text-center mb-10">
-            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
-              <Clock className="w-8 h-8" />
-            </div>
-            <h2 className="text-4xl font-heading font-bold text-primary mb-4">Request Your Deployment</h2>
-            <p className="text-muted-foreground">Fill out the intel below. We'll analyze your property satellite data and send your custom plan.</p>
-          </div>
-
-          <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                {/* 1. Contact Intel */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">1. Contact Intel</h3>
-                  
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Street Address <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Maple Ave, Springfield, IL 62704" {...field} />
-                        </FormControl>
-                        <FormDescription>Include City and Zip Code</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="contactMethod"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Preferred Contact Method <span className="text-red-500">*</span></FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-white border-2 border-border">
-                                <SelectValue placeholder="Select method" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-white">
-                              <SelectItem value="text">Text Message</SelectItem>
-                              <SelectItem value="phone">Phone Call</SelectItem>
-                              <SelectItem value="email">Email</SelectItem>
-                              <SelectItem value="either">Either (Phone or Email)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Mobile Phone {(selectedContactMethod === "text" || selectedContactMethod === "phone") && <span className="text-red-500">*</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="(555) 123-4567" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Email Address {selectedContactMethod === "email" && <span className="text-red-500">*</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="john@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
-                    <Info className="w-3 h-3 inline mr-1" />
-                    To give you a quote, all we really need is your address and a way to reach you. Photos are helpful but optional.
-                  </div>
-                </div>
-
-
-                {/* 2. Premium Add-On Services Gallery */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">2. Available Premium Services</h3>
-                  <p className="text-sm text-muted-foreground">We offer a variety of premium add-on services. Discuss your needs during your consultation.</p>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgXmasPremium} alt="Premium Christmas Lights Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Christmas Lights</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgSeasonalFlowers} alt="Seasonal Flower Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Seasonal Flowers</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgMulchInstall} alt="Brown Mulch Installation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Mulch Installation</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgTrashBinWash} alt="Pressure Washing Trash Bins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Trash Bin Cleaning</span>
-                      </div>
-                    </div>
-                    <div className="relative group overflow-hidden rounded-lg aspect-[4/3]">
-                      <img src={imgPineStrawInstall} alt="Shrub Trimming" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                        <span className="text-white text-xs font-bold">Shrub Trimming</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3. Optional Info */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-bold font-heading uppercase text-primary border-b border-border pb-2">3. Recon Data (Optional)</h3>
-                  
-                  <div className="grid gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="photos">Yard Photos (Optional - up to 5 photos, max 5MB each)</Label>
-                      <Input 
-                        id="photos" 
-                        type="file" 
-                        accept="image/*" 
-                        multiple 
-                        className="cursor-pointer bg-white border-2 border-border" 
-                        onChange={handlePhotoChange}
-                      />
-                      {selectedPhotos.length > 0 && (
-                        <p className="text-[0.8rem] text-green-600 font-medium">
-                          {selectedPhotos.length} photo{selectedPhotos.length > 1 ? 's' : ''} selected: {selectedPhotos.map(f => f.name).join(', ')}
-                        </p>
-                      )}
-                      {photoError && (
-                        <p className="text-[0.8rem] text-amber-600">{photoError}</p>
-                      )}
-                      <p className="text-[0.8rem] text-muted-foreground">Photos help us give you a more accurate quote. You can also text photos to us or share them during your consultation.</p>
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Special Instructions / Gate Codes / Customer Names You're Referring</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Fenced backyard, dog on property, specific gate code, etc." 
-                              className="resize-none"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-8 text-2xl shadow-xl mt-8 flex flex-col items-center justify-center h-auto leading-tight px-4 gap-2">
-                  <span>DEPLOY THE TROOPS</span>
-                  <span className="text-xs font-bold normal-case text-yellow-400 max-w-md text-center leading-tight">your account commander will reach out asap<br/>to schedule a custom yard plan consultation with you.</span>
-                </Button>
-              </form>
-            </Form>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground pt-16 pb-8 border-t border-accent/20">
         <div className="container mx-auto px-4">
@@ -1561,7 +915,11 @@ export default function LandingPage() {
           </div>
           
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
-            <p>&copy; {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+              <p>&copy; {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
+              <span className="hidden md:inline text-white/30">|</span>
+              <p className="text-xs italic text-primary-foreground/50">Military-style branding. Landscaping tools only.</p>
+            </div>
             <div className="flex gap-8">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>

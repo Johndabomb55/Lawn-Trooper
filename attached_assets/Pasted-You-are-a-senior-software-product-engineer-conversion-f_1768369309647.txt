@@ -1,0 +1,128 @@
+You are a senior software product engineer + conversion-focused marketer.
+
+Mission:
+Turn Lawn-Trooper.com into a premium lead-generation + “playable” quote experience that:
+1) Clearly states: NO payment is required at any point, and we do NOT sell data (we only use it to schedule the FREE Dream Yard Recon).
+2) Shows dynamic promotions and savings in a fun, rewarding way, without exposing internal pricing logic.
+3) Encourages exploration (“reward those who play with options”), nudges toward higher-value plans/add-ons, and still makes Basic feel like an amazing value.
+4) Implements a stacking promotions engine (all promos stack up to 30% off and 3 free months) and removes the obsolete “pay-in-full extra 2 months free” offer everywhere.
+
+**All promotions stack**, and free months always come off the end of the agreement. Referral free month only applies after the referred customer commits. All savings and free months must be reflected accurately in the wizard.
+
+------------------------------------------------------------
+PHASE 0 — READ-ONLY AUDIT (NO CODE CHANGES YET)
+------------------------------------------------------------
+Before modifying anything:
+A) Identify the single quote flow component(s) (the multi-step form) and the final submit handler.
+B) Confirm where plan tiers, add-ons, and promotions are currently defined.
+C) Provide a short plan with the exact file list you will modify.
+STOP and ask if anything is unclear.
+
+------------------------------------------------------------
+PHASE 1 — TRUST + COMPLIANCE (HIGH PRIORITY)
+------------------------------------------------------------
+Add trust messaging in 3 places (no new page required):
+1) Near the primary CTA / top of the quote form:
+   - “No payment required. This is a FREE Dream Yard Recon request.”
+2) On the Contact step, directly above fields:
+   - “No payment required. We never sell your data. We only use this to contact you to schedule your FREE Dream Yard Recon.”
+3) On the confirmation screen:
+   - Repeat the above + a short privacy note.
+
+Include the tagline “Commit to us and we commit to you” in the contract-term selector area.
+
+------------------------------------------------------------
+PHASE 2 — PROMOTIONS ENGINE (CONFIG-DRIVEN + SAFE)
+------------------------------------------------------------
+Create a centralized promotions config file (e.g., `/client/src/data/promotions.ts` or `.json`) with:
+- id, title, shortDescription, eligibilityRules, stackGroup, maxStackCount, appliesTo (term/prepay/segment/referral/earlyBird), and “freeMonthsAtEnd” or “percentOff”.
+- Include every deal currently marketed on the website, except remove the obsolete “pay-in-full extra 2 months free.”
+- Example entries:
+  • 2-Year Pact Early Bird: 3 free months (termFreeMonths, freeMonthsAtEnd: 3)
+  • 1-Year Pact Early Bird: 1 free month (termFreeMonths, freeMonthsAtEnd: 1)
+  • Renters Discount: 5% off (segmentPercentOff)
+  • Pay Upfront 2-Year: 15% off (prepayPercentOff)
+  • Pay Upfront 1-Year: 10% off (prepayPercentOff)
+  • Veterans Discount: 5% off (segmentPercentOff)
+  • Seniors Discount: 5% off (segmentPercentOff)
+  • Referral Bonus: 1 free month for both parties (referralFreeMonth; should display as pending until referred friend commits)
+- Enforce the cap: maximum 30% total discount and maximum 3 free months from stacking.
+- Implement stacking rules clearly: promotions from different groups stack up to the cap; if the cap is exceeded, reduce the last-applied benefit first.
+
+Implement:
+- A pure function `getApplicablePromotions(userSelections, nowDate) -> { eligible[], applied[], savingsBreakdown, capApplied }`
+- A pure function `applyPromotions(baseTotals, appliedPromotions) -> { displayedMonthly, displayedEffectiveMonthly, freeMonthsAtEnd, percentSavings, annualSavingsEstimate }`
+- Referral Bonus: Show as “+1 free month after your referred friend commits” but don’t deduct from totals until actually earned.
+
+------------------------------------------------------------
+PHASE 3 — LIVE SAVINGS UI (MAKE IT FUN, MAKE IT CLEAR)
+------------------------------------------------------------
+In the quote flow, add a “Savings & Promotions” panel that updates on EVERY choice:
+- Show: “Monthly Total” (current), “Effective Monthly” (after term/free months), “You Save” (monthly and total over term), “Free Months” (at end), and “Why you got this” (applied promos list).
+- Add a small “Rewards” indicator:
+  - “Discount Unlocked!” banner + subtle confetti burst when a new promo becomes applied.
+  - Outline glow around the applied promo card for 1 second.
+- Add a tagline line near this panel:
+  - “Commit to us and we commit to you.”
+
+------------------------------------------------------------
+PHASE 4 — TERM & PAYMENT SELECTOR + CONTROLLED UPSELL
+------------------------------------------------------------
+1) Add a **contract-term selector** (1-Year vs 2-Year) in the Plan Tier step (or as its own mini-step before Add-ons). Display Early Bird free months next to each option.
+2) Add a **Pay Upfront toggle** or checkbox right below the term selector. If the user toggles “Pay Upfront”, apply the appropriate % discount (10% for 1-Year, 15% for 2-Year) and update the promotions panel.
+3) Provide **Renter/Veteran/Senior** options as self-declared checkboxes in the Contact step. They should trigger the associated 5% discounts via the promotions engine. (Treat them as “segment” promos; cap still applies.)
+4) In the Plan Tier step, add “Value Highlights” for Premium/Executive (3 bullets max) and a subtle “Most Popular” badge for Premium.
+5) Show an “Upgrade impact” line: “Upgrade to Premium for about +$X/mo after your current discounts” (computed; no internal formula shown).
+6) Add-ons step:
+   - Keep required add-on guidance visible (“Loadout required: X Basic + Y Premium”).
+   - When user meets minimum requirements, show: “Loadout Complete — add more services to unlock more savings/value” (if any promo supports it).
+   - Add a “Recommended add-ons” section (max 3) based on plan tier + season (simple mapping in config).
+7) Reward exploration:
+   - If user spends time toggling options, occasionally show a small “Nice — you found a better value combo” toast (rate-limited).
+
+------------------------------------------------------------
+PHASE 5 — GAMIFICATION (LIGHTWEIGHT)
+------------------------------------------------------------
+Add subtle gamification (must be fast, non-blocking):
+- Step labels: Recruit → Specialist → Sergeant → Commander.
+- Checkmark pulse on step completion.
+- Confetti only when a promotion is newly unlocked or when form is submitted successfully.
+
+------------------------------------------------------------
+PHASE 6 — SUBMISSION + CONFIRMATION (LEAD GEN)
+------------------------------------------------------------
+On submit:
+- Capture selected plan, yard size, add-ons, contract term, pay-upfront choice, renter/veteran/senior flags, applied promos, savings summary, and contact info.
+- Send to /api/leads (or existing endpoint) as structured JSON.
+- Do NOT process payment.
+
+Confirmation screen:
+- “Mission Accomplished” headline.
+- Summary of selections + promotions applied.
+- Repeat: no payment required, data not sold.
+- Add note: “We will contact you via your preferred method (call, email, or text) to schedule your FREE Dream Yard Recon. If you don’t attach yard photos, we’ll send Miguel to scout your property — no commitment needed.”
+- Add waitlist CTA:  
+  “Join Priority Waitlist for Lawn Trooper Elite (Launching Spring 2026)” (email only; optional)
+- Add referral nudge:  
+  “Refer a neighbour — you both get 1 month free after your friend commits.”  
+  (This is UI messaging only; you do not need to implement referral code entry or tracking yet.)
+
+------------------------------------------------------------
+PERFORMANCE + MAINTAINABILITY REQUIREMENTS
+------------------------------------------------------------
+- No horizontal scroll at any viewport.
+- Promotions, add-ons, plan highlights, seasonal recommendations stored in config files (easy to edit later).
+- Code organized into components:
+  QuoteWizard, PromotionsPanel, SavingsPanel, AddOnSummary, TermSelector, Confirmation.
+- Feature flags:
+  enableGamification, enableWaitlist, enablePromoConfetti.
+- Add a short README section: “How to update promotions, plan tiers, add-ons, and term/segment configs safely.”
+
+------------------------------------------------------------
+DELIVERABLES
+------------------------------------------------------------
+1) PLAN + file list (per Phase)
+2) Diffs grouped by phase
+3) Manual test checklist (desktop + mobile)
+4) Confirmation that base pricing logic is unchanged and the obsolete “pay-in-full 2 months free” offer is removed everywhere
+5) Ask me any final clarifications needed before coding

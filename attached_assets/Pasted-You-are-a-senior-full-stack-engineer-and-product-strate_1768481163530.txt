@@ -1,0 +1,34 @@
+You are a senior full-stack engineer and product strategist. You’re working on an existing Vite + React + TypeScript + Tailwind project for Lawn Trooper. The current site has a hero section with a quote wizard (“Dream Yard Recon”) and a minimal footer. Your task is to PLAN and then IMPLEMENT the following enhancements while preserving the quote wizard’s functionality:
+
+1. **Add a “Why Lawn Trooper” section** below the hero. It should briefly list 3–4 bullet points highlighting: (a) electric equipment (low noise, zero emissions), (b) 25+ years of local experience and over 100 beautification awards, (c) AI‑powered efficiency and honest pricing, (d) fully licensed and insured.
+
+2. **Add a plan overview section** above the “Why Lawn Trooper” section. This section displays three cards summarizing the “Basic Patrol”, “Premium Patrol”, and “Executive Command” plans. Each card should show:
+   - Plan name and “from $X/mo” placeholder price.
+   - Key inclusions (e.g. mowing frequency, weed control treatments).
+   - A short “Perfect for…” blurb.
+   - A button labeled “Build My Plan” that scrolls to the quote wizard.
+   Use Tailwind’s grid utilities to make these cards responsive.
+
+3. **Add a testimonials section** below the plan overview or at the bottom of the page (before the footer). Include 3–6 placeholder quotes (one sentence each) with star ratings and “Verified customer, [City]”. Use a simple card layout with Tailwind and add proper aria labels for accessibility.
+
+4. **Refine copy and plan positioning**:
+   - Update hero subheadline to: “North Alabama’s trusted lawn care service for 25+ years. Build your perfect plan in under 2 minutes.”
+   - In the quote wizard, rename commitment options to “Flexible (Month‑to‑Month)”, “Popular (2‑Year Commitment)”, and “Best Value (3‑Year Commitment)”. Keep the existing pricing logic and free‑month incentives.
+   - Tighten language throughout for clarity and brevity.
+
+5. **Simplify add-ons** inside the quote wizard:
+   - Group basic add-ons (e.g. extra bush trimming, shrub fertilization) and premium add-ons (e.g. irrigation check, aeration + overseeding, mulch delivery, pressure washing).
+   - Clearly indicate how many add-ons are included with each plan and that additional add-ons cost $20–$40 per month.
+
+6. **Ensure anchor links** from the new plan overview and bullet sections scroll smoothly to the quote wizard. Maintain responsiveness across devices and ensure accessibility (tab navigation, aria labels, contrast).
+
+7. **Organize content and configuration**:
+   - Move marketing copy (section headings, bullet text, plan summaries, testimonials) to a `content.ts` file.
+   - Keep pricing and add-on values in `pricing.ts`.
+   - Update the README to explain how to run and deploy the updated site on Replit.
+
+8. **Testing and validation**:
+   - After implementing the changes, run the app locally in Replit, ensuring the quote wizard still functions correctly and that the new sections appear where intended.
+   - Confirm that the anchor links work, sections are responsive, and there are no console errors.
+
+Break down the work into logical steps (analysis, planning, implementation, and testing). Provide brief status updates and commit messages as you work. Use only free dependencies.

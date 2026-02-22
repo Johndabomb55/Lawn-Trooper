@@ -1,20 +1,52 @@
-// Integration with Resend for sending emails
+// Integration with Resend for sending emails via Replit Connector
 import { Resend } from 'resend';
 
-// Use RESEND_API_KEY secret directly for reliability
-function getResendClient() {
-  const apiKey = process.env.RESEND_API_KEY;
+// Resend connection settings cache
+let connectionSettings: any;
+
+// Get credentials from Replit Resend connector
+async function getCredentials() {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   
-  if (!apiKey) {
-    throw new Error('RESEND_API_KEY secret is not configured');
+  if (!hostname) {
+    throw new Error('REPLIT_CONNECTORS_HOSTNAME not found - Resend connector may not be configured');
   }
   
-  console.log('Using Resend API key from secret (starts with):', apiKey.substring(0, 6) + '...');
+  const xReplitToken = process.env.REPL_IDENTITY 
+    ? 'repl ' + process.env.REPL_IDENTITY 
+    : process.env.WEB_REPL_RENEWAL 
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
+    : null;
+
+  if (!xReplitToken) {
+    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  }
+
+  connectionSettings = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    }
+  ).then(res => res.json()).then(data => data.items?.[0]);
+
+  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
+    throw new Error('Resend not connected - please configure Resend in your Replit integrations');
+  }
   
-  // Use Resend's shared domain for testing (until lawntrooper.com is verified)
-  // Change to 'noreply@lawntrooper.com' once domain is verified in Resend
-  const fromEmail = 'Lawn Trooper <onboarding@resend.dev>';
-  
+  return {
+    apiKey: connectionSettings.settings.api_key,
+    fromEmail: connectionSettings.settings.from_email || 'Lawn Trooper <onboarding@resend.dev>'
+  };
+}
+
+// WARNING: Never cache this client.
+// Access tokens expire, so a new client must be created each time.
+async function getResendClient() {
+  const { apiKey, fromEmail } = await getCredentials();
+  console.log('Using Resend API key from connector (starts with):', apiKey.substring(0, 6) + '...');
   return {
     client: new Resend(apiKey),
     fromEmail: fromEmail
@@ -89,7 +121,7 @@ function prepareAttachments(photos: PhotoData[]) {
 }
 
 export async function sendQuoteEmails(data: QuoteRequestData) {
-  const { client, fromEmail } = getResendClient();
+  const { client, fromEmail } = await getResendClient();
 
   const planName = PLAN_NAMES[data.plan] || data.plan;
   const basicAddonsFormatted = formatAddons(data.basicAddons);
@@ -216,6 +248,164 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
     };
   } catch (error) {
     console.error('Email sending failed with exception:', error);
+    throw error;
+  }
+}
+
+// Lead data interface for streamlined wizard
+export interface LeadEmailData {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  yardSize: string;
+  plan: string;
+  basicAddons: string[];
+  premiumAddons: string[];
+  term?: string | null;
+  payUpfront?: string | null;
+  freeMonths?: number | null;
+  totalPrice?: string | null;
+  notes?: string | null;
+}
+
+export async function sendLeadEmails(data: LeadEmailData) {
+  const { client, fromEmail } = await getResendClient();
+
+  const planName = PLAN_NAMES[data.plan] || data.plan;
+  const basicAddonsFormatted = formatAddons(data.basicAddons);
+  const premiumAddonsFormatted = formatAddons(data.premiumAddons);
+  
+  // Format term for display
+  const termDisplay = data.term === '1-year' ? '1-Year Subscription' 
+    : data.term === '2-year' ? '2-Year Subscription (Price Lock)'
+    : 'Month-to-Month';
+  
+  const payInFull = data.payUpfront === 'true';
+
+  // Email to Lawn Trooper business
+  const businessEmail = {
+    from: fromEmail,
+    to: 'jclaxtonlandscapes@gmail.com',
+    subject: `New Lead from Quote Wizard: ${data.name} - ${planName}`,
+    html: `
+      <h2>New Lead Captured</h2>
+      
+      <h3 style="color: #2E7D32; border-bottom: 2px solid #2E7D32; padding-bottom: 8px;">Customer Information</h3>
+      <ul>
+        <li><strong>Name:</strong> ${data.name}</li>
+        <li><strong>Email:</strong> ${data.email || 'Not provided'}</li>
+        <li><strong>Phone:</strong> ${data.phone || 'Not provided'}</li>
+        <li><strong>Address:</strong> ${data.address || 'Not provided'}</li>
+      </ul>
+      
+      <h3 style="color: #5D4037; border-bottom: 2px solid #5D4037; padding-bottom: 8px;">Selected Plan Details</h3>
+      <ul>
+        <li><strong>Yard Size:</strong> ${data.yardSize}</li>
+        <li><strong>Plan:</strong> ${planName}</li>
+        <li><strong>Basic Add-ons:</strong> ${basicAddonsFormatted}</li>
+        <li><strong>Premium Add-ons:</strong> ${premiumAddonsFormatted}</li>
+      </ul>
+      
+      <h3 style="color: #1565C0; border-bottom: 2px solid #1565C0; padding-bottom: 8px;">Commitment & Pricing</h3>
+      <ul>
+        <li><strong>Term:</strong> ${termDisplay}</li>
+        <li><strong>Pay in Full:</strong> ${payInFull ? 'Yes' : 'No'}</li>
+        <li><strong>Complimentary Months:</strong> ${data.freeMonths || 0}</li>
+        <li><strong>Monthly Price:</strong> ${data.totalPrice || 'Custom quote needed'}</li>
+      </ul>
+      
+      ${data.notes ? `<h3 style="color: #666;">Notes</h3><p>${data.notes}</p>` : ''}
+      
+      <p style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+        <strong>Next Steps:</strong> Contact this lead to schedule a free yard consultation.
+      </p>
+      
+      <p style="margin-top: 20px; color: #666; font-size: 12px;">
+        Submitted via Lawn Trooper Streamlined Quote Wizard
+      </p>
+    `
+  };
+
+  // Email to Customer (confirmation) - only if email provided
+  const customerEmail = data.email ? {
+    from: fromEmail,
+    to: data.email,
+    subject: 'Your Lawn Trooper Quote Request - Confirmation',
+    html: `
+      <h2>Thank you for your quote request!</h2>
+      <p>Hi ${data.name},</p>
+      <p>We've received your request for lawn care services. Our team will review your information and reach out shortly to schedule your free Dream Yard Recon consultation.</p>
+      
+      <h3 style="color: #2E7D32; border-bottom: 2px solid #2E7D32; padding-bottom: 8px;">Your Selected Plan</h3>
+      <ul>
+        ${data.address ? `<li><strong>Address:</strong> ${data.address}</li>` : ''}
+        <li><strong>Yard Size:</strong> ${data.yardSize}</li>
+        <li><strong>Plan:</strong> ${planName}</li>
+        <li><strong>Basic Add-ons:</strong> ${basicAddonsFormatted}</li>
+        <li><strong>Premium Add-ons:</strong> ${premiumAddonsFormatted}</li>
+      </ul>
+      
+      <h3 style="color: #1565C0; border-bottom: 2px solid #1565C0; padding-bottom: 8px;">Your Commitment</h3>
+      <ul>
+        <li><strong>Term:</strong> ${termDisplay}</li>
+        ${payInFull ? '<li><strong>Pay in Full:</strong> Yes (Double complimentary months!)</li>' : ''}
+        <li><strong>Complimentary Months:</strong> ${data.freeMonths || 0}</li>
+      </ul>
+      
+      <p style="margin-top: 20px; padding: 15px; background: #E8F5E9; border-radius: 8px; border-left: 4px solid #2E7D32;">
+        <strong>What's Next?</strong><br/>
+        We'll schedule your free Dream Yard Recon to confirm your yard size, discuss any special needs, and finalize your plan. No payment required, no obligation.
+      </p>
+      
+      <p>We typically respond within 24 hours. If you have any urgent questions, feel free to contact us directly.</p>
+      
+      <p>Thank you for choosing Lawn Trooper!</p>
+      
+      <p style="margin-top: 30px; color: #666; font-size: 12px;">
+        Lawn Trooper LLC - 25+ years serving the Tennessee Valley<br/>
+        This is an automated confirmation email.
+      </p>
+    `
+  } : null;
+
+  // Send emails
+  try {
+    console.log('Attempting to send lead emails via Resend...');
+    console.log('From email:', fromEmail);
+    console.log('To business:', businessEmail.to);
+    console.log('To customer:', customerEmail?.to || 'No email provided');
+    
+    // Always send business email
+    const businessResult = await client.emails.send(businessEmail);
+    console.log('Business email result:', JSON.stringify(businessResult, null, 2));
+    
+    if (businessResult.error) {
+      console.error('Business email error:', businessResult.error);
+    }
+
+    // Only send customer email if email was provided
+    let customerEmailSent = true;
+    if (customerEmail) {
+      const customerResult = await client.emails.send(customerEmail);
+      console.log('Customer email result:', JSON.stringify(customerResult, null, 2));
+      
+      if (customerResult.error) {
+        console.error('Customer email error:', customerResult.error);
+        customerEmailSent = false;
+      } else {
+        customerEmailSent = customerResult.data !== null;
+      }
+    } else {
+      console.log('No customer email provided, skipping customer confirmation');
+    }
+
+    return {
+      businessEmailSent: businessResult.data !== null && !businessResult.error,
+      customerEmailSent: customerEmailSent
+    };
+  } catch (error) {
+    console.error('Lead email sending failed with exception:', error);
     throw error;
   }
 }

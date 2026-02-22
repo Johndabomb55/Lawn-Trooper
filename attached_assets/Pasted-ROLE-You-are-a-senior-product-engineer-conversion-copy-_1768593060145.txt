@@ -1,0 +1,134 @@
+ROLE:
+You are a senior product engineer + conversion copy editor improving lawn-trooper.com.
+RETROFIT ONLY. Do NOT redesign the site. Keep layout and styling. Update copy + bonus naming + placement to implement the “25-Year Birthday Bonus” in a premium, clear way with correct math.
+
+PRIMARY GOAL:
+Implement a new bonus name and phased enrollment schedule:
+- Marketing name: “25-Year Birthday Bonus”
+- Formal label (optional): “25th Anniversary Enrollment Bonus”
+The bonus must be applied as SKIPPED BILLING MONTHS at the end of the term (it does NOT extend the contract).
+
+========================================
+A) DEFINITIONS (COPY MUST MATCH)
+========================================
+
+1) Everywhere “free months / bonus months” are described, ensure this is clear:
+- “Complimentary months are skipped billing months applied at the end of your term.”
+- “Your agreement still ends on your 12-month or 24-month anniversary date.”
+- “You pay for fewer months, but the term length remains the same.”
+
+No copy should imply the customer receives extra months beyond the term end date.
+
+========================================
+B) COMMITMENT BONUS (ALWAYS ON)
+========================================
+
+2) Commitment Bonus is separate from the Birthday Bonus:
+- 1-Year Subscription: +1 complimentary month
+- 2-Year Subscription: +2 complimentary months
+- Month-to-Month: 0 complimentary months (because we reward commitment)
+
+3) Pay-in-Full doubles the COMMITMENT BONUS ONLY (not the Birthday Bonus):
+- 1-Year PIF => 2 commitment months
+- 2-Year PIF => 4 commitment months
+
+========================================
+C) 25-YEAR BIRTHDAY BONUS (PHASED)
+========================================
+
+4) Implement “25-Year Birthday Bonus” as the enrollment bonus.
+This replaces/renames any prior “25th Anniversary Enrollment Bonus” wording on UI.
+If you want to keep the formal name, show both:
+“25th Anniversary Enrollment Bonus (25-Year Birthday Bonus)”
+But default to “25-Year Birthday Bonus” as the visible user-facing name.
+
+5) Phased bonus schedule:
+- Enroll by Jan 25 => +2 bonus months
+- Enroll by Feb 25 => +1 bonus month
+- Enroll after Feb 25 => +0 (bonus concluded)
+
+6) Display behavior:
+- On homepage/hero: add a subtle mention without numbers:
+  “Celebrating 25 years — long-term subscribers may qualify for our 25-Year Birthday Bonus.”
+- In the builder (Step 5): show the actual phased bonus amounts with dates.
+- On/after March: show “Bonus concluded” in muted text; do NOT remove it completely.
+
+========================================
+D) MATH (NON-NEGOTIABLE)
+========================================
+
+7) Use these variables:
+termMonths = 12 or 24
+commitmentFreeMonths = 1 or 2 (depending on 1-year vs 2-year)
+payInFullMultiplier = 1 or 2 (applies to commitment months only)
+birthdayBonusMonths = 0, 1, or 2 (based on date window)
+
+8) Total free months:
+totalFreeMonths =
+  (commitmentFreeMonths * payInFullMultiplier) +
+  birthdayBonusMonths
+
+9) Billed months:
+billedMonths = termMonths - totalFreeMonths
+
+10) Effective monthly (display only):
+effectiveMonthly = (monthlySubscription * billedMonths) / termMonths
+
+Rules:
+- effectiveMonthly must always be <= monthlySubscription
+- no fractional months
+- month-to-month has 0 totalFreeMonths
+
+========================================
+E) STEP 5 COPY & LAYOUT (CLARITY FIX)
+========================================
+
+11) Step 5 must clearly separate the two bonuses to avoid confusion:
+- “Commitment Bonus” section
+- “25-Year Birthday Bonus” section
+
+Example layout:
+
+Commitment Bonus:
+• 1-Year: +1 month
+• 2-Year: +2 months
+• Pay in full doubles commitment months
+
+25-Year Birthday Bonus (Enrollment Bonus):
+• Enroll by Jan 25: +2 months
+• Enroll by Feb 25: +1 month
+• After Feb 25: Bonus concluded
+
+Then show:
+“Total complimentary billing months earned: X”
+and the disclaimer:
+“Applied as skipped billing months at the end of your term.”
+
+12) Remove any UI labels that imply:
+“1-Year automatically gets +2 or +3 months”
+unless those months are explicitly listed in the breakdown.
+
+========================================
+F) QA / TESTING (REQUIRED)
+========================================
+
+13) Test scenarios:
+- Month-to-Month: shows 0 complimentary months
+- 1-Year (no PIF) in Jan window: 1 + 2 = 3 months
+- 1-Year (PIF) in Jan window: 2 + 2 = 4 months
+- 2-Year (no PIF) in Jan window: 2 + 2 = 4 months
+- 2hin 2-Year (PIF) in Jan window: 4 + 2 = 6 months
+- Same tests in Feb window produce +1 instead of +2
+- After Feb 25 produces +0 birthday bonus
+
+14) Confirm:
+- All totals update live when toggles change
+- Effective monthly never increases when free months increase
+- Copy never implies the contract term is extended
+- Bonus name is “25-Year Birthday Bonus” everywhere intended
+
+DELIVERABLE:
+Provide a short report listing files changed and confirming:
+- correct bonus naming and placement
+- correct math in every scenario above
+- copy clarity (skipped billing months at end of term)

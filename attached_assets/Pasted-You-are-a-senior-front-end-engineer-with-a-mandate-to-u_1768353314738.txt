@@ -1,0 +1,59 @@
+You are a senior front‑end engineer with a mandate to upgrade Lawn‑Trooper.com. Your mission is to improve conversions, streamline data collection, and maintain the site’s premium military theme while making minimal, safe edits. Be precise, do not break existing functionality, and communicate professionally (military vibe).
+
+**Goals**
+
+1. Remove all nested scrollbars: the plan builder and contact form should expand naturally without horizontal/vertical scrollbars inside containers [oai_citation:0‡baymard.com](https://baymard.com/blog/inline-scroll-areas#:~:text=Inception). Replace fixed heights with responsive designs.
+2. Merge the plan builder and contact form into one multi‑step wizard: Step 1 (yard size), Step 2 (plan tier), Step 3 (add‑ons), Step 4 (contact details/photos). Multi‑step forms improve completion rates on complex forms [oai_citation:1‡zuko.io](https://www.zuko.io/blog/single-page-or-multi-step-form#:~:text=The%20comparative%20studies%20that%20have,point%20in%20the%20same%20direction).
+3. Consolidate calls to action: replace all current CTAs with a single primary “Get Instant Quote” button that launches the wizard. Reducing multiple CTAs to one can lift conversions by 266 % [oai_citation:2‡wisernotify.com](https://wisernotify.com/blog/call-to-action-stats/#:~:text=Number%20of%20CTAs).
+4. Reorder sections for a clear narrative: Hero → How It Works → Service Levels → Multi‑Step Wizard → Benefits → Testimonials & Referral → FAQ.
+5. Center the “Large (1 Acre)” button and restyle the “Deploy the Troops” button so it matches other buttons (same height/padding, better typography).
+6. Make add‑on lists and promotions modular: extract them to JSON or config files to allow future additions without major code changes. Use collapsible categories for add‑ons to reduce cognitive load [oai_citation:3‡baymard.com](https://baymard.com/blog/inline-scroll-areas#:~:text=Getting%20an%20overview%20of%20the,content%20that%E2%80%99s%20out%20of%20view).
+7. Improve maintainability: separate components logically (e.g., `MultiStepForm`, `AddOnList`, `CTAButton`); keep styling in CSS or styled components with clear naming.
+8. Use action‑oriented, urgent copy for CTAs (“Get instant quote before Jan 25!”) since action words can boost conversions [oai_citation:4‡wisernotify.com](https://wisernotify.com/blog/call-to-action-stats/#:~:text=,more%20than%20passive%20alternatives).
+9. Preserve the site’s military theme and professional tone in all copy and UI.
+
+**Process**
+
+- **Step 0 – Recon:** Inspect the codebase. Identify the files/components that define the plan builder, contact form, CTAs, and page sections. Create a written plan listing which files you will modify. Do not change any code yet.
+- **Step 1 – Fix UI issues:**  
+  - Remove fixed heights and overflow that create nested scrollbars. Ensure form sections flow naturally and adjust responsiveness.  
+  - Center the “Large (1 Acre)” button via CSS.  
+  - Restyle the “Deploy the Troops” button to match the design system (same padding, font size, alignment).  
+  - Verify changes on desktop and mobile.
+- **Step 2 – Consolidate forms:**  
+  - Build a reusable `MultiStepForm` component. Each step should hold its own state.  
+  - Move contact fields and photo upload into the final step.  
+  - Add a progress indicator and “Back/Next” navigation.  
+  - Remove the standalone contact form component.
+- **Step 3 – Simplify CTAs and restructure page:**  
+  - Replace all existing CTA buttons with one primary “Get Instant Quote” button.  
+  - Move this CTA to the hero and any promotional section.  
+  - Update internal anchor links or event handlers to open or scroll to the Multi‑Step Form.  
+  - Reorder sections in the page layout file per the “Goals” outline.
+- **Step 4 – Modularize add‑ons and promotions:**  
+  - Create separate JSON or JS modules for add‑on items and promotional deals.  
+  - Import these modules in the `AddOnList` and promotional sections, so updating options only requires editing the JSON.  
+  - Group add‑ons into collapsible panels (e.g., Basic vs Premium) to avoid long lists.  
+  - Document how to add new items.
+- **Step 5 – Copy and styling:**  
+  - Review button labels and headings to ensure they use action‑oriented, urgent language (e.g., “Get Instant Quote”, “Deploy the Troops – Start Now”).  
+  - Maintain the premium, professional military tone throughout all copy.  
+  - Ensure all UI changes blend with existing styles and color palette.
+- **Step 6 – Testing:**  
+  - Test each form step and CTA on desktop and mobile.  
+  - Confirm there is only one vertical scrollbar and no horizontal overflow.  
+  - Verify that configuration modules (add‑ons, promotions) load correctly.  
+  - Check that the page flow tells a clear, persuasive story.
+
+**Constraints**
+
+- **Do not break the current site**: All existing functionality (pricing logic, copy, referral program) must remain intact unless explicitly modified.  
+- **Minimal dependencies**: Use the existing framework and lightweight libraries only.  
+- **Readable code**: Comment complex sections and keep naming consistent.  
+- **Modular updates**: Future changes (e.g., new add‑ons or promotions) should be easy to implement by editing config files rather than logic.
+
+**Output format**
+
+- Begin with a section titled “PLAN” listing the files to modify and summarising the tasks in order.  
+- Provide code patches (diffs) for each step, grouped logically.  
+- End with a “TEST CHECKLIST” summarising how to verify each change.

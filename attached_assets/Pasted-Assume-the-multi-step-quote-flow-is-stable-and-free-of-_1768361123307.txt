@@ -1,0 +1,45 @@
+Assume the multi‑step quote flow is stable and free of layout bugs.
+
+You are a senior product engineer tasked with enhancing lawn-trooper.com’s quote experience to increase engagement, capture leads, and set up future paid tiers. Maintain the premium military tone.
+
+Tasks:
+
+1. **Add an “Add‑On Summary & Progress Indicator”**
+   - At the bottom of the add‑ons step and at the top of the contact step, display a summary card listing the selected yard size, plan tier, basic add‑ons (with count), and premium add‑ons (with count).  
+   - If the user hasn’t met the required number of add‑ons, show a friendly warning (“Select 3 Basic & 1 Premium to proceed”) and disable the Next button until the requirement is met.  
+   - When complete, show a green checkmark and the phrase “Mission Ready.”
+
+2. **Gamify the quote flow**
+   - Introduce a thematic progress bar labeled with military ranks (e.g., “Recruit,” “Sergeant,” “Commander”). Each step completed advances the rank.
+   - After completing each step, briefly display a celebratory animation (e.g., confetti burst) and a playful copy line (“You’ve earned your stripes – on to the next mission!”). Keep animations lightweight to avoid slowing the page.
+
+3. **Insert micro‑content banners**
+   - Between the add‑ons step and the contact step, add a rotating banner that displays local lawn tips or fun facts about Huntsville/Madison/Decatur.  
+   - Use local imagery as a faint background behind these banners (e.g., images of well‑manicured North Alabama yards). Research shows authentic photos build trust [oai_citation:0‡brightlocal.com](https://www.brightlocal.com/research/images-inspire-trust-local-business-website/#:~:text=,little%20trust%20%E2%80%93%20just%2021).
+
+4. **Create a “Mission Accomplished” confirmation page**
+   - After the form submission, replace the modal with a full “Mission Accomplished” page. Show a recap of the selected yard size, plan tier, add‑ons, and monthly price.  
+   - Invite the user to join an early‑access waitlist for upcoming premium features launching in March, and collect an email to notify them.  
+   - Provide a downloadable PDF summary of the quote (include yard size, plan tier, add‑ons, price) for the user’s records.  
+   - Encourage sharing: “Tell a neighbor and you both get one month free!” Include social sharing icons or pre‑populated messages.
+
+5. **Capture leads to a backend endpoint**
+   - Upon form completion, send the customer’s name, address, contact details, plan tier, and selected add‑ons via a secure POST request to `/api/leads`.  
+   - Validate inputs and handle errors gracefully.  
+   - Ensure the site still works if the endpoint is unreachable (retry or fallback, but still show confirmation).
+
+6. **Set up modular, marketing‑friendly data sources**
+   - Move all promotional copy (banners, offers) and micro‑banners into a JSON or MD file so marketing can update them without touching code.  
+   - Document how to add or change banners and fun facts.
+
+Constraints:
+- Preserve the military aesthetic with crisp design and professional copy.  
+- Do not change core pricing logic or plan details.  
+- Animations must be non-blocking and accessible (no flashing effects).  
+- Use existing components or minimal custom code; avoid heavy libraries.  
+- Keep the initial page load light; load gamification assets asynchronously where possible.
+
+Deliverables:
+- List of modified files with concise diffs.  
+- Instructions for testing each new feature (desktop and mobile).  
+- A note on how to toggle the waitlist promotion via a feature flag.
