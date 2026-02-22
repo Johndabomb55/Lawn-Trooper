@@ -369,7 +369,7 @@ export default function LandingPage() {
            </div>
            <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Sale + AI Cost Reductions! 🎉</span>
            <span className="hidden md:inline mx-2 text-white/50">|</span>
-           <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 25, 2026</span> to lock in your pricing for up to 2 years!</span>
+           <span>Act by <span className="underline decoration-white/50 underline-offset-4">February 25, 2026</span> to lock in your pricing for up to 2 years!</span>
            <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
              + Up to 3 Months Free
            </span>
@@ -545,7 +545,7 @@ export default function LandingPage() {
             <div className="mb-10 bg-black/70 backdrop-blur-md border-2 border-accent/50 p-6 rounded-xl shadow-2xl relative overflow-hidden">
                {/* Diagonal "Ending Soon" Banner */}
                <div className="absolute top-0 right-0 bg-destructive text-white text-[10px] font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm">
-                 ENDS JAN 25TH
+                 ENDS MAR 25TH
                </div>
 
                <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
@@ -555,7 +555,7 @@ export default function LandingPage() {
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                   ⚠️ Lock in lowest pricing for up to 2 years - Ends Jan 25th!
+                   ⚠️ Lock in lowest pricing for up to 2 years - Ends Mar 25th!
                  </p>
                </div>
                
@@ -567,7 +567,7 @@ export default function LandingPage() {
                    </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Sign Up By Jan 25th</span>
+                     <span className="text-accent font-bold uppercase text-xs">Sign Up By Feb 25th</span>
                    </div>
                    <div className="text-white text-sm font-medium">
                      <div className="flex justify-between items-center mb-1"><span>2-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">3 Months Free</span></div>
