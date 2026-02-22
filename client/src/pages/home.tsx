@@ -39,8 +39,9 @@ import {
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_1771794280044.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
-import heroDiverseCrew from "@assets/generated_images/black_woman_waving_from_porch.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
+import mascotAtWork from "@assets/Lawn_Trooper_at_work_in_the_yard_2_1771794299342.png";
+import mascotHolidayLights from "@assets/Holiday_lights_on_a_festive_home_1771794249376.png";
 
 // Stock Assets
 import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
@@ -71,7 +72,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Mascot } from "@/components/Mascot";
 
 // Countdown Timer Component
 function CountdownTimer() {
@@ -429,9 +429,6 @@ export default function LandingPage() {
 
       {/* Quote Wizard Section - Primary CTA */}
       <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
-        <div className="absolute top-1/2 -right-8 z-0 opacity-40">
-          <Mascot pose="trooper4" size="lg" hideOnMobile />
-        </div>
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
           <MultiStepQuoteWizard />
         </div>
@@ -488,12 +485,6 @@ export default function LandingPage() {
 
       <section id="plans" className="py-24 bg-primary/5 relative">
         <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
-        <div className="absolute top-1/4 -left-8 z-10 opacity-60">
-          <Mascot pose="trooper1" size="lg" hideOnMobile />
-        </div>
-        <div className="absolute top-2/3 -right-8 z-10 opacity-60">
-          <Mascot pose="trooper2" size="lg" hideOnMobile />
-        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
@@ -672,8 +663,8 @@ export default function LandingPage() {
             </div>
             <div className="relative">
               <img 
-                src={heroDiverseCrew} 
-                alt="Lawn Trooper Crew" 
+                src={mascotAtWork} 
+                alt="Lawn Trooper at work" 
                 className="w-full rounded-xl shadow-2xl relative z-10 border-4 border-white object-cover h-[400px]"
               />
               <div className="bg-card p-6 rounded-2xl border border-border relative mt-4 z-20 mx-4 shadow-xl">
@@ -761,11 +752,44 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Seasonal Services Highlight */}
+      <section className="py-16 bg-gradient-to-b from-[#0a1628] to-[#1a2744] border-t border-border">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+            <div className="rounded-xl overflow-hidden shadow-2xl border-2 border-white/10">
+              <img 
+                src={mascotHolidayLights} 
+                alt="Lawn Trooper holiday lights installation" 
+                data-testid="img-mascot-holiday-lights"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+            <div className="text-white text-center md:text-left">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">Year-Round Curb Appeal</h2>
+              <p className="text-white/80 text-lg mb-6 leading-relaxed">
+                From spring landscaping to holiday light installation, Lawn Trooper keeps your property looking its best every season.
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span className="text-white/90">Basic & Premium seasonal lighting packages</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span className="text-white/90">Holiday Hustle pre-event cleanup</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span className="text-white/90">Full seasonal flower installs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials - Field Reports */}
       <section className="py-20 bg-background relative border-t border-border">
-        <div className="absolute top-1/3 -left-8 z-10 opacity-60">
-          <Mascot pose="trooper3" size="lg" hideOnMobile />
-        </div>
         <div className="container mx-auto px-4">
            <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Field Reports</h2>
