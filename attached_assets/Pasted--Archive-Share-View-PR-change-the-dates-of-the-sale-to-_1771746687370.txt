@@ -1,0 +1,572 @@
+
+
+Archive
+
+Share
+View PR
+
+
+change the dates of the sale to feb 25th and march 25.  had to delay it
+Copy
+Summary
+
+Updated promo configuration and plan labels to use the new February/March sale timing (cutoff and promo labels).
+
+Refreshed homepage sale messaging to reflect the February 25 signup deadline and March 25 sale end date.
+
+Screenshot
+
+Updated homepage sale messaging preview: Captured screenshot
+
+Testing
+
+Not run (not requested).
+
+
+Files (2)
+all terminology for the sale needs to be changed to ending march 25th.  including act by march 25 etc. also the sign up by feb needs to be changed to march 25 scan the whole site and make sure its not confusing.
+Copy
+Summary
+Updated all sale deadline terminology to March 25 in promo config and labels, including changing remaining “Feb Promo” wording to “March Promo” and aligning promo logic comments accordingly.
+
+Updated homepage sale messaging so “Act by” and “Sign Up By” now both point to March 25, and standardized the sale-end banner language to March 25 as requested.
+
+Scanned the app source for sale-related date terms to ensure no conflicting January/February sale messaging remained in the user-facing sale copy.
+
+Screenshot
+Captured screenshot
+
+Testing
+
+✅ rg -n "Feb|February|Jan|January|March 25|Mar 25|Sign Up By|Act by|25th Anniversary Sale" client server shared public
+
+✅ npm run dev
+
+⚠️ mcp__browser_tools__run_playwright_script (chromium, http://localhost:5000) (browser process crashed in environment)
+
+✅ mcp__browser_tools__run_playwright_script (firefox, http://localhost:5000)
+
+
+Files (2)
+stage commit and push to github
+Copy
+Done what I could from this environment:
+
+I staged everything with git add -A (no pending changes).
+
+I attempted to create a commit, but Git reported the working tree is already clean.
+
+I attempted to push, but this repo has no configured remote.
+
+Checks run
+✅ git status -sb && git branch -vv && git remote -v
+
+✅ git add -A && git commit -m "chore: finalize sale messaging updates" (result: nothing to commit, working tree clean)
+
+⚠️ git push (failed because no remote push destination is configured)
+
+To complete push, add a remote and run push, e.g.:
+
+git remote add origin <your-github-repo-url>
+git push -u origin work
+https://github.com/Johndabomb55/Lawn-Trooper.git
+Copy
+I set the GitHub remote and attempted to push the branch, but push is blocked by this environment’s network/proxy.
+
+What I ran
+✅ git remote -v && git remote add origin https://github.com/Johndabomb55/Lawn-Trooper.git && git remote -v
+
+⚠️ git push -u origin work (failed: CONNECT tunnel failed, response 403)
+
+If you run the same push command from your local machine (or a network with GitHub access), it should publish the existing work branch and commits:
+
+git push -u origin work
+git push -u origin work
+Copy
+I ran it exactly as requested, but this environment still can’t reach GitHub due to a proxy/network block.
+
+Command run
+
+⚠️ git push -u origin work (failed: CONNECT tunnel failed, response 403)
+
+Remote is configured correctly to your repo, so the same command should work from a network with GitHub access.
+
+git status
+Copy
+✅ git status
+On branch work with nothing to commit; working tree is clean.
+
+git branch
+Copy
+✅ git branch
+* work
+
+git status
+Copy
+✅ git status
+On branch work with nothing to commit; working tree is clean.
+
+git status
+git log -n 3 --oneline
+Copy
+✅ git status
+On branch work, nothing to commit, working tree clean.
+
+✅ git log -n 3 --oneline
+
+2a01688 Unify sale deadline messaging to March 25 across site
+
+7ea15aa Published your App
+
+fb96f8e Published your App
+
+git remote -v
+Copy
+✅ git remote -v
+No remotes are currently configured (no output returned).
+
+git format-patch -1 HEAD
+ls
+Copy
+✅ git format-patch -1 HEAD
+Created patch file: 0001-Unify-sale-deadline-messaging-to-March-25-across-sit.patch
+
+✅ ls
+Directory contents include:
+
+0001-Unify-sale-deadline-messaging-to-March-25-across-sit.patch
+
+attached_assets
+
+client
+
+components.json
+
+drizzle.config.ts
+
+fix_home.js
+
+fix_home.py
+
+node_modules
+
+package-lock.json
+
+package.json
+
+postcss.config.js
+
+public
+
+replit.md
+
+script
+
+server
+
+shared
+
+tsconfig.json
+
+update_discounts.cjs
+
+vite-plugin-meta-images.ts
+
+vite.config.ts
+
+i want to download the files in a zip file
+Copy
+Done — I created a ZIP you can download:
+
+✅ zip -r Lawn-Trooper-files.zip client server shared public package.json package-lock.json tsconfig.json vite.config.ts postcss.config.js drizzle.config.ts components.json replit.md
+
+✅ ls -lh Lawn-Trooper-files.zip
+
+File: Lawn-Trooper-files.zip
+Size: 34M
+Location: /workspace/Lawn-Trooper/Lawn-Trooper-files.zip
+
+base64 lon-trooper-files.zip
+Copy
+Done.
+
+✅ zip -r lon-trooper-files.zip client server shared public package.json package-lock.json tsconfig.json vite.config.ts postcss.config.js drizzle.config.ts components.json replit.md
+
+✅ base64 lon-trooper-files.zip > lon-trooper-files.zip.b64
+
+✅ ls -lh lon-trooper-files.zip lon-trooper-files.zip.b64
+
+Created:
+
+lon-trooper-files.zip (34M)
+
+lon-trooper-files.zip.b64 (46M)
+
+git remote -v
+Copy
+✅ git remote -v
+No remotes are configured (command returned no output).
+
+https://github.com/Johndabomb55/Lawn-Trooper.git
+Copy
+Set — your GitHub remote is now configured.
+
+✅ git remote remove origin 2>/dev/null || true; git remote add origin https://github.com/Johndabomb55/Lawn-Trooper.git; git remote -v
+
+Current remotes:
+
+origin https://github.com/Johndabomb55/Lawn-Trooper.git (fetch)
+
+origin https://github.com/Johndabomb55/Lawn-Trooper.git (push)
+
+git push -u origin work
+Copy
+⚠️ git push -u origin work failed in this environment with:
+
+fatal: unable to access 'https://github.com/Johndabomb55/Lawn-Trooper.git/': CONNECT tunnel failed, response 403
+
+Remote is configured, but outbound GitHub access is blocked by the current network/proxy.
+
+ls 0001-*.patch
+wc -l 0001-*.patch
+Copy
+❌ ls 0001-*.patch
+No matching patch files found (No such file or directory).
+
+❌ wc -l 0001-*.patch
+Not run successfully because no 0001-*.patch files exist to count.
+
+git format-patch -1 HEAD
+Copy
+✅ git format-patch -1 HEAD
+Created: 0001-Unify-sale-deadline-messaging-to-March-25-across-sit.patch
+
+git format-patch -1 HEAD --stdout > codex.patch
+ls -lh codex.patch
+Copy
+✅ git format-patch -1 HEAD --stdout > codex.patch
+✅ ls -lh codex.patch
+
+Created codex.patch at 6.1K (/workspace/Lawn-Trooper/codex.patch).
+
+cat codex.patch
+Copy
+❌ cat codex.patch
+cat: codex.patch: No such file or directory
+
+
+
+
+Diff
+Logs
+
+client/src/data/plans.ts
+client/src/data/plans.ts
++5
+-5
+
+export const PROMO_CONFIG = {
+  executiveBonusEnabled: true,
+  cutoffDate: "2026-01-25T23:59:59", // Sale ends Jan 25th at 11:59 PM (end of day)
+  saleLabel: "25th Anniversary Sale + AI Cost Reductions Ends January 25th"
+  cutoffDate: "2026-03-25T23:59:59", // Sale ends March 25th at 11:59 PM (end of day)
+  saleLabel: "25th Anniversary Sale + AI Cost Reductions Ends March 25th"
+};
+
+export const GLOBAL_CONSTANTS = {
+  YARD_ELIGIBILITY: "Yards larger than 1 acre or not in a neighborhood must submit pics for a custom quote.",
+  BUSH_TRIMMING_DISPOSAL: "All clippings removed and disposed for clean curb appeal and pristine flower beds.",
+  AI_SAVINGS_MESSAGE: "We are lowering costs with new AI + 2026 technology and passing savings on to customers.",
+  COMMITMENT_MESSAGE: "If you commit to us, we commit to you.",
+  EXISTING_CUSTOMER_LOYALTY: "Our Loyalty Club Customers: Sign into your account with your customer login for your loyalty discount based on your years of service. (Must complete 12 months to get a loyalty discount).",
+  CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it's not the right fit, provide a full refund.",
+  AI_TECH_EXPLANATION: "We sometimes will deploy robotic AI vision, LiDAR sensor, satellite-linked mowing units to achieve the best cut quality and highest efficiency at no additional expense to the customer. Lawn Trooper reserves the right to choose which robot will be best for each property, although customer can weigh in of course."
+};
+
+export const PLANS = [
+  {
+    id: "basic",
+    name: "Basic Patrol",
+    price: 169,
+    oldPrice: 199,
+    priceLabel: "Starts at $169/mo",
+    description: "Includes: 1 Basic Add-on - 0 Premium Add-ons",
+    keyStats: [
+      { label: "Mowing", value: "Bi-Weekly" },
+      { label: "Weed Control", value: "2 Treatments" },
+      { label: "Add-ons", value: "1 Included" }
+    ],
+@@ -55,83 +55,83 @@ export const PLANS = [
+    priceLabel: "Starts at $299/mo",
+    description: "Plus weed control & beds. Includes: 2 Basic Add-ons - 1 Premium Add-on",
+    keyStats: [
+      { label: "Mowing", value: "Weekly" },
+      { label: "Weed Control", value: "2 Treatments" },
+      { label: "Add-ons", value: "3 Included" }
+    ],
+    features: [
+      "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+      "Weed Control: 2 pre-emergent weed control treatments + weed killer",
+      "Weed Control (Beds): Weed control in all flower beds included",
+      "Weed-Free Guarantee: Not Included",
+      `<span class='font-bold text-primary'>Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
+      "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
+      "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
+      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
+      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
+      "Multiple Trash Cans Cleaning: Not Included (Executive only)"
+    ],
+    allowance: {
+      basic: 2,
+      premium: 1
+    },
+    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
+    promoLabel: "Jan Promo: +1 Free Basic Add-on"
+    promoLabel: "March Promo: +1 Free Basic Add-on"
+  },
+  {
+    id: "executive",
+    name: "Executive Command",
+    price: 399,
+    oldPrice: 479,
+    priceLabel: "Starts at $399/mo",
+    description: "Weekly Main. 6 Weed Apps. Includes: 2 Basic Add-ons - 3 Premium Add-ons",
+    keyStats: [
+      { label: "Mowing", value: "Weekly" },
+      { label: "Weed Control", value: "6 Treatments" },
+      { label: "Add-ons", value: "5 Included" }
+    ],
+    features: [
+      "Mowing: Weekly mowing (top priority)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+      "Weed Control: 6 weed treatments per year",
+      "Weed Control (Beds): Weed control in all flower beds included",
+      "Weed-Free Guarantee: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge to help maintain a weed-free yard year-round.",
+      `<span class='font-bold text-accent'>Bush Trimming: 3 bush trimmings per year (Unlimited Bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
+      "Spring & Fall Cleanup<br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
+      "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
+      "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
+      "Leaf Service (Fall & Winter): Bi-weekly leaf cleanup - Leaf blowing / Mulching / Removal",
+      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
+      "<span class='font-bold text-accent'>Multiple Trash Cans: Included with any trash bin cleaning add-on (up to 3 cans)</span>"
+    ],
+    allowance: {
+      basic: 2,
+      premium: 3
+    },
+    allowanceLabel: "2 Basic Add-Ons + 3 Premium Add-Ons",
+    promoLabel: "Jan Promo: +1 Free Basic Add-on"
+    promoLabel: "March Promo: +1 Free Basic Add-on"
+  }
+];
+
+export const BASIC_ADDONS = [
+  {
+    id: "extra_bush_trimming",
+    label: "Extra Bush Trimming",
+    description: `Additional trimming beyond plan limits. ${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}`
+  },
+  {
+    id: "shrub_fertilization",
+    label: "Shrub Fertilization / Diseased Plant Application",
+    description: "Targeted nutrient boost and disease control for healthier shrubs."
+  },
+  {
+    id: "irrigation_check",
+    label: "Full Irrigation Check/Diagnosis + Seasonal Activation & Winterization",
+    description: "System diagnostics and seasonal preparation."
+  },
+  {
+    id: "fire_ant_app",
+    label: "Quarterly Fire Ant Applications",
+    description: "Quarterly treatments to control fire ant mounds."
+  },
+  {
+@@ -208,51 +208,51 @@ export const PREMIUM_ADDONS = [
+    description: "Cleaning and sanitizing of trash bins every month. Executive Plan: Multiple cans (up to 3) included."
+  },
+  {
+    id: "christmas_lights_premium",
+    label: "Christmas Light Premium Package",
+    description: "First floor roofline lighting + yard decorations."
+  }
+];
+
+// Helper to get allowance including promo
+export const getPlanAllowance = (planId: string, payFull: boolean = false) => {
+  const plan = PLANS.find(p => p.id === planId);
+  if (!plan) return { basic: 0, premium: 0 };
+
+  let { basic, premium } = plan.allowance;
+
+  // Executive Bonus Rule: Executive + Pay Upfront -> +1 Premium Add-on
+  if (planId === "executive" && payFull) {
+     premium += 1;
+  }
+  
+  if ((planId === "executive" || planId === "premium") && PROMO_CONFIG.executiveBonusEnabled) {
+    const today = new Date();
+    const cutoff = new Date(PROMO_CONFIG.cutoffDate);
+    if (today < cutoff) {
+       // Jan promo logic: +1 Free Basic Add-on
+       // March promo logic: +1 Free Basic Add-on
+       basic += 1;
+    }
+  }
+
+  return { basic, premium };
+};
+
+// Acre multipliers for pricing: 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44
+// For future larger sizes: each additional 1/3 acre multiplies by 1.2
+const ACRE_MULTIPLIERS: Record<string, number> = {
+  "1/3": 1.0,
+  "2/3": 1.2,
+  "1": 1.44
+};
+
+// AI Savings rate: 15% discount (2025 = 2026 / 0.85)
+const AI_SAVINGS_RATE = 0.15;
+
+// Get multiplier for a given yard size ID
+export const getAcreMultiplier = (yardSizeId: string): number => {
+  return ACRE_MULTIPLIERS[yardSizeId] || 1.0;
+};
+
+// Calculate 2026 AI-Savings price (current promotional price)
+export const calculate2026Price = (planId: string, yardSizeId: string): number => {
+client/src/pages/home.tsx
+client/src/pages/home.tsx
++4
+-4
+
+@@ -347,51 +347,51 @@ export default function LandingPage() {
+    }
+  }
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      setIsMenuOpen(false);
+    }
+  };
+
+
+  const mascotLogo = heroMascot;
+
+  return (
+    <TooltipProvider>
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
+      {/* Top Announcement Banner */}
+      <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
+        <div className="container mx-auto relative flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
+           <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 h-10">
+              <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
+           </div>
+           <span className="uppercase tracking-wide md:pl-16">🎉 25th Anniversary Sale + AI Cost Reductions! 🎉</span>
+           <span className="hidden md:inline mx-2 text-white/50">|</span>
+           <span>Act by <span className="underline decoration-white/50 underline-offset-4">January 25, 2026</span> to lock in your pricing for up to 2 years!</span>
+           <span>Act by <span className="underline decoration-white/50 underline-offset-4">March 25, 2026</span> to lock in your pricing for up to 2 years!</span>
+           <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
+             + Up to 3 Months Free
+           </span>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="fixed top-[calc(3rem)] md:top-[3rem] w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-primary/10" />
+            <span className="font-heading font-bold text-xl tracking-tight text-primary">LAWN TROOPER</span>
+          </div>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
+            <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
+            <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
+            <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+              Get Quote
+            </Button>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+@@ -523,73 +523,73 @@ export default function LandingPage() {
+              ].map((step, i) => (
+                <div 
+                  key={i}
+                  className="relative p-6 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-black/60 transition-colors text-left"
+                >
+                  <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center mb-4 text-accent">
+                    <step.icon size={20} strokeWidth={2.5} />
+                  </div>
+                  <h3 className="text-lg font-bold font-heading text-white mb-2">{step.title}</h3>
+                  <p className="text-white/70 text-sm leading-relaxed">{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+    
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="max-w-5xl mx-auto"
+          >
+            {/* Mission Briefing / Promotions Banner */}
+            <div className="mb-10 bg-black/70 backdrop-blur-md border-2 border-accent/50 p-6 rounded-xl shadow-2xl relative overflow-hidden">
+               {/* Diagonal "Ending Soon" Banner */}
+               <div className="absolute top-0 right-0 bg-destructive text-white text-[10px] font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm">
+                 ENDS JAN 25TH
+                 ENDS MARCH 25TH
+               </div>
+
+               <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
+                 <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl text-center">
+                   <Star className="fill-accent w-6 h-6 animate-pulse" /> 
+                   🎉 25th Anniversary Sale + AI Cost Reductions 🎉
+                   <Star className="fill-accent w-6 h-6 animate-pulse" /> 
+                 </div>
+                 <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
+                   ⚠️ Lock in lowest pricing for up to 2 years - Ends Jan 25th!
+                   ⚠️ Lock in lowest pricing for up to 2 years - Ends March 25th!
+                 </p>
+               </div>
+               
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+                 {/* Deal 1: Early Bird Special */}
+                 <div className="bg-accent/10 p-3 rounded border border-accent/50 hover:bg-accent/20 transition-colors relative">
+                   <div className="absolute -top-2 -right-2">
+                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">EARLY BIRD ONLY</span>
+                   </div>
+                   <div className="flex items-center gap-2 mb-1">
+                     <Calendar className="w-4 h-4 text-accent" />
+                     <span className="text-accent font-bold uppercase text-xs">Sign Up By Jan 25th</span>
+                     <span className="text-accent font-bold uppercase text-xs">Sign Up By March 25th</span>
+                   </div>
+                   <div className="text-white text-sm font-medium">
+                     <div className="flex justify-between items-center mb-1"><span>2-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">3 Months Free</span></div>
+                     <div className="flex justify-between items-center mb-1"><span>1-Year Pact:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">1 Month Free</span></div>
+                     <div className="flex justify-between items-center"><span>Renters:</span> <span className="text-green-400 font-bold bg-green-900/40 px-1.5 rounded">5% OFF</span></div>
+                   </div>
+                 </div>
+
+                 {/* Deal 2: Pay Upfront */}
+                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
+                   <div className="flex items-center gap-2 mb-1">
+                     <Zap className="w-4 h-4 text-accent" />
+                     <span className="text-accent font-bold uppercase text-xs">Pay Upfront (Full Term)</span>
+                   </div>
+                   <div className="text-white text-sm font-medium">
+                     <div className="flex justify-between"><span>2-Year Term:</span> <span className="text-green-400 font-bold">15% OFF</span></div>
+                     <div className="flex justify-between"><span>1-Year Term:</span> <span className="text-green-400 font-bold">10% OFF</span></div>
+                   </div>
+                 </div>
+
+                 {/* Deal 3: Honors */}
+                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
+                   <div className="flex items-center gap-2 mb-1">
+                     <Shield className="w-4 h-4 text-accent" />
+                     <span className="text-accent font-bold uppercase text-xs">Service Honors</span>
