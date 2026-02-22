@@ -101,34 +101,33 @@ The promotions engine is a config-driven stacking discounts system. All promotio
 - **Max 6 free months** from term-based promos
 - If cap is exceeded, the last-applied benefit is reduced first
 
-#### Commitment Model (Updated January 2026)
+#### Commitment Model (Updated March 2026)
 - **Month-to-Month**: No complimentary months, 15% flexibility premium over 1-year rate
 - **1-Year Commitment**: Commitment Bonus +1 complimentary month (Save More badge)
 - **2-Year Commitment**: Commitment Bonus +2 complimentary months (Best Value badge)
 - **Payment Options**: Monthly or Pay in Full
 
-#### 25-Year Birthday Bonus (Phased Enrollment Bonus)
+#### 25-Year Birthday Bonus
 - **Marketing name**: "25-Year Birthday Bonus"
 - **Formal name**: "25th Anniversary Enrollment Bonus"
-- **Enroll by Feb 25**: +2 bonus months (Tier 1)
-- **Enroll by Mar 25**: +1 bonus month (Tier 2)
-- **After Mar 25**: +0 bonus months (Bonus concluded - show muted text, don't hide)
+- **Enroll by March 25**: +2 bonus months
+- **After March 25**: +0 bonus months (Bonus concluded - show muted text, don't hide)
 - **Important**: Bonus months are NOT doubled by Pay-in-Full
 - Configure in `BIRTHDAY_BONUS` in promotions.ts
 
 #### Step 5 Layout (Commitment Step)
 Step 5 now shows two clearly separated sections:
 1. **Commitment Bonus** section - shows 1Y/2Y base months and PIF doubling
-2. **25-Year Birthday Bonus** section - shows phased enrollment schedule with dates
+2. **25-Year Birthday Bonus** section - shows single March 25 deadline
 
 #### Pay-in-Full Option
 - **Effect**: Doubles ONLY commitment months (bonus months NOT doubled)
-- **Examples (Jan-Feb enrollment)**:
+- **Examples (enroll by March 25)**:
   - 1-Year (monthly): 1 + 2 = 3 complimentary months
   - 1-Year + PIF: 2 + 2 = 4 complimentary months
   - 2-Year (monthly): 2 + 2 = 4 complimentary months
   - 2-Year + PIF: 4 + 2 = 6 complimentary months
-- **Max outcomes**: 1-Year PIF + Dec bonus = 4, 2-Year PIF + Dec bonus = 6
+- **Max outcomes**: 1-Year PIF + March bonus = 4, 2-Year PIF + March bonus = 6
 - **Note**: Always optional - monthly payment is always available
 
 #### Complimentary Months Definition

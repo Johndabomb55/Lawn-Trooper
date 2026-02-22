@@ -345,7 +345,7 @@ export default function LandingPage() {
                    <Star className="fill-accent w-6 h-6 animate-pulse" /> 
                  </div>
                  <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                   ⚠️ Lock in lowest pricing for up to 3 years - Ends March 25th!
+                   ⚠️ Lock in lowest pricing for up to 2 years - Ends March 25th!
                  </p>
                </div>
                
@@ -357,7 +357,7 @@ export default function LandingPage() {
                    </div>
                    <div className="flex items-center gap-2 mb-1">
                      <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">25th Anniversary</span>
+                     <span className="text-accent font-bold uppercase text-xs">Sign Up By March 25th</span>
                    </div>
                    <div className="text-white text-sm font-medium">
                      <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">+2 Bonus Months</div>
