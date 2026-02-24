@@ -151,10 +151,6 @@ export const CELEBRATION_MESSAGES = {
 
 // Social Sharing Templates
 export const SOCIAL_SHARING = {
-  twitter: {
-    text: "Just got my instant quote from @LawnTrooper! Professional lawn care with military precision. Check them out:",
-    hashtags: ["LawnCare", "Huntsville", "CurbAppeal"]
-  },
   facebook: {
     quote: "Getting my yard mission-ready with Lawn Trooper's professional lawn care service!",
   },
@@ -164,10 +160,10 @@ export const SOCIAL_SHARING = {
 // Waitlist Configuration
 export const WAITLIST_CONFIG = {
   title: "Join the Command Center",
-  subtitle: "Get early access to premium features launching March 2026",
+  subtitle: "More advanced autonomy is coming soon, providing daily mows for weekly prices.",
   features: [
-    "Smart irrigation monitoring",
-    "Real-time service tracking",
+    "Premium add-on coming soon",
+    "Daily-mow autonomy at weekly-plan pricing",
     "Exclusive member discounts",
     "Priority scheduling"
   ],

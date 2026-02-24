@@ -38,9 +38,10 @@ import {
   BASIC_ADDONS, 
   PREMIUM_ADDONS, 
   OVERAGE_PRICES,
-  SWAP_OPTIONS,
   getYardMultiplier,
   getPlanAllowance,
+  getPlanAllowanceLabel,
+  getExecutiveSwapOptions,
   calculateOverageCost,
   getAddonById,
   calculate2026Price
@@ -142,6 +143,8 @@ export default function StreamlinedWizard() {
   const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
   
   const isExecutive = plan === 'executive';
+  const executiveSwapOptions = getExecutiveSwapOptions();
+  const executiveBaseAllowance = getPlanAllowance("executive", 0);
   // Get effective allowances using the canonical function with swap adjustment
   const allowance = getPlanAllowance(plan, isExecutive ? swapCount : 0);
   const effectiveBasicAllowance = allowance.basic;
@@ -501,8 +504,8 @@ export default function StreamlinedWizard() {
               className="space-y-4"
             >
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-2">Choose your plan</h3>
-                <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming & blowing</p>
+                <h3 className="text-2xl font-bold text-primary mb-2">Choose your Total Maintenance Plan</h3>
+                <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming, blowing, and flower bed weed control.</p>
               </div>
 
               <div className="space-y-3">
@@ -564,7 +567,8 @@ export default function StreamlinedWizard() {
                         {/* Add-on breakdown line */}
                         <div className="mt-2 pt-2 border-t border-border/50 text-xs">
                           <span className="text-muted-foreground">Add-Ons Included: </span>
-                          <span className="font-medium">{p.allowance.basic} Basic + {p.allowance.premium} Premium</span>
+                          <span className="font-medium">{getPlanAllowanceLabel(p.id)}</span>
+                          <span className="block text-muted-foreground mt-0.5">Flower bed weed control: Included</span>
                           {p.id === 'executive' && p.executiveExtras && (
                             <span className="block text-accent mt-0.5 font-medium">
                               Extras: {p.executiveExtras.slice(0, 2).join(', ')}
@@ -622,7 +626,7 @@ export default function StreamlinedWizard() {
                               )}
                               <div className="border-t pt-3 text-center">
                                 <div className="text-lg font-bold text-primary">Add-Ons Included</div>
-                                <div className="text-sm">{p.allowance.basic} Basic + {p.allowance.premium} Premium</div>
+                                <div className="text-sm">{getPlanAllowanceLabel(p.id)}</div>
                                 {p.allowsSwap && (
                                   <div className="text-xs text-accent mt-1">Swap: 1 Premium → +2 Basic</div>
                                 )}
@@ -653,7 +657,7 @@ export default function StreamlinedWizard() {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Customize with add-ons</h3>
                 <p className="text-muted-foreground text-sm">
-                  Your plan includes {selectedPlan?.allowanceLabel || "add-ons"} at no extra cost.
+                  Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, isExecutive ? swapCount : 0) : "add-ons"} at no extra cost.
                 </p>
               </div>
 
@@ -671,13 +675,13 @@ export default function StreamlinedWizard() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {SWAP_OPTIONS.map((opt) => (
+                    {executiveSwapOptions.map((opt) => (
                       <button
                         key={opt.value}
                         data-testid={`swap-btn-${opt.value}`}
                         onClick={() => {
                           setSwapCount(opt.value);
-                          const newPremiumAllowance = 2 - opt.value;
+                          const newPremiumAllowance = executiveBaseAllowance.premium - opt.value;
                           if (premiumAddons.length > newPremiumAllowance) {
                             setPremiumAddons(premiumAddons.slice(0, Math.max(0, newPremiumAllowance)));
                           }
@@ -688,7 +692,7 @@ export default function StreamlinedWizard() {
                             : 'border-accent/30 bg-background hover:border-accent/50'
                         }`}
                       >
-                        {opt.value === 0 ? '3B + 2P' : opt.value === 1 ? '5B + 1P' : '7B + 0P'}
+                        {opt.compactLabel}
                       </button>
                     ))}
                   </div>
@@ -1236,6 +1240,15 @@ export default function StreamlinedWizard() {
               {/* Pricing Summary */}
               {basePrice > 0 && (
                 <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 space-y-3">
+                  {term !== 'month-to-month' && (
+                    <div className="rounded-lg border border-green-300 bg-green-50 p-3 text-center">
+                      <div className="text-xs uppercase tracking-wide text-green-700 font-bold">Commitment Savings Locked</div>
+                      <div className="text-lg font-extrabold text-green-700">
+                        {totalFreeMonths} free billing month{totalFreeMonths === 1 ? '' : 's'} + save ${((calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * termMonths) - (monthlySubscription * billedMonths)).toLocaleString()}
+                      </div>
+                      <div className="text-xs text-green-700">Compared to month-to-month for the same service period.</div>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-lg">Monthly subscription:</span>
                     <span className="text-2xl font-bold text-primary">${monthlySubscription}/mo</span>
@@ -1245,7 +1258,7 @@ export default function StreamlinedWizard() {
                   {term !== 'month-to-month' && (
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Complimentary months:</span>
+                        <span>Free billing months:</span>
                         <span className="font-bold text-green-600">{totalFreeMonths} month{totalFreeMonths !== 1 ? 's' : ''}</span>
                       </div>
                       {/* Itemized breakdown */}
@@ -1305,7 +1318,7 @@ export default function StreamlinedWizard() {
               {/* Complimentary Months Disclaimer */}
               <div className="p-3 bg-muted/50 rounded-lg border border-border text-center">
                 <p className="text-xs text-muted-foreground">
-                  Complimentary months are skipped billing months applied at the end of your term. Your agreement still ends on your 12-month or 24-month anniversary date.
+                  Free billing months are skipped billing months applied at the end of your term. Your agreement still ends on your 12-month or 24-month anniversary date.
                 </p>
               </div>
 
