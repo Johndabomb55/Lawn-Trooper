@@ -1,0 +1,18 @@
+# Local PostgreSQL for Lawn Trooper development
+# Run: docker compose up -d
+# Then: DATABASE_URL=postgresql://postgres:postgres@localhost:5432/lawn_trooper npm run dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lawn_trooper
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

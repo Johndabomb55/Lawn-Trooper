@@ -1,7 +1,15 @@
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
   cutoffDate: "2026-03-25T23:59:59", // Sale ends March 25th at 11:59 PM (end of day)
-  saleLabel: "25th Anniversary Sale + AI Cost Reductions Ends March 25th"
+  saleLabel: "25th Anniversary Sale — Ends March 25th"
+};
+
+// Anniversary add-on bonus (limited-time event through cutoffDate):
+// - Basic and Premium: +1 included Basic add-on
+// - Executive: +1 included Premium add-on
+export const ANNIVERSARY_ADDON_BONUS = {
+  basicNonExecutive: 1,
+  executivePremium: 1,
 };
 
 export const GLOBAL_CONSTANTS = {
@@ -146,7 +154,7 @@ export const PLANS: PlanDefinition[] = [
     ],
     allowanceLabel: "3 Basic Add-Ons + 2 Premium Add-Ons",
     swapLabel: "Swap option: 1 Premium = 2 Basic",
-    promoLabel: "March Promo: +1 Free Basic Add-on"
+    promoLabel: "March Promo: +1 Free Premium Add-on"
   }
 ];
 
@@ -226,11 +234,11 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "growing_season_boost",
-    name: "Spring/Summer Mowing Boost",
+    name: "Wet-Month Weekly Mow Boost (Basic Plan)",
     tier: "basic",
     category: "landscaping",
     price: 20,
-    description: "Upgrade to weekly mowing service for 3 months during peak growing season (spring/summer). Keep your lawn looking its best when growth is at its highest. Available after 3 months of active service."
+    description: "Best for Basic Patrol homes during heavy-growth months: includes 6 extra weekly cuts per season. Must be booked at least 1 week in advance."
   },
   {
     id: "extra_weed_control",
@@ -400,6 +408,21 @@ export const OVERAGE_PRICES = {
   premium: 40 // $40/mo per extra premium add-on
 };
 
+export const isAnniversaryPricingEventActive = (asOf: Date = new Date()): boolean => {
+  return asOf <= new Date(PROMO_CONFIG.cutoffDate);
+};
+
+const getAnniversaryBonusForPlan = (planId: string, asOf: Date = new Date()): { basic: number; premium: number } => {
+  if (!isAnniversaryPricingEventActive(asOf)) {
+    return { basic: 0, premium: 0 };
+  }
+
+  return {
+    basic: planId === "executive" ? 0 : ANNIVERSARY_ADDON_BONUS.basicNonExecutive,
+    premium: planId === "executive" ? ANNIVERSARY_ADDON_BONUS.executivePremium : 0,
+  };
+};
+
 // Calculate overage cost
 export const calculateOverageCost = (
   selectedBasic: number,
@@ -417,17 +440,22 @@ export const calculateOverageCost = (
 };
 
 // Helper to get allowance with swap adjustment
-// swapCount: 0, 1, or 2 (only applies to Executive)
-// Each swap converts 1 Premium slot to +2 Basic slots
+// swapCount applies only to Executive.
+// Each swap converts 1 Premium slot to +2 Basic slots.
 export const getPlanAllowance = (
   planId: string, 
   swapCount: number = 0,
-  payFull: boolean = false
+  payFull: boolean = false,
+  asOf: Date = new Date()
 ): { basic: number; premium: number } => {
   const plan = PLANS.find(p => p.id === planId);
   if (!plan) return { basic: 0, premium: 0 };
 
   let { basic, premium } = plan.allowance;
+  const anniversaryBonus = getAnniversaryBonusForPlan(planId, asOf);
+
+  basic += anniversaryBonus.basic;
+  premium += anniversaryBonus.premium;
 
   // Apply swap only for Executive plan
   if (planId === "executive" && plan.allowsSwap && swapCount > 0) {
@@ -439,16 +467,47 @@ export const getPlanAllowance = (
   return { basic, premium };
 };
 
-// SWAP RULES (LOCKED)
-// Executive base: 3 Basic + 2 Premium
-// Swap 0: 3B + 2P
-// Swap 1: 5B + 1P (traded 1P for +2B)
-// Swap 2: 7B + 0P (traded 2P for +4B)
+export const getPlanAllowanceLabel = (
+  planId: string,
+  swapCount: number = 0,
+  payFull: boolean = false,
+  asOf: Date = new Date()
+): string => {
+  const allowance = getPlanAllowance(planId, swapCount, payFull, asOf);
+  return `${allowance.basic} Basic Add-On${allowance.basic === 1 ? "" : "s"} + ${allowance.premium} Premium Add-On${allowance.premium === 1 ? "" : "s"}`;
+};
+
+// Legacy static swap rules (pre-anniversary bonus).
 export const SWAP_OPTIONS = [
   { value: 0, label: "No swap (3 Basic + 2 Premium)" },
   { value: 1, label: "Swap 1 Premium → +2 Basic (5 Basic + 1 Premium)" },
   { value: 2, label: "Swap 2 Premium → +4 Basic (7 Basic + 0 Premium)" }
 ];
+
+export const getExecutiveSwapOptions = (asOf: Date = new Date()) => {
+  const baseAllowance = getPlanAllowance("executive", 0, false, asOf);
+  const options: Array<{ value: number; label: string; compactLabel: string }> = [];
+
+  for (let swapCount = 0; swapCount <= baseAllowance.premium; swapCount += 1) {
+    const swappedAllowance = getPlanAllowance("executive", swapCount, false, asOf);
+    if (swapCount === 0) {
+      options.push({
+        value: 0,
+        label: `No swap (${swappedAllowance.basic} Basic + ${swappedAllowance.premium} Premium)`,
+        compactLabel: `${swappedAllowance.basic}B + ${swappedAllowance.premium}P`,
+      });
+      continue;
+    }
+
+    options.push({
+      value: swapCount,
+      label: `Swap ${swapCount} Premium → +${swapCount * 2} Basic (${swappedAllowance.basic} Basic + ${swappedAllowance.premium} Premium)`,
+      compactLabel: `${swappedAllowance.basic}B + ${swappedAllowance.premium}P`,
+    });
+  }
+
+  return options;
+};
 
 // Acre multipliers for pricing: 20% increase per yard size tier
 // 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44

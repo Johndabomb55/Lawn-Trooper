@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TRUST_MESSAGES } from "@/data/promotions";
+import { MONTH_TO_MONTH_PREMIUM, TRUST_MESSAGES } from "@/data/promotions";
 import type { PromotionResult, AppliedTotals } from "@/data/promotions";
 
 interface SavingsPanelProps {
@@ -52,6 +52,15 @@ export default function SavingsPanel({
     '2-year': '2-Year Commitment',
   };
   const termLabel = termLabels[term] || term;
+  const isCommittedTerm = term !== 'month-to-month';
+  const billedMonths = Math.max(1, appliedTotals.termMonths - freeMonthsAtEnd);
+  const monthToMonthRate = Math.round(baseMonthly * (1 + MONTH_TO_MONTH_PREMIUM));
+  const committedTermCost = displayedMonthly * billedMonths;
+  const monthToMonthTermCost = monthToMonthRate * appliedTotals.termMonths;
+  const committedTermSavings = isCommittedTerm ? Math.max(0, monthToMonthTermCost - committedTermCost) : 0;
+  const annualizedCommittedSavings = isCommittedTerm
+    ? Math.round(committedTermSavings / (appliedTotals.termMonths / 12))
+    : 0;
 
   return (
     <div className={`bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border border-primary/20 overflow-hidden ${className}`}>
@@ -72,7 +81,7 @@ export default function SavingsPanel({
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 6 complimentary months).</p>
+                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 6 free billing months).</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -82,11 +91,27 @@ export default function SavingsPanel({
 
       {/* Pricing Summary */}
       <div className="p-4 space-y-4">
+        {/* High-attention commitment value banner */}
+        {isCommittedTerm && (
+          <div className="rounded-lg border border-green-300 bg-green-50 p-3 text-center">
+            <div className="text-xs uppercase tracking-wide text-green-700 font-bold">
+              Commitment Savings Locked
+            </div>
+            <div className="text-lg font-extrabold text-green-700">
+              {freeMonthsAtEnd} free billing month{freeMonthsAtEnd === 1 ? "" : "s"} + ~${annualizedCommittedSavings}/year saved
+            </div>
+            <div className="text-xs text-green-700">
+              Compared to month-to-month pricing for the same service period.
+            </div>
+          </div>
+        )}
+
         {/* Main Pricing */}
         <div className="grid grid-cols-2 gap-3">
           <div className="text-center p-3 bg-white/50 rounded-lg">
             <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Monthly Total</div>
-            <div className="text-2xl font-bold text-primary">${displayedMonthly}</div>
+            <div className="text-3xl font-extrabold text-primary">${displayedMonthly}</div>
+            <div className="text-[11px] text-muted-foreground">Includes AI-Savings Discount</div>
             {monthlyDiscount > 0 && (
               <div className="text-xs text-green-600">
                 <TrendingDown className="w-3 h-3 inline mr-1" />
@@ -97,7 +122,7 @@ export default function SavingsPanel({
           <div className="text-center p-3 bg-white/50 rounded-lg">
             <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Effective Monthly</div>
             <div className="text-2xl font-bold text-green-600">${displayedEffectiveMonthly}</div>
-            <div className="text-xs text-muted-foreground">After complimentary</div>
+            <div className="text-xs text-muted-foreground">After free months</div>
           </div>
         </div>
 
@@ -106,7 +131,7 @@ export default function SavingsPanel({
           <div className="flex items-center gap-2 p-2 bg-accent/10 rounded-lg">
             <Calendar className="w-5 h-5 text-accent shrink-0" />
             <div>
-              <div className="text-sm font-bold text-accent">{freeMonthsAtEnd} Complimentary</div>
+              <div className="text-sm font-bold text-accent">{freeMonthsAtEnd} Free Billing Month{freeMonthsAtEnd === 1 ? "" : "s"}</div>
               <div className="text-xs text-muted-foreground">At end of {termLabel}</div>
             </div>
           </div>

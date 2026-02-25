@@ -461,10 +461,75 @@ export function getApplicablePromotions(
   let totalFreeMonths = 0;
   let capApplied = false;
 
+  // Calculate term-based free months from canonical commitment logic.
+  // This ensures pay-in-full correctly increases free months.
+  const freeMonthsBreakdown = getFreeMonthsBreakdown(selections.term, selections.payUpfront);
+  if (selections.term !== 'month-to-month') {
+    const commitmentPromo = activePromos.find(
+      (p) => p.id === (selections.term === '1-year' ? 'commitment_1year' : 'commitment_2year')
+    );
+    if (commitmentPromo) {
+      applied.push(commitmentPromo);
+    }
+    if (freeMonthsBreakdown.commitmentBase > 0) {
+      savingsBreakdown.push({
+        promoId: commitmentPromo?.id || `commitment_${selections.term}`,
+        title: commitmentPromo?.title || 'Commitment Bonus',
+        savings: selections.monthlyTotal * freeMonthsBreakdown.commitmentBase,
+        freeMonths: freeMonthsBreakdown.commitmentBase,
+        percentOff: 0,
+      });
+    }
+
+    if (selections.payUpfront && freeMonthsBreakdown.commitmentMonths > freeMonthsBreakdown.commitmentBase) {
+      const payFullPromo = activePromos.find((p) => p.id === 'pay_full_option');
+      if (payFullPromo) {
+        applied.push(payFullPromo);
+      }
+      const extraMonthsFromMultiplier = freeMonthsBreakdown.commitmentMonths - freeMonthsBreakdown.commitmentBase;
+      savingsBreakdown.push({
+        promoId: payFullPromo?.id || 'pay_full_option',
+        title: 'Pay-in-Full Commitment Multiplier',
+        savings: selections.monthlyTotal * extraMonthsFromMultiplier,
+        freeMonths: extraMonthsFromMultiplier,
+        percentOff: 0,
+      });
+    }
+
+    if (freeMonthsBreakdown.anniversaryBonus > 0) {
+      const anniversaryPromo: Promotion = {
+        id: 'anniversary_enrollment_bonus',
+        title: '25th Anniversary Enrollment Bonus',
+        shortDescription: `+${freeMonthsBreakdown.anniversaryBonus} complimentary months`,
+        type: 'termFreeMonths',
+        stackGroup: 'freeMonths',
+        value: freeMonthsBreakdown.anniversaryBonus,
+        eligibility: {},
+        displayOrder: 4,
+        active: true,
+      };
+      applied.push(anniversaryPromo);
+      savingsBreakdown.push({
+        promoId: anniversaryPromo.id,
+        title: anniversaryPromo.title,
+        savings: selections.monthlyTotal * freeMonthsBreakdown.anniversaryBonus,
+        freeMonths: freeMonthsBreakdown.anniversaryBonus,
+        percentOff: 0,
+      });
+    }
+
+    totalFreeMonths = freeMonthsBreakdown.total;
+  }
+
   // Sort by display order for consistent application
   const sortedPromos = [...activePromos].sort((a, b) => a.displayOrder - b.displayOrder);
 
   for (const promo of sortedPromos) {
+    // Term-based free months are handled above from canonical formulas.
+    if (promo.stackGroup === 'freeMonths' && promo.type !== 'referralFreeMonth') {
+      continue;
+    }
+
     // Check eligibility
     let isEligible = true;
     const { eligibility } = promo;
@@ -604,6 +669,11 @@ export function getApplicablePromotions(
     }
   }
 
+  if (totalFreeMonths > PROMO_CAPS.maxFreeMonths) {
+    totalFreeMonths = PROMO_CAPS.maxFreeMonths;
+    capApplied = true;
+  }
+
   return {
     eligible,
     applied,
@@ -655,10 +725,10 @@ export function applyPromotions(
 // Trust messaging constants
 export const TRUST_MESSAGES = {
   ctaTop: "No payment required. This is a FREE Dream Yard Recon request.",
-  contactStep: "No payment required. We never sell your data. We only use this to contact you to schedule your FREE Dream Yard Recon.",
-  confirmation: "Your information is secure. We never sell your data and will only use it to schedule your FREE Dream Yard Recon.",
+  contactStep: "No payment required. We never sell your data. An account manager will reach out to schedule a good time for your FREE property walk-through.",
+  confirmation: "Your information is secure. We never sell your data. An account manager will reach out to schedule your FREE property walk-through.",
   commitment: "Commit to us and we commit to you.",
-  miguelNote: "We will contact you via your preferred method (call, email, or text) to schedule your FREE Dream Yard Recon. If you don't attach yard photos, we'll send Miguel to scout your property — no commitment needed.",
+  miguelNote: "An account manager will contact you via your preferred method (call, email, or text) to coordinate a good time for your FREE property walk-through and Dream Yard Recon.",
   referralNudge: "Refer a neighbour — you both earn 1 complimentary month after your friend commits.",
 };
 

@@ -48,8 +48,8 @@ export const WHY_LAWN_TROOPER = {
 };
 
 export const PLAN_SUMMARIES = {
-  sectionTitle: "Choose Your Perfect Plan",
-  sectionSubtitle: "All plans include mowing, edging, trimming, and blowing on every visit.",
+  sectionTitle: "Choose Your Total Maintenance Plan",
+  sectionSubtitle: "All plans include mowing, edging, trimming, blowing, and weed control in flower beds.",
   plans: [
     {
       id: "basic",
@@ -58,6 +58,7 @@ export const PLAN_SUMMARIES = {
       highlights: [
         "Bi-weekly mowing",
         "2 weed treatments per year",
+        "Weed control in flower beds included",
         "Monthly light leaf management",
         "1 Basic add-on included"
       ]
@@ -69,6 +70,7 @@ export const PLAN_SUMMARIES = {
       highlights: [
         "Weekly mowing",
         "4 weed treatments + weed killer",
+        "Weed control in flower beds included",
         "Bi-weekly leaf management (fall/winter)",
         "Spring & fall cleanups included",
         "2 Basic + 1 Premium add-ons"
@@ -81,6 +83,7 @@ export const PLAN_SUMMARIES = {
       highlights: [
         "Priority weekly mowing",
         "6 weed treatments + guarantee",
+        "Weed control in flower beds included",
         "Enhanced leaf management",
         "Storm visits & winter yard checks",
         "3 Basic + 2 Premium add-ons"
