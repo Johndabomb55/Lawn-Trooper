@@ -70,6 +70,7 @@ import {
   BASIC_ADDONS, 
   PREMIUM_ADDONS, 
   getPlanAllowance,
+  getPlanAllowanceLabel,
   calculate2026Price,
   calculate2025Price,
   YARD_SIZES
@@ -77,10 +78,41 @@ import {
 
 const STEPS = [
   { id: 1, title: "Yard Size", icon: MapPin, rank: "Recruit", rankIcon: Shield },
-  { id: 2, title: "Plan Tier", icon: Zap, rank: "Sergeant", rankIcon: Award },
-  { id: 3, title: "Add-ons", icon: Star, rank: "Commander", rankIcon: Target },
+  { id: 2, title: "Plan", icon: Zap, rank: "Sergeant", rankIcon: Award },
+  { id: 3, title: "Add-Ons", icon: Star, rank: "Commander", rankIcon: Target },
   { id: 4, title: "Contact", icon: Phone, rank: "General", rankIcon: Award },
 ];
+
+// Safe UI copy layer for plan-card clarity (no wizard logic changes).
+const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string; highlights: string[] }> = {
+  basic: {
+    frequency: "Bi-Weekly",
+    tagline: "Entry-level maintenance for consistent curb appeal.",
+    highlights: [
+      "Bi-weekly mowing, edging, and blow-off",
+      "Core weed-control program",
+      "Included add-on coverage with plan selection"
+    ],
+  },
+  premium: {
+    frequency: "Weekly",
+    tagline: "Weekly upkeep with stronger property presentation.",
+    highlights: [
+      "Weekly mowing with trim and edge finish",
+      "Expanded treatment cadence",
+      "Included add-on coverage with plan selection"
+    ],
+  },
+  executive: {
+    frequency: "Weekly Full-Service",
+    tagline: "Top-tier weekly command with priority service standards.",
+    highlights: [
+      "Priority weekly full-service visits",
+      "Enhanced treatment and cleanup coverage",
+      "Maximum included add-on coverage"
+    ],
+  },
+};
 
 // Confetti particle component
 const ConfettiParticle = ({ delay, x }: { delay: number; x: number }) => (
@@ -392,7 +424,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   }
 
   const planData = PLANS.find(p => p.id === plan);
-  const allowance = getPlanAllowance(plan, payUpfront);
+  const allowance = getPlanAllowance(plan, 0, payUpfront);
+  const tableBasicAllowance = getPlanAllowance("basic", 0, payUpfront);
+  const tablePremiumAllowance = getPlanAllowance("premium", 0, payUpfront);
+  const tableExecutiveAllowance = getPlanAllowance("executive", 0, payUpfront);
   const planPrice = calculate2026Price(plan, yardSize);
   const extraBasicCount = Math.max(0, basicAddons.length - allowance.basic);
   const extraPremiumCount = Math.max(0, premiumAddons.length - allowance.premium);
@@ -513,6 +548,16 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   }
 
   // Mission Ready indicator
+  const getAddOnInstructionText = () => {
+    if (plan === "basic") {
+      return "Basic Plan includes 1 included add-on. Choose your included service below.";
+    }
+    if (plan === "premium") {
+      return `Premium Plan includes ${allowance.basic} Basic and ${allowance.premium} Premium included add-ons.`;
+    }
+    return `Executive Command includes ${allowance.basic} Basic and ${allowance.premium} Premium included add-ons.`;
+  };
+
   const MissionReadyIndicator = () => (
     <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-bold ${
       addonsRequirementMet 
@@ -527,7 +572,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       ) : (
         <>
           <AlertCircle className="w-4 h-4" />
-          <span>Select {allowance.basic} Basic & {allowance.premium} Premium to proceed</span>
+          <span>{getAddOnInstructionText()}</span>
         </>
       )}
     </div>
@@ -576,9 +621,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
         </div>
         
         {/* Progress Steps */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           {STEPS.map((step, idx) => {
-            const StepIcon = step.icon;
             const isCompleted = currentStep > step.id;
             const isCurrent = currentStep === step.id;
             
@@ -596,9 +640,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     isCompleted ? 'bg-green-500 text-white' :
                     isCurrent ? 'bg-accent text-accent-foreground' : 'bg-white/20'
                   }`}>
-                    {isCompleted ? <Check className="w-5 h-5" /> : <StepIcon className="w-5 h-5" />}
+                    {isCompleted ? <Check className="w-5 h-5" /> : <span className="text-sm font-extrabold">{step.id}</span>}
                   </div>
-                  <span className="text-[10px] md:text-xs font-bold hidden md:block">{step.title}</span>
+                  <span className="text-[10px] md:text-xs font-bold text-center leading-tight">
+                    {`Step ${step.id}: ${step.title}`}
+                  </span>
                 </button>
                 {idx < STEPS.length - 1 && (
                   <div className={`flex-1 h-1 mx-2 rounded ${
@@ -661,8 +707,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   className="space-y-6"
                 >
                   <div className="text-center mb-6">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Plan Tier</h4>
-                    <p className="text-muted-foreground">All prices reflect 2026 AI-Savings discount</p>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Total Maintenance Plan</h4>
+                    <p className="text-muted-foreground">One-stop exterior maintenance with full lawn coverage.</p>
                   </div>
 
                   {/* Compact Plan Comparison */}
@@ -686,8 +732,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         <tr className="border-b border-border/50">
                           <td className="py-2 pr-2 text-muted-foreground">Weed Control</td>
                           <td className="py-2 px-2 text-center">2 Apps</td>
-                          <td className="py-2 px-2 text-center">2 Apps</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">4 Apps</td>
                           <td className="py-2 px-2 text-center font-bold text-accent">6 Apps</td>
+                        </tr>
+                        <tr className="border-b border-border/50">
+                          <td className="py-2 pr-2 text-muted-foreground">Flower Bed Weed Control</td>
+                          <td className="py-2 px-2 text-center">Included</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">Included</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">Included</td>
                         </tr>
                         <tr className="border-b border-border/50">
                           <td className="py-2 pr-2 text-muted-foreground">Bush Trimming</td>
@@ -697,20 +749,21 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         </tr>
                         <tr>
                           <td className="py-2 pr-2 text-muted-foreground">Add-ons Included</td>
-                          <td className="py-2 px-2 text-center">1</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">3</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">5</td>
+                          <td className="py-2 px-2 text-center">{tableBasicAllowance.basic + tableBasicAllowance.premium}</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">{tablePremiumAllowance.basic + tablePremiumAllowance.premium}</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">{tableExecutiveAllowance.basic + tableExecutiveAllowance.premium}</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                   
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {PLANS.map((p) => {
                       const price2026 = calculate2026Price(p.id, yardSize);
                       const price2025 = calculate2025Price(p.id, yardSize);
                       const isExecutive = p.id === 'executive';
                       const isSelected = plan === p.id;
+                      const cardCopy = PLAN_CARD_COPY[p.id] || PLAN_CARD_COPY.basic;
                       
                       return (
                         <button
@@ -738,6 +791,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             <h5 className={`font-bold ${isExecutive ? 'text-xl' : 'text-lg'}`}>{p.name}</h5>
                             {isExecutive && <Star className="w-5 h-5 fill-accent text-accent" />}
                           </div>
+                          <div className="mt-1 text-[11px] font-bold uppercase tracking-wide text-primary/90">
+                            {cardCopy.frequency}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">{cardCopy.tagline}</p>
                           <div className="mt-2">
                             <div className="text-xs text-muted-foreground line-through">
                               2025: ${price2025}/mo
@@ -748,7 +805,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             </div>
                             <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-2">{p.allowanceLabel}</div>
+                          <div className="text-xs text-muted-foreground mt-2">{getPlanAllowanceLabel(p.id, 0, payUpfront)}</div>
+                          <ul className="mt-3 space-y-1">
+                            {cardCopy.highlights.map((highlight) => (
+                              <li key={highlight} className="text-xs text-foreground/85 flex items-start gap-1.5">
+                                <Check className="w-3.5 h-3.5 text-green-600 shrink-0 mt-[1px]" />
+                                <span>{highlight}</span>
+                              </li>
+                            ))}
+                          </ul>
                           {isSelected && (
                             <div className="absolute top-2 right-2">
                               <Check className="w-5 h-5 text-primary" />
@@ -838,7 +903,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium add-ons
                     </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
-                      Select {allowance.basic} Basic & {allowance.premium} Premium add-on{allowance.premium > 1 ? 's' : ''} (required)
+                      {getAddOnInstructionText()}
                     </p>
                   </div>
 
@@ -911,7 +976,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   {/* Price Summary */}
                   <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 text-center">
                     <div className="text-sm text-muted-foreground">Your Monthly Total</div>
-                    <div className="text-3xl font-bold text-primary">${totalPrice}/mo</div>
+                    <div className="text-4xl font-extrabold text-primary">${totalPrice}/mo</div>
+                    <div className="text-xs text-muted-foreground">Includes AI-Savings Discount</div>
                     {extraCost > 0 && (
                       <div className="text-xs text-muted-foreground">
                         Base ${planPrice} + ${extraCost} extra add-ons
@@ -965,7 +1031,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 >
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
-                    <p className="text-muted-foreground">We'll reach out to schedule your FREE Dream Yard Recon</p>
+                    <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your FREE property walk-through.</p>
                   </div>
 
                   {/* Trust Badge */}
@@ -983,6 +1049,12 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       <Award className="w-4 h-4" />
                       HOA Partner Code (optional)
                     </div>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Reminder: partnered HOA residents receive <span className="font-bold text-primary">10% off</span>. If your HOA is not partnered yet,{" "}
+                      <a href="#hoa-partnership" className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80">
+                        open the HOA partner form
+                      </a>.
+                    </p>
                     <div className="flex gap-2">
                       <Input
                         placeholder="Enter promo code"
@@ -1170,6 +1242,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         <Camera className="w-4 h-4" />
                         Yard Photos (Optional)
                       </Label>
+                      <p className="text-xs text-muted-foreground">
+                        For the fastest estimate, upload 4 photos: front, back, left side, and right side of the property.
+                      </p>
                       <Input 
                         type="file" 
                         accept="image/*" 

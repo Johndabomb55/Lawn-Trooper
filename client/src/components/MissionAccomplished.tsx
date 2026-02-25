@@ -321,7 +321,7 @@ Contact: info@lawntrooper.com | (256) 555-LAWN
           <p className="text-sm text-green-800">{TRUST_MESSAGES.confirmation}</p>
         </div>
 
-        {/* Miguel Recon Note */}
+        {/* Scheduling Follow-up Note */}
         <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
           <p className="text-sm text-muted-foreground">{TRUST_MESSAGES.miguelNote}</p>
         </div>

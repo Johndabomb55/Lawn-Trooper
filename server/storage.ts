@@ -63,8 +63,6 @@ export class MemStorage implements IStorage {
   private users: Map<string, User> = new Map();
   private leadsStore: Lead[] = [];
   private waitlistStore: Waitlist[] = [];
-  private nextLeadId = 1;
-  private nextWaitlistId = 1;
 
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
@@ -83,7 +81,7 @@ export class MemStorage implements IStorage {
 
   async createLead(insertLead: InsertLead): Promise<Lead> {
     const lead: Lead = {
-      id: this.nextLeadId++,
+      id: crypto.randomUUID(),
       name: insertLead.name,
       email: insertLead.email ?? null,
       phone: insertLead.phone ?? null,
@@ -97,6 +95,12 @@ export class MemStorage implements IStorage {
       premiumAddons: (insertLead.premiumAddons ?? []) as string[],
       term: insertLead.term ?? null,
       payUpfront: insertLead.payUpfront ?? null,
+      paymentMethod: insertLead.paymentMethod ?? null,
+      propertyType: insertLead.propertyType ?? null,
+      hoaName: insertLead.hoaName ?? null,
+      hoaAcreage: insertLead.hoaAcreage ?? null,
+      hoaUnits: insertLead.hoaUnits ?? null,
+      hoaNotes: insertLead.hoaNotes ?? null,
       segments: (insertLead.segments ?? []) as string[],
       appliedPromos: (insertLead.appliedPromos ?? []) as string[],
       freeMonths: insertLead.freeMonths ?? null,
@@ -114,7 +118,7 @@ export class MemStorage implements IStorage {
 
   async createWaitlistEntry(insertEntry: InsertWaitlist): Promise<Waitlist> {
     const entry: Waitlist = {
-      id: this.nextWaitlistId++,
+      id: crypto.randomUUID(),
       email: insertEntry.email,
       createdAt: new Date(),
     };

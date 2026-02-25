@@ -133,6 +133,7 @@ function CountdownTimer() {
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showPromoBar, setShowPromoBar] = useState(true);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -148,23 +149,26 @@ export default function LandingPage() {
   return (
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
-      {/* Top Announcement Banner */}
-      <div className="bg-[#5D4037] text-white py-3 px-4 text-center font-bold relative z-[60]">
-        <div className="container mx-auto relative flex flex-col md:flex-row items-center justify-center gap-2 text-sm md:text-base leading-tight">
-           <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 h-10">
-              <img src={heroFlag} alt="American Flag" className="h-full object-contain w-auto opacity-90 hover:opacity-100 transition-opacity" />
-           </div>
-           <span className="uppercase tracking-wide md:pl-16">🎉 Celebrating 25 Years + AI Cost Reductions! 🎉</span>
-           <span className="hidden md:inline mx-2 text-white/50">|</span>
-           <span>Long-term subscribers can earn complimentary billing months.</span>
-           <span className="bg-white/20 px-2 py-0.5 rounded text-xs uppercase tracking-widest ml-1 animate-pulse">
-             Learn More ↓
-           </span>
+      {/* Launch-ready promo banner: single, concise, dismissible */}
+      {showPromoBar && (
+        <div className="fixed top-0 left-0 right-0 z-[70] bg-[#5D4037] text-white border-b border-white/10">
+          <div className="container mx-auto px-4 py-2 text-center text-sm md:text-base font-bold tracking-wide relative">
+            <span>25th Anniversary Pricing Event — Ends March 25</span>
+            <button
+              aria-label="Dismiss promotion banner"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white/80 hover:text-white transition-colors"
+              onClick={() => setShowPromoBar(false)}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Navigation */}
-      <nav className="fixed top-[calc(3rem)] md:top-[3rem] w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+      <nav
+        className={`sticky md:fixed ${showPromoBar ? "top-11" : "top-0"} w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border`}
+      >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-primary/10" />
@@ -209,13 +213,6 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col pt-32 pb-20 overflow-hidden bg-primary/5">
-        
-        {/* Urgency Top Bar */}
-        <div className="absolute top-24 left-0 right-0 z-20 transform -rotate-1 pointer-events-none">
-          <div className="pointer-events-auto inline-block w-full">
-             <CountdownTimer />
-          </div>
-        </div>
 
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
@@ -265,18 +262,12 @@ export default function LandingPage() {
             </div>
             
             <div className="mt-6 flex flex-col items-center gap-4">
-               <div className="inline-block bg-accent text-accent-foreground font-bold px-4 py-1.5 rounded-full animate-pulse shadow-lg border-2 border-white/20">
-                 Celebrating 25 years — long-term subscribers can earn complimentary billing months
-               </div>
-               
-               <div className="flex flex-col items-center gap-4 mt-2">
-                 <button 
-                   onClick={() => scrollToSection('quote')} 
-                   className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
-                 >
-                   Get your free quote below
-                 </button>
-               </div>
+              <button
+                onClick={() => scrollToSection('quote')}
+                className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
+              >
+                Get your free quote below
+              </button>
             </div>
           </motion.div>
 
@@ -325,92 +316,17 @@ export default function LandingPage() {
             </div>
           </motion.div>
     
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="max-w-5xl mx-auto"
-          >
-            {/* Mission Briefing / Promotions Banner */}
-            <div className="mb-10 bg-black/70 backdrop-blur-md border-2 border-accent/50 p-6 rounded-xl shadow-2xl relative overflow-hidden">
-               {/* Diagonal "Ending Soon" Banner */}
-               <div className="absolute top-0 right-0 bg-destructive text-white text-[10px] font-bold px-8 py-1 transform translate-x-8 translate-y-3 rotate-45 shadow-sm">
-                 ENDS MARCH 25TH
-               </div>
+        </div>
+      </section>
 
-               <div className="flex flex-col items-center justify-center gap-2 border-b border-accent/30 pb-4 mb-4">
-                 <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-widest text-xl text-center">
-                   <Star className="fill-accent w-6 h-6 animate-pulse" /> 
-                   🎉 25th Anniversary Early Bird Bonus 🎉
-                   <Star className="fill-accent w-6 h-6 animate-pulse" /> 
-                 </div>
-                 <p className="text-white/90 font-medium text-sm bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                   ⚠️ Lock in lowest pricing for up to 2 years - Ends March 25th!
-                 </p>
-               </div>
-               
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
-                 {/* Deal 1: 25th Anniversary Enrollment Bonus */}
-                 <div className="bg-accent/10 p-3 rounded border border-accent/50 hover:bg-accent/20 transition-colors relative">
-                   <div className="absolute -top-2 -right-2">
-                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">BONUS</span>
-                   </div>
-                   <div className="flex items-center gap-2 mb-1">
-                     <Calendar className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Sign Up By March 25th</span>
-                   </div>
-                   <div className="text-white text-sm font-medium">
-                     <div className="text-green-400 font-bold text-center py-1 bg-green-900/40 rounded">+2 Bonus Months</div>
-                     <div className="text-white/70 text-xs mt-1 text-center">Ends March 25</div>
-                   </div>
-                 </div>
-
-                 {/* Deal 2: Commitment Bonus */}
-                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
-                   <div className="flex items-center gap-2 mb-1">
-                     <Zap className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Commitment Bonus</span>
-                   </div>
-                   <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between"><span>1-Year:</span> <span className="text-green-400 font-bold">+1 Complimentary</span></div>
-                     <div className="flex justify-between"><span>2-Year:</span> <span className="text-green-400 font-bold">+2 Complimentary</span></div>
-                   </div>
-                 </div>
-
-                 {/* Deal 3: Service Honors */}
-                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
-                   <div className="flex items-center gap-2 mb-1">
-                     <Shield className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Service Honors</span>
-                   </div>
-                   <div className="text-white text-sm font-medium">
-                     <div className="flex justify-between"><span>Veterans:</span> <span className="text-green-400 font-bold">5% OFF</span></div>
-                     <div className="flex justify-between"><span>Seniors:</span> <span className="text-green-400 font-bold">5% OFF</span></div>
-                   </div>
-                 </div>
-
-                 {/* Deal 4: Pay-in-Full Option */}
-                 <div className="bg-white/5 p-3 rounded border border-white/10 hover:border-accent/50 transition-colors">
-                   <div className="flex items-center gap-2 mb-1">
-                     <Star className="w-4 h-4 text-accent" />
-                     <span className="text-accent font-bold uppercase text-xs">Pay-in-Full Option</span>
-                   </div>
-                   <div className="text-white text-sm font-medium leading-relaxed">
-                     <span className="text-green-400 font-bold">Doubles commitment</span> months
-                   </div>
-                 </div>
-               </div>
-               
-               {/* Existing Customer Message */}
-               <div className="mt-4 text-center space-y-2">
-                  <p className="text-green-400 font-bold text-base md:text-lg bg-green-900/30 inline-block px-4 py-1 rounded-full border border-green-500/30 shadow-lg">
-                    Complimentary billing months may apply based on commitment and enrollment timing
-                  </p>
-                  <p className="text-xs text-white/60 italic block">{GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY}</p>
-               </div>
-            </div>
-
-          </motion.div>
+      {/* Subtle trust strip directly under hero */}
+      <section className="bg-primary/5 border-y border-primary/10 py-3">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-8 text-sm font-semibold text-primary">
+            <span className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> Licensed &amp; Insured</span>
+            <span className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> 25+ Years Serving the Tennessee Valley</span>
+            <span className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> Military-Level Reliability</span>
+          </div>
         </div>
       </section>
 
@@ -541,101 +457,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Referral Program */}
-      <section className="py-16 bg-accent text-accent-foreground text-center">
-        <div className="container mx-auto px-4">
-           <div className="max-w-2xl mx-auto">
-             <h2 className="text-3xl font-heading font-bold mb-4">"No One Left Behind" Referral Program</h2>
-             <p className="text-lg mb-8 opacity-90">Refer a Neighbor and you both earn 1 complimentary month!</p>
-           </div>
-        </div>
-      </section>
-
-      {/* Promos Banner */}
-      <section className="relative py-12 overflow-hidden text-primary-foreground">
-        {/* Background Image Matching Hero */}
-        <div className="absolute inset-0 z-0">
-           <img src={bgLandscape} alt="Background" className="w-full h-full object-cover brightness-[0.6]" />
-           <div className="absolute inset-0 bg-primary/70 mix-blend-multiply"></div>
-        </div>
-
-        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 z-0"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-center md:text-left">
-              <h3 className="text-2xl font-heading font-bold text-accent mb-2">25-YEAR BIRTHDAY BONUS</h3>
-              <ul className="text-sm md:text-base space-y-1 opacity-90">
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Earn <strong>complimentary billing months</strong> with a commitment</li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> The longer you commit, the more you save</li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Pay-in-Full doubles your commitment months</li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Celebrating 25 years — long-term subscribers may qualify for our 25-Year Birthday Bonus</li>
-                <li className="flex items-center gap-2 md:justify-start justify-center"><Check className="w-4 h-4 text-accent" /> Refer a Neighbor: <strong>You BOTH earn 1 complimentary month!</strong></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="py-20 bg-background">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-3xl font-heading font-bold text-center text-primary mb-12">Mission Intel (FAQ)</h2>
-          
-          <Accordion type="single" collapsible className="w-full">
-            {[
-              {
-                q: "Do I have to sign a contract?",
-                a: `We offer an annual subscription service designed to keep your property pristine year-round. ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY} Month-to-month options are also available.`
-              },
-              {
-                q: "How does billing work?",
-                a: "We keep it simple with automated monthly billing through Jobber Payments. You'll receive an account number via email for your customer login, allowing you to view and manage your account at any time."
-              },
-              {
-                q: "What if it rains?",
-                a: "Our team closely monitors weather conditions daily. If rain prevents service on your scheduled day, we’ll reschedule as soon as conditions allow, typically within one to two days, to prevent yard damage. Schedules may adjust based on weather conditions."
-              },
-              {
-                q: "Is the price guaranteed?",
-                a: "Yes. Once you receive your quote based on your yard size, that price is locked for the season. No surprise surcharges."
-              },
-              {
-                q: "Can I switch plans later?",
-                a: "Absolutely. You can switch plans at any time, but please note that any plan change will start a new one-year subscription term at the new plan’s rate."
-              },
-              {
-                q: "Existing Customers",
-                a: GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY
-              },
-              {
-                q: "What if I need to cancel early?",
-                a: (
-                  <div className="space-y-2">
-                    <p>We keep it fair. Lawn Trooper plans are annual, but we understand things change.</p>
-                    <p className="font-bold">If you cancel early:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li>You’re only responsible for services already performed</li>
-                      <li>Any remaining balance is settled at standard per-visit pricing</li>
-                    </ul>
-                  </div>
-                )
-              },
-              {
-                q: "Do you use robots?",
-                a: GLOBAL_CONSTANTS.AI_TECH_EXPLANATION
-              }
-            ].map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`}>
-                <AccordionTrigger className="text-left font-bold text-lg hover:text-accent transition-colors">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-base leading-relaxed">
-                  {faq.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
       {/* Why Lawn Trooper */}
       <section className="py-20 bg-muted/30 border-t border-border">
         <div className="container mx-auto px-4">
@@ -665,7 +486,7 @@ export default function LandingPage() {
               <img 
                 src={mascotAtWork} 
                 alt="Lawn Trooper at work" 
-                className="w-full rounded-xl shadow-2xl relative z-10 border-4 border-white object-cover h-[400px]"
+                className="w-full h-auto rounded-xl shadow-2xl relative z-10 border-4 border-white object-contain object-top"
               />
               <div className="bg-card p-6 rounded-2xl border border-border relative mt-4 z-20 mx-4 shadow-xl">
                 <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
@@ -885,6 +706,110 @@ export default function LandingPage() {
                  </div>
               </div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Referral section placed directly above FAQ for launch clarity */}
+      <section className="py-14 bg-accent/15 border-t border-border">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-3">
+            NO ONE LEFT BEHIND — REFERRAL PROGRAM
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Refer a neighbor and you both earn service rewards.
+          </p>
+          <ul className="space-y-2 text-left max-w-xl mx-auto mb-7">
+            <li className="flex items-start gap-2">
+              <Check className="w-4 h-4 text-green-600 mt-1 shrink-0" />
+              <span>1 successful referral = 1 complimentary month</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Check className="w-4 h-4 text-green-600 mt-1 shrink-0" />
+              <span>2 referrals = upgrade bonus</span>
+            </li>
+          </ul>
+          <Button
+            onClick={() => window.location.href = "mailto:lawntrooperllc@gmail.com?subject=Neighbor%20Referral%20Program"}
+            className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider"
+          >
+            Refer a Neighbor
+          </Button>
+        </div>
+      </section>
+
+      {/* Launch FAQ near footer for stronger conversion support */}
+      <section id="faq" aria-labelledby="faq-heading" className="py-16 bg-background border-t border-border">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <h2 id="faq-heading" className="text-3xl font-heading font-bold text-center text-primary mb-10">
+            Mission Intel (FAQ)
+          </h2>
+          <p className="text-sm text-muted-foreground text-center mb-4">
+            Most-asked questions first. Scroll for the full list.
+          </p>
+          {/* Prioritized February FAQ list in a scrollable accordion container. */}
+          <div className="max-h-[560px] overflow-y-auto pr-1">
+            <Accordion type="single" collapsible className="w-full" aria-label="Frequently asked questions">
+              {[
+                {
+                  q: "What does the Basic Patrol plan include?",
+                  a: "Basic Patrol includes bi-weekly mowing, edging, cleanup, core seasonal lawn care, and one included basic add-on."
+                },
+                {
+                  q: "Is the Basic plan bi-weekly or weekly?",
+                  a: "Basic Patrol is bi-weekly. Premium Patrol and Executive Command are weekly service plans."
+                },
+                {
+                  q: "Do I have to sign a contract?",
+                  a: `We offer annual subscription pricing for maximum value. ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY} Month-to-month options are also available.`
+                },
+                {
+                  q: "How does billing work?",
+                  a: "Billing is automated monthly through Jobber Payments. You receive customer login details by email to manage your account."
+                },
+                {
+                  q: "Is the price guaranteed?",
+                  a: "Yes. Once your quote is issued for your yard size, your seasonal plan pricing is locked with no surprise surcharges."
+                },
+                {
+                  q: "What areas do you serve?",
+                  a: "We serve Huntsville, Madison, Harvest, Athens, Owens Cross Roads, Meridianville, and nearby Tennessee Valley neighborhoods."
+                },
+                {
+                  q: "What if it rains on my service day?",
+                  a: "If weather prevents service, we reschedule as soon as conditions allow, typically within one to two days."
+                },
+                {
+                  q: "What if I need additional services later?",
+                  a: "You can add services at any time. We can update your mission plan as your property needs change."
+                },
+                {
+                  q: "Can I switch plans later?",
+                  a: "Yes. You can upgrade or adjust plans at any time; a plan change starts a new subscription term at the new rate."
+                },
+                {
+                  q: "What if I need to cancel early?",
+                  a: "If you cancel early, you are only responsible for services already performed. Any remaining balance is settled at standard per-visit pricing."
+                },
+                {
+                  q: "I am an existing customer. Do loyalty discounts still apply?",
+                  a: GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY
+                },
+                {
+                  q: "Do you use robots or AI technology?",
+                  a: GLOBAL_CONSTANTS.AI_TECH_EXPLANATION
+                }
+              ].map((faq, i) => (
+                <AccordionItem key={faq.q} value={`launch-faq-${i}`}>
+                  <AccordionTrigger className="text-left font-bold text-lg hover:text-accent transition-colors">
+                    {faq.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-base leading-relaxed">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </section>

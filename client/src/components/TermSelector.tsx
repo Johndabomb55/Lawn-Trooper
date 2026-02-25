@@ -1,6 +1,6 @@
 import React from "react";
 import { Calendar, Check, Sparkles, Gift } from "lucide-react";
-import { COMMITMENT_TERMS, TRUST_MESSAGES, LOYALTY_DISCOUNTS } from "@/data/promotions";
+import { calculateTermFreeMonths, COMMITMENT_TERMS, TRUST_MESSAGES, LOYALTY_DISCOUNTS } from "@/data/promotions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
@@ -30,6 +30,9 @@ export default function TermSelector({
         <div className="grid grid-cols-3 gap-2">
           {COMMITMENT_TERMS.map((option) => {
             const isSelected = term === option.id;
+            const dynamicFreeMonths = option.id === 'month-to-month'
+              ? 0
+              : calculateTermFreeMonths(option.id, payUpfront);
             
             return (
               <button
@@ -53,7 +56,9 @@ export default function TermSelector({
                   <div>
                     <div className="font-bold text-primary text-sm">{option.label}</div>
                     <div className="text-xs text-green-600 font-semibold">
-                      +{option.freeMonths} complimentary
+                      {option.id === 'month-to-month'
+                        ? 'No free billing months'
+                        : `+${dynamicFreeMonths} free billing month${dynamicFreeMonths === 1 ? '' : 's'}`}
                     </div>
                   </div>
                   {isSelected && <Check className="w-4 h-4 text-primary" />}
@@ -81,7 +86,7 @@ export default function TermSelector({
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Pay your full term upfront to double your commitment months (bonus not doubled)
+              Pay your full term upfront to double commitment months. 1-year goes 1 to 2, and 2-year goes 2 to 4, with anniversary bonus stacked on top.
             </p>
           </Label>
         </div>
