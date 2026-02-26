@@ -151,6 +151,10 @@ export const CELEBRATION_MESSAGES = {
 
 // Social Sharing Templates
 export const SOCIAL_SHARING = {
+  twitter: {
+    text: "Just got my yard mission-ready with Lawn Trooper! Professional lawn care with military precision.",
+    hashtags: ["LawnTrooper", "LawnCare", "MissionReady"],
+  },
   facebook: {
     quote: "Getting my yard mission-ready with Lawn Trooper's professional lawn care service!",
   },
