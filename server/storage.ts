@@ -30,8 +30,8 @@ export class DatabaseStorage implements IStorage {
   async createLead(insertLead: InsertLead): Promise<Lead> {
     const [lead] = await db!.insert(leads).values({
       name: insertLead.name,
-      address: insertLead.address,
-      contactMethod: insertLead.contactMethod,
+      address: insertLead.address ?? null,
+      contactMethod: insertLead.contactMethod ?? null,
       yardSize: insertLead.yardSize,
       plan: insertLead.plan,
       email: insertLead.email ?? null,
@@ -42,8 +42,16 @@ export class DatabaseStorage implements IStorage {
       premiumAddons: (insertLead.premiumAddons ?? []) as string[],
       term: insertLead.term ?? null,
       payUpfront: insertLead.payUpfront ?? null,
+      paymentMethod: insertLead.paymentMethod ?? null,
+      propertyType: insertLead.propertyType ?? null,
+      hoaName: insertLead.hoaName ?? null,
+      hoaAcreage: insertLead.hoaAcreage ?? null,
+      hoaUnits: insertLead.hoaUnits ?? null,
+      hoaNotes: insertLead.hoaNotes ?? null,
       segments: (insertLead.segments ?? []) as string[],
       appliedPromos: (insertLead.appliedPromos ?? []) as string[],
+      freeMonths: insertLead.freeMonths ?? null,
+      promoCode: insertLead.promoCode ?? null,
     }).returning();
     return lead;
   }
