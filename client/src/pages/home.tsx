@@ -20,7 +20,6 @@ import {
   AlertCircle,
   Facebook,
   Instagram,
-  Twitter,
   Mail
 } from "lucide-react";
 import { 
@@ -145,6 +144,21 @@ export default function LandingPage() {
 
 
   const mascotLogo = heroMascot;
+
+  useEffect(() => {
+    const w = window as any;
+    if (w.FB) {
+      w.FB.XFBML.parse();
+    } else {
+      const checkFB = setInterval(() => {
+        if (w.FB) {
+          w.FB.XFBML.parse();
+          clearInterval(checkFB);
+        }
+      }, 1000);
+      return () => clearInterval(checkFB);
+    }
+  }, []);
 
   return (
     <TooltipProvider>
@@ -814,6 +828,68 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Social Media Feeds */}
+      <section id="social" aria-labelledby="social-heading" className="py-16 bg-muted/30 border-t border-border">
+        <div className="container mx-auto px-4">
+          <h2 id="social-heading" className="text-3xl font-heading font-bold text-center text-primary mb-3">
+            Follow the Troops
+          </h2>
+          <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto">
+            See our work in action. Follow us on Facebook and Instagram for lawn transformations, tips, and exclusive deals.
+          </p>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden" data-testid="facebook-embed">
+              <div className="px-4 py-3 bg-primary/5 border-b flex items-center gap-2">
+                <Facebook size={20} className="text-blue-600" />
+                <span className="font-bold text-sm text-primary">Facebook</span>
+              </div>
+              <div className="flex justify-center p-4">
+                <div
+                  className="fb-page"
+                  data-href="https://www.facebook.com/profile.php?id=61588087766755"
+                  data-tabs="timeline"
+                  data-width="500"
+                  data-height="600"
+                  data-small-header="false"
+                  data-adapt-container-width="true"
+                  data-hide-cover="false"
+                  data-show-facepile="true"
+                >
+                  <blockquote cite="https://www.facebook.com/profile.php?id=61588087766755" className="fb-xfbml-parse-ignore">
+                    <a href="https://www.facebook.com/profile.php?id=61588087766755" target="_blank" rel="noopener noreferrer">Lawn Trooper on Facebook</a>
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-md overflow-hidden" data-testid="instagram-embed">
+              <div className="px-4 py-3 bg-primary/5 border-b flex items-center gap-2">
+                <Instagram size={20} className="text-pink-600" />
+                <span className="font-bold text-sm text-primary">Instagram</span>
+              </div>
+              <div className="flex flex-col items-center justify-center p-6 min-h-[400px] text-center">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center mb-6">
+                  <Instagram size={40} className="text-white" />
+                </div>
+                <h3 className="font-heading font-bold text-xl text-primary mb-2">@lawntrooper</h3>
+                <p className="text-muted-foreground mb-6 max-w-xs">
+                  Follow us on Instagram for before &amp; after photos, lawn care tips, and behind-the-scenes content.
+                </p>
+                <a
+                  href="https://www.instagram.com/lawntrooper"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="link-instagram-follow"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white font-bold hover:opacity-90 transition-opacity"
+                >
+                  <Instagram size={18} />
+                  Follow on Instagram
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground pt-16 pb-8 border-t border-accent/20">
         <div className="container mx-auto px-4">
@@ -827,14 +903,11 @@ export default function LandingPage() {
                 Deploying elite lawn care services across North Alabama. Professional, reliable, and always mission-ready.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="https://www.facebook.com/share/18D5pQyZio/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" data-testid="link-facebook" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
                   <Facebook size={20} />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="https://www.instagram.com/lawntrooper" target="_blank" rel="noopener noreferrer" data-testid="link-instagram" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
                   <Instagram size={20} />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
-                  <Twitter size={20} />
                 </a>
               </div>
             </div>
