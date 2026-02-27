@@ -71,9 +71,12 @@ import {
   PREMIUM_ADDONS, 
   getPlanAllowance,
   getPlanAllowanceLabel,
+  getSwapOptions,
+  EXECUTIVE_PLUS,
   calculate2026Price,
   calculate2025Price,
-  YARD_SIZES
+  YARD_SIZES,
+  OVERAGE_PRICES
 } from "@/data/plans";
 
 const STEPS = [
@@ -87,29 +90,29 @@ const STEPS = [
 const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string; highlights: string[] }> = {
   basic: {
     frequency: "Bi-Weekly",
-    tagline: "Entry-level maintenance for consistent curb appeal.",
+    tagline: "Reliable maintenance with Dream Yard Recon\u2122.",
     highlights: [
-      "Bi-weekly mowing, edging, and blow-off",
-      "Core weed-control program",
-      "Included add-on coverage with plan selection"
+      "Bi-weekly mowing (growing season)",
+      "Monthly property check (off-season)",
+      "2 Basic Upgrades included"
     ],
   },
   premium: {
     frequency: "Weekly",
-    tagline: "Weekly upkeep with stronger property presentation.",
+    tagline: "Weekly upkeep with Account Manager access.",
     highlights: [
-      "Weekly mowing with trim and edge finish",
-      "Expanded treatment cadence",
-      "Included add-on coverage with plan selection"
+      "Weekly mowing + bi-weekly off-season",
+      "Monthly bed weed control",
+      "3 Basic + 1 Premium Upgrades"
     ],
   },
   executive: {
-    frequency: "Weekly Full-Service",
-    tagline: "Top-tier weekly command with priority service standards.",
+    frequency: "Year-Round Weekly",
+    tagline: "Top-tier weekly command with Turf Defense\u2122.",
     highlights: [
-      "Priority weekly full-service visits",
-      "Enhanced treatment and cleanup coverage",
-      "Maximum included add-on coverage"
+      "Year-round weekly property monitoring",
+      "Executive Turf Defense\u2122 (7 apps/year)",
+      "3 Basic + 3 Premium Upgrades"
     ],
   },
 };
@@ -196,7 +199,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
   
-  // New state for promotions engine
+  const [swapCount, setSwapCount] = useState(0);
+  const [executivePlus, setExecutivePlus] = useState(false);
+  
   const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
@@ -424,14 +429,19 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   }
 
   const planData = PLANS.find(p => p.id === plan);
-  const allowance = getPlanAllowance(plan, 0, payUpfront);
+  const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
+  const allowance = getPlanAllowance(plan, swapCount, payUpfront, new Date(), executivePlus);
   const tableBasicAllowance = getPlanAllowance("basic", 0, payUpfront);
   const tablePremiumAllowance = getPlanAllowance("premium", 0, payUpfront);
   const tableExecutiveAllowance = getPlanAllowance("executive", 0, payUpfront);
-  const planPrice = calculate2026Price(plan, yardSize);
+  let planPrice = calculate2026Price(plan, yardSize);
+  if (executivePlus && plan === 'executive') {
+    const yardMultiplier = YARD_SIZES.find(y => y.id === yardSize)?.multiplier ?? 1.0;
+    planPrice += Math.round(EXECUTIVE_PLUS.price * yardMultiplier);
+  }
   const extraBasicCount = Math.max(0, basicAddons.length - allowance.basic);
   const extraPremiumCount = Math.max(0, premiumAddons.length - allowance.premium);
-  const extraCost = (extraBasicCount * 20) + (extraPremiumCount * 40);
+  const extraCost = (extraBasicCount * OVERAGE_PRICES.basic) + (extraPremiumCount * OVERAGE_PRICES.premium);
   const baseMonthlyTotal = planPrice + extraCost;
 
   // Calculate promotions
@@ -772,6 +782,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           data-testid={`wizard-plan-${p.id}`}
                           onClick={() => {
                             setPlan(p.id);
+                            setSwapCount(0);
+                            if (p.id !== 'executive') setExecutivePlus(false);
                             resetAddons();
                           }}
                           className={`p-5 rounded-xl transition-all text-left relative ${
@@ -823,6 +835,43 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       );
                     })}
                   </div>
+
+                  {/* Executive+ Toggle */}
+                  {plan === 'executive' && (
+                    <button
+                      type="button"
+                      data-testid="wizard-executive-plus-toggle"
+                      onClick={() => {
+                        setExecutivePlus(!executivePlus);
+                        setSwapCount(0);
+                      }}
+                      className={`w-full mt-4 p-3 rounded-lg border-2 transition-all text-left ${
+                        executivePlus
+                          ? 'border-accent bg-accent/10'
+                          : 'border-border hover:border-accent/40'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-bold text-sm flex items-center gap-2">
+                            <Star className="w-4 h-4 text-accent" />
+                            {EXECUTIVE_PLUS.label}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {EXECUTIVE_PLUS.description} — +1 Basic, +1 Premium upgrade
+                          </div>
+                          <div className="text-xs text-accent/80 mt-1">
+                            {EXECUTIVE_PLUS.perks.join(' • ')}
+                          </div>
+                        </div>
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                          executivePlus ? 'border-accent bg-accent' : 'border-muted-foreground/30'
+                        }`}>
+                          {executivePlus && <Check className="w-3 h-3 text-white" />}
+                        </div>
+                      </div>
+                    </button>
+                  )}
 
                   {/* Plan Features Preview with Value Highlights */}
                   {planData && (
@@ -898,14 +947,56 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   className="space-y-6"
                 >
                   <div className="text-center mb-4">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Select Add-on Services</h4>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Select Upgrade Services</h4>
                     <p className="text-muted-foreground">
-                      {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium add-ons
+                      {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades
                     </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
                     </p>
                   </div>
+
+                  {/* Upgrade Conversion (Swap) - all plans */}
+                  {planData?.allowsSwap && swapOptions.length > 1 && (
+                    <div className="bg-primary/5 rounded-lg p-3 border border-primary/20 mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <div className="font-medium text-sm">Upgrade Conversion</div>
+                          <div className="text-xs text-muted-foreground">Convert 2 Basic → 1 Premium</div>
+                        </div>
+                        <div className="text-right text-xs">
+                          <div className="font-bold text-primary">{allowance.basic}B</div>
+                          <div className="font-bold text-accent">{allowance.premium}P</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {swapOptions.map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            data-testid={`wizard-swap-btn-${opt.value}`}
+                            onClick={() => {
+                              setSwapCount(opt.value);
+                              const newAllowance = getPlanAllowance(plan, opt.value, false, new Date(), executivePlus);
+                              if (premiumAddons.length > newAllowance.premium) {
+                                setPremiumAddons(premiumAddons.slice(0, Math.max(0, newAllowance.premium)));
+                              }
+                              if (basicAddons.length > newAllowance.basic) {
+                                setBasicAddons(basicAddons.slice(0, Math.max(0, newAllowance.basic)));
+                              }
+                            }}
+                            className={`flex-1 py-2 px-2 text-xs rounded-lg border-2 transition-all font-medium ${
+                              swapCount === opt.value
+                                ? 'border-primary bg-primary text-white'
+                                : 'border-primary/30 bg-background hover:border-primary/50'
+                            }`}
+                          >
+                            {opt.compactLabel}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Basic Add-ons */}
                   <div className="space-y-3">

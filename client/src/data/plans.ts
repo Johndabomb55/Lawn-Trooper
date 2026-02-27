@@ -45,118 +45,113 @@ export const PLANS: PlanDefinition[] = [
   {
     id: "basic",
     name: "Basic Patrol",
-    price: 169,  // Fixed base price for Basic plan
+    price: 169,
     oldPrice: 199,
     priceLabel: "Starts at $169/mo",
-    description: "Includes: 1 Basic Add-on + 0 Premium Add-ons",
+    description: "Includes: 2 Basic Upgrades",
     keyStats: [
       { label: "Mowing", value: "Bi-Weekly" },
-      { label: "Weed Control", value: "2 Treatments" },
-      { label: "Bush Trimming", value: "1x/Year" },
-      { label: "Add-ons", value: "1 Included" }
+      { label: "Off-Season", value: "Monthly Check" },
+      { label: "Upgrades", value: "2 Basic" },
+      { label: "Dream Yard", value: "AI Recon" }
     ],
     features: [
-      "Mowing: Regular (bi-weekly) mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Weed Control: 2 pre-emergent weed control treatments per year",
-      "Weed Control (Beds): Weed control in all flower beds included",
-      `<span class='font-bold text-primary'>Bush Trimming: 1 bush trimming per year (Limit 20 bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
-      "Light Spring & Fall Cleanup: Pull out dead seasonal plants, cut back pampas grasses, lillies, and other seasonal and ornamental growth for excellent early season curb appeal.",
-      "Leaf Service (Fall & Winter): Monthly leaf cleanup - Leaf blowing / Mulching / Removal",
-      "Weekly Mowing: Not Included (Upgrade to Premium or Executive)",
-      "Weed-Free Guarantee: Not Included (Executive only)",
-      "Off-season Bi-weekly Yard Checks: Not Included (Premium & Executive)",
-      "Small Tree & Low-Hanging Branch Trimming: Not Included (Premium & Executive)",
-      "Free Customized Landscaping Plan: Not Included (Premium & Executive)",
-      "Multiple Trash Cans Cleaning: Not Included (Executive only)"
+      "Mowing: Bi-weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+      "Off-Season: Monthly property check",
+      "<span class='font-bold text-primary'>2 Basic Upgrades included</span>",
+      "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
+      "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>",
+      "Turf Applications: Not Included (Premium & Executive)",
+      "Bed Weed Control: Not Included (Premium & Executive)",
+      "Account Manager: Not Included (Premium & Executive)",
+      "Landscape Allowance\u2122: Not Included (Premium & Executive)"
     ],
     allowance: {
-      basic: 1,
+      basic: 2,
       premium: 0
     },
-    allowsSwap: false,
-    allowanceLabel: "1 Basic Add-On"
+    allowsSwap: true,
+    allowanceLabel: "2 Basic Upgrades",
+    swapLabel: "Convert 2 Basic \u2192 1 Premium"
   },
   {
     id: "premium",
     name: "Premium Patrol",
-    price: 299,  // Fixed base price for Premium plan
+    price: 299,
     oldPrice: 349,
     priceLabel: "Starts at $299/mo",
-    description: "Includes: 2 Basic Add-ons + 1 Premium Add-on",
+    description: "Includes: 3 Basic + 1 Premium Upgrades",
     keyStats: [
       { label: "Mowing", value: "Weekly" },
-      { label: "Weed Control", value: "4 Treatments" },
-      { label: "Bush Trimming", value: "2x/Year" },
-      { label: "Add-ons", value: "3 Included" }
+      { label: "Off-Season", value: "Bi-Weekly" },
+      { label: "Upgrades", value: "3B + 1P" },
+      { label: "Allowance", value: "Seasonal" }
     ],
     features: [
-      "Mowing: Weekly mowing<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Weed Control: 4 weed control treatments + weed killer",
-      "Weed Control (Beds): Weed control in all flower beds included",
-      "Weed-Free Guarantee: Not Included",
-      `<span class='font-bold text-primary'>Bush Trimming: 2 bush trimmings per year (Limit 20 bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
-      "<span class='font-bold text-primary'>Spring & Fall Cleanup</span><br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
-      "<span class='font-bold text-primary'>Holiday Hustle Cleanup</span><br/><span class='text-xs text-muted-foreground'>Pre-holiday leaf and debris cleanup before major holidays or events.</span>",
-      "Off-season Bi-weekly Yard Checks<br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
-      "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
-      "<span class='font-bold text-primary'>Leaf Service (Fall & Winter): Bi-weekly leaf cleanup</span> - Leaf blowing / Mulching / Removal",
-      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
-      "Multiple Trash Cans Cleaning: Not Included (Executive only)"
+      "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+      "Off-Season: Bi-weekly service",
+      "Monthly Bed Weed Control",
+      "<span class='font-bold text-primary'>3 Basic + 1 Premium Upgrades included</span>",
+      "Service Photo Updates",
+      "Account Manager Access (remote + visit request)",
+      "Dream Yard Recon\u2122 + Personalized Review",
+      "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>Includes Seasonal Landscape Refresh Allowance\u2122 usable toward mulch, pine straw, or seasonal bed refresh.</span>",
+      "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
     ],
     allowance: {
-      basic: 2,
+      basic: 3,
       premium: 1
     },
-    allowsSwap: false,
-    allowanceLabel: "2 Basic Add-Ons + 1 Premium Add-On",
-    promoLabel: "March Promo: +1 Free Basic Add-on"
+    allowsSwap: true,
+    allowanceLabel: "3 Basic + 1 Premium Upgrades",
+    swapLabel: "Convert 2 Basic \u2192 1 Premium"
   },
   {
     id: "executive",
     name: "Executive Command",
-    price: 399,  // Fixed base price for Executive plan
+    price: 399,
     oldPrice: 469,
     priceLabel: "Starts at $399/mo",
-    description: "Includes: 3 Basic Add-ons + 2 Premium Add-ons",
+    description: "Includes: 3 Basic + 3 Premium Upgrades",
     keyStats: [
-      { label: "Mowing", value: "Priority Weekly" },
-      { label: "Weed Control", value: "6 Treatments" },
-      { label: "Bush Trimming", value: "3x/Year" },
-      { label: "Add-ons", value: "5 Included" }
+      { label: "Service", value: "Year-Round Weekly" },
+      { label: "Turf Defense", value: "7 Apps/Year" },
+      { label: "Upgrades", value: "3B + 3P" },
+      { label: "Allowance", value: "Premier" }
     ],
     features: [
-      "<span class='font-bold text-accent'>Priority Mowing: Weekly mowing with top-priority scheduling</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Weed Control: 6 weed treatments per year",
-      "Weed Control (Beds): Weed control in all flower beds included",
-      "<span class='font-bold text-accent'>Weed-Free Guarantee</span>: After 12 consecutive months of service, if weeds are present in treated areas, additional weed applications are provided at no charge.",
-      `<span class='font-bold text-accent'>Bush Trimming: 3 bush trimmings per year (Unlimited Bushes) + "${GLOBAL_CONSTANTS.BUSH_TRIMMING_DISPOSAL}"</span>`,
-      "<span class='font-bold text-accent'>Spring & Fall Cleanup</span><br/><span class='text-xs text-muted-foreground'>Heavy cleanups with overgrown plants, trees, and debris require a premium upgrade to be included.</span>",
-      "<span class='font-bold text-accent'>Holiday Hustle Cleanup</span><br/><span class='text-xs text-muted-foreground'>Pre-holiday leaf and debris cleanup before major holidays or events.</span>",
-      "<span class='font-bold text-accent'>After-Storm Visits: Small limbs and debris cleanup included</span>",
-      "<span class='font-bold text-accent'>Bi-weekly Winter Visits & Yard Checks</span><br/><span class='text-xs text-muted-foreground'>Trash pick up, blow driveway and steps, pick any unwanted winter weeds, pick up sticks and limbs, check for winter damage, etc.</span>",
-      "Small Tree & Low-Hanging Branch Trimming: Once per year + debris removed from property",
-      "<span class='font-bold text-accent'>Leaf Service (Fall & Winter): Bi-weekly leaf cleanup</span> - Leaf blowing / Mulching / Removal",
-      "Free Customized Wish List Landscaping Plan & Diagram + Itemized Cost Layout",
-      "<span class='font-bold text-accent'>Multiple Trash Cans: Included with any trash bin cleaning add-on (up to 3 cans)</span>",
-      "<span class='font-bold text-accent'>Commander's Club: 1 FREE premium add-on on your service anniversary</span>"
+      "<span class='font-bold text-accent'>Year-Round Weekly Property Monitoring</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+      "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
+      "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
+      "Monthly Bed Weed Control",
+      "<span class='font-bold text-accent'>3 Basic + 3 Premium Upgrades included</span>",
+      "Service Photo Updates",
+      "<span class='font-bold text-accent'>Priority Storm Service</span>",
+      "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
+      "<span class='font-bold text-accent'>Premier Landscape Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>Includes Premier Landscape Allowance\u2122 usable toward mulch, pine straw, or property enhancements.</span>",
+      "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
     ],
     allowance: {
       basic: 3,
-      premium: 2
+      premium: 3
     },
     allowsSwap: true,
-    executiveExtras: [
-      "Unlimited Mulch",
-      "Unlimited Pine Straw",
-      "Bi-Monthly Shrub Trimmings (every 2 months year-round)",
-      "After-Storm Visits",
-      "Bi-Weekly Winter Visits & Yard Checks"
-    ],
-    allowanceLabel: "3 Basic Add-Ons + 2 Premium Add-Ons",
-    swapLabel: "Swap option: 1 Premium = 2 Basic",
-    promoLabel: "March Promo: +1 Free Premium Add-on"
+    allowanceLabel: "3 Basic + 3 Premium Upgrades",
+    swapLabel: "Convert 2 Basic \u2192 1 Premium"
   }
 ];
+
+export const EXECUTIVE_PLUS = {
+  price: 99,
+  label: "Executive+ Upgrade",
+  description: "+$99/mo",
+  bonusAllowance: { basic: 1, premium: 1 },
+  perks: [
+    "Quarterly Strategy Session",
+    "Rapid Response Priority",
+    "Expanded Landscape Allowance\u2122 tier"
+  ]
+};
 
 // CANONICAL ADD-ON CATALOG
 // All add-ons defined here with: id, name, tier, category, price, description
@@ -385,21 +380,22 @@ export const SEASONAL_ADDONS = ADDON_CATALOG.filter(a => a.category === 'seasona
   description: a.description
 }));
 
-// EXECUTIVE EXCLUSIVES (included with Executive plan, not selectable add-ons)
 export const EXECUTIVE_EXTRAS = [
-  "Unlimited Mulch",
-  "Unlimited Pine Straw",
-  "Bi-Monthly Shrub Trimmings (every 2 months year-round)",
-  "After-Storm Visits",
-  "Bi-Weekly Winter Visits & Yard Checks"
+  "Year-Round Weekly Property Monitoring",
+  "Executive Turf Defense\u2122 (up to 7 applications annually)",
+  "Weed-Free Turf Guarantee",
+  "Priority Storm Service",
+  "Dedicated Account Manager",
+  "Premier Landscape Allowance\u2122"
 ];
 
 export const EXECUTIVE_PERKS = [
-  "Priority mowing scheduling",
-  "After-storm visits: Small limbs & debris cleanup",
-  "Bi-weekly winter visits & yard checks",
-  "Commander's Club: 1 FREE premium add-on on anniversary",
-  "Swap option: Trade 1 Premium slot for +2 Basic slots"
+  "Year-round weekly property monitoring",
+  "Executive Turf Defense\u2122 — up to 7 turf applications annually",
+  "Weed-Free Turf Guarantee (progressive improvement)",
+  "Priority storm service",
+  "Dedicated Account Manager",
+  "Premier Landscape Allowance\u2122"
 ];
 
 // OVERAGE PRICING (LOCKED)
@@ -440,13 +436,15 @@ export const calculateOverageCost = (
 };
 
 // Helper to get allowance with swap adjustment
-// swapCount applies only to Executive.
-// Each swap converts 1 Premium slot to +2 Basic slots.
+// swapCount: each swap converts 2 Basic slots into 1 Premium slot.
+// Available on ALL plans that have allowsSwap: true.
+// executivePlus: adds +1 Basic, +1 Premium (Executive plan only).
 export const getPlanAllowance = (
   planId: string, 
   swapCount: number = 0,
   payFull: boolean = false,
-  asOf: Date = new Date()
+  asOf: Date = new Date(),
+  executivePlus: boolean = false
 ): { basic: number; premium: number } => {
   const plan = PLANS.find(p => p.id === planId);
   if (!plan) return { basic: 0, premium: 0 };
@@ -457,11 +455,17 @@ export const getPlanAllowance = (
   basic += anniversaryBonus.basic;
   premium += anniversaryBonus.premium;
 
-  // Apply swap only for Executive plan
-  if (planId === "executive" && plan.allowsSwap && swapCount > 0) {
-    const validSwap = Math.min(swapCount, premium); // Can't swap more than available premium slots
-    basic += validSwap * 2;
-    premium -= validSwap;
+  if (executivePlus && planId === "executive") {
+    basic += EXECUTIVE_PLUS.bonusAllowance.basic;
+    premium += EXECUTIVE_PLUS.bonusAllowance.premium;
+  }
+
+  // Apply swap on any plan with allowsSwap (2 Basic → 1 Premium)
+  if (plan.allowsSwap && swapCount > 0) {
+    const maxSwaps = Math.floor(basic / 2);
+    const validSwap = Math.min(swapCount, maxSwaps);
+    basic -= validSwap * 2;
+    premium += validSwap;
   }
 
   return { basic, premium };
@@ -471,43 +475,46 @@ export const getPlanAllowanceLabel = (
   planId: string,
   swapCount: number = 0,
   payFull: boolean = false,
-  asOf: Date = new Date()
+  asOf: Date = new Date(),
+  executivePlus: boolean = false
 ): string => {
-  const allowance = getPlanAllowance(planId, swapCount, payFull, asOf);
-  return `${allowance.basic} Basic Add-On${allowance.basic === 1 ? "" : "s"} + ${allowance.premium} Premium Add-On${allowance.premium === 1 ? "" : "s"}`;
+  const allowance = getPlanAllowance(planId, swapCount, payFull, asOf, executivePlus);
+  return `${allowance.basic} Basic Upgrade${allowance.basic === 1 ? "" : "s"} + ${allowance.premium} Premium Upgrade${allowance.premium === 1 ? "" : "s"}`;
 };
 
-// Legacy static swap rules (pre-anniversary bonus).
-export const SWAP_OPTIONS = [
-  { value: 0, label: "No swap (3 Basic + 2 Premium)" },
-  { value: 1, label: "Swap 1 Premium → +2 Basic (5 Basic + 1 Premium)" },
-  { value: 2, label: "Swap 2 Premium → +4 Basic (7 Basic + 0 Premium)" }
-];
-
-export const getExecutiveSwapOptions = (asOf: Date = new Date()) => {
-  const baseAllowance = getPlanAllowance("executive", 0, false, asOf);
+// Get swap options for ANY plan (2 Basic → 1 Premium conversion)
+export const getSwapOptions = (planId: string, asOf: Date = new Date(), executivePlus: boolean = false) => {
+  const baseAllowance = getPlanAllowance(planId, 0, false, asOf, executivePlus);
+  const maxSwaps = Math.floor(baseAllowance.basic / 2);
   const options: Array<{ value: number; label: string; compactLabel: string }> = [];
 
-  for (let swapCount = 0; swapCount <= baseAllowance.premium; swapCount += 1) {
-    const swappedAllowance = getPlanAllowance("executive", swapCount, false, asOf);
+  for (let swapCount = 0; swapCount <= maxSwaps; swapCount += 1) {
+    const swappedAllowance = getPlanAllowance(planId, swapCount, false, asOf, executivePlus);
     if (swapCount === 0) {
       options.push({
         value: 0,
         label: `No swap (${swappedAllowance.basic} Basic + ${swappedAllowance.premium} Premium)`,
         compactLabel: `${swappedAllowance.basic}B + ${swappedAllowance.premium}P`,
       });
-      continue;
+    } else {
+      options.push({
+        value: swapCount,
+        label: `Convert ${swapCount * 2} Basic → ${swapCount} Premium (${swappedAllowance.basic}B + ${swappedAllowance.premium}P)`,
+        compactLabel: `${swappedAllowance.basic}B + ${swappedAllowance.premium}P`,
+      });
     }
-
-    options.push({
-      value: swapCount,
-      label: `Swap ${swapCount} Premium → +${swapCount * 2} Basic (${swappedAllowance.basic} Basic + ${swappedAllowance.premium} Premium)`,
-      compactLabel: `${swappedAllowance.basic}B + ${swappedAllowance.premium}P`,
-    });
   }
 
   return options;
 };
+
+// Legacy alias
+export const getExecutiveSwapOptions = (asOf: Date = new Date()) => getSwapOptions("executive", asOf);
+
+export const SWAP_OPTIONS = [
+  { value: 0, label: "No swap" },
+  { value: 1, label: "Convert 2 Basic → 1 Premium" }
+];
 
 // Acre multipliers for pricing: 20% increase per yard size tier
 // 1/3 acre = 1.0, 2/3 acre = 1.2, 1 acre = 1.44

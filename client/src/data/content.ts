@@ -49,18 +49,18 @@ export const WHY_LAWN_TROOPER = {
 
 export const PLAN_SUMMARIES = {
   sectionTitle: "Choose Your Total Maintenance Plan",
-  sectionSubtitle: "All plans include mowing, edging, trimming, blowing, and weed control in flower beds.",
+  sectionSubtitle: "All plans include mowing, edging, trimming, and blowing. Upgrade conversion available on every plan.",
   plans: [
     {
       id: "basic",
       name: "Basic Patrol",
       perfectFor: "Homeowners who want reliable maintenance with minimal fuss.",
       highlights: [
-        "Bi-weekly mowing",
-        "2 weed treatments per year",
-        "Weed control in flower beds included",
-        "Monthly light leaf management",
-        "1 Basic add-on included"
+        "Bi-weekly mowing (growing season)",
+        "Monthly property check (off-season)",
+        "2 Basic Upgrades included",
+        "Dream Yard Recon\u2122 — AI landscape plan",
+        "Upgrade swap: Convert 2 Basic \u2192 1 Premium"
       ]
     },
     {
@@ -68,12 +68,12 @@ export const PLAN_SUMMARIES = {
       name: "Premium Patrol",
       perfectFor: "Families who want a consistently great-looking yard all year.",
       highlights: [
-        "Weekly mowing",
-        "4 weed treatments + weed killer",
-        "Weed control in flower beds included",
-        "Bi-weekly leaf management (fall/winter)",
-        "Spring & fall cleanups included",
-        "2 Basic + 1 Premium add-ons"
+        "Weekly mowing (growing season)",
+        "Bi-weekly off-season service",
+        "Monthly bed weed control",
+        "3 Basic + 1 Premium Upgrades",
+        "Account Manager access",
+        "Seasonal Landscape Refresh Allowance\u2122"
       ]
     },
     {
@@ -81,12 +81,12 @@ export const PLAN_SUMMARIES = {
       name: "Executive Command",
       perfectFor: "Those who want the best lawn on the block without lifting a finger.",
       highlights: [
-        "Priority weekly mowing",
-        "6 weed treatments + guarantee",
-        "Weed control in flower beds included",
-        "Enhanced leaf management",
-        "Storm visits & winter yard checks",
-        "3 Basic + 2 Premium add-ons"
+        "Year-round weekly property monitoring",
+        "Executive Turf Defense\u2122 (up to 7 apps/year)",
+        "Weed-Free Turf Guarantee",
+        "3 Basic + 3 Premium Upgrades",
+        "Dedicated Account Manager",
+        "Premier Landscape Allowance\u2122"
       ]
     }
   ]

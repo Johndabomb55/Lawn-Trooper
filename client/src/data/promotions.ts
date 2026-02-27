@@ -759,13 +759,13 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 // Value highlights for plan upsell
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
-    'Weekly mowing for pristine curb appeal',
-    'Free customized landscaping plan',
-    'Off-season yard checks included',
+    'Weekly mowing + bi-weekly off-season service',
+    'Monthly bed weed control included',
+    'Seasonal Landscape Refresh Allowance\u2122',
   ],
   executive: [
-    '6 weed treatments with Weed-Free Guarantee',
-    'Unlimited bush trimmings (3x/year)',
-    'Multiple trash can cleaning included',
+    'Executive Turf Defense\u2122 — up to 7 applications/year',
+    'Weed-Free Turf Guarantee (progressive improvement)',
+    'Premier Landscape Allowance\u2122',
   ],
 };

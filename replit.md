@@ -1,7 +1,7 @@
 # Lawn Trooper Website
 
 ## Overview
-Lawn Trooper is a subscription-based residential lawn care service with a military-inspired brand. The website acts as a landing page and quote request system, aiming to convert visitors into customers. It features instant pricing calculations, tiered service plans (Basic Patrol, Premium Patrol, Executive Patrol), optional add-on services, and a promotional countdown timer. The project's ambition is to create a streamlined, mobile-first user experience for lead generation, incorporating gamification and a robust promotions engine to maximize customer acquisition and retention.
+Lawn Trooper is a subscription-based residential lawn care service with a military-inspired brand. The website acts as a landing page and quote request system, aiming to convert visitors into customers. It features instant pricing calculations, tiered service plans (Basic Patrol, Premium Patrol, Executive Command), an optional Executive+ upgrade (+$99/mo), Landscape Allowance™ tiers, upgrade conversion (2 Basic → 1 Premium on all plans), and a promotional countdown timer. The project's ambition is to create a streamlined, mobile-first user experience for lead generation, incorporating gamification and a robust promotions engine to maximize customer acquisition and retention.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -27,7 +27,11 @@ The project is organized into `client/` for the React application, `server/` for
 4.  **Quote Wizard Gamification**: The quote process incorporates military-themed rank progression, "Mission Ready" indicators, and local tips to enhance user engagement.
 5.  **Property Type Selection**: The wizard intelligently adapts its flow based on whether the user selects "Residential" (standard pricing) or "HOA/Commercial" (custom quote request).
 6.  **Accessibility**: The website adheres to accessibility standards with smooth scrolling, ARIA labels, proper heading hierarchy, and `data-testid` attributes.
-7.  **Enhanced Landing Page**: Includes sections for plan overview, testimonials, and trust messaging, with social media embeds (Facebook, Instagram) to boost engagement.
+7.  **Enhanced Landing Page**: Includes sections for plan overview, testimonials, trust messaging, "Why We're Different", "Limited Spots" messaging, and social media embeds (Facebook, Instagram).
+8.  **Landscape Allowance™ Tiers**: Premium gets Seasonal Landscape Refresh Allowance™, Executive gets Premier Landscape Allowance™. No dollar values are exposed publicly. Terms are disclosed in FAQ.
+9.  **Executive+ Toggle**: Optional +$99/mo upgrade for Executive Command that adds +1 Basic, +1 Premium upgrade, Quarterly Strategy Session, Rapid Response Priority, and Expanded Landscape Allowance™.
+10. **Upgrade Conversion (Swap)**: All plans support converting 2 Basic Upgrades → 1 Premium Upgrade. The `getSwapOptions()` function generates swap options for any plan.
+11. **Dream Yard Recon™**: AI-generated landscape plan included with every plan. Premium/Executive get personalized review with Account Manager.
 
 ## External Dependencies
 

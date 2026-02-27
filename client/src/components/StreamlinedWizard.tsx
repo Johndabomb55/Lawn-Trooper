@@ -41,7 +41,8 @@ import {
   getYardMultiplier,
   getPlanAllowance,
   getPlanAllowanceLabel,
-  getExecutiveSwapOptions,
+  getSwapOptions,
+  EXECUTIVE_PLUS,
   calculateOverageCost,
   getAddonById,
   calculate2026Price
@@ -110,6 +111,7 @@ export default function StreamlinedWizard() {
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
   const [swapCount, setSwapCount] = useState(0);
+  const [executivePlus, setExecutivePlus] = useState(false);
   const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
   const [payInFull, setPayInFull] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -143,10 +145,9 @@ export default function StreamlinedWizard() {
   const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
   
   const isExecutive = plan === 'executive';
-  const executiveSwapOptions = getExecutiveSwapOptions();
-  const executiveBaseAllowance = getPlanAllowance("executive", 0);
-  // Get effective allowances using the canonical function with swap adjustment
-  const allowance = getPlanAllowance(plan, isExecutive ? swapCount : 0);
+  const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
+  const planBaseAllowance = getPlanAllowance(plan, 0, false, new Date(), executivePlus);
+  const allowance = getPlanAllowance(plan, swapCount, false, new Date(), executivePlus);
   const effectiveBasicAllowance = allowance.basic;
   const effectivePremiumAllowance = allowance.premium;
   
@@ -163,7 +164,10 @@ export default function StreamlinedWizard() {
 
   const calculateBasePrice = () => {
     if (!selectedPlan || !selectedYard) return 0;
-    const basePrice = selectedPlan.price;
+    let basePrice = selectedPlan.price;
+    if (executivePlus && plan === 'executive') {
+      basePrice += EXECUTIVE_PLUS.price;
+    }
     const sizeMultiplier = getYardMultiplier(selectedYard.id);
     let price = Math.round(basePrice * sizeMultiplier);
     if (promoDiscount > 0) {
@@ -520,8 +524,9 @@ export default function StreamlinedWizard() {
                         onClick={() => {
                           const previousPlan = plan;
                           setPlan(p.id);
+                          setSwapCount(0);
                           if (p.id !== 'executive') {
-                            setSwapCount(0);
+                            setExecutivePlus(false);
                           }
                           // Clear premium add-ons when switching to Basic plan (no premium allowance)
                           if (p.id === 'basic' && previousPlan !== 'basic') {
@@ -564,19 +569,12 @@ export default function StreamlinedWizard() {
                             <div className="text-xs text-muted-foreground">/mo</div>
                           </div>
                         </div>
-                        {/* Add-on breakdown line */}
+                        {/* Upgrade breakdown line */}
                         <div className="mt-2 pt-2 border-t border-border/50 text-xs">
-                          <span className="text-muted-foreground">Add-Ons Included: </span>
+                          <span className="text-muted-foreground">Upgrades Included: </span>
                           <span className="font-medium">{getPlanAllowanceLabel(p.id)}</span>
-                          <span className="block text-muted-foreground mt-0.5">Flower bed weed control: Included</span>
-                          {p.id === 'executive' && p.executiveExtras && (
-                            <span className="block text-accent mt-0.5 font-medium">
-                              Extras: {p.executiveExtras.slice(0, 2).join(', ')}
-                              {p.executiveExtras.length > 2 && ' & more'}
-                            </span>
-                          )}
-                          {p.id === 'executive' && p.allowsSwap && (
-                            <span className="block text-accent/80 mt-0.5">Swap option: 1 Premium = 2 Basic</span>
+                          {p.allowsSwap && (
+                            <span className="block text-primary/70 mt-0.5">Convert 2 Basic → 1 Premium</span>
                           )}
                         </div>
                         {isSelected && (
@@ -611,24 +609,11 @@ export default function StreamlinedWizard() {
                                   ))}
                                 </ul>
                               </div>
-                              {p.executiveExtras && (
-                                <div className="border-t pt-3 bg-accent/10 -mx-4 px-4 py-3 rounded-b-lg">
-                                  <div className="font-medium text-sm mb-2 text-accent">Executive Exclusives:</div>
-                                  <ul className="space-y-1 text-sm">
-                                    {p.executiveExtras.map((extra, i) => (
-                                      <li key={i} className="flex gap-2 items-center">
-                                        <Star className="w-4 h-4 text-accent shrink-0" />
-                                        <span>{extra}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
                               <div className="border-t pt-3 text-center">
-                                <div className="text-lg font-bold text-primary">Add-Ons Included</div>
+                                <div className="text-lg font-bold text-primary">Upgrades Included</div>
                                 <div className="text-sm">{getPlanAllowanceLabel(p.id)}</div>
                                 {p.allowsSwap && (
-                                  <div className="text-xs text-accent mt-1">Swap: 1 Premium → +2 Basic</div>
+                                  <div className="text-xs text-primary/70 mt-1">Convert 2 Basic → 1 Premium</div>
                                 )}
                               </div>
                             </div>
@@ -642,6 +627,44 @@ export default function StreamlinedWizard() {
                   );
                 })}
               </div>
+
+              {/* Executive+ Toggle */}
+              {plan === 'executive' && (
+                <div className="mt-4">
+                  <button
+                    data-testid="executive-plus-toggle"
+                    onClick={() => {
+                      setExecutivePlus(!executivePlus);
+                      setSwapCount(0);
+                    }}
+                    className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
+                      executivePlus
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border hover:border-accent/40'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-sm flex items-center gap-2">
+                          <Star className="w-4 h-4 text-accent" />
+                          {EXECUTIVE_PLUS.label}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {EXECUTIVE_PLUS.description} — +1 Basic, +1 Premium upgrade
+                        </div>
+                        <div className="text-xs text-accent/80 mt-1">
+                          {EXECUTIVE_PLUS.perks.join(' • ')}
+                        </div>
+                      </div>
+                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                        executivePlus ? 'border-accent bg-accent' : 'border-muted-foreground/30'
+                      }`}>
+                        {executivePlus && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -655,19 +678,19 @@ export default function StreamlinedWizard() {
               className="space-y-4"
             >
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-2">Customize with add-ons</h3>
+                <h3 className="text-2xl font-bold text-primary mb-2">Customize with upgrades</h3>
                 <p className="text-muted-foreground text-sm">
-                  Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, isExecutive ? swapCount : 0) : "add-ons"} at no extra cost.
+                  Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
                 </p>
               </div>
 
-              {/* Executive Swap Toggle - Button-based for visibility */}
-              {isExecutive && (
-                <div className="bg-accent/10 rounded-lg p-3 border border-accent/30">
+              {/* Swap Toggle - Available for all plans with allowsSwap */}
+              {selectedPlan?.allowsSwap && swapOptions.length > 1 && (
+                <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <div className="font-medium text-sm">Premium ↔ Basic Swap</div>
-                      <div className="text-xs text-muted-foreground">Trade 1 Premium for +2 Basic slots</div>
+                      <div className="font-medium text-sm">Upgrade Conversion</div>
+                      <div className="text-xs text-muted-foreground">Convert 2 Basic → 1 Premium</div>
                     </div>
                     <div className="text-right text-xs">
                       <div className="font-bold text-primary">{effectiveBasicAllowance}B</div>
@@ -675,21 +698,21 @@ export default function StreamlinedWizard() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {executiveSwapOptions.map((opt) => (
+                    {swapOptions.map((opt) => (
                       <button
                         key={opt.value}
                         data-testid={`swap-btn-${opt.value}`}
                         onClick={() => {
                           setSwapCount(opt.value);
-                          const newPremiumAllowance = executiveBaseAllowance.premium - opt.value;
-                          if (premiumAddons.length > newPremiumAllowance) {
-                            setPremiumAddons(premiumAddons.slice(0, Math.max(0, newPremiumAllowance)));
+                          const newAllowance = getPlanAllowance(plan, opt.value, false, new Date(), executivePlus);
+                          if (premiumAddons.length > newAllowance.premium) {
+                            setPremiumAddons(premiumAddons.slice(0, Math.max(0, newAllowance.premium)));
                           }
                         }}
                         className={`flex-1 py-2 px-2 text-xs rounded-lg border-2 transition-all font-medium ${
                           swapCount === opt.value
-                            ? 'border-accent bg-accent text-white'
-                            : 'border-accent/30 bg-background hover:border-accent/50'
+                            ? 'border-primary bg-primary text-white'
+                            : 'border-primary/30 bg-background hover:border-primary/50'
                         }`}
                       >
                         {opt.compactLabel}

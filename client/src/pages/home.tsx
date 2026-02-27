@@ -453,6 +453,15 @@ export default function LandingPage() {
             </div>
           </div>
 
+          {/* Limited Spots Message */}
+          <div className="mt-8 text-center" data-testid="limited-spots-message">
+            <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 max-w-3xl mx-auto">
+              <p className="text-sm text-amber-800 font-medium">
+                We only onboard a limited number of new properties each month to protect service quality. When this month's route is full, new customers are placed on our priority waitlist.
+              </p>
+            </div>
+          </div>
+
           {/* Service Method Disclaimer */}
           <div className="mt-8 text-center">
             <div className="bg-white/80 border border-border rounded-lg p-4 max-w-3xl mx-auto">
@@ -516,6 +525,53 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why We're Different */}
+      <section id="why-different" aria-labelledby="why-different-heading" className="py-16 bg-background border-t border-border">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <h2 id="why-different-heading" className="text-3xl font-heading font-bold text-center text-primary mb-10">
+            Why We're Different
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                title: "25 Years Serving the Community",
+                desc: "Over two decades of trusted service in the Tennessee Valley with 100+ beautification awards."
+              },
+              {
+                title: "Industry-Leading Knowledge",
+                desc: "Our founder has attended 3 AI and landscaping conferences to bring the latest innovations to your yard."
+              },
+              {
+                title: "Investment in Efficiency",
+                desc: "We invest in automation and operational efficiency so we can pass real savings to you."
+              },
+              {
+                title: "Loyalty Price Drop Guarantee",
+                desc: "Your pricing decreases over time as a loyal customer. We reward commitment, not punish it."
+              },
+              {
+                title: "Dedicated Account Manager",
+                desc: "Premium and Executive members get a real person managing their property — not a call center."
+              },
+              {
+                title: "AI-Assisted Dream Yard Recon\u2122",
+                desc: "Every plan includes an AI-generated landscape plan personalized to your property and goals."
+              }
+            ].map((item, i) => (
+              <div key={i} className="flex gap-3 p-4 bg-muted/30 rounded-lg border border-border" data-testid={`why-different-${i}`}>
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-primary">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -767,11 +823,27 @@ export default function LandingPage() {
               {[
                 {
                   q: "What does the Basic Patrol plan include?",
-                  a: "Basic Patrol includes bi-weekly mowing, edging, cleanup, core seasonal lawn care, and one included basic add-on."
+                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly property checks in the off-season, 2 Basic Upgrades, and a Dream Yard Recon\u2122 AI landscape plan. You can also convert 2 Basic Upgrades into 1 Premium Upgrade."
                 },
                 {
-                  q: "Is the Basic plan bi-weekly or weekly?",
-                  a: "Basic Patrol is bi-weekly. Premium Patrol and Executive Command are weekly service plans."
+                  q: "What's the difference between Basic, Premium, and Executive?",
+                  a: "Basic Patrol is bi-weekly mowing with 2 Basic Upgrades. Premium Patrol is weekly mowing with 3 Basic + 1 Premium Upgrades, bed weed control, Account Manager access, and a Seasonal Landscape Refresh Allowance\u2122. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Basic + 3 Premium Upgrades, Dedicated Account Manager, and Premier Landscape Allowance\u2122."
+                },
+                {
+                  q: "What is Executive+ and how does it work?",
+                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Basic and +1 Premium Upgrade, Quarterly Strategy Sessions, Rapid Response Priority, and an Expanded Landscape Allowance\u2122 tier."
+                },
+                {
+                  q: "What is the Landscape Allowance\u2122?",
+                  a: "The Landscape Allowance\u2122 is included with Premium and Executive plans. It covers standard materials and installation for seasonal bed refresh, mulch, or pine straw. It resets annually, does not roll over, and specialty materials may require an additional upgrade. Installation is scheduled seasonally based on availability."
+                },
+                {
+                  q: "What is Dream Yard Recon\u2122?",
+                  a: "Dream Yard Recon\u2122 is an AI-generated landscape plan personalized to your property and goals. Every plan includes it. Premium and Executive members also receive a personalized review with their Account Manager."
+                },
+                {
+                  q: "Can I convert Basic Upgrades to Premium?",
+                  a: "Yes. All plans allow you to convert 2 Basic Upgrades into 1 Premium Upgrade. This gives you flexibility to choose higher-tier services even on the Basic plan."
                 },
                 {
                   q: "Do I have to sign a contract?",
@@ -779,7 +851,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "How does billing work?",
-                  a: "Billing is automated monthly through Jobber Payments. You receive customer login details by email to manage your account."
+                  a: "Billing is automated monthly through Jobber Payments. You receive customer login details by email to manage your account. Complimentary months are applied at the end of your agreement term."
                 },
                 {
                   q: "Is the price guaranteed?",
@@ -792,10 +864,6 @@ export default function LandingPage() {
                 {
                   q: "What if it rains on my service day?",
                   a: "If weather prevents service, we reschedule as soon as conditions allow, typically within one to two days."
-                },
-                {
-                  q: "What if I need additional services later?",
-                  a: "You can add services at any time. We can update your mission plan as your property needs change."
                 },
                 {
                   q: "Can I switch plans later?",

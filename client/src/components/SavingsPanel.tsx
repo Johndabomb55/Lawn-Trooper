@@ -187,12 +187,17 @@ export default function SavingsPanel({
         )}
 
         {/* Commitment Message */}
-        <div className="text-center pt-2 border-t border-primary/10">
+        <div className="text-center pt-2 border-t border-primary/10 space-y-1">
           <p className="text-xs text-primary/80 font-medium italic flex items-center justify-center gap-1">
             <Sparkles className="w-3 h-3" />
             {TRUST_MESSAGES.commitment}
             <Sparkles className="w-3 h-3" />
           </p>
+          {freeMonthsAtEnd > 0 && (
+            <p className="text-[10px] text-muted-foreground">
+              Complimentary months applied at end of agreement term.
+            </p>
+          )}
         </div>
       </div>
     </div>
