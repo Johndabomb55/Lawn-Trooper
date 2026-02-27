@@ -1,0 +1,183 @@
+You are working inside the Lawn Trooper Replit project.
+
+IMPORTANT:
+I have already made some unpublished edits in this workspace. 
+Do NOT revert or overwrite unrelated changes.
+Make surgical updates only where required.
+If something already matches the new structure, leave it unchanged.
+
+GOAL:
+Restructure plans into a subscription-based property management model with Landscape Allowance™ tiers, updated upgrade counts, and clarified service levels — without exposing dollar values publicly.
+
+---------------------------------------
+PLAN STRUCTURE (LOCKED)
+---------------------------------------
+
+1) BASIC PATROL – $169
+
+Includes:
+- Bi-weekly mowing (growing season)
+- Monthly property check (off-season)
+- 2 Basic Upgrades included
+- Dream Yard Recon (AI plan emailed)
+
+Does NOT include:
+- Turf applications
+- Bed weed control
+- Account Manager access
+- Landscape Allowance
+
+Rules:
+- Allow 2 Basic → 1 Premium upgrade conversion
+- Premium upgrade option must include "Weekly Mowing"
+
+---------------------------------------
+
+2) PREMIUM PATROL – $299
+
+Includes:
+- Weekly mowing (growing season)
+- Bi-weekly off-season service
+- Monthly bed weed control
+- 3 Basic + 1 Premium Upgrades
+- Service photo updates
+- Account Manager access (remote + visit request)
+- Dream Yard Recon + review
+- Seasonal Landscape Refresh Allowance™
+
+IMPORTANT:
+Do NOT show dollar values or yard quantities publicly.
+Allowance language only:
+"Includes Seasonal Landscape Refresh Allowance™ usable toward mulch, pine straw, or seasonal bed refresh."
+
+Internally:
+You may note that this equals roughly 5-yard equivalent, but do not expose that on UI.
+
+---------------------------------------
+
+3) EXECUTIVE COMMAND – $399
+
+Includes:
+- Weekly service year-round (label as "Year-Round Weekly Property Monitoring")
+- Executive Turf Defense™ (up to 7 applications annually)
+- Weed-Free Turf Guarantee (progressive improvement language)
+- Monthly bed weed control
+- 3 Basic + 3 Premium Upgrades
+- Service photo updates
+- Priority storm service
+- Dedicated Account Manager
+- Premier Landscape Allowance™
+
+IMPORTANT:
+Do NOT display yard numbers.
+Use language:
+"Includes Premier Landscape Allowance™ usable toward mulch, pine straw, or property enhancements."
+
+Add Turf Defense protection language:
+"Turf restoration takes time. Results improve progressively based on starting conditions."
+
+---------------------------------------
+
+4) EXECUTIVE PLUS – +$99 Upgrade Toggle (from Executive)
+
+Do NOT create a separate standalone plan card.
+Create an upgrade toggle option when Executive is selected.
+
+Includes:
+- +1 Basic Upgrade
+- +1 Premium Upgrade
+- Quarterly Strategy Session
+- Rapid Response Priority
+- Expanded Landscape Allowance tier
+
+---------------------------------------
+UPGRADE LOGIC
+---------------------------------------
+
+- Basic: 2 Basic Upgrades included
+- Premium: 3 Basic + 1 Premium
+- Executive: 3 Basic + 3 Premium
+- Executive+ adds +1 Basic +1 Premium
+
+Allow 2 Basic → 1 Premium conversion on all plans.
+
+Ensure plan builder enforces correct counts.
+
+---------------------------------------
+LANDSCAPE ALLOWANCE LANGUAGE
+---------------------------------------
+
+Add a FAQ or terms note (small print):
+
+- Landscape Allowance resets annually.
+- Applies to standard materials and installation.
+- Specialty materials may require additional upgrade.
+- Allowance does not roll over.
+- Installation scheduled seasonally.
+
+Do NOT expose dollar equivalents.
+
+---------------------------------------
+PROMOTIONS SIMPLIFICATION
+---------------------------------------
+
+Keep:
+- 1-year commitment = +1 complimentary month
+- 2-year commitment = +2 complimentary months
+- Pay in full doubles bonus months
+- Referral = +1 complimentary month
+- March 25 cutoff for Anniversary Bonus
+
+Add:
+"Complimentary months applied at end of agreement term."
+(Place in small-print or tooltip.)
+
+Remove confusing overlapping promo language.
+
+---------------------------------------
+WHY WE’RE DIFFERENT SECTION
+---------------------------------------
+
+Add new section under pricing:
+
+Title: "Why We're Different"
+
+Include:
+- 25 years serving the community
+- Founder attended 3 AI and landscaping conferences
+- Investment in automation and operational efficiency
+- Loyalty Price Drop Guarantee (pricing decreases over time for committed customers)
+- Dedicated Account Manager model
+- AI-assisted Dream Yard Recon™
+
+Do NOT oversell robotics on homepage hero.
+Keep it professional and forward-looking.
+
+---------------------------------------
+LIMITED SPOTS MESSAGE
+---------------------------------------
+
+Add near pricing:
+
+"We only onboard a limited number of new properties each month to protect service quality. When this month’s route is full, new customers are placed on our priority waitlist."
+
+---------------------------------------
+IMPLEMENTATION CHECKLIST
+---------------------------------------
+
+1. Update plan comparison table.
+2. Update plan cards.
+3. Update plan builder validation logic.
+4. Update upgrade count UI text.
+5. Add Executive+ toggle logic.
+6. Add Landscape Allowance™ language in plans + FAQ.
+7. Simplify promo section.
+8. Add Why We're Different section.
+9. Test builder flow for:
+   - Basic (2 Basic)
+   - Premium (3 Basic +1 Premium)
+   - Executive (3 Basic +3 Premium)
+   - Executive+ (adds correctly)
+
+After completion:
+Provide a list of files changed and summary of changes.
