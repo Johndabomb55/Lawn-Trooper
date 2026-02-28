@@ -149,7 +149,7 @@ export const TRUST_BAR = {
 };
 
 export const FOOTER_CONTENT = {
-  email: "lawntrooperllc@gmail.com",
+  email: "John@lawn-trooper.com",
   phone: "(256) 555-0000",
   serviceArea: "Serving Athens, Huntsville, Madison, Decatur, and all of North Alabama",
 };

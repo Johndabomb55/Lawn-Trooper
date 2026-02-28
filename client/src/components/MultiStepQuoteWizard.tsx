@@ -740,25 +740,25 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           <td className="py-2 px-2 text-center font-bold text-accent">Weekly</td>
                         </tr>
                         <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">Weed Control</td>
+                          <td className="py-2 pr-2 text-muted-foreground">Turf Defense</td>
                           <td className="py-2 px-2 text-center">2 Apps</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">4 Apps</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">6 Apps</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">5 Apps</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">7 Apps</td>
                         </tr>
                         <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">Flower Bed Weed Control</td>
-                          <td className="py-2 px-2 text-center">Included</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">Included</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">Included</td>
+                          <td className="py-2 pr-2 text-muted-foreground">Bed Weed Control</td>
+                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">Monthly</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">Monthly</td>
                         </tr>
                         <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">Bush Trimming</td>
-                          <td className="py-2 px-2 text-center">1x/Year</td>
-                          <td className="py-2 px-2 text-center">2x/Year</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">3x/Year</td>
+                          <td className="py-2 pr-2 text-muted-foreground">Landscape Allowance™</td>
+                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">Seasonal Refresh</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">Premier</td>
                         </tr>
                         <tr>
-                          <td className="py-2 pr-2 text-muted-foreground">Add-ons Included</td>
+                          <td className="py-2 pr-2 text-muted-foreground">Upgrades Included</td>
                           <td className="py-2 px-2 text-center">{tableBasicAllowance.basic + tableBasicAllowance.premium}</td>
                           <td className="py-2 px-2 text-center font-medium text-primary">{tablePremiumAllowance.basic + tablePremiumAllowance.premium}</td>
                           <td className="py-2 px-2 text-center font-bold text-accent">{tableExecutiveAllowance.basic + tableExecutiveAllowance.premium}</td>

@@ -6,10 +6,10 @@ export const PROMO_CONFIG = {
 
 // Anniversary add-on bonus (limited-time event through cutoffDate):
 // - Basic and Premium: +1 included Basic add-on
-// - Executive: +1 included Premium add-on
+// - Executive: no additional bonus (base already includes 3 Premium)
 export const ANNIVERSARY_ADDON_BONUS = {
   basicNonExecutive: 1,
-  executivePremium: 1,
+  executivePremium: 0,
 };
 
 export const GLOBAL_CONSTANTS = {

@@ -133,7 +133,7 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
 
   const businessEmail = {
     from: fromEmail,
-    to: 'jclaxtonlandscapes@gmail.com',
+    to: 'John@lawn-trooper.com',
     subject: `New Quote Request from ${data.name} - ${planName}${hasPhotos ? ' (with photos)' : ''}`,
     html: `
       <h2>New Quote Request</h2>
@@ -267,7 +267,7 @@ export async function sendLeadEmails(data: LeadEmailData) {
 
   const businessEmail = {
     from: fromEmail,
-    to: 'jclaxtonlandscapes@gmail.com',
+    to: 'John@lawn-trooper.com',
     subject: `New Lead from Quote Wizard: ${data.name} - ${planName}`,
     html: `
       <h2>New Lead Captured</h2>

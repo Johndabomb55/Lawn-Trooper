@@ -185,7 +185,7 @@ export default function LandingPage() {
       >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-primary/10" />
+            <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full" />
             <span className="font-heading font-bold text-xl tracking-tight text-primary">LAWN TROOPER</span>
           </div>
 
@@ -246,7 +246,7 @@ export default function LandingPage() {
             className="mb-8 relative w-full max-w-4xl"
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
-            <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-4 scale-125" />
+            <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-6" />
             
             {/* Big Intimidating Camo Banner */}
             <div className="mt-4 relative z-20 w-full">
@@ -800,7 +800,7 @@ export default function LandingPage() {
             </li>
           </ul>
           <Button
-            onClick={() => window.location.href = "mailto:lawntrooperllc@gmail.com?subject=Neighbor%20Referral%20Program"}
+            onClick={() => window.location.href = "mailto:John@lawn-trooper.com?subject=Neighbor%20Referral%20Program"}
             className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider"
           >
             Refer a Neighbor
@@ -986,7 +986,7 @@ export default function LandingPage() {
               <div className="space-y-4 text-primary-foreground/80">
                 <div className="flex items-center gap-3 mt-6">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />
-                  <a href="mailto:lawntrooperllc@gmail.com" className="hover:text-white transition-colors">lawntrooperllc@gmail.com</a>
+                  <a href="mailto:John@lawn-trooper.com" className="hover:text-white transition-colors">John@lawn-trooper.com</a>
                 </div>
               </div>
             </div>

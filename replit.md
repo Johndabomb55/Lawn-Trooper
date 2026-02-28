@@ -1,7 +1,7 @@
 # Lawn Trooper Website
 
 ## Overview
-Lawn Trooper is a subscription-based residential lawn care service with a military-inspired brand. The website acts as a landing page and quote request system, aiming to convert visitors into customers. It features instant pricing calculations, tiered service plans (Basic Patrol, Premium Patrol, Executive Command), an optional Executive+ upgrade (+$99/mo), Landscape Allowance™ tiers, upgrade conversion (2 Basic → 1 Premium on all plans), and a promotional countdown timer. The project's ambition is to create a streamlined, mobile-first user experience for lead generation, incorporating gamification and a robust promotions engine to maximize customer acquisition and retention.
+Lawn Trooper is a subscription-based residential lawn care service with a military-inspired brand. The website acts as a landing page and quote request system, aiming to convert visitors into customers. It features instant pricing calculations, tiered service plans (Basic Patrol $169, Premium Patrol $299, Executive Command $399), an optional Executive+ upgrade (+$99/mo), Landscape Allowance™ tiers (no dollar values exposed publicly), upgrade conversion (2 Basic → 1 Premium on all plans), and a promotional countdown timer (25th Anniversary Sale through March 25, 2026). The company email is John@lawn-trooper.com. The project's ambition is to create a streamlined, mobile-first user experience for lead generation, incorporating gamification and a robust promotions engine to maximize customer acquisition and retention.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
