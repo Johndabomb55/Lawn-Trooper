@@ -509,7 +509,7 @@ export default function StreamlinedWizard() {
             >
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose your Total Maintenance Plan</h3>
-                <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming, blowing, and flower bed weed control.</p>
+                <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming, and blowing.</p>
               </div>
 
               <div className="space-y-3">

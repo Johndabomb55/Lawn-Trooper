@@ -60,7 +60,6 @@ export const PLANS: PlanDefinition[] = [
       "Off-Season: Monthly property check",
       "<span class='font-bold text-primary'>2 Basic Upgrades included</span>",
       "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
-      "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>",
       "Turf Applications: Not Included (Premium & Executive)",
       "Bed Weed Control: Not Included (Premium & Executive)",
       "Account Manager: Not Included (Premium & Executive)",
@@ -70,9 +69,8 @@ export const PLANS: PlanDefinition[] = [
       basic: 2,
       premium: 0
     },
-    allowsSwap: true,
-    allowanceLabel: "2 Basic Upgrades",
-    swapLabel: "Convert 2 Basic \u2192 1 Premium"
+    allowsSwap: false,
+    allowanceLabel: "2 Basic Upgrades"
   },
   {
     id: "premium",
@@ -95,7 +93,7 @@ export const PLANS: PlanDefinition[] = [
       "Service Photo Updates",
       "Account Manager Access (remote + visit request)",
       "Dream Yard Recon\u2122 + Personalized Review",
-      "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>Includes Seasonal Landscape Refresh Allowance\u2122 usable toward mulch, pine straw, or seasonal bed refresh.</span>",
+      "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
       "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
     ],
     allowance: {
@@ -128,7 +126,7 @@ export const PLANS: PlanDefinition[] = [
       "Service Photo Updates",
       "<span class='font-bold text-accent'>Priority Storm Service</span>",
       "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
-      "<span class='font-bold text-accent'>Premier Landscape Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>Includes Premier Landscape Allowance\u2122 usable toward mulch, pine straw, or property enhancements.</span>",
+      "<span class='font-bold text-accent'>Premier Landscape Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
       "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
     ],
     allowance: {

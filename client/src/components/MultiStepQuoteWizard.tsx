@@ -700,7 +700,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       >
                         <div className="text-2xl font-bold text-primary">{size.label}</div>
                         <div className="text-lg text-muted-foreground">{size.subtitle}</div>
-                        <div className="text-xs text-muted-foreground mt-2">{size.id} Acre</div>
                       </button>
                     ))}
                   </div>
@@ -741,8 +740,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         </tr>
                         <tr className="border-b border-border/50">
                           <td className="py-2 pr-2 text-muted-foreground">Turf Defense</td>
-                          <td className="py-2 px-2 text-center">2 Apps</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">5 Apps</td>
+                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
+                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
                           <td className="py-2 px-2 text-center font-bold text-accent">7 Apps</td>
                         </tr>
                         <tr className="border-b border-border/50">
@@ -752,7 +751,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           <td className="py-2 px-2 text-center font-bold text-accent">Monthly</td>
                         </tr>
                         <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">Landscape Allowance™</td>
+                          <td className="py-2 pr-2 text-muted-foreground">
+                            <span title="An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.">Landscape Allowance™ ℹ️</span>
+                          </td>
                           <td className="py-2 px-2 text-center text-muted-foreground">—</td>
                           <td className="py-2 px-2 text-center font-medium text-primary">Seasonal Refresh</td>
                           <td className="py-2 px-2 text-center font-bold text-accent">Premier</td>

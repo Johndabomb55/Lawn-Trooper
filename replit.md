@@ -30,7 +30,7 @@ The project is organized into `client/` for the React application, `server/` for
 7.  **Enhanced Landing Page**: Includes sections for plan overview, testimonials, trust messaging, "Why We're Different", "Limited Spots" messaging, and social media embeds (Facebook, Instagram).
 8.  **Landscape Allowance™ Tiers**: Premium gets Seasonal Landscape Refresh Allowance™, Executive gets Premier Landscape Allowance™. No dollar values are exposed publicly. Terms are disclosed in FAQ.
 9.  **Executive+ Toggle**: Optional +$99/mo upgrade for Executive Command that adds +1 Basic, +1 Premium upgrade, Quarterly Strategy Session, Rapid Response Priority, and Expanded Landscape Allowance™.
-10. **Upgrade Conversion (Swap)**: All plans support converting 2 Basic Upgrades → 1 Premium Upgrade. The `getSwapOptions()` function generates swap options for any plan.
+10. **Upgrade Conversion (Swap)**: Premium and Executive plans support converting 2 Basic Upgrades → 1 Premium Upgrade. Basic does NOT allow conversion. The `getSwapOptions()` function generates swap options for eligible plans.
 11. **Dream Yard Recon™**: AI-generated landscape plan included with every plan. Premium/Executive get personalized review with Account Manager.
 
 ## External Dependencies

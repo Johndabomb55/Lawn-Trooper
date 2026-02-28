@@ -49,7 +49,7 @@ export const WHY_LAWN_TROOPER = {
 
 export const PLAN_SUMMARIES = {
   sectionTitle: "Choose Your Total Maintenance Plan",
-  sectionSubtitle: "All plans include mowing, edging, trimming, and blowing. Upgrade conversion available on every plan.",
+  sectionSubtitle: "All plans include mowing, edging, trimming, and blowing.",
   plans: [
     {
       id: "basic",
@@ -59,8 +59,7 @@ export const PLAN_SUMMARIES = {
         "Bi-weekly mowing (growing season)",
         "Monthly property check (off-season)",
         "2 Basic Upgrades included",
-        "Dream Yard Recon\u2122 — AI landscape plan",
-        "Upgrade swap: Convert 2 Basic \u2192 1 Premium"
+        "Dream Yard Recon\u2122 — AI landscape plan"
       ]
     },
     {

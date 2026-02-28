@@ -843,7 +843,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "Can I convert Basic Upgrades to Premium?",
-                  a: "Yes. All plans allow you to convert 2 Basic Upgrades into 1 Premium Upgrade. This gives you flexibility to choose higher-tier services even on the Basic plan."
+                  a: "Yes. Premium and Executive plans allow you to convert 2 Basic Upgrades into 1 Premium Upgrade, giving you flexibility to choose higher-tier services."
                 },
                 {
                   q: "Do I have to sign a contract?",
