@@ -1,13 +1,13 @@
 import React from "react";
-import { Calendar, Check, Sparkles, Gift } from "lucide-react";
-import { calculateTermFreeMonths, COMMITMENT_TERMS, TRUST_MESSAGES, LOYALTY_DISCOUNTS } from "@/data/promotions";
+import { Calendar, Check, Sparkles } from "lucide-react";
+import { calculateTermFreeMonths, COMMITMENT_TERMS, TRUST_MESSAGES } from "@/data/promotions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 interface TermSelectorProps {
-  term: 'month-to-month' | '1-year' | '2-year';
+  term: '1-year' | '2-year';
   payUpfront: boolean;
-  onTermChange: (term: 'month-to-month' | '1-year' | '2-year') => void;
+  onTermChange: (term: '1-year' | '2-year') => void;
   onPayUpfrontChange: (payUpfront: boolean) => void;
   className?: string;
 }
@@ -21,24 +21,21 @@ export default function TermSelector({
 }: TermSelectorProps) {
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Term Selection */}
       <div>
         <div className="text-sm font-bold text-primary mb-2 flex items-center gap-2">
           <Calendar className="w-4 h-4" />
           Choose Your Commitment
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {COMMITMENT_TERMS.map((option) => {
             const isSelected = term === option.id;
-            const dynamicFreeMonths = option.id === 'month-to-month'
-              ? 0
-              : calculateTermFreeMonths(option.id, payUpfront);
+            const dynamicFreeMonths = calculateTermFreeMonths(option.id as '1-year' | '2-year', payUpfront);
             
             return (
               <button
                 key={option.id}
                 type="button"
-                onClick={() => onTermChange(option.id as 'month-to-month' | '1-year' | '2-year')}
+                onClick={() => onTermChange(option.id as '1-year' | '2-year')}
                 className={`relative p-3 rounded-xl border-2 transition-all text-left ${
                   isSelected
                     ? 'border-primary bg-primary/10 shadow-md'
@@ -46,9 +43,7 @@ export default function TermSelector({
                 }`}
               >
                 {option.badge && (
-                  <span className={`absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
-                    option.badge === 'Best Value' ? 'bg-accent text-accent-foreground' : 'bg-muted-foreground/20 text-muted-foreground'
-                  }`}>
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap bg-accent text-accent-foreground">
                     {option.badge}
                   </span>
                 )}
@@ -56,9 +51,7 @@ export default function TermSelector({
                   <div>
                     <div className="font-bold text-primary text-sm">{option.label}</div>
                     <div className="text-xs text-green-600 font-semibold">
-                      {option.id === 'month-to-month'
-                        ? 'No free billing months'
-                        : `+${dynamicFreeMonths} free billing month${dynamicFreeMonths === 1 ? '' : 's'}`}
+                      +{dynamicFreeMonths} complimentary month{dynamicFreeMonths === 1 ? '' : 's'}
                     </div>
                   </div>
                   {isSelected && <Check className="w-4 h-4 text-primary" />}
@@ -69,7 +62,6 @@ export default function TermSelector({
         </div>
       </div>
 
-      {/* Pay Upfront Toggle */}
       <div className="bg-accent/5 rounded-xl p-4 border border-accent/20">
         <div className="flex items-start gap-3">
           <Checkbox
@@ -86,38 +78,20 @@ export default function TermSelector({
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Pay your full term upfront to double commitment months. 1-year goes 1 to 2, and 2-year goes 2 to 4, with anniversary bonus stacked on top.
+              Pay your full term upfront to double commitment months. 1-year goes 1 to 2, and 2-year goes 2 to 4.
             </p>
           </Label>
         </div>
       </div>
 
-      {/* Operation Price Drop - Loyalty Preview */}
-      <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
-        <div className="flex items-center gap-2 mb-3">
-          <Gift className="w-4 h-4 text-primary" />
-          <span className="text-sm font-bold text-primary">Operation Price Drop</span>
-          <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Future Benefit</span>
-        </div>
-        <p className="text-xs text-muted-foreground mb-3">
-          Loyal customers earn automatic price reductions on renewal:
-        </p>
-        <div className="flex gap-2 justify-between">
-          {LOYALTY_DISCOUNTS.map((tier) => (
-            <div key={tier.year} className="flex-1 text-center p-2 bg-white rounded-lg border border-border">
-              <div className="text-xs text-muted-foreground">{tier.label}</div>
-              <div className="text-lg font-bold text-green-600">-{tier.discount}%</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Commitment Message */}
       <div className="text-center">
         <p className="text-xs text-primary/70 font-medium italic flex items-center justify-center gap-1">
           <Sparkles className="w-3 h-3" />
           {TRUST_MESSAGES.commitment}
           <Sparkles className="w-3 h-3" />
+        </p>
+        <p className="text-[10px] text-muted-foreground mt-1">
+          Complimentary months are applied as credits at the end of the agreement term.
         </p>
       </div>
     </div>

@@ -43,7 +43,7 @@ interface MissionAccomplishedProps {
     basicAddons: string[];
     premiumAddons: string[];
     totalPrice: number;
-    term?: 'month-to-month' | '1-year' | '2-year';
+    term?: '1-year' | '2-year';
     payUpfront?: boolean;
     segments?: string[];
     appliedPromos?: string[];

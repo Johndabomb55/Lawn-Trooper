@@ -5,7 +5,6 @@ import { useState } from "react";
 import { PLANS, YARD_SIZES, getYardMultiplier } from "@/data/plans";
 import { 
   COMMITMENT_TERMS, 
-  MONTH_TO_MONTH_PREMIUM,
   calculateActualMonthly,
   calculateTermFreeMonths,
   getFreeMonthsBreakdown,
@@ -16,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 export default function PromotionsPage() {
   const [selectedPlan, setSelectedPlan] = useState("premium");
   const [selectedYardSize, setSelectedYardSize] = useState("1/3");
-  const [selectedTerm, setSelectedTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
+  const [selectedTerm, setSelectedTerm] = useState<'1-year' | '2-year'>('2-year');
   const [payInFull, setPayInFull] = useState(false);
 
   const plan = PLANS.find(p => p.id === selectedPlan);
@@ -29,21 +28,12 @@ export default function PromotionsPage() {
 
   const actualMonthly = calculateActualMonthly(basePrice, selectedTerm);
   
-  // Calculate free months based on term and pay-in-full
   const freeMonths = calculateTermFreeMonths(selectedTerm, payInFull);
   const freeMonthsBreakdown = getFreeMonthsBreakdown(selectedTerm, payInFull);
   const earlyBirdBonus = getEarlyBirdBonus();
   
-  const termMonths = term?.months || 1;
+  const termMonths = term?.months || 12;
   const billedMonths = Math.max(termMonths - freeMonths, 1);
-  const effectiveMonthly = selectedTerm !== 'month-to-month'
-    ? Math.round((actualMonthly * billedMonths) / termMonths)
-    : actualMonthly;
-  // Savings compared to M2M baseline (15% premium) for the same period
-  const m2mMonthly = Math.round(basePrice * 1.15);
-  const savings = selectedTerm !== 'month-to-month'
-    ? (m2mMonthly * termMonths) - (actualMonthly * billedMonths)
-    : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -72,8 +62,7 @@ export default function PromotionsPage() {
                   key={t.id}
                   data-testid={`promo-term-${t.id}`}
                   onClick={() => {
-                    setSelectedTerm(t.id as 'month-to-month' | '1-year' | '2-year');
-                    if (t.id === 'month-to-month') setPayInFull(false);
+                    setSelectedTerm(t.id as '1-year' | '2-year');
                   }}
                   className={`w-full p-3 rounded-lg border-2 text-left flex justify-between items-center transition-all ${
                     selectedTerm === t.id
@@ -83,13 +72,10 @@ export default function PromotionsPage() {
                 >
                   <div>
                     <div className="font-medium">{t.label}</div>
-                    <div className="text-xs text-muted-foreground">{(t as any).shortDescription || t.description}</div>
+                    <div className="text-xs text-muted-foreground">{t.shortDescription || t.description}</div>
                   </div>
                   {t.freeMonths > 0 && (
                     <span className="text-green-600 font-bold">+{t.freeMonths} complimentary</span>
-                  )}
-                  {t.hasPremium && (
-                    <span className="text-amber-600 text-sm">+15%</span>
                   )}
                 </button>
               ))}
@@ -101,48 +87,40 @@ export default function PromotionsPage() {
               <DollarSign className="w-5 h-5 text-accent" />
               <h2 className="font-bold text-lg">Payment Option</h2>
             </div>
-            {selectedTerm !== 'month-to-month' ? (
-              <div className="space-y-4">
-                {/* 25-Year Birthday Bonus */}
-                {earlyBirdBonus.isActive && (
-                  <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
-                    <strong>🎉 25-Year Birthday Bonus:</strong> +{earlyBirdBonus.months} complimentary month{earlyBirdBonus.months > 1 ? 's' : ''} included!
-                    <div className="text-xs text-amber-600 mt-1">
-                      Enroll by {earlyBirdBonus.enrollBy} • First payment by {earlyBirdBonus.payBy}
-                    </div>
-                  </div>
-                )}
-                {!earlyBirdBonus.isActive && (
-                  <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-muted-foreground">
-                    <span>25-Year Birthday Bonus</span> <span className="italic">(Bonus concluded)</span>
-                  </div>
-                )}
-                
-                {/* Pay-in-Full Option */}
-                <div className="p-4 rounded-lg border-2 border-border bg-muted/30">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">Pay-in-Full Option</div>
-                      <div className="text-sm text-muted-foreground">
-                        Doubles commitment months ({selectedTerm === '1-year' ? '1 → 2' : '2 → 4'}). Birthday Bonus adds on top.
-                      </div>
-                    </div>
-                    <Switch
-                      data-testid="promo-pay-in-full-toggle"
-                      checked={payInFull}
-                      onCheckedChange={setPayInFull}
-                    />
+            <div className="space-y-4">
+              {earlyBirdBonus.isActive && (
+                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
+                  <strong>🎉 25-Year Birthday Bonus:</strong> +{earlyBirdBonus.months} complimentary month{earlyBirdBonus.months > 1 ? 's' : ''} included!
+                  <div className="text-xs text-amber-600 mt-1">
+                    Enroll by {earlyBirdBonus.enrollBy} • First payment by {earlyBirdBonus.payBy}
                   </div>
                 </div>
-                <p className="text-xs text-center text-muted-foreground">
-                  Pay monthly is always available. Pay in full to double your commitment months.
-                </p>
+              )}
+              {!earlyBirdBonus.isActive && (
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-muted-foreground">
+                  <span>25-Year Birthday Bonus</span> <span className="italic">(Bonus concluded)</span>
+                </div>
+              )}
+              
+              <div className="p-4 rounded-lg border-2 border-border bg-muted/30">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">Pay-in-Full Option</div>
+                    <div className="text-sm text-muted-foreground">
+                      Doubles commitment months ({selectedTerm === '1-year' ? '1 → 2' : '2 → 4'}).
+                    </div>
+                  </div>
+                  <Switch
+                    data-testid="promo-pay-in-full-toggle"
+                    checked={payInFull}
+                    onCheckedChange={setPayInFull}
+                  />
+                </div>
               </div>
-            ) : (
-              <div className="p-4 rounded-lg border-2 border-border bg-muted/30 text-center text-muted-foreground">
-                Pay-in-Full Accelerator only available with 1-Year or 2-Year subscription
-              </div>
-            )}
+              <p className="text-xs text-center text-muted-foreground">
+                Pay monthly is always available. Pay in full to double your commitment months.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -181,29 +159,25 @@ export default function PromotionsPage() {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-4 gap-4 text-center">
+          <div className="grid sm:grid-cols-3 gap-4 text-center">
             <div className="bg-primary/10 rounded-lg p-4">
               <div className="text-2xl font-bold text-primary">${actualMonthly}</div>
               <div className="text-xs text-muted-foreground">Monthly Payment</div>
             </div>
             <div className="bg-green-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-green-600">{freeMonths}</div>
-              <div className="text-xs text-muted-foreground">Complimentary</div>
+              <div className="text-xs text-muted-foreground">Complimentary Months</div>
             </div>
             <div className="bg-accent/10 rounded-lg p-4">
               <div className="text-2xl font-bold text-accent">{billedMonths}</div>
               <div className="text-xs text-muted-foreground">Months Billed</div>
-            </div>
-            <div className="bg-green-100 rounded-lg p-4">
-              <div className="text-2xl font-bold text-green-700">${savings}</div>
-              <div className="text-xs text-muted-foreground">Total Savings</div>
             </div>
           </div>
 
           {freeMonths > 0 && (
             <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200 text-sm text-green-800">
               <strong>How it works:</strong> You'll receive {termMonths} months of service while paying for {billedMonths}. 
-              Your final {freeMonths} month{freeMonths > 1 ? 's are' : ' is'} complimentary (skipped billing).
+              Your final {freeMonths} month{freeMonths > 1 ? 's are' : ' is'} complimentary.
             </div>
           )}
         </div>
@@ -215,37 +189,32 @@ export default function PromotionsPage() {
           </h2>
           <div className="space-y-3 text-sm">
             <p>
-              <strong>Complimentary months are skipped billing months applied at the end of your term.</strong>
-            </p>
-            <p className="text-muted-foreground">
-              Your subscription still ends on your 12-month or 24-month anniversary date. You receive the same term length—you simply pay for fewer months.
+              <strong>Complimentary months are applied as credits at the end of the agreement term.</strong>
             </p>
             <div className="bg-white rounded-lg p-4 border">
-              <p className="font-medium mb-2">Example: 2-Year + Pay-in-Full (enroll by March 25)</p>
+              <p className="font-medium mb-2">Example: 2-Year + Pay-in-Full</p>
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Commitment Bonus (2-year): 2 months</li>
                 <li>• Pay-in-Full doubles commitment: 2 × 2 = 4 months</li>
-                <li>• Birthday Bonus (fixed): +2 months</li>
-                <li>• Total: 6 complimentary months</li>
+                <li>• Total: 4 complimentary months</li>
                 <li>• Term: 24 months of service</li>
-                <li>• Months billed: 18</li>
+                <li>• Months billed: 20</li>
               </ul>
             </div>
             <div className="bg-white rounded-lg p-4 border mt-3">
-              <p className="font-medium mb-2">Example: 1-Year + Pay-in-Full (enroll by March 25)</p>
+              <p className="font-medium mb-2">Example: 1-Year + Pay-in-Full</p>
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Commitment Bonus (1-year): 1 month</li>
                 <li>• Pay-in-Full doubles commitment: 1 × 2 = 2 months</li>
-                <li>• Birthday Bonus (fixed): +1 month</li>
-                <li>• Total: 3 complimentary months</li>
+                <li>• Total: 2 complimentary months</li>
                 <li>• Term: 12 months of service</li>
-                <li>• Months billed: 9</li>
+                <li>• Months billed: 10</li>
               </ul>
             </div>
             <div className="bg-amber-50 rounded-lg p-4 border border-amber-200 mt-3">
               <p className="font-medium text-amber-800 mb-1">Important:</p>
               <p className="text-amber-700 text-xs">
-                Complimentary months are skipped billing months applied at the end of your term. Your subscription still ends on your 12-month or 24-month anniversary date.
+                Complimentary months are applied as credits at the end of the agreement term.
               </p>
             </div>
           </div>

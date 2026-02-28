@@ -37,6 +37,7 @@ import {
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_1771794280044.png";
+import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 import mascotAtWork from "@assets/Lawn_Trooper_at_work_in_the_yard_2_1771794299342.png";
@@ -143,7 +144,7 @@ export default function LandingPage() {
   };
 
 
-  const mascotLogo = heroMascot;
+  const mascotLogo = companyLogo;
 
   useEffect(() => {
     const w = window as any;
@@ -246,7 +247,7 @@ export default function LandingPage() {
             className="mb-8 relative w-full max-w-4xl"
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
-            <img src={mascotLogo} alt="Cartoon lawn-care professional holding a weed trimmer" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-6" />
+            <img src={mascotLogo} alt="Lawn Trooper Premium Exterior Care logo" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-6" />
             
             {/* Big Intimidating Camo Banner */}
             <div className="mt-4 relative z-20 w-full">

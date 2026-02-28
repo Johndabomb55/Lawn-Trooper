@@ -50,16 +50,12 @@ import {
 } from "@/data/plans";
 import { 
   COMMITMENT_TERMS, 
-  LOYALTY_DISCOUNTS,
-  PROMO_CAPS,
   HOA_PROMO_CODES,
   validatePromoCode,
   calculateActualMonthly,
   calculateTermFreeMonths,
   getFreeMonthsBreakdown,
-  getEarlyBirdBonus,
   getAnniversaryBonus,
-  MONTH_TO_MONTH_PREMIUM
 } from "@/data/promotions";
 
 const STEPS = [
@@ -113,7 +109,7 @@ export default function StreamlinedWizard() {
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
   const [swapCount, setSwapCount] = useState(0);
   const [executivePlus, setExecutivePlus] = useState(false);
-  const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
+  const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
   const [payInFull, setPayInFull] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [name, setName] = useState("");
@@ -178,15 +174,9 @@ export default function StreamlinedWizard() {
   };
 
   const basePrice = calculateBasePrice();
-  // Monthly subscription = base price + addon extras (with M2M premium if applicable)
   const monthlySubscription = isHOA ? 0 : calculateActualMonthly(basePrice + addonExtraCost, term);
-  // For 1-year/2-year: billedMonths = termMonths - freeMonths, effectiveMonthly = (monthly × billedMonths) / termMonths
-  const termMonths = selectedTerm?.months || 1;
-  const billedMonths = term !== 'month-to-month' ? termMonths - totalFreeMonths : 1;
-  const effectiveMonthly = term !== 'month-to-month' && totalFreeMonths > 0
-    ? (monthlySubscription * billedMonths) / termMonths
-    : monthlySubscription;
-  // For backward compatibility
+  const termMonths = selectedTerm?.months || 12;
+  const billedMonths = termMonths - totalFreeMonths;
   const actualMonthly = monthlySubscription;
 
   const handleNext = () => {
@@ -1052,27 +1042,20 @@ export default function StreamlinedWizard() {
                 {COMMITMENT_TERMS.map((t) => {
                   const isSelected = term === t.id;
                   const isBestValue = t.id === '2-year';
-                  const isSaveMore = t.id === '1-year';
-                  // Calculate display free months based on current selection if this term were selected
-                  const displayFreeMonths = t.id !== 'month-to-month' 
-                    ? calculateTermFreeMonths(t.id as '1-year' | '2-year', isSelected ? payInFull : false) 
-                    : 0;
+                  const displayFreeMonths = calculateTermFreeMonths(t.id as '1-year' | '2-year', isSelected ? payInFull : false);
                   return (
                     <div key={t.id}>
                       <button
                         data-testid={`term-${t.id}`}
                         onClick={() => {
-                          setTerm(t.id as 'month-to-month' | '1-year' | '2-year');
-                          if (t.id === 'month-to-month') setPayInFull(false);
+                          setTerm(t.id as '1-year' | '2-year');
                         }}
                         className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between relative ${
                           isBestValue
                             ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
-                            : isSaveMore
-                              ? `border-primary/70 ${isSelected ? 'bg-primary/10 shadow-lg' : 'bg-primary/5'}`
-                              : isSelected
-                                ? 'border-primary bg-primary/10 shadow-lg'
-                                : 'border-border hover:border-primary/50'
+                            : isSelected
+                              ? 'border-primary bg-primary/10 shadow-lg'
+                              : 'border-border hover:border-primary/50'
                         }`}
                       >
                         {isBestValue && (
@@ -1080,19 +1063,11 @@ export default function StreamlinedWizard() {
                             BEST VALUE
                           </div>
                         )}
-                        {isSaveMore && (
-                          <div className="absolute -top-2 left-4 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            SAVE MORE
-                          </div>
-                        )}
                         <div>
                           <div className="font-bold text-lg">{t.label}</div>
                           <div className="text-sm text-muted-foreground">
-                            {(t as any).shortDescription || t.description}
+                            {t.shortDescription || t.description}
                           </div>
-                          {t.hasPremium && (
-                            <div className="text-xs text-amber-600 mt-1">Includes flexibility pricing (+15%)</div>
-                          )}
                         </div>
                         <div className="text-right">
                           {displayFreeMonths > 0 ? (
@@ -1202,13 +1177,12 @@ export default function StreamlinedWizard() {
               {/* Pricing Summary */}
               {basePrice > 0 && (
                 <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 space-y-3">
-                  {term !== 'month-to-month' && (
+                  {totalFreeMonths > 0 && (
                     <div className="rounded-lg border border-green-300 bg-green-50 p-3 text-center">
-                      <div className="text-xs uppercase tracking-wide text-green-700 font-bold">Commitment Savings Locked</div>
+                      <div className="text-xs uppercase tracking-wide text-green-700 font-bold">Complimentary Months Earned</div>
                       <div className="text-lg font-extrabold text-green-700">
-                        {totalFreeMonths} free billing month{totalFreeMonths === 1 ? '' : 's'} + save ${((calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * termMonths) - (monthlySubscription * billedMonths)).toLocaleString()}
+                        {totalFreeMonths} complimentary month{totalFreeMonths === 1 ? '' : 's'}
                       </div>
-                      <div className="text-xs text-green-700">Compared to month-to-month for the same service period.</div>
                     </div>
                   )}
                   <div className="flex justify-between items-center">
@@ -1216,39 +1190,30 @@ export default function StreamlinedWizard() {
                     <span className="text-2xl font-bold text-primary">${monthlySubscription}/mo</span>
                   </div>
                   
-                  {/* 1-Year / 2-Year Billing Breakdown */}
-                  {term !== 'month-to-month' && (
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Free billing months:</span>
-                        <span className="font-bold text-green-600">{totalFreeMonths} month{totalFreeMonths !== 1 ? 's' : ''}</span>
-                      </div>
-                      {/* Itemized breakdown */}
-                      <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
-                        <div className="flex justify-between">
-                          <span>• Commitment Bonus:</span>
-                          <span>{payInFull ? `${freeMonthsBreakdown.commitmentBase} × 2 = ${freeMonthsBreakdown.commitmentMonths}` : `+${freeMonthsBreakdown.commitmentBase}`} mo</span>
-                        </div>
-                        {freeMonthsBreakdown.anniversaryBonus > 0 && (
-                          <div className="flex justify-between">
-                            <span>• Birthday Bonus (fixed):</span>
-                            <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Billed months:</span>
-                        <span className="font-medium">{billedMonths} of {termMonths}</span>
-                      </div>
-                      <div className="flex justify-between items-center pt-2 border-t">
-                        <span className="font-medium">Effective monthly:</span>
-                        <span className="text-lg font-bold text-green-600">${effectiveMonthly.toFixed(0)}/mo</span>
-                      </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Complimentary months:</span>
+                      <span className="font-bold text-green-600">{totalFreeMonths} month{totalFreeMonths !== 1 ? 's' : ''}</span>
                     </div>
-                  )}
+                    <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
+                      <div className="flex justify-between">
+                        <span>• Commitment Bonus:</span>
+                        <span>{payInFull ? `${freeMonthsBreakdown.commitmentBase} × 2 = ${freeMonthsBreakdown.commitmentMonths}` : `+${freeMonthsBreakdown.commitmentBase}`} mo</span>
+                      </div>
+                      {freeMonthsBreakdown.anniversaryBonus > 0 && (
+                        <div className="flex justify-between">
+                          <span>• Birthday Bonus (fixed):</span>
+                          <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Billed months:</span>
+                      <span className="font-medium">{billedMonths} of {termMonths}</span>
+                    </div>
+                  </div>
                   
-                  {/* Pay in Full total display - for both 1-year and 2-year */}
-                  {payInFull && term !== 'month-to-month' && (
+                  {payInFull && (
                     <div className="bg-green-50 rounded-lg p-3 border border-green-200">
                       <div className="text-center">
                         <div className="text-lg font-bold text-green-700">Pay in Full Total</div>
@@ -1261,50 +1226,15 @@ export default function StreamlinedWizard() {
                       </div>
                     </div>
                   )}
-                  
-                  {/* Savings vs Month-to-Month */}
-                  {term !== 'month-to-month' && (
-                    <div className="text-xs text-center text-muted-foreground">
-                      <span>vs Month-to-Month: </span>
-                      <span className="font-bold text-red-500 line-through">
-                        ${(calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * termMonths).toLocaleString()}
-                      </span>
-                      <span className="font-bold text-green-600 ml-2">
-                        Save ${((calculateActualMonthly(basePrice + addonExtraCost, 'month-to-month') * termMonths) - (monthlySubscription * billedMonths)).toLocaleString()}!
-                      </span>
-                    </div>
-                  )}
                 </div>
               )}
 
               {/* Complimentary Months Disclaimer */}
               <div className="p-3 bg-muted/50 rounded-lg border border-border text-center">
                 <p className="text-xs text-muted-foreground">
-                  Free billing months are skipped billing months applied at the end of your term. Your agreement still ends on your 12-month or 24-month anniversary date.
+                  Complimentary months are applied as credits at the end of the agreement term.
                 </p>
               </div>
-
-              {/* Loyalty Preview */}
-              <button
-                data-testid="info-loyalty"
-                onClick={() => showInfo("Operation Price Drop", (
-                  <div className="space-y-3">
-                    <p className="font-semibold">Future loyalty benefits on renewal:</p>
-                    {LOYALTY_DISCOUNTS.map((l, i) => (
-                      <div key={i} className="flex justify-between bg-green-50 p-2 rounded">
-                        <span>{l.label}</span>
-                        <span className="font-bold text-green-600">{l.discount}% off</span>
-                      </div>
-                    ))}
-                    <p className="text-xs text-muted-foreground">
-                      Loyalty discounts apply automatically when you renew your contract.
-                    </p>
-                  </div>
-                ))}
-                className="text-sm text-primary underline mx-auto block"
-              >
-                See future loyalty savings
-              </button>
             </motion.div>
           )}
 
@@ -1367,7 +1297,7 @@ export default function StreamlinedWizard() {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Complimentary months are skipped billing months at the end of your term. Your subscription still ends on your anniversary date.</p>
+                  <p className="text-xs text-muted-foreground mt-2">Complimentary months are applied as credits at the end of the agreement term.</p>
                 </div>
               )}
 
@@ -1511,23 +1441,10 @@ export default function StreamlinedWizard() {
               {!isHOA && (
                 <div className="text-left text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
                   <p className="font-medium mb-1">Cancellation Policy:</p>
-                  <p>Month-to-month plans may be canceled anytime with 30 days notice. Term plans may be canceled early at any time; complimentary months and unused credits are forfeited if canceled before the term ends.</p>
+                  <p>Subscriptions may be canceled early at any time; complimentary months and unused credits are forfeited if canceled before the term ends.</p>
                 </div>
               )}
 
-              {/* Future Loyalty - Residential only */}
-              {!isHOA && (
-                <div className="text-left">
-                  <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Future Loyalty Benefits</p>
-                  <div className="flex gap-2 text-xs">
-                    {LOYALTY_DISCOUNTS.map((l, i) => (
-                      <span key={i} className="bg-green-50 text-green-700 px-2 py-1 rounded">
-                        {l.label}: {l.discount}% off
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
             </motion.div>
           )}
         </AnimatePresence>

@@ -5,42 +5,24 @@
  * Marketing team can edit this file to add/modify promotions without touching component code.
  * 
  * COMMITMENT MODEL (March 2026):
- * 3 commitment options:
- * - Month-to-Month: +15% premium, no complimentary months, cancel anytime
+ * 2 subscription options (no month-to-month):
  * - 1-Year Subscription: 12 months, can pay monthly or pay in full
- * - 2-Year Subscription (Price Lock): 24 months, can pay monthly or pay in full
+ * - 2-Year Subscription (Best Value): 24 months, can pay monthly or pay in full
  * 
  * COMPLIMENTARY MONTH RULES:
- * "Complimentary months" = skipped billing months at the END of your term.
- * Your agreement still ends on your 12-month or 24-month anniversary date.
+ * "Complimentary months" = credits applied at the end of the agreement term.
  * 
  * 1) Commitment Bonus (always available):
  *    - 1-Year: +1 complimentary month
  *    - 2-Year: +2 complimentary months
  * 2) Pay-in-Full Option:
- *    - Doubles ONLY commitment months (bonus months NOT doubled)
+ *    - Doubles commitment months
  *    - 1-Year PIF: 1×2 = 2 commitment months
  *    - 2-Year PIF: 2×2 = 4 commitment months
- * 3) 25th Anniversary Enrollment Bonus (limited time):
- *    - Enroll by March 25: +2 bonus months
- *    - After March 25: +0 bonus months
- *    - Bonus months are NOT doubled by pay-in-full
+ * 3) Referral Bonus:
+ *    - +1 complimentary month after friend commits
  * 
- * EXAMPLES (before March 25 bonus = +2):
- * - 1-Year (monthly): 1 + 2 = 3 complimentary months
- * - 1-Year + PIF: 2 + 2 = 4 complimentary months
- * - 2-Year (monthly): 2 + 2 = 4 complimentary months
- * - 2-Year + PIF: 4 + 2 = 6 complimentary months
- * 
- * MAX OUTCOMES:
- * - 1-Year Pay in Full + March bonus = 4 total
- * - 2-Year Pay in Full + March bonus = 6 total
- * 
- * BILLING:
- * - termMonths = 12 or 24
- * - billedMonths = termMonths - complimentaryMonths
- * - effectiveMonthly = (monthlySubscription × billedMonths) / termMonths
- * - Complimentary months are skipped billing at END of agreement
+ * Complimentary months are applied as credits at the end of the agreement term.
  */
 
 export interface Promotion {
@@ -51,7 +33,7 @@ export interface Promotion {
   stackGroup: 'freeMonths' | 'percentOff';
   value: number;
   eligibility: {
-    term?: 'month-to-month' | '1-year' | '2-year';
+    term?: '1-year' | '2-year';
     payUpfront?: boolean;
     segment?: 'renter' | 'veteran' | 'senior';
     hasReferral?: boolean;
@@ -65,9 +47,6 @@ export const PROMO_CAPS = {
   maxPercentOff: 30,
   maxFreeMonths: 6,  // Max: 2-Year PIF (4) + March bonus (2) = 6
 };
-
-// Month-to-month premium (15% over 2-year base rate)
-export const MONTH_TO_MONTH_PREMIUM = 0.15;
 
 // 25-Year Birthday Bonus (25th Anniversary Enrollment Bonus) - Single deadline March 25
 export const BIRTHDAY_BONUS = {
@@ -143,46 +122,26 @@ export const getEarlyBirdBonus = () => {
 };
 export const isEarlyBird = isBirthdayBonusActive;
 
-// Operation Price Drop - Loyalty Pricing
-export const LOYALTY_DISCOUNTS = [
-  { year: 1, discount: 5, label: "After Year 1" },
-  { year: 2, discount: 10, label: "After Year 2" },
-  { year: 3, discount: 15, label: "After Year 3" },
-];
-
-// Contract term options - 3 options
+// Contract term options - 2 subscription options only (no month-to-month)
 export const COMMITMENT_TERMS = [
-  {
-    id: 'month-to-month' as const,
-    label: 'Month-to-Month',
-    months: 1,
-    freeMonths: 0,
-    badge: 'Flexible',
-    description: 'Month-to-month does not include complimentary months because we reward long-term commitment.',
-    shortDescription: 'No complimentary months (+15% flexibility premium)',
-    hasPremium: true,
-    allowsPayInFull: false,
-  },
   {
     id: '1-year' as const,
     label: '1-Year Subscription',
     months: 12,
-    freeMonths: 1,  // Commitment Bonus
-    badge: 'Save More',
-    description: 'Commit to one year and earn +1 complimentary billing month. Pay monthly or pay in full.',
-    shortDescription: '+1 complimentary month (Commitment Bonus)',
-    hasPremium: false,
+    freeMonths: 1,
+    badge: '',
+    description: 'Commit to one year and earn +1 complimentary month. Pay monthly or pay in full.',
+    shortDescription: '+1 complimentary month',
     allowsPayInFull: true,
   },
   {
     id: '2-year' as const,
-    label: '2-Year Subscription (Price Lock)',
+    label: '2-Year Subscription',
     months: 24,
-    freeMonths: 2,  // Commitment Bonus
+    freeMonths: 2,
     badge: 'Best Value',
-    description: 'Lock in your rate for 2 years and earn +2 complimentary billing months. Pay monthly or pay in full.',
-    shortDescription: '+2 complimentary months (Commitment Bonus)',
-    hasPremium: false,
+    description: 'Lock in your rate for 2 years and earn +2 complimentary months. Pay monthly or pay in full.',
+    shortDescription: '+2 complimentary months',
     allowsPayInFull: true,
   },
 ];
@@ -201,9 +160,7 @@ export const COMMITMENT_TERMS = [
  * - 2-Year (monthly): 2 + 2 = 4 complimentary months
  * - 2-Year + PIF: 4 + 2 = 6 complimentary months
  */
-export function calculateTermFreeMonths(term: 'month-to-month' | '1-year' | '2-year', payInFull: boolean): number {
-  if (term === 'month-to-month') return 0;
-  
+export function calculateTermFreeMonths(term: '1-year' | '2-year', payInFull: boolean): number {
   // Commitment Bonus: 1 for 1-year, 2 for 2-year
   const commitmentBase = term === '1-year' ? 1 : 2;
   
@@ -235,33 +192,17 @@ export function calculate2YearFreeMonths(payInFull: boolean): number {
  * - total: Final complimentary months
  * - payInFull: Whether PIF is applied
  */
-export function getFreeMonthsBreakdown(term: 'month-to-month' | '1-year' | '2-year', payInFull: boolean): {
+export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boolean): {
   commitmentBase: number;
   commitmentMonths: number;
   anniversaryBonus: number;
   total: number;
   payInFull: boolean;
-  // Legacy aliases for backward compatibility
   earlyBirdBonus: number;
   commitmentBonus: number;
   earnedTotal: number;
   acceleratorMultiplier: number;
 } {
-  if (term === 'month-to-month') {
-    return { 
-      commitmentBase: 0,
-      commitmentMonths: 0,
-      anniversaryBonus: 0,
-      total: 0,
-      payInFull: false,
-      // Legacy
-      earlyBirdBonus: 0,
-      commitmentBonus: 0,
-      earnedTotal: 0,
-      acceleratorMultiplier: 1,
-    };
-  }
-  
   // Commitment Bonus base: 1 for 1-year, 2 for 2-year
   const commitmentBase = term === '1-year' ? 1 : 2;
   
@@ -288,15 +229,7 @@ export function getFreeMonthsBreakdown(term: 'month-to-month' | '1-year' | '2-ye
   };
 }
 
-/**
- * Calculate the actual monthly payment based on term and base price
- * Month-to-month includes 15% flexibility pricing
- * 1-year and 2-year use base pricing
- */
-export function calculateActualMonthly(basePrice: number, term: 'month-to-month' | '1-year' | '2-year'): number {
-  if (term === 'month-to-month') {
-    return Math.round(basePrice * (1 + MONTH_TO_MONTH_PREMIUM));
-  }
+export function calculateActualMonthly(basePrice: number, term: '1-year' | '2-year'): number {
   return basePrice;
 }
 
@@ -395,7 +328,7 @@ export const PROMOTIONS: Promotion[] = [
 
 // User selections interface for promotions engine
 export interface UserSelections {
-  term: 'month-to-month' | '1-year' | '2-year';
+  term: '1-year' | '2-year';
   payUpfront: boolean;
   segments: ('renter' | 'veteran' | 'senior')[];
   hasReferral: boolean;
@@ -464,7 +397,7 @@ export function getApplicablePromotions(
   // Calculate term-based free months from canonical commitment logic.
   // This ensures pay-in-full correctly increases free months.
   const freeMonthsBreakdown = getFreeMonthsBreakdown(selections.term, selections.payUpfront);
-  if (selections.term !== 'month-to-month') {
+  {
     const commitmentPromo = activePromos.find(
       (p) => p.id === (selections.term === '1-year' ? 'commitment_1year' : 'commitment_2year')
     );
@@ -521,7 +454,7 @@ export function getApplicablePromotions(
     totalFreeMonths = freeMonthsBreakdown.total;
   }
 
-  // Sort by display order for consistent application
+  // Sort by display order
   const sortedPromos = [...activePromos].sort((a, b) => a.displayOrder - b.displayOrder);
 
   for (const promo of sortedPromos) {
@@ -685,16 +618,12 @@ export function getApplicablePromotions(
   };
 }
 
-/**
- * Apply promotions to base totals and return display values
- * Accepts month-to-month, 1-year, or 2-year terms
- */
 export function applyPromotions(
-  baseTotals: { monthlyTotal: number; term: 'month-to-month' | '1-year' | '2-year' },
+  baseTotals: { monthlyTotal: number; term: '1-year' | '2-year' },
   promotionResult: PromotionResult
 ): AppliedTotals {
-  const termMonthsMap: Record<string, number> = { 'month-to-month': 1, '1-year': 12, '2-year': 24 };
-  const termMonths = termMonthsMap[baseTotals.term] || 24;
+  const termMonthsMap: Record<string, number> = { '1-year': 12, '2-year': 24 };
+  const termMonths = termMonthsMap[baseTotals.term] || 12;
   const { totalPercentOff, totalFreeMonths } = promotionResult;
 
   // Calculate discounted monthly

@@ -4,6 +4,7 @@ import { Shield, Mail, Phone, Leaf, Award, Cpu, Star, ChevronRight } from "lucid
 import { HERO_CONTENT, TRUST_BAR_COMPACT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
 import { PLANS } from "@/data/plans";
 import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_1771794280044.png";
+import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
 
 const iconMap: Record<string, React.ElementType> = {
   Leaf,
@@ -26,7 +27,7 @@ export default function SimpleHome() {
       <header className="bg-primary text-white py-3 px-4">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src={heroMascot} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-white/10" />
+            <img src={companyLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-white/10" />
             <span data-testid="text-brand" className="font-heading font-bold text-xl tracking-tight">LAWN TROOPER</span>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm">

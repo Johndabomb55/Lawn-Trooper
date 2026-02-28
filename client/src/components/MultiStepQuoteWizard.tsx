@@ -202,7 +202,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [swapCount, setSwapCount] = useState(0);
   const [executivePlus, setExecutivePlus] = useState(false);
   
-  const [term, setTerm] = useState<'month-to-month' | '1-year' | '2-year'>('2-year');
+  const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
   const [showPromoUnlocked, setShowPromoUnlocked] = useState(false);
@@ -220,7 +220,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     basicAddons: string[];
     premiumAddons: string[];
     totalPrice: number;
-    term: 'month-to-month' | '1-year' | '2-year';
+    term: '1-year' | '2-year';
     payUpfront: boolean;
     segments: string[];
     appliedPromos: string[];
@@ -760,9 +760,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         </tr>
                         <tr>
                           <td className="py-2 pr-2 text-muted-foreground">Upgrades Included</td>
-                          <td className="py-2 px-2 text-center">{tableBasicAllowance.basic + tableBasicAllowance.premium}</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">{tablePremiumAllowance.basic + tablePremiumAllowance.premium}</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">{tableExecutiveAllowance.basic + tableExecutiveAllowance.premium}</td>
+                          <td className="py-2 px-2 text-center">{tableBasicAllowance.basic}B</td>
+                          <td className="py-2 px-2 text-center font-medium text-primary">{tablePremiumAllowance.basic}B + {tablePremiumAllowance.premium}P</td>
+                          <td className="py-2 px-2 text-center font-bold text-accent">{tableExecutiveAllowance.basic}B + {tableExecutiveAllowance.premium}P</td>
                         </tr>
                       </tbody>
                     </table>
