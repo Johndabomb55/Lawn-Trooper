@@ -21,7 +21,7 @@ Drizzle ORM is used with PostgreSQL for data persistence. Schema definitions are
 The project is organized into `client/` for the React application, `server/` for the Express backend, `shared/` for common types and schemas, and `migrations/` for Drizzle database migrations.
 
 ### Key Design Decisions
-1.  **Centralized Pricing & Marketing Data**: All plan definitions, add-ons, promotions, and marketing content are stored in dedicated TypeScript files (`client/src/data/plans.ts`, `client/src/data/marketing.ts`, `client/src/data/promotions.ts`, `client/src/data/content.ts`) to ensure consistency and easy updates.
+1.  **Centralized Pricing & Marketing Data**: All plan definitions, upgrades, promotions, and marketing content are stored in dedicated TypeScript files (`client/src/data/plans.ts`, `client/src/data/marketing.ts`, `client/src/data/promotions.ts`, `client/src/data/content.ts`) to ensure consistency and easy updates.
 2.  **Graceful Degradation**: The application is designed to function even without a connected database (using in-memory storage) or email service (skipping emails but capturing leads), ensuring resilience.
 3.  **Promotions Engine**: A config-driven stacking discount system defined in `client/src/data/promotions.ts` allows for flexible promotion management, including commitment bonuses, anniversary bonuses, and loyalty pricing.
 4.  **Quote Wizard Gamification**: The quote process incorporates military-themed rank progression, "Mission Ready" indicators, and local tips to enhance user engagement.
@@ -32,6 +32,7 @@ The project is organized into `client/` for the React application, `server/` for
 9.  **Executive+ Toggle**: Optional +$99/mo upgrade for Executive Command that adds +1 Basic, +1 Premium upgrade, Quarterly Strategy Session, Rapid Response Priority, and Expanded Landscape Allowance™.
 10. **Upgrade Conversion (Swap)**: Premium and Executive plans support converting 2 Basic Upgrades → 1 Premium Upgrade. Basic does NOT allow conversion. The `getSwapOptions()` function generates swap options for eligible plans.
 11. **Dream Yard Recon™**: AI-generated landscape plan included with every plan. Premium/Executive get personalized review with Account Manager.
+12. **Step 2 Plan Details Panel**: `PlanDetailsPanel.tsx` renders inline below the selected plan card in Step 3 (Plan Selection) of the Streamlined Wizard. Shows locked features, swappable upgrade slots with live counters, tabbed Basic/Premium upgrade selection, and conversion controls (2B→1P / reverse). Executive+ toggle is embedded in this panel. Selections carry to Step 4 via shared state (`basicAddons`, `premiumAddons`, `swapCount`, `executivePlus`).
 
 ## External Dependencies
 

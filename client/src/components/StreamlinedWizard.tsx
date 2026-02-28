@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import PlanDetailsPanel from "@/components/PlanDetailsPanel";
 import { 
   PLANS, 
   YARD_SIZES, 
@@ -498,7 +499,7 @@ export default function StreamlinedWizard() {
             </motion.div>
           )}
 
-          {/* Step 3: Plan Selection */}
+          {/* Step 3: Plan Selection + Details Panel */}
           {step === 3 && (
             <motion.div
               key="step3"
@@ -518,7 +519,7 @@ export default function StreamlinedWizard() {
                   const isExecutive = p.id === 'executive';
                   const isPremium = p.id === 'premium';
                   return (
-                    <div key={p.id} className="relative">
+                    <div key={p.id}>
                       <button
                         data-testid={`plan-${p.id}`}
                         onClick={() => {
@@ -528,7 +529,6 @@ export default function StreamlinedWizard() {
                           if (p.id !== 'executive') {
                             setExecutivePlus(false);
                           }
-                          // Clear premium add-ons when switching to Basic plan (no premium allowance)
                           if (p.id === 'basic' && previousPlan !== 'basic') {
                             setPremiumAddons([]);
                           }
@@ -556,25 +556,23 @@ export default function StreamlinedWizard() {
                         <div className="flex items-center justify-between">
                           <div>
                             <h4 className="font-bold text-lg">{p.name}</h4>
-                            <div className="flex gap-2 mt-1 flex-wrap">
-                              {p.keyStats.slice(0, 2).map((stat, i) => (
-                                <span key={i} className="text-xs bg-muted px-2 py-0.5 rounded">
-                                  {stat.label}: {stat.value}
-                                </span>
-                              ))}
-                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">{p.description}</p>
                           </div>
                           <div className="text-right">
                             <div className="text-2xl font-bold text-primary">${calculate2026Price(p.id, yardSize || "1/3")}</div>
                             <div className="text-xs text-muted-foreground">/mo</div>
                           </div>
                         </div>
-                        {/* Upgrade breakdown line */}
-                        <div className="mt-2 pt-2 border-t border-border/50 text-xs">
-                          <span className="text-muted-foreground">Upgrades Included: </span>
-                          <span className="font-medium">{getPlanAllowanceLabel(p.id)}</span>
+                        <div className="mt-2 pt-2 border-t border-border/50 flex items-center justify-between text-xs">
+                          <div>
+                            <span className="text-muted-foreground">Slots: </span>
+                            <span className="font-bold text-primary">{p.allowance.basic}B</span>
+                            {p.allowance.premium > 0 && (
+                              <span className="font-bold text-accent"> + {p.allowance.premium}P</span>
+                            )}
+                          </div>
                           {p.allowsSwap && (
-                            <span className="block text-primary/70 mt-0.5">Convert 2 Basic → 1 Premium</span>
+                            <span className="text-primary/70">Swap: 2B → 1P</span>
                           )}
                         </div>
                         {isSelected && (
@@ -583,92 +581,33 @@ export default function StreamlinedWizard() {
                           </div>
                         )}
                       </button>
-                      {/* See All Details button */}
-                      <button
-                        data-testid={`plan-details-${p.id}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          showInfo(`${p.name} - Full Details`, (
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-2 text-sm">
-                                {p.keyStats.map((stat, i) => (
-                                  <div key={i} className="bg-muted/50 p-2 rounded">
-                                    <div className="font-medium text-primary">{stat.value}</div>
-                                    <div className="text-xs text-muted-foreground">{stat.label}</div>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="border-t pt-3">
-                                <div className="font-medium text-sm mb-2">Included Services:</div>
-                                <ul className="space-y-2 text-sm">
-                                  {p.features.map((feature, i) => (
-                                    <li key={i} className="flex gap-2">
-                                      <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                                      <span dangerouslySetInnerHTML={{ __html: feature }} />
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                              <div className="border-t pt-3 text-center">
-                                <div className="text-lg font-bold text-primary">Upgrades Included</div>
-                                <div className="text-sm">{getPlanAllowanceLabel(p.id)}</div>
-                                {p.allowsSwap && (
-                                  <div className="text-xs text-primary/70 mt-1">Convert 2 Basic → 1 Premium</div>
-                                )}
-                              </div>
-                            </div>
-                          ));
-                        }}
-                        className="w-full text-center text-xs text-primary underline py-1 hover:text-primary/80"
-                      >
-                        See All Details
-                      </button>
+
+                      {isSelected && (
+                        <div className="mt-3">
+                          <PlanDetailsPanel
+                            plan={plan as any}
+                            executivePlus={executivePlus}
+                            setExecutivePlus={setExecutivePlus}
+                            swapCount={swapCount}
+                            setSwapCount={setSwapCount}
+                            basicAddons={basicAddons}
+                            setBasicAddons={setBasicAddons}
+                            premiumAddons={premiumAddons}
+                            setPremiumAddons={setPremiumAddons}
+                            effectiveBasicAllowance={effectiveBasicAllowance}
+                            effectivePremiumAllowance={effectivePremiumAllowance}
+                            showInfo={showInfo}
+                          />
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
-
-              {/* Executive+ Toggle */}
-              {plan === 'executive' && (
-                <div className="mt-4">
-                  <button
-                    data-testid="executive-plus-toggle"
-                    onClick={() => {
-                      setExecutivePlus(!executivePlus);
-                      setSwapCount(0);
-                    }}
-                    className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
-                      executivePlus
-                        ? 'border-accent bg-accent/10'
-                        : 'border-border hover:border-accent/40'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-sm flex items-center gap-2">
-                          <Star className="w-4 h-4 text-accent" />
-                          {EXECUTIVE_PLUS.label}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          {EXECUTIVE_PLUS.description} — +1 Basic, +1 Premium upgrade
-                        </div>
-                        <div className="text-xs text-accent/80 mt-1">
-                          {EXECUTIVE_PLUS.perks.join(' • ')}
-                        </div>
-                      </div>
-                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                        executivePlus ? 'border-accent bg-accent' : 'border-muted-foreground/30'
-                      }`}>
-                        {executivePlus && <Check className="w-3 h-3 text-white" />}
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              )}
             </motion.div>
           )}
 
-          {/* Step 4: Add-ons */}
+          {/* Step 4: Upgrades */}
           {step === 4 && (
             <motion.div
               key="step4"
@@ -766,7 +705,7 @@ export default function StreamlinedWizard() {
                 {/* BASIC ADD-ONS - Always visible for all plans */}
                 <div>
                   <div className="text-xs font-bold text-primary uppercase tracking-wider mb-2 sticky top-0 bg-background py-1">
-                    Basic Add-ons ({basicAddons.length}/{effectiveBasicAllowance} included free)
+                    Basic Upgrades ({basicAddons.length}/{effectiveBasicAllowance} included free)
                   </div>
                   
                   {/* Landscaping */}
@@ -934,7 +873,7 @@ export default function StreamlinedWizard() {
                 {(plan === 'premium' || plan === 'executive') && (
                   <div className="pt-3 border-t border-accent/30">
                     <div className="text-xs font-bold text-accent uppercase tracking-wider mb-2 sticky top-0 bg-background py-1">
-                      Premium Add-ons ({premiumAddons.length}/{effectivePremiumAllowance} included free)
+                      Premium Upgrades ({premiumAddons.length}/{effectivePremiumAllowance} included free)
                       {effectivePremiumAllowance === 0 && <span className="text-amber-600 ml-1">(+$40/mo each)</span>}
                     </div>
                     
@@ -1411,10 +1350,10 @@ export default function StreamlinedWizard() {
                     <span data-testid="text-yard-size" className="bg-muted px-2 py-0.5 rounded">{selectedYard?.label}</span>
                     <span data-testid="text-term" className="bg-muted px-2 py-0.5 rounded">{selectedTerm?.label}</span>
                   </div>
-                  {/* Add-ons summary */}
+                  {/* Upgrades summary */}
                   <div className="text-xs border-t border-border/50 pt-2 mt-2 space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Add-ons:</span>
+                      <span className="text-muted-foreground">Upgrades:</span>
                       <span>{basicAddons.length} Basic, {premiumAddons.length} Premium</span>
                     </div>
                     <div className="flex justify-between">
@@ -1423,7 +1362,7 @@ export default function StreamlinedWizard() {
                     </div>
                     {totalOverage > 0 && (
                       <div className="flex justify-between text-amber-600 font-medium">
-                        <span>Add-on overages:</span>
+                        <span>Upgrade overages:</span>
                         <span>+${totalOverage}/mo</span>
                       </div>
                     )}
@@ -1539,7 +1478,7 @@ export default function StreamlinedWizard() {
                       <span data-testid="text-confirm-free-months" className="font-bold text-green-600">{totalFreeMonths} mo</span>
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
-                      <span className="text-xs text-muted-foreground block">Add-ons</span>
+                      <span className="text-xs text-muted-foreground block">Upgrades</span>
                       <span data-testid="text-confirm-addons" className="font-bold">
                         {basicAddons.length} Basic, {premiumAddons.length} Premium
                         {totalOverage > 0 && <span className="text-amber-600"> (+${totalOverage}/mo overages)</span>}
