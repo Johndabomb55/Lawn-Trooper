@@ -1,0 +1,83 @@
+You are working inside the Lawn Trooper Replit codebase.
+
+IMPORTANT:
+- I may have other edits in this workspace. Do NOT revert unrelated changes.
+- Do NOT refactor the entire wizard architecture.
+- Preserve the wizard steps and routing: Step 1 Yard Size → Step 2 Plan → Step 3 Upgrades → Step 4 Contact.
+- Goal is correctness + clarity, not a giant redesign.
+
+PRIMARY GOAL:
+Fix plan consistency and the quote wizard logic so the site matches the intended plan structure and stops confusing customers.
+
+PLAN PRICES + NAMES (LOCKED):
+- Basic Patrol: $169/mo
+- Premium Patrol: $299/mo
+- Executive Command: $399/mo
+- Executive+ is an OPTIONAL TOGGLE that appears ONLY when Executive is selected: +$99/mo
+
+SLOT COUNTS (LOCKED):
+- Basic Patrol: 2 Basic slots, 0 Premium slots
+- Premium Patrol: 3 Basic slots, 1 Premium slot
+- Executive Command: 3 Basic slots, 3 Premium slots
+- Executive+ toggle adds: +1 Basic slot AND +1 Premium slot
+
+CONVERSION RULE:
+Allow “Convert 2 Basic → 1 Premium” ONLY for Premium and Executive.
+Basic does NOT allow conversion.
+
+TURF DEFENSE RULE (LOCKED):
+- Basic: no turf apps included (do not show “2 apps” anywhere)
+- Premium: no turf apps included by default
+- Executive: show “Executive Turf Defense™ — up to 7 turf applications annually” + weed-free turf guarantee language.
+
+LANDSCAPE ALLOWANCE (LOCKED, NO DOLLARS, NO YARD NUMBERS):
+- Premium: “Seasonal Landscape Refresh Allowance™”
+- Executive: “Premier Landscape Allowance™”
+- Executive+: “Expanded Landscape Allowance™”
+Add tooltip/helper text anywhere it appears:
+“An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.”
+Do NOT show yard counts or dollar amounts publicly.
+
+STEP 1 CLEANUP:
+Fix yard size cards so there is no duplicate line. Display only:
+- Small: Up to 1/3 acre
+- Medium: 1/3 – 2/3 acre
+- Large: 2/3 – 1 acre
+
+STEP 2 CONSISTENCY FIX:
+Right now the plan comparison table/card/features show conflicting numbers.
+Create/identify ONE “plan config” source of truth (object or file) and make:
+- Step 2 comparison table
+- plan cards
+- plan features panels
+- Step 3 counters and validation
+all read from that shared plan config.
+This should eliminate mismatched counts like “Upgrades Included 3/5/6” vs “3 basic + 0 premium” vs “2 basic included.”
+
+STEP 3 ENFORCEMENT:
+Ensure Step 3 starts with required slots (or defaults if you already have them) and cannot proceed unless:
+- Basic has 2 Basic selected
+- Premium has 3 Basic + 1 Premium (or conversion-adjusted totals)
+- Executive has 3 Basic + 3 Premium (or conversion-adjusted totals)
+Also ensure the Executive+ toggle correctly increases slot counts and total price.
+
+EXECUTIVE+ TOGGLE:
+When Executive is selected, show:
+“Executive+ Upgrade (+$99/mo)”
+If enabled:
+- Adds +1 Basic slot, +1 Premium slot
+- Adds locked perks: Quarterly Strategy Session + Rapid Response Priority
+- Changes allowance label to Expanded Landscape Allowance™ in summaries
+
+OUTPUT:
+After implementing, provide:
+- List of files changed
+- Short explanation of the plan config structure (where it lives)
+- A test checklist (click-through steps)
+- Confirm no console errors
+
+DO NOT in this pass:
+- rewrite all marketing copy
+- redesign the entire UI
+- add new paid add-on mechanisms
+Just fix correctness + slot logic + consistency + allowance wording.
