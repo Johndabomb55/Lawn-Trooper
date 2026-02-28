@@ -1,0 +1,134 @@
+You are a senior product engineer working in the Lawn Trooper Replit codebase.
+
+IMPORTANT:
+- Do NOT refactor the entire wizard architecture.
+- Keep the same wizard steps and routing.
+- Only redesign Step 2 UI (Plan selection) and its selection state so Step 3 still works.
+- Do NOT change pricing or plan names.
+- Preserve current styling/brand (colors, typography, spacing).
+- Make changes surgically. If something already matches the requirement, leave it unchanged.
+
+ASSUMPTION:
+Stage 1 has already centralized plan config and fixed slot counts/logic.
+Use that shared plan config as the source of truth.
+
+GOAL:
+Redesign Step 2 (Plan Selection) so customers instantly understand:
+1) What’s included (locked)
+2) What’s included but swappable (upgrade slots)
+3) How swapping works (basic vs premium slots, conversion button)
+Without making the wizard longer or more complex.
+
+---------------------------------------
+STEP 2 NEW UX (MUST IMPLEMENT)
+---------------------------------------
+
+A) Top row: 3 plan cards only
+- Basic Patrol ($169/mo)
+- Premium Patrol ($299/mo)
+- Executive Command ($399/mo)
+
+Each card shows:
+- Plan name
+- Price
+- One-liner summary (short)
+- Included slot counts (Basic slots / Premium slots)
+Selecting a card highlights it.
+
+B) When a plan is selected, render a DETAILS PANEL directly BELOW the cards (same page)
+The panel has three sections:
+
+1) INCLUDED (LOCKED) ✅
+- List non-negotiable features from plan config (mowing schedule, off-season cadence, account manager access if included, turf defense if included, bed weed control cadence).
+- These cannot be swapped.
+
+2) INCLUDED UPGRADES (SWAPPABLE) 🔁✅
+- Show slots as “Basic Upgrade Slots” and “Premium Upgrade Slots”
+- Show default selections pre-selected IF the code already has defaults.
+  - If no defaults exist, show “Pick your included upgrades” with empty slot placeholders.
+- These are swappable within their category.
+
+3) SWAP OPTIONS
+- Two tabs or two columns:
+  - “Basic Upgrades”
+  - “Premium Upgrades”
+- Clicking an option swaps it into an available slot of that type.
+- Show live slot counters and remaining slots.
+
+C) Conversion (Premium + Executive only)
+- Add a clear button:
+  “Convert 2 Basic → +1 Premium”
+- If feasible, allow reverse:
+  “Convert 1 Premium → +2 Basic”
+- Conversion must update counters and enforce slot limits.
+- Basic plan must NOT show conversion controls.
+
+D) Icon language (keep dead simple)
+- ✅ Included (locked)
+- 🔁✅ Included upgrade (swappable)
+- ➕ Optional paid add-on (ONLY if already supported; do not invent new paid logic)
+
+---------------------------------------
+EXECUTIVE+ TOGGLE (ONLY ON EXECUTIVE)
+---------------------------------------
+When Executive Command is selected:
+- Show a toggle within Step 2 (either on the card or in the details panel):
+  “Executive+ Upgrade (+$99/mo)”
+- When enabled:
+  - Add +1 Basic slot and +1 Premium slot
+  - Add locked perks: Quarterly Strategy Session + Rapid Response Priority
+  - Upgrade the allowance label to “Expanded Landscape Allowance™”
+- Ensure the total monthly price updates and Step 3 receives updated slot counts.
+
+---------------------------------------
+LANDSCAPE ALLOWANCE LANGUAGE (NO DOLLARS / NO YARDS)
+---------------------------------------
+Use only tier labels:
+- Premium: Seasonal Landscape Refresh Allowance™
+- Executive: Premier Landscape Allowance™
+- Executive+ : Expanded Landscape Allowance™
+In the details panel, show a short helper line:
+“An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.”
+
+---------------------------------------
+STEP 3 COMPATIBILITY (MUST NOT BREAK)
+---------------------------------------
+- Step 3 must start with the selected included upgrades from Step 2.
+- Slot enforcement must still work exactly as Stage 1 defined.
+- If Step 3 has its own UI, keep it, but it must reflect choices made in Step 2.
+
+---------------------------------------
+YARD SIZE LABEL CLEANUP (IF NOT ALREADY DONE)
+---------------------------------------
+Ensure Step 1 yard cards show ONLY:
+Small: Up to 1/3 acre
+Medium: 1/3 – 2/3 acre
+Large: 2/3 – 1 acre
+
+---------------------------------------
+ACCEPTANCE TESTS
+---------------------------------------
+After implementing:
+1) Small yard → Basic Patrol
+   - Details panel renders correctly
+   - Shows 2 Basic slots
+   - No conversion button
+   - Step 3 requires exactly 2 Basic selections
+
+2) Small yard → Premium Patrol
+   - Shows 3 Basic + 1 Premium slots
+   - Conversion button works (2 Basic → +1 Premium)
+   - Step 3 reflects the same
+
+3) Small yard → Executive Command
+   - Shows 3 Basic + 3 Premium slots
+   - Conversion works
+   - Executive+ toggle appears
+   - Toggle adds +1 Basic +1 Premium and increases price +$99/mo
+   - Step 3 reflects updated slots and price
+
+OUTPUT:
+- List all files changed
+- Briefly explain the Step 2 state shape and how it passes to Step 3
+- Confirm no console errors
+- Provide a quick click-through test guide
