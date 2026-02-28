@@ -82,7 +82,7 @@ import {
 const STEPS = [
   { id: 1, title: "Yard Size", icon: MapPin, rank: "Recruit", rankIcon: Shield },
   { id: 2, title: "Plan", icon: Zap, rank: "Sergeant", rankIcon: Award },
-  { id: 3, title: "Add-Ons", icon: Star, rank: "Commander", rankIcon: Target },
+  { id: 3, title: "Upgrades", icon: Star, rank: "Commander", rankIcon: Target },
   { id: 4, title: "Contact", icon: Phone, rank: "General", rankIcon: Award },
 ];
 
@@ -560,12 +560,12 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   // Mission Ready indicator
   const getAddOnInstructionText = () => {
     if (plan === "basic") {
-      return "Basic Plan includes 1 included add-on. Choose your included service below.";
+      return `Basic Plan includes ${allowance.basic} included upgrades. Choose your included services below.`;
     }
     if (plan === "premium") {
-      return `Premium Plan includes ${allowance.basic} Basic and ${allowance.premium} Premium included add-ons.`;
+      return `Premium Plan includes ${allowance.basic} Basic and ${allowance.premium} Premium included upgrades.`;
     }
-    return `Executive Command includes ${allowance.basic} Basic and ${allowance.premium} Premium included add-ons.`;
+    return `Executive Command includes ${allowance.basic} Basic and ${allowance.premium} Premium included upgrades.`;
   };
 
   const MissionReadyIndicator = () => (
@@ -1072,7 +1072,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <div className="text-xs text-muted-foreground">Includes AI-Savings Discount</div>
                     {extraCost > 0 && (
                       <div className="text-xs text-muted-foreground">
-                        Base ${planPrice} + ${extraCost} extra add-ons
+                        Base ${planPrice} + ${extraCost} extra upgrades
                       </div>
                     )}
                   </div>

@@ -48,7 +48,7 @@ export const MILITARY_RANKS = [
   { 
     id: 3, 
     rank: "Commander", 
-    label: "Add-ons", 
+    label: "Upgrades", 
     description: "Commanding your arsenal",
     completionMessage: "Arsenal locked and loaded! Final briefing ahead."
   },
@@ -166,7 +166,7 @@ export const WAITLIST_CONFIG = {
   title: "Join the Command Center",
   subtitle: "More advanced autonomy is coming soon, providing daily mows for weekly prices.",
   features: [
-    "Premium add-on coming soon",
+    "Premium upgrade coming soon",
     "Daily-mow autonomy at weekly-plan pricing",
     "Exclusive member discounts",
     "Priority scheduling"

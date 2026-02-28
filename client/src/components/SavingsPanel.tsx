@@ -36,9 +36,7 @@ export default function SavingsPanel({
 }: SavingsPanelProps) {
   const {
     displayedMonthly,
-    displayedEffectiveMonthly,
     freeMonthsAtEnd,
-    percentSavings,
     annualSavingsEstimate,
     monthlyDiscount,
   } = appliedTotals;
@@ -120,29 +118,19 @@ export default function SavingsPanel({
             )}
           </div>
           <div className="text-center p-3 bg-white/50 rounded-lg">
-            <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Effective Monthly</div>
-            <div className="text-2xl font-bold text-green-600">${displayedEffectiveMonthly}</div>
-            <div className="text-xs text-muted-foreground">After free months</div>
+            <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Complimentary Months</div>
+            <div className="text-2xl font-bold text-accent">{freeMonthsAtEnd}</div>
+            <div className="text-xs text-muted-foreground">At end of term</div>
           </div>
         </div>
 
-        {/* Complimentary Months & Total Savings */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 p-2 bg-accent/10 rounded-lg">
-            <Calendar className="w-5 h-5 text-accent shrink-0" />
-            <div>
-              <div className="text-sm font-bold text-accent">{freeMonthsAtEnd} Free Billing Month{freeMonthsAtEnd === 1 ? "" : "s"}</div>
-              <div className="text-xs text-muted-foreground">At end of {termLabel}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+        {/* Savings Summary */}
+        {annualSavingsEstimate > 0 && (
+          <div className="flex items-center justify-center gap-2 p-2 bg-green-50 rounded-lg">
             <TrendingDown className="w-5 h-5 text-green-600 shrink-0" />
-            <div>
-              <div className="text-sm font-bold text-green-600">{percentSavings}% Off</div>
-              <div className="text-xs text-muted-foreground">~${annualSavingsEstimate}/yr saved</div>
-            </div>
+            <div className="text-sm font-bold text-green-600">~${annualSavingsEstimate}/yr saved vs. month-to-month</div>
           </div>
-        </div>
+        )}
 
         {/* Applied Promotions */}
         {hasDiscounts && (
@@ -195,7 +183,7 @@ export default function SavingsPanel({
           </p>
           {freeMonthsAtEnd > 0 && (
             <p className="text-[10px] text-muted-foreground">
-              Complimentary months applied at end of agreement term.
+              Complimentary months are applied as credits at the end of the agreement term.
             </p>
           )}
         </div>

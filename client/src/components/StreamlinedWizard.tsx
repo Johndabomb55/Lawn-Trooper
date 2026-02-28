@@ -65,7 +65,7 @@ const STEPS = [
   { id: 1, title: "Welcome", icon: Shield },
   { id: 2, title: "Yard Size", icon: MapPin },
   { id: 3, title: "Plan", icon: Star },
-  { id: 4, title: "Add-ons", icon: Gift },
+  { id: 4, title: "Upgrades", icon: Gift },
   { id: 5, title: "Commitment", icon: Calendar },
   { id: 6, title: "Contact", icon: User },
   { id: 7, title: "Complete", icon: Trophy },
@@ -756,7 +756,7 @@ export default function StreamlinedWizard() {
                 )}
                 {totalOverage > 0 && (
                   <div className="flex justify-between items-center font-bold text-amber-700 bg-amber-50 -mx-3 -mb-3 px-3 py-2 rounded-b-lg">
-                    <span>Extra add-on cost:</span>
+                    <span>Extra upgrade cost:</span>
                     <span>+${totalOverage}/mo</span>
                   </div>
                 )}
@@ -1085,12 +1085,12 @@ export default function StreamlinedWizard() {
               </div>
 
               <p className="text-xs text-center text-muted-foreground">
-                Tap the info icon for details. You can always adjust add-ons later.
+                Tap the info icon for details. You can always adjust upgrades later.
               </p>
               
               {/* Seasonal Scheduling Disclaimer */}
               <p className="text-[10px] text-center text-muted-foreground/70 mt-2">
-                Some add-on services are seasonal and may be scheduled during appropriate times of the year or during off-season periods when our schedule allows.
+                Some upgrade services are seasonal and may be scheduled during appropriate times of the year or during off-season periods when our schedule allows.
               </p>
             </motion.div>
           )}
