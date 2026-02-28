@@ -912,21 +912,14 @@ export default function LandingPage() {
                 <span className="font-bold text-sm text-primary">Facebook</span>
               </div>
               <div className="flex justify-center p-4">
-                <div
-                  className="fb-page"
-                  data-href="https://www.facebook.com/profile.php?id=61588087766755"
-                  data-tabs="timeline"
-                  data-width="500"
-                  data-height="600"
-                  data-small-header="false"
-                  data-adapt-container-width="true"
-                  data-hide-cover="false"
-                  data-show-facepile="true"
-                >
-                  <blockquote cite="https://www.facebook.com/profile.php?id=61588087766755" className="fb-xfbml-parse-ignore">
-                    <a href="https://www.facebook.com/profile.php?id=61588087766755" target="_blank" rel="noopener noreferrer">Lawn Trooper on Facebook</a>
-                  </blockquote>
-                </div>
+                <iframe
+                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61588087766755&tabs=timeline&width=500&height=600&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true"
+                  width="500"
+                  height="600"
+                  style={{ border: 'none', overflow: 'hidden', maxWidth: '100%' }}
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Lawn Trooper Facebook Page"
+                ></iframe>
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-md overflow-hidden" data-testid="instagram-embed">
