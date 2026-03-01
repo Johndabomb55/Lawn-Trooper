@@ -78,7 +78,7 @@ export default function TermSelector({
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Pay your full term upfront to double commitment months. 1-year goes 1 to 2, and 2-year goes 2 to 4.
+              Pay your full term upfront to double commitment months. 1-year goes 1 to 2, and 2-year goes 3 to 6.
             </p>
           </Label>
         </div>
@@ -89,9 +89,6 @@ export default function TermSelector({
           <Sparkles className="w-3 h-3" />
           {TRUST_MESSAGES.commitment}
           <Sparkles className="w-3 h-3" />
-        </p>
-        <p className="text-[10px] text-muted-foreground mt-1">
-          Complimentary months are applied as credits at the end of the agreement term.
         </p>
       </div>
     </div>

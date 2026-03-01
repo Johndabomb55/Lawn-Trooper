@@ -14,15 +14,13 @@
  * 
  * 1) Commitment Bonus (always available):
  *    - 1-Year: +1 complimentary month
- *    - 2-Year: +2 complimentary months
+ *    - 2-Year: +3 complimentary months
  * 2) Pay-in-Full Option:
  *    - Doubles commitment months
  *    - 1-Year PIF: 1×2 = 2 commitment months
- *    - 2-Year PIF: 2×2 = 4 commitment months
- * 3) Referral Bonus:
- *    - +1 complimentary month after friend commits
+ *    - 2-Year PIF: 3×2 = 6 commitment months
  * 
- * Complimentary months are applied as credits at the end of the agreement term.
+ * No referral bonus on site. Complimentary months are applied as credits at the end of the agreement term.
  */
 
 export interface Promotion {
@@ -45,7 +43,7 @@ export interface Promotion {
 // Stacking caps
 export const PROMO_CAPS = {
   maxPercentOff: 30,
-  maxFreeMonths: 6,  // Max: 2-Year PIF (4) + March bonus (2) = 6
+  maxFreeMonths: 6,  // Max: 2-Year PIF = 6 complimentary months
 };
 
 // 25-Year Birthday Bonus (25th Anniversary Enrollment Bonus) - Single deadline March 25
@@ -138,42 +136,25 @@ export const COMMITMENT_TERMS = [
     id: '2-year' as const,
     label: '2-Year Subscription',
     months: 24,
-    freeMonths: 2,
+    freeMonths: 3,
     badge: 'Best Value',
-    description: 'Lock in your rate for 2 years and earn +2 complimentary months. Pay monthly or pay in full.',
-    shortDescription: '+2 complimentary months',
+    description: 'Lock in your rate for 2 years and earn +3 complimentary months. Pay monthly or pay in full.',
+    shortDescription: '+3 complimentary months',
     allowsPayInFull: true,
   },
 ];
 
 /**
  * Calculate complimentary service months for term commitments
- * 
+ *
  * Formula:
- * - Commitment months: 1 (1-year) or 2 (2-year)
- * - Pay-in-Full doubles ONLY commitment months (NOT bonus)
- * - Anniversary Enrollment Bonus: +2 (before March 25) — NOT doubled
- * 
- * Examples (before March 25, bonus = +2):
- * - 1-Year (monthly): 1 + 2 = 3 complimentary months
- * - 1-Year + PIF: 2 + 2 = 4 complimentary months
- * - 2-Year (monthly): 2 + 2 = 4 complimentary months
- * - 2-Year + PIF: 4 + 2 = 6 complimentary months
+ * - 1-Year: +1 complimentary month (PIF doubles to 2)
+ * - 2-Year: +3 complimentary months (PIF doubles to 6)
+ * - No anniversary stacking, no referral bonus
  */
 export function calculateTermFreeMonths(term: '1-year' | '2-year', payInFull: boolean): number {
-  // Commitment Bonus: 1 for 1-year, 2 for 2-year
-  const commitmentBase = term === '1-year' ? 1 : 2;
-  
-  // Pay-in-Full doubles ONLY commitment months
-  const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
-  
-  // 25th Anniversary Enrollment Bonus: NOT doubled by PIF
-  const anniversaryBonus = getAnniversaryBonus().months;
-  
-  // Total: doubled commitment + undoubled bonus
-  const totalFreeMonths = commitmentMonths + anniversaryBonus;
-  
-  return totalFreeMonths;
+  const commitmentBase = term === '1-year' ? 1 : 3;
+  return payInFull ? commitmentBase * 2 : commitmentBase;
 }
 
 // Legacy alias for backward compatibility
@@ -184,13 +165,9 @@ export function calculate2YearFreeMonths(payInFull: boolean): number {
 /**
  * Get itemized breakdown of complimentary months
  * Useful for displaying in UI
- * 
- * Returns:
- * - commitmentBase: Base commitment months (1 for 1-year, 2 for 2-year)
- * - commitmentMonths: After PIF doubling (if applicable)
- * - anniversaryBonus: Enrollment bonus (NOT doubled by PIF)
- * - total: Final complimentary months
- * - payInFull: Whether PIF is applied
+ *
+ * Birthday Bonus terminology maps to the commitment bonus.
+ * 1-year=1, 2-year=3. Pay-in-full doubles commitment months.
  */
 export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boolean): {
   commitmentBase: number;
@@ -203,28 +180,20 @@ export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boo
   earnedTotal: number;
   acceleratorMultiplier: number;
 } {
-  // Commitment Bonus base: 1 for 1-year, 2 for 2-year
-  const commitmentBase = term === '1-year' ? 1 : 2;
-  
-  // Pay-in-Full doubles ONLY commitment months
+  const commitmentBase = term === '1-year' ? 1 : 3;
   const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
-  
-  // 25th Anniversary Enrollment Bonus: NOT doubled
-  const anniversaryBonus = getAnniversaryBonus().months;
-  
-  // Total = doubled commitment + undoubled bonus
-  const total = commitmentMonths + anniversaryBonus;
-  
+  const anniversaryBonus = 0;
+  const total = commitmentMonths;
+
   return {
     commitmentBase,
     commitmentMonths,
     anniversaryBonus,
     total,
     payInFull,
-    // Legacy aliases
-    earlyBirdBonus: anniversaryBonus,
+    earlyBirdBonus: 0,
     commitmentBonus: commitmentBase,
-    earnedTotal: commitmentBase + anniversaryBonus,
+    earnedTotal: commitmentBase,
     acceleratorMultiplier: payInFull ? 2 : 1,
   };
 }
@@ -238,10 +207,10 @@ export function calculateActualMonthly(basePrice: number, term: '1-year' | '2-ye
 
 // All available promotions - SIMPLIFIED for new commitment model
 export const PROMOTIONS: Promotion[] = [
-  // 1-Year Commitment Bonus
+  // 1-Year Birthday Bonus (commitment-based)
   {
     id: 'commitment_1year',
-    title: '1-Year Commitment Bonus',
+    title: '1-Year Birthday Bonus',
     shortDescription: '+1 complimentary month',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
@@ -251,14 +220,14 @@ export const PROMOTIONS: Promotion[] = [
     active: true,
   },
   
-  // 2-Year Commitment Bonus
+  // 2-Year Birthday Bonus (commitment-based)
   {
     id: 'commitment_2year',
-    title: '2-Year Commitment Bonus',
-    shortDescription: '+2 complimentary months',
+    title: '2-Year Birthday Bonus',
+    shortDescription: '+3 complimentary months',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
-    value: 2,
+    value: 3,
     eligibility: { term: '2-year' },
     displayOrder: 2,
     active: true,
@@ -312,7 +281,7 @@ export const PROMOTIONS: Promotion[] = [
     active: true,
   },
 
-  // Referral bonus
+  // Referral bonus (disabled — no referral bonus on site)
   {
     id: 'referral_bonus',
     title: 'Referral Bonus',
@@ -322,7 +291,7 @@ export const PROMOTIONS: Promotion[] = [
     value: 1,
     eligibility: { hasReferral: true },
     displayOrder: 8,
-    active: true,
+    active: false,
   },
 ];
 
@@ -658,7 +627,7 @@ export const TRUST_MESSAGES = {
   confirmation: "Your information is secure. We never sell your data. An account manager will reach out to schedule your FREE property walk-through.",
   commitment: "Commit to us and we commit to you.",
   miguelNote: "An account manager will contact you via your preferred method (call, email, or text) to coordinate a good time for your FREE property walk-through and Dream Yard Recon.",
-  referralNudge: "Refer a neighbour — you both earn 1 complimentary month after your friend commits.",
+  referralNudge: "Refer a neighbor — get in touch to learn more.",
 };
 
 
@@ -669,19 +638,24 @@ export const SEGMENT_OPTIONS = [
   { id: 'senior' as const, label: 'I am 60 or older', description: '5% off for seniors' },
 ];
 
-// Recommended add-ons by plan and season
+// Recommended add-ons by plan and season (IDs must exist in ADDON_CATALOG)
+// Pre-selected defaults per plan (slot counts must match: Basic 2B/0P, Premium 3B+1P, Executive 3B+3P)
 export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: string[] }> = {
   basic: {
-    basic: ['irrigation_check', 'fire_ant_app', 'extra_weed_control'],
+    basic: ['extra_weed_control', 'gutter_cleaning'],
     premium: [],
   },
   premium: {
-    basic: ['irrigation_check', 'mulch_delivery_install_2yards'],
-    premium: ['pest_control', 'aeration_overseeding'],
+    basic: ['mulch_install_4yards', 'gutter_cleaning', 'extra_weed_control'],
+    premium: ['aeration_dethatching'],
   },
   executive: {
-    basic: ['mulch_delivery_install_2yards', 'basic_christmas_lights'],
-    premium: ['pressure_washing', 'premium_flower_install', 'christmas_lights_premium'],
+    basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning'],
+    premium: ['premium_pressure_wash', 'christmas_lights_premium', 'aeration_dethatching'],
+  },
+  "executive+": {
+    basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning', 'extra_weed_control'],
+    premium: ['premium_pressure_wash', 'christmas_lights_premium', 'aeration_dethatching', 'weekly_growth_season_mowing'],
   },
 };
 
@@ -689,7 +663,6 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    'Monthly bed weed control included',
     'Seasonal Landscape Refresh Allowance\u2122',
   ],
   executive: [

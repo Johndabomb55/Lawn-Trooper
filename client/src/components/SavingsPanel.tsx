@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TRUST_MESSAGES } from "@/data/promotions";
+import { TRUST_MESSAGES, calculateTermFreeMonths } from "@/data/promotions";
 import type { PromotionResult, AppliedTotals } from "@/data/promotions";
 
 interface SavingsPanelProps {
@@ -22,6 +22,7 @@ interface SavingsPanelProps {
   promotionResult: PromotionResult;
   appliedTotals: AppliedTotals;
   term: '1-year' | '2-year';
+  payUpfront: boolean;
   showUnlockedAnimation?: boolean;
   className?: string;
 }
@@ -31,6 +32,7 @@ export default function SavingsPanel({
   promotionResult,
   appliedTotals,
   term,
+  payUpfront,
   showUnlockedAnimation = false,
   className = "",
 }: SavingsPanelProps) {
@@ -41,6 +43,11 @@ export default function SavingsPanel({
   } = appliedTotals;
 
   const { applied, pending, savingsBreakdown, capApplied } = promotionResult;
+  const baseTermFreeMonths = calculateTermFreeMonths(term, false);
+  const payInFullFreeMonths = calculateTermFreeMonths(term, true);
+  const extraPayInFullMonths = Math.max(0, payInFullFreeMonths - baseTermFreeMonths);
+  const commitmentSavings = displayedMonthly * freeMonthsAtEnd;
+  const payInFullExtraSavings = displayedMonthly * extraPayInFullMonths;
 
   const hasDiscounts = applied.length > 0 || pending.length > 0;
   const termLabels: Record<string, string> = {
@@ -90,9 +97,25 @@ export default function SavingsPanel({
           <div className="text-center p-3 bg-white/50 rounded-lg">
             <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Complimentary Months</div>
             <div className="text-2xl font-bold text-accent">{freeMonthsAtEnd}</div>
-            <div className="text-xs text-muted-foreground">At end of term</div>
           </div>
         </div>
+
+        {freeMonthsAtEnd > 0 && (
+          <div className="bg-white/50 rounded-lg p-3 border border-primary/10 space-y-1.5">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Commitment savings</span>
+              <span className="font-bold text-green-700">${commitmentSavings.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">
+                {payUpfront ? "Pay-in-full extra savings" : "Pay in full to add"}
+              </span>
+              <span className="font-semibold text-green-700">
+                +${payInFullExtraSavings.toLocaleString()}
+              </span>
+            </div>
+          </div>
+        )}
 
         {hasDiscounts && (
           <div className="border-t border-primary/10 pt-3">
@@ -141,11 +164,6 @@ export default function SavingsPanel({
             {TRUST_MESSAGES.commitment}
             <Sparkles className="w-3 h-3" />
           </p>
-          {freeMonthsAtEnd > 0 && (
-            <p className="text-[10px] text-muted-foreground">
-              Complimentary months are applied as credits at the end of the agreement term.
-            </p>
-          )}
         </div>
       </div>
     </div>

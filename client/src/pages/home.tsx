@@ -33,6 +33,7 @@ import {
   GLOBAL_CONSTANTS, 
   PROMO_CONFIG
 } from "@/data/plans";
+import { WHY_DIFFERENT } from "@/data/content";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -40,7 +41,6 @@ import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_17717942800
 import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
-import mascotAtWork from "@assets/Lawn_Trooper_at_work_in_the_yard_2_1771794299342.png";
 import mascotHolidayLights from "@assets/Holiday_lights_on_a_festive_home_1771794249376.png";
 
 // Stock Assets
@@ -57,12 +57,12 @@ import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.
 import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
 import imgTrashBinWash from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
 import imgPineStrawInstall from "@assets/stock_images/man_trimming_hedges__4f4ec72f.jpg";
-import imgAlabamaYard1 from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
-import imgAlabamaYard2 from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
-import imgAlabamaYard3 from "@assets/stock_images/manicured_lawn_curb__32de1fed.jpg";
+import imgAlabamaYardBasic from "@assets/generated_images/athens_al_middle_class_home_landscaping.png";
+import imgAlabamaYardPremium from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
+import imgAlabamaYardExecutive from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
 import imgSmallYard1 from "@assets/generated_images/athens_al_home_with_pansies.png";
 import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
-import imgSmallYard3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
+import imgHuntsvilleHome from "@assets/generated_images/huntsville_al_home_landscaping.png";
 import bgLandscape from "@assets/generated_images/beautiful_landscaped_yard_background.png";
 
 
@@ -247,28 +247,14 @@ export default function LandingPage() {
             className="mb-8 relative w-full max-w-4xl"
           >
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
-            <img src={mascotLogo} alt="Lawn Trooper Premium Exterior Care logo" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[300px] mb-6" />
+            <img src={mascotLogo} alt="Lawn Trooper Premium Exterior Care logo" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[450px] mb-6" />
             
             {/* Big Intimidating Camo Banner */}
             <div className="mt-4 relative z-20 w-full">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase mb-4 leading-none" 
-                  style={{ 
-                    backgroundImage: `url(${camoPattern})`, 
-                    backgroundSize: '200px',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0px 3px 6px rgba(0,0,0,0.7))'
-                  }}>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase mb-4 leading-none text-white drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)] [-webkit-text-stroke:2px_rgba(134,239,172,0.9)]">
                 Lawn Trooper
               </h1>
-              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-6 leading-tight" 
-                  style={{ 
-                    backgroundImage: `url(${camoPattern})`, 
-                    backgroundSize: '250px',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.6))'
-                  }}>
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-6 leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] [-webkit-text-stroke:2px_rgba(134,239,172,0.9)]">
                 Landscape Maintenance<br/>& Exterior Home Care
               </h2>
               <h3 className="text-xl md:text-2xl font-serif font-bold text-white/90 uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-2 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30 max-w-3xl leading-relaxed">
@@ -358,6 +344,37 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 2026 Savings Banner — prominent selling point, stands out from rest of page */}
+      <section className="py-8 px-4 bg-amber-100 border-y-4 border-amber-400">
+        <div className="container mx-auto max-w-4xl text-center">
+          <p className="text-xl md:text-2xl lg:text-3xl font-extrabold text-amber-900 leading-snug drop-shadow-sm" style={{ textShadow: '0 0 0 3px #facc15, 0 0 0 5px #facc15, 0 0 0 6px #eab308, 0 2px 4px rgba(0,0,0,0.1)' }}>
+            New technology and automation have lowered our costs in 2026, and we are passing the savings on to our customers.
+          </p>
+        </div>
+      </section>
+
+      {/* Why We're Different — above plan builder */}
+      <section id="why-different" aria-labelledby="why-different-heading" className="py-12 bg-muted/20 border-y border-border">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <h2 id="why-different-heading" className="text-2xl md:text-3xl font-heading font-bold text-center text-primary mb-8">
+            {WHY_DIFFERENT.sectionTitle}
+          </h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {WHY_DIFFERENT.bullets.map((item, i) => (
+              <div key={i} className="flex gap-3 p-4 bg-background rounded-lg border border-border" data-testid={`why-different-${i}`}>
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-primary">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Quote Wizard Section - Primary CTA */}
       <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
@@ -427,28 +444,28 @@ export default function LandingPage() {
             </p>
           </div>
           
-          {/* Alabama Yards Gallery */}
+          {/* Alabama Yards Gallery — order matches plan builder: Basic, Premium, Executive */}
           <div className="mb-16">
             <h3 className="text-center text-xl font-bold text-[#0f2f1a] mb-6">
-              Examples of Tennessee Valley Yards We Maintain
+              Examples of Maintained Tennessee Valley Yards
             </h3>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
-                <img src={imgAlabamaYard1} alt="Beautiful Alabama Home with Landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img src={imgAlabamaYardBasic} alt="Athens, AL - Basic Patrol - Middle class Alabama home with nice landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Madison, AL - Executive Command</span>
+                  <span className="text-white text-sm font-bold">Athens, AL - Basic Patrol</span>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
-                <img src={imgAlabamaYard2} alt="Southern Home Front Yard" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img src={imgAlabamaYardPremium} alt="Huntsville, AL - Premium Patrol - Southern home front yard" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
                   <span className="text-white text-sm font-bold">Huntsville, AL - Premium Patrol</span>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
-                <img src={imgAlabamaYard3} alt="Landscaped Front Yard with Flowers" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img src={imgAlabamaYardExecutive} alt="Madison, AL - Executive Command - Beautiful Alabama home with landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Athens, AL - Basic Patrol</span>
+                  <span className="text-white text-sm font-bold">Madison, AL - Executive Command</span>
                 </div>
               </div>
             </div>
@@ -477,102 +494,6 @@ export default function LandingPage() {
             <p className="text-sm text-muted-foreground bg-white/50 inline-block px-4 py-2 rounded-lg border border-border">
               <strong>Note:</strong> {GLOBAL_CONSTANTS.YARD_ELIGIBILITY}
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Lawn Trooper */}
-      <section className="py-20 bg-muted/30 border-t border-border">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-6">Why Enlist Lawn Trooper?</h2>
-              <div className="space-y-6">
-                {[
-                  { title: "Locally Owned Command", desc: "Not a faceless national chain. We live here, we work here." },
-                  { title: "Tech-Forward Tactics", desc: "Smart routing and robotic mowers where appropriate for maximum efficiency." },
-                  { title: "Consistent Personnel", desc: "You'll know who is on your property. Friendly, vetted, and professional." },
-                  { title: "The Mission Mindset", desc: "We treat every yard like an assignment we must complete with excellence." }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                      <Shield className="w-5 h-5 text-secondary-foreground" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-lg">{item.title}</h4>
-                      <p className="text-muted-foreground text-sm">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="relative">
-              <img 
-                src={mascotAtWork} 
-                alt="Lawn Trooper at work" 
-                className="w-full h-auto rounded-xl shadow-2xl relative z-10 border-4 border-white object-contain object-top"
-              />
-              <div className="bg-card p-6 rounded-2xl border border-border relative mt-4 z-20 mx-4 shadow-xl">
-                <div className="text-6xl text-primary/20 font-serif absolute top-4 left-6">"</div>
-                <p className="text-lg italic text-foreground/80 relative z-10 pt-4 mb-6">
-                  I used to dread weekends because it meant mowing. Now I don't even think about it. The crew is like clockwork, and the billing is totally predictable. Best decision I made for my home.
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">LP</div>
-                  <div>
-                    <div className="font-bold">Loretta P.</div>
-                    <div className="text-xs text-muted-foreground">Premium Command Member since 2023</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why We're Different */}
-      <section id="why-different" aria-labelledby="why-different-heading" className="py-16 bg-background border-t border-border">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 id="why-different-heading" className="text-3xl font-heading font-bold text-center text-primary mb-10">
-            Why We're Different
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              {
-                title: "25 Years Serving the Community",
-                desc: "Over two decades of trusted service in the Tennessee Valley with 100+ beautification awards."
-              },
-              {
-                title: "Industry-Leading Knowledge",
-                desc: "Our founder has attended 3 AI and landscaping conferences to bring the latest innovations to your yard."
-              },
-              {
-                title: "Investment in Efficiency",
-                desc: "We invest in automation and operational efficiency so we can pass real savings to you."
-              },
-              {
-                title: "Loyalty Price Drop Guarantee",
-                desc: "Your pricing decreases over time as a loyal customer. We reward commitment, not punish it."
-              },
-              {
-                title: "Dedicated Account Manager",
-                desc: "Premium and Executive members get a real person managing their property — not a call center."
-              },
-              {
-                title: "AI-Assisted Dream Yard Recon\u2122",
-                desc: "Every plan includes an AI-generated landscape plan personalized to your property and goals."
-              }
-            ].map((item, i) => (
-              <div key={i} className="flex gap-3 p-4 bg-muted/30 rounded-lg border border-border" data-testid={`why-different-${i}`}>
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm text-primary">{item.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -757,7 +678,7 @@ export default function LandingPage() {
                className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
             >
               <div className="h-48 overflow-hidden relative">
-                 <img src={imgSmallYard3} alt="Huntsville Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <img src={imgHuntsvilleHome} alt="Huntsville, AL - Alabama style home with landscaping" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                  <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
                    Sector: Huntsville, AL
                  </div>
@@ -781,25 +702,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Referral section placed directly above FAQ for launch clarity */}
+      {/* Referral section — contact-only, no bonus promise */}
       <section className="py-14 bg-accent/15 border-t border-border">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-3">
             NO ONE LEFT BEHIND — REFERRAL PROGRAM
           </h2>
-          <p className="text-muted-foreground mb-6">
-            Refer a neighbor and you both earn service rewards.
+          <p className="text-muted-foreground mb-7">
+            Know a neighbor who could use a great lawn? Refer them and get in touch to learn more.
           </p>
-          <ul className="space-y-2 text-left max-w-xl mx-auto mb-7">
-            <li className="flex items-start gap-2">
-              <Check className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-              <span>1 successful referral = 1 complimentary month</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Check className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-              <span>2 referrals = upgrade bonus</span>
-            </li>
-          </ul>
           <Button
             onClick={() => window.location.href = "mailto:John@lawn-trooper.com?subject=Neighbor%20Referral%20Program"}
             className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider"
@@ -848,7 +759,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "Do I have to sign a contract?",
-                  a: `We offer annual subscription pricing for maximum value. ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY} Month-to-month options are also available.`
+                  a: `We offer 1-year and 2-year subscription terms. ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY}`
                 },
                 {
                   q: "How does billing work?",

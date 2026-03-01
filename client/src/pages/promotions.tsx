@@ -7,8 +7,7 @@ import {
   COMMITMENT_TERMS, 
   calculateActualMonthly,
   calculateTermFreeMonths,
-  getFreeMonthsBreakdown,
-  getEarlyBirdBonus
+  getFreeMonthsBreakdown
 } from "@/data/promotions";
 import { Switch } from "@/components/ui/switch";
 
@@ -30,7 +29,6 @@ export default function PromotionsPage() {
   
   const freeMonths = calculateTermFreeMonths(selectedTerm, payInFull);
   const freeMonthsBreakdown = getFreeMonthsBreakdown(selectedTerm, payInFull);
-  const earlyBirdBonus = getEarlyBirdBonus();
   
   const termMonths = term?.months || 12;
   const billedMonths = Math.max(termMonths - freeMonths, 1);
@@ -88,26 +86,12 @@ export default function PromotionsPage() {
               <h2 className="font-bold text-lg">Payment Option</h2>
             </div>
             <div className="space-y-4">
-              {earlyBirdBonus.isActive && (
-                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
-                  <strong>🎉 25-Year Birthday Bonus:</strong> +{earlyBirdBonus.months} complimentary month{earlyBirdBonus.months > 1 ? 's' : ''} included!
-                  <div className="text-xs text-amber-600 mt-1">
-                    Enroll by {earlyBirdBonus.enrollBy} • First payment by {earlyBirdBonus.payBy}
-                  </div>
-                </div>
-              )}
-              {!earlyBirdBonus.isActive && (
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-muted-foreground">
-                  <span>25-Year Birthday Bonus</span> <span className="italic">(Bonus concluded)</span>
-                </div>
-              )}
-              
               <div className="p-4 rounded-lg border-2 border-border bg-muted/30">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Pay-in-Full Option</div>
                     <div className="text-sm text-muted-foreground">
-                      Doubles commitment months ({selectedTerm === '1-year' ? '1 → 2' : '2 → 4'}).
+                      Doubles commitment months ({selectedTerm === '1-year' ? '1 → 2' : '3 → 6'}).
                     </div>
                   </div>
                   <Switch
@@ -188,17 +172,14 @@ export default function PromotionsPage() {
             Understanding Complimentary Months
           </h2>
           <div className="space-y-3 text-sm">
-            <p>
-              <strong>Complimentary months are applied as credits at the end of the agreement term.</strong>
-            </p>
             <div className="bg-white rounded-lg p-4 border">
               <p className="font-medium mb-2">Example: 2-Year + Pay-in-Full</p>
               <ul className="space-y-1 text-muted-foreground">
-                <li>• Commitment Bonus (2-year): 2 months</li>
-                <li>• Pay-in-Full doubles commitment: 2 × 2 = 4 months</li>
-                <li>• Total: 4 complimentary months</li>
+                <li>• Commitment Bonus (2-year): 3 months</li>
+                <li>• Pay-in-Full doubles commitment: 3 × 2 = 6 months</li>
+                <li>• Total: 6 complimentary months</li>
                 <li>• Term: 24 months of service</li>
-                <li>• Months billed: 20</li>
+                <li>• Months billed: 18</li>
               </ul>
             </div>
             <div className="bg-white rounded-lg p-4 border mt-3">
@@ -210,12 +191,6 @@ export default function PromotionsPage() {
                 <li>• Term: 12 months of service</li>
                 <li>• Months billed: 10</li>
               </ul>
-            </div>
-            <div className="bg-amber-50 rounded-lg p-4 border border-amber-200 mt-3">
-              <p className="font-medium text-amber-800 mb-1">Important:</p>
-              <p className="text-amber-700 text-xs">
-                Complimentary months are applied as credits at the end of the agreement term.
-              </p>
             </div>
           </div>
         </div>

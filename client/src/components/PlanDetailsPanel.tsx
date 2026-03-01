@@ -10,12 +10,12 @@ import {
 import {
   ADDON_CATALOG,
   EXECUTIVE_PLUS,
-  OVERAGE_PRICES,
   getSwapOptions,
   getPlanAllowance,
   type PlanId,
   type Addon,
 } from "@/data/plans";
+import { getPlanConfig } from "@/data/planConfig";
 
 interface LockedFeature {
   label: string;
@@ -29,7 +29,7 @@ const LOCKED_FEATURES: LockedFeature[] = [
   { label: "Off-Season: Monthly property check", planIds: ["basic"] },
   { label: "Off-Season: Bi-weekly service", planIds: ["premium"] },
   { label: "Year-Round Weekly Property Monitoring", planIds: ["executive"] },
-  { label: "Monthly Bed Weed Control", planIds: ["premium", "executive"] },
+  { label: "Flower bed weed control (included)", planIds: ["basic", "premium", "executive"] },
   { label: "Executive Turf Defense™ (up to 7 applications)", planIds: ["executive"] },
   { label: "Weed-Free Turf Guarantee", planIds: ["executive"] },
   { label: "Priority Storm Service", planIds: ["executive"] },
@@ -82,7 +82,7 @@ export default function PlanDetailsPanel({
   const lockedFeatures = LOCKED_FEATURES.filter((f) => f.planIds.includes(plan));
   const allowanceKey = plan === "executive" && executivePlus ? "executive+" : plan;
   const landscapeAllowance = LANDSCAPE_ALLOWANCE[allowanceKey];
-  const allowsSwap = plan !== "basic";
+  const allowsSwap = getPlanConfig(plan)?.allowConversion ?? false;
 
   const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
   const maxSwaps = swapOptions.length > 1 ? swapOptions[swapOptions.length - 1].value : 0;
@@ -166,7 +166,7 @@ export default function PlanDetailsPanel({
             <span className="font-medium text-sm">{addon.name}</span>
             {isOverage && isSelected && (
               <span className="text-[10px] text-amber-600 ml-1">
-                (+${addon.price}/mo)
+                (extra)
               </span>
             )}
           </div>
@@ -429,8 +429,7 @@ export default function PlanDetailsPanel({
               <div>
                 {effectivePremiumAllowance === 0 && (
                   <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg mb-2">
-                    No Premium slots included. Each selection adds +$
-                    {OVERAGE_PRICES.premium}/mo.
+                    No Premium slots included. Each selection is an extra add-on.
                   </div>
                 )}
                 {groupByCategory(premiumCatalog).map((cat) => (

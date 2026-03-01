@@ -69,6 +69,7 @@ import {
   PLANS, 
   BASIC_ADDONS, 
   PREMIUM_ADDONS, 
+  ADDON_CATALOG,
   getPlanAllowance,
   getPlanAllowanceLabel,
   getSwapOptions,
@@ -76,8 +77,9 @@ import {
   calculate2026Price,
   calculate2025Price,
   YARD_SIZES,
-  OVERAGE_PRICES
+  calculateOverageCost
 } from "@/data/plans";
+import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
 
 const STEPS = [
   { id: 1, title: "Yard Size", icon: MapPin, rank: "Recruit", rankIcon: Shield },
@@ -86,36 +88,23 @@ const STEPS = [
   { id: 4, title: "Contact", icon: Phone, rank: "General", rankIcon: Award },
 ];
 
-// Safe UI copy layer for plan-card clarity (no wizard logic changes).
-const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string; highlights: string[] }> = {
+// Step 2 plan cards: simplified — table shows features; cards show price + pre-selected upgrades only
+const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
   basic: {
     frequency: "Bi-Weekly",
     tagline: "Reliable maintenance with Dream Yard Recon\u2122.",
-    highlights: [
-      "Bi-weekly mowing (growing season)",
-      "Monthly property check (off-season)",
-      "2 Basic Upgrades included"
-    ],
   },
   premium: {
     frequency: "Weekly",
     tagline: "Weekly upkeep with Account Manager access.",
-    highlights: [
-      "Weekly mowing + bi-weekly off-season",
-      "Monthly bed weed control",
-      "3 Basic + 1 Premium Upgrades"
-    ],
   },
   executive: {
     frequency: "Year-Round Weekly",
     tagline: "Top-tier weekly command with Turf Defense\u2122.",
-    highlights: [
-      "Year-round weekly property monitoring",
-      "Executive Turf Defense\u2122 (7 apps/year)",
-      "3 Basic + 3 Premium Upgrades"
-    ],
   },
 };
+
+const getAddonName = (id: string) => ADDON_CATALOG.find((a) => a.id === id)?.name ?? id;
 
 // Confetti particle component
 const ConfettiParticle = ({ delay, x }: { delay: number; x: number }) => (
@@ -326,9 +315,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     }
   };
 
-  const resetAddons = () => {
-    setBasicAddons([]);
-    setPremiumAddons([]);
+  const setDefaultAddonsForPlan = (planId: string) => {
+    const rec = RECOMMENDED_ADDONS[planId];
+    if (rec) {
+      setBasicAddons(rec.basic);
+      setPremiumAddons(rec.premium);
+    } else {
+      setBasicAddons([]);
+      setPremiumAddons([]);
+    }
   };
 
   const handleBasicAddonToggle = (addonId: string) => {
@@ -431,9 +426,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const planData = PLANS.find(p => p.id === plan);
   const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
   const allowance = getPlanAllowance(plan, swapCount, payUpfront, new Date(), executivePlus);
-  const tableBasicAllowance = getPlanAllowance("basic", 0, payUpfront);
-  const tablePremiumAllowance = getPlanAllowance("premium", 0, payUpfront);
-  const tableExecutiveAllowance = getPlanAllowance("executive", 0, payUpfront);
   let planPrice = calculate2026Price(plan, yardSize);
   if (executivePlus && plan === 'executive') {
     const yardMultiplier = YARD_SIZES.find(y => y.id === yardSize)?.multiplier ?? 1.0;
@@ -441,8 +433,13 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   }
   const extraBasicCount = Math.max(0, basicAddons.length - allowance.basic);
   const extraPremiumCount = Math.max(0, premiumAddons.length - allowance.premium);
-  const extraCost = (extraBasicCount * OVERAGE_PRICES.basic) + (extraPremiumCount * OVERAGE_PRICES.premium);
-  const baseMonthlyTotal = planPrice + extraCost;
+  const { totalOverage } = calculateOverageCost(
+    basicAddons.length,
+    premiumAddons.length,
+    allowance.basic,
+    allowance.premium
+  );
+  const baseMonthlyTotal = planPrice + totalOverage;
 
   // Calculate promotions
   const userSelections: UserSelections = {
@@ -560,12 +557,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   // Mission Ready indicator
   const getAddOnInstructionText = () => {
     if (plan === "basic") {
-      return `Basic Plan includes ${allowance.basic} included upgrades. Choose your included services below.`;
+      if (allowance.premium > 0) {
+        return `Select exactly ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed.`;
+      }
+      return `Select exactly ${allowance.basic} Basic upgrade${allowance.basic === 1 ? "" : "s"} to proceed.`;
     }
     if (plan === "premium") {
-      return `Premium Plan includes ${allowance.basic} Basic and ${allowance.premium} Premium included upgrades.`;
+      return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
     }
-    return `Executive Command includes ${allowance.basic} Basic and ${allowance.premium} Premium included upgrades.`;
+    return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
   };
 
   const MissionReadyIndicator = () => (
@@ -720,54 +720,41 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <p className="text-muted-foreground">One-stop exterior maintenance with full lawn coverage.</p>
                   </div>
 
-                  {/* Compact Plan Comparison */}
-                  <div className="bg-muted/30 rounded-xl p-4 border border-border mb-4 overflow-x-auto">
-                    <table className="w-full text-sm">
+                  {/* Feature comparison matrix */}
+                  <div className="bg-muted/30 rounded-xl border border-border overflow-x-auto">
+                    <table className="w-full text-sm min-w-[480px]">
                       <thead>
                         <tr className="border-b border-border">
-                          <th className="text-left py-2 pr-2 text-muted-foreground font-medium">Feature</th>
-                          <th className="text-center py-2 px-2 font-bold text-primary">Basic</th>
-                          <th className="text-center py-2 px-2 font-bold text-primary">Premium</th>
-                          <th className="text-center py-2 px-2 font-bold text-accent">Executive</th>
+                          <th className="text-left py-3 px-3 text-muted-foreground font-medium">Feature</th>
+                          <th className="text-center py-3 px-3 font-bold text-primary">Basic</th>
+                          <th className="text-center py-3 px-3 font-bold text-primary">Premium</th>
+                          <th className="text-center py-3 px-3 font-bold text-accent">Executive</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">Mowing</td>
-                          <td className="py-2 px-2 text-center">Bi-Weekly</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">Weekly</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">Weekly</td>
-                        </tr>
-                        <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">Turf Defense</td>
-                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
-                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">7 Apps</td>
-                        </tr>
-                        <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">Bed Weed Control</td>
-                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">Monthly</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">Monthly</td>
-                        </tr>
-                        <tr className="border-b border-border/50">
-                          <td className="py-2 pr-2 text-muted-foreground">
-                            <span title="An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.">Landscape Allowance™ ℹ️</span>
-                          </td>
-                          <td className="py-2 px-2 text-center text-muted-foreground">—</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">Seasonal Refresh</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">Premier</td>
-                        </tr>
-                        <tr>
-                          <td className="py-2 pr-2 text-muted-foreground">Upgrades Included</td>
-                          <td className="py-2 px-2 text-center">{tableBasicAllowance.basic}B</td>
-                          <td className="py-2 px-2 text-center font-medium text-primary">{tablePremiumAllowance.basic}B + {tablePremiumAllowance.premium}P</td>
-                          <td className="py-2 px-2 text-center font-bold text-accent">{tableExecutiveAllowance.basic}B + {tableExecutiveAllowance.premium}P</td>
-                        </tr>
+                        {PLAN_COMPARISON_ROWS.map((row, i) => {
+                          const basicVal = row.basic;
+                          const premiumDiff = row.premium !== basicVal;
+                          const execDiff = row.executive !== basicVal;
+                          return (
+                            <tr key={i} className="border-b border-border/50 last:border-b-0">
+                              <td className="py-2.5 px-3 text-muted-foreground">{row.feature}</td>
+                              <td className={`py-2.5 px-3 text-center font-medium ${basicVal === "✓" ? "text-green-600" : ""}`}>
+                                {basicVal}
+                              </td>
+                              <td className={`py-2.5 px-3 text-center ${premiumDiff ? "bg-accent/5 font-medium text-primary" : ""} ${row.premium === "✓" ? "text-green-600" : ""}`}>
+                                {row.premium}
+                              </td>
+                              <td className={`py-2.5 px-3 text-center ${execDiff ? "bg-accent/5 font-medium text-accent" : ""} ${row.executive === "✓" ? "text-green-600" : ""}`}>
+                                {row.executive}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {PLANS.map((p) => {
                       const price2026 = calculate2026Price(p.id, yardSize);
@@ -785,9 +772,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             setPlan(p.id);
                             setSwapCount(0);
                             if (p.id !== 'executive') setExecutivePlus(false);
-                            resetAddons();
+                            setDefaultAddonsForPlan(p.id);
                           }}
-                          className={`p-5 rounded-xl transition-all text-left relative ${
+                          className={`p-5 rounded-xl transition-all text-left relative flex flex-col items-start h-full justify-start ${
                             isExecutive 
                               ? `border-3 border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`
                               : isSelected
@@ -818,15 +805,24 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             </div>
                             <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-2">{getPlanAllowanceLabel(p.id, 0, payUpfront)}</div>
-                          <ul className="mt-3 space-y-1">
-                            {cardCopy.highlights.map((highlight) => (
-                              <li key={highlight} className="text-xs text-foreground/85 flex items-start gap-1.5">
-                                <Check className="w-3.5 h-3.5 text-green-600 shrink-0 mt-[1px]" />
-                                <span>{highlight}</span>
-                              </li>
-                            ))}
-                          </ul>
+                          <div className="mt-3">
+                            <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-1">Pre-selected upgrades</div>
+                            <ul className="space-y-0.5">
+                              {(RECOMMENDED_ADDONS[p.id]?.basic ?? []).map((id) => (
+                                <li key={id} className="text-xs text-foreground/85 flex items-start gap-1.5">
+                                  <Check className="w-3.5 h-3.5 text-green-600 shrink-0 mt-[1px]" />
+                                  <span>{getAddonName(id)}</span>
+                                </li>
+                              ))}
+                              {(RECOMMENDED_ADDONS[p.id]?.premium ?? []).map((id) => (
+                                <li key={id} className="text-xs text-accent/90 flex items-start gap-1.5">
+                                  <Star className="w-3.5 h-3.5 fill-accent shrink-0 mt-[1px]" />
+                                  <span>{getAddonName(id)}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            <p className="text-[10px] text-muted-foreground italic mt-1">Swap in next step.</p>
+                          </div>
                           {isSelected && (
                             <div className="absolute top-2 right-2">
                               <Check className="w-5 h-5 text-primary" />
@@ -843,8 +839,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       type="button"
                       data-testid="wizard-executive-plus-toggle"
                       onClick={() => {
-                        setExecutivePlus(!executivePlus);
+                        const next = !executivePlus;
+                        setExecutivePlus(next);
                         setSwapCount(0);
+                        setDefaultAddonsForPlan(next ? "executive+" : "executive");
                       }}
                       className={`w-full mt-4 p-3 rounded-lg border-2 transition-all text-left ${
                         executivePlus
@@ -874,48 +872,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </button>
                   )}
 
-                  {/* Plan Features Preview with Value Highlights */}
-                  {planData && (
+                  {/* Upgrade upsell for Basic only — features shown in table above */}
+                  {planData && plan === 'basic' && (
                     <div className="bg-muted/30 rounded-xl p-4 border border-border mt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-bold text-primary">{planData.name} Features:</h5>
-                        {plan === 'premium' && (
-                          <span className="text-xs bg-accent text-accent-foreground px-2 py-0.5 rounded-full font-bold">
-                            Most Popular
-                          </span>
-                        )}
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">
+                          Upgrade to <span className="font-bold text-primary">Premium</span> for about
+                          <span className="font-bold text-accent"> +${calculate2026Price('premium', yardSize) - calculate2026Price('basic', yardSize)}/mo</span> more
+                        </p>
                       </div>
-                      <ul className="grid md:grid-cols-2 gap-1 text-sm">
-                        {planData.features.slice(0, 6).map((feature, i) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <Check className="w-4 h-4 shrink-0 text-green-600 mt-0.5" />
-                            <span dangerouslySetInnerHTML={{ __html: feature.split('<br/>')[0] }} />
-                          </li>
-                        ))}
-                      </ul>
-                      {/* Value Highlights for Premium/Executive */}
-                      {(plan === 'premium' || plan === 'executive') && PLAN_VALUE_HIGHLIGHTS[plan] && (
-                        <div className="mt-3 pt-3 border-t border-border">
-                          <div className="text-xs font-bold text-accent mb-1">Value Highlights:</div>
-                          <ul className="text-xs space-y-1">
-                            {PLAN_VALUE_HIGHLIGHTS[plan].map((highlight, i) => (
-                              <li key={i} className="flex items-center gap-1 text-green-700">
-                                <Sparkles className="w-3 h-3" />
-                                {highlight}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {/* Upgrade Impact for Basic */}
-                      {plan === 'basic' && (
-                        <div className="mt-3 pt-3 border-t border-border text-center">
-                          <p className="text-xs text-muted-foreground">
-                            Upgrade to <span className="font-bold text-primary">Premium</span> for about 
-                            <span className="font-bold text-accent"> +${calculate2026Price('premium', yardSize) - calculate2026Price('basic', yardSize)}/mo</span> more
-                          </p>
-                        </div>
-                      )}
                     </div>
                   )}
 
@@ -933,6 +898,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     promotionResult={promotionResult}
                     appliedTotals={appliedTotals}
                     term={term}
+                    payUpfront={payUpfront}
                     showUnlockedAnimation={showPromoUnlocked}
                   />
                 </motion.div>
@@ -1005,7 +971,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       <h5 className="font-bold text-primary">Basic Add-ons</h5>
                       <span className="text-sm text-muted-foreground">
                         {basicAddons.length}/{allowance.basic} included
-                        {extraBasicCount > 0 && <span className="text-accent ml-1">(+{extraBasicCount} extra @ $20/mo each)</span>}
+                        {extraBasicCount > 0 && <span className="text-accent ml-1">(+{extraBasicCount} extra)</span>}
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[300px] md:max-h-none overflow-y-auto md:overflow-visible">
@@ -1070,11 +1036,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <div className="text-sm text-muted-foreground">Your Monthly Total</div>
                     <div className="text-4xl font-extrabold text-primary">${totalPrice}/mo</div>
                     <div className="text-xs text-muted-foreground">Includes AI-Savings Discount</div>
-                    {extraCost > 0 && (
-                      <div className="text-xs text-muted-foreground">
-                        Base ${planPrice} + ${extraCost} extra upgrades
-                      </div>
-                    )}
                   </div>
 
                   {/* Mission Ready Indicator */}

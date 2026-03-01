@@ -126,7 +126,7 @@ export const PROMO_BANNERS = [
   {
     id: "referral",
     title: "Refer a Neighbor",
-    subtitle: "You both earn 1 complimentary month when they sign up",
+    subtitle: "Get in touch to learn more",
     cta: "Learn More",
     active: true,
     priority: 2
@@ -158,7 +158,7 @@ export const SOCIAL_SHARING = {
   facebook: {
     quote: "Getting my yard mission-ready with Lawn Trooper's professional lawn care service!",
   },
-  referralMessage: "Tell a neighbor about Lawn Trooper and you BOTH earn 1 complimentary month when they sign up!",
+  referralMessage: "Tell a neighbor about Lawn Trooper — get in touch to learn more!",
 };
 
 // Waitlist Configuration

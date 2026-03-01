@@ -69,7 +69,7 @@ export const PLAN_SUMMARIES = {
       highlights: [
         "Weekly mowing (growing season)",
         "Bi-weekly off-season service",
-        "Monthly bed weed control",
+        "Flower bed weed control (included)",
         "3 Basic + 1 Premium Upgrades",
         "Account Manager access",
         "Seasonal Landscape Refresh Allowance\u2122"
@@ -160,4 +160,43 @@ export const CTA_BUTTONS = {
   buildMyPlan: "Build My Subscription",
   getStarted: "Get Started",
   viewPlans: "View Plans",
+};
+
+/** Why We're Different — professional, reassuring tone. Combined from plan builder + Why Enlist sections. */
+export const WHY_DIFFERENT = {
+  sectionTitle: "Why We're Different",
+  bullets: [
+    {
+      title: "25 years serving our community",
+      desc: "Over two decades of trusted service in the Tennessee Valley with 100+ beautification awards.",
+    },
+    {
+      title: "Electric equipment — eco-friendly and quiet",
+      desc: "Battery-powered mowers and electric handheld equipment mean zero emissions and much quieter operation. We don't disturb your neighborhood — so quiet you might not notice we just mowed.",
+    },
+    {
+      title: "Loyalty Price Drop Guarantee",
+      desc: "Your pricing decreases over time as a loyal customer. We reward commitment, not punish it.",
+    },
+    {
+      title: "Dedicated Account Manager (Premium & Executive)",
+      desc: "Premium and Executive members get a real person managing their property — not a call center.",
+    },
+    {
+      title: "AI-assisted Dream Yard Recon™",
+      desc: "Every plan includes an AI-generated landscape plan personalized to your property and goals.",
+    },
+    {
+      title: "Locally owned — not a faceless chain",
+      desc: "We live here, we work here. You'll know who is on your property — friendly, vetted, and professional.",
+    },
+    {
+      title: "Tech-forward tactics",
+      desc: "Smart routing, automation, and robotic mowers where appropriate for maximum efficiency and honest pricing.",
+    },
+    {
+      title: "Licensed and insured",
+      desc: "Full coverage for your peace of mind. We take full responsibility for any liability while performing services.",
+    },
+  ],
 };

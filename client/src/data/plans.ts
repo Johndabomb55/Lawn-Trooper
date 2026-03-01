@@ -1,3 +1,10 @@
+import {
+  PLAN_CONFIGS,
+  getPlanConfig,
+  EXECUTIVE_PLUS_CONFIG,
+  type PlanConfigId,
+} from "./planConfig";
+
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
   cutoffDate: "2026-03-25T23:59:59", // Sale ends March 25th at 11:59 PM (end of day)
@@ -22,7 +29,7 @@ export const GLOBAL_CONSTANTS = {
   AI_TECH_EXPLANATION: "We sometimes will deploy robotic AI vision, LiDAR sensor, satellite-linked mowing units to achieve the best cut quality and highest efficiency at no additional expense to the customer. Lawn Trooper reserves the right to choose which robot will be best for each property, although customer can weigh in of course."
 };
 
-export type PlanId = "basic" | "premium" | "executive";
+export type PlanId = PlanConfigId;
 
 export interface PlanDefinition {
   id: PlanId;
@@ -41,109 +48,106 @@ export interface PlanDefinition {
   swapLabel?: string;
 }
 
-export const PLANS: PlanDefinition[] = [
-  {
-    id: "basic",
-    name: "Basic Patrol",
-    price: 169,
-    oldPrice: 199,
-    priceLabel: "Starts at $169/mo",
-    description: "Includes: 2 Basic Upgrades",
-    keyStats: [
-      { label: "Mowing", value: "Bi-Weekly" },
-      { label: "Off-Season", value: "Monthly Check" },
-      { label: "Upgrades", value: "2 Basic" },
-      { label: "Dream Yard", value: "AI Recon" }
-    ],
-    features: [
-      "Mowing: Bi-weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Off-Season: Monthly property check",
-      "<span class='font-bold text-primary'>2 Basic Upgrades included</span>",
-      "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
-      "Turf Applications: Not Included (Premium & Executive)",
-      "Bed Weed Control: Not Included (Premium & Executive)",
-      "Account Manager: Not Included (Premium & Executive)",
-      "Landscape Allowance\u2122: Not Included (Premium & Executive)"
-    ],
-    allowance: {
-      basic: 2,
-      premium: 0
+// Build PLANS from planConfig (single source of truth for slots/pricing)
+function buildPlansFromConfig(): PlanDefinition[] {
+  const uiOverrides: Record<string, { oldPrice: number; keyStats: Array<{ label: string; value: string }>; features: string[]; description: string }> = {
+    basic: {
+      oldPrice: 199,
+      keyStats: [
+        { label: "Mowing", value: "Bi-Weekly" },
+        { label: "Off-Season", value: "Monthly Check" },
+        { label: "Upgrades", value: "2 Basic" },
+        { label: "Dream Yard", value: "AI Recon" }
+      ],
+      description: "Includes: 2 Basic Upgrades",
+      features: [
+        "Mowing: Bi-weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+        "Off-Season: Monthly property check",
+        "<span class='font-bold text-primary'>2 Basic Upgrades included</span>",
+        "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
+        "Flower bed weed control (included)",
+        "Turf Applications: Not Included (Premium & Executive)",
+        "Account Manager: Not Included (Premium & Executive)",
+        "Landscape Allowance\u2122: Not Included (Premium & Executive)"
+      ]
     },
-    allowsSwap: false,
-    allowanceLabel: "2 Basic Upgrades"
-  },
-  {
-    id: "premium",
-    name: "Premium Patrol",
-    price: 299,
-    oldPrice: 349,
-    priceLabel: "Starts at $299/mo",
-    description: "Includes: 3 Basic + 1 Premium Upgrades",
-    keyStats: [
-      { label: "Mowing", value: "Weekly" },
-      { label: "Off-Season", value: "Bi-Weekly" },
-      { label: "Upgrades", value: "3B + 1P" },
-      { label: "Allowance", value: "Seasonal" }
-    ],
-    features: [
-      "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "Off-Season: Bi-weekly service",
-      "Monthly Bed Weed Control",
-      "<span class='font-bold text-primary'>3 Basic + 1 Premium Upgrades included</span>",
-      "Service Photo Updates",
-      "Account Manager Access (remote + visit request)",
-      "Dream Yard Recon\u2122 + Personalized Review",
-      "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
-      "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
-    ],
-    allowance: {
-      basic: 3,
-      premium: 1
+    premium: {
+      oldPrice: 349,
+      keyStats: [
+        { label: "Mowing", value: "Weekly" },
+        { label: "Off-Season", value: "Bi-Weekly" },
+        { label: "Upgrades", value: "3B + 1P" },
+        { label: "Allowance", value: "Seasonal" }
+      ],
+      description: "Includes: 3 Basic + 1 Premium Upgrades",
+      features: [
+        "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+        "Off-Season: Bi-weekly service",
+        "Flower bed weed control (included)",
+        "<span class='font-bold text-primary'>3 Basic + 1 Premium Upgrades included</span>",
+        "Service Photo Updates",
+        "Account Manager Access (remote + visit request)",
+        "Dream Yard Recon\u2122 + Personalized Review",
+        "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
+        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
+      ]
     },
-    allowsSwap: true,
-    allowanceLabel: "3 Basic + 1 Premium Upgrades",
-    swapLabel: "Convert 2 Basic \u2192 1 Premium"
-  },
-  {
-    id: "executive",
-    name: "Executive Command",
-    price: 399,
-    oldPrice: 469,
-    priceLabel: "Starts at $399/mo",
-    description: "Includes: 3 Basic + 3 Premium Upgrades",
-    keyStats: [
-      { label: "Service", value: "Year-Round Weekly" },
-      { label: "Turf Defense", value: "7 Apps/Year" },
-      { label: "Upgrades", value: "3B + 3P" },
-      { label: "Allowance", value: "Premier" }
-    ],
-    features: [
-      "<span class='font-bold text-accent'>Year-Round Weekly Property Monitoring</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
-      "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
-      "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
-      "Monthly Bed Weed Control",
-      "<span class='font-bold text-accent'>3 Basic + 3 Premium Upgrades included</span>",
-      "Service Photo Updates",
-      "<span class='font-bold text-accent'>Priority Storm Service</span>",
-      "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
-      "<span class='font-bold text-accent'>Premier Landscape Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
-      "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
-    ],
-    allowance: {
-      basic: 3,
-      premium: 3
-    },
-    allowsSwap: true,
-    allowanceLabel: "3 Basic + 3 Premium Upgrades",
-    swapLabel: "Convert 2 Basic \u2192 1 Premium"
-  }
-];
+    executive: {
+      oldPrice: 469,
+      keyStats: [
+        { label: "Service", value: "Year-Round Weekly" },
+        { label: "Turf Defense", value: "7 Apps/Year" },
+        { label: "Upgrades", value: "3B + 3P" },
+        { label: "Allowance", value: "Premier" }
+      ],
+      description: "Includes: 3 Basic + 3 Premium Upgrades",
+      features: [
+        "<span class='font-bold text-accent'>Year-Round Weekly Property Monitoring</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+        "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
+        "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
+        "Flower bed weed control (included)",
+        "<span class='font-bold text-accent'>3 Basic + 3 Premium Upgrades included</span>",
+        "Service Photo Updates",
+        "<span class='font-bold text-accent'>Priority Storm Service</span>",
+        "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
+        "<span class='font-bold text-accent'>Premier Landscape Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
+        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
+      ]
+    }
+  };
+
+  return PLAN_CONFIGS.map((c) => {
+    const override = uiOverrides[c.id];
+    const allowanceLabel = c.premiumSlots === 0
+      ? `${c.basicSlots} Basic Upgrades`
+      : `${c.basicSlots} Basic + ${c.premiumSlots} Premium Upgrades`;
+    return {
+      id: c.id as PlanId,
+      name: c.name,
+      price: c.basePrice,
+      oldPrice: override?.oldPrice ?? c.basePrice,
+      priceLabel: `Starts at $${c.basePrice}/mo`,
+      description: override?.description ?? `Includes: ${allowanceLabel}`,
+      keyStats: override?.keyStats ?? [],
+      features: override?.features ?? [],
+      allowance: { basic: c.basicSlots, premium: c.premiumSlots },
+      allowsSwap: c.allowConversion,
+      allowanceLabel,
+      swapLabel: c.allowConversion ? "Convert 2 Basic \u2192 1 Premium" : undefined,
+    };
+  });
+}
+
+export const PLANS: PlanDefinition[] = buildPlansFromConfig();
 
 export const EXECUTIVE_PLUS = {
-  price: 99,
+  price: EXECUTIVE_PLUS_CONFIG.priceAdd,
   label: "Executive+ Upgrade",
-  description: "+$99/mo",
-  bonusAllowance: { basic: 1, premium: 1 },
+  description: `+$${EXECUTIVE_PLUS_CONFIG.priceAdd}/mo`,
+  bonusAllowance: {
+    basic: EXECUTIVE_PLUS_CONFIG.basicSlotsAdd,
+    premium: EXECUTIVE_PLUS_CONFIG.premiumSlotsAdd,
+  },
   perks: [
     "Quarterly Strategy Session",
     "Rapid Response Priority",
@@ -258,14 +262,6 @@ export const ADDON_CATALOG: Addon[] = [
     description: "Thorough cleaning of gutters and downspouts to remove debris and ensure proper drainage. Helps prevent water damage and keeps your home protected."
   },
   {
-    id: "flower_bed_maintenance",
-    name: "Flower Bed Maintenance",
-    tier: "basic",
-    category: "landscaping",
-    price: 20,
-    description: "Seasonal flower bed care including weeding, edging, and light pruning to keep your beds looking neat and healthy throughout the year."
-  },
-  {
     id: "one_time_leaf_removal",
     name: "One-Time Leaf Removal",
     tier: "basic",
@@ -275,6 +271,14 @@ export const ADDON_CATALOG: Addon[] = [
   },
   
   // --- PREMIUM ADD-ONS ($40/mo overage) ---
+  {
+    id: "weekly_growth_season_mowing",
+    name: "Weekly Growth Season Mowing (May–August)",
+    tier: "premium",
+    category: "landscaping",
+    price: 40,
+    description: "Upgrades mowing frequency to weekly during peak growth months (May–August). Reverts to bi-weekly outside growth season. Weather delays apply."
+  },
   {
     id: "premium_pressure_wash",
     name: "Premium Pressure-Wash Package",
@@ -435,7 +439,7 @@ export const calculateOverageCost = (
 
 // Helper to get allowance with swap adjustment
 // swapCount: each swap converts 2 Basic slots into 1 Premium slot.
-// Available on ALL plans that have allowsSwap: true.
+// Available on ALL plans that have allowConversion: true.
 // executivePlus: adds +1 Basic, +1 Premium (Executive plan only).
 export const getPlanAllowance = (
   planId: string, 
@@ -444,22 +448,23 @@ export const getPlanAllowance = (
   asOf: Date = new Date(),
   executivePlus: boolean = false
 ): { basic: number; premium: number } => {
-  const plan = PLANS.find(p => p.id === planId);
-  if (!plan) return { basic: 0, premium: 0 };
+  const config = getPlanConfig(planId);
+  if (!config) return { basic: 0, premium: 0 };
 
-  let { basic, premium } = plan.allowance;
+  let basic = config.basicSlots;
+  let premium = config.premiumSlots;
   const anniversaryBonus = getAnniversaryBonusForPlan(planId, asOf);
 
   basic += anniversaryBonus.basic;
   premium += anniversaryBonus.premium;
 
-  if (executivePlus && planId === "executive") {
-    basic += EXECUTIVE_PLUS.bonusAllowance.basic;
-    premium += EXECUTIVE_PLUS.bonusAllowance.premium;
+  if (executivePlus && config.executivePlusEligible) {
+    basic += EXECUTIVE_PLUS_CONFIG.basicSlotsAdd;
+    premium += EXECUTIVE_PLUS_CONFIG.premiumSlotsAdd;
   }
 
-  // Apply swap on any plan with allowsSwap (2 Basic → 1 Premium)
-  if (plan.allowsSwap && swapCount > 0) {
+  // Apply swap on any plan with allowConversion (2 Basic → 1 Premium)
+  if (config.allowConversion && swapCount > 0) {
     const maxSwaps = Math.floor(basic / 2);
     const validSwap = Math.min(swapCount, maxSwaps);
     basic -= validSwap * 2;
@@ -477,6 +482,9 @@ export const getPlanAllowanceLabel = (
   executivePlus: boolean = false
 ): string => {
   const allowance = getPlanAllowance(planId, swapCount, payFull, asOf, executivePlus);
+  if (allowance.premium === 0) {
+    return `${allowance.basic} Basic Upgrade${allowance.basic === 1 ? "" : "s"}`;
+  }
   return `${allowance.basic} Basic Upgrade${allowance.basic === 1 ? "" : "s"} + ${allowance.premium} Premium Upgrade${allowance.premium === 1 ? "" : "s"}`;
 };
 
@@ -530,10 +538,10 @@ export const getAcreMultiplier = (yardSizeId: string): number => {
   return ACRE_MULTIPLIERS[yardSizeId] || 1.0;
 };
 
-// Get base price for a plan from PLANS config (single source of truth)
+// Get base price for a plan from planConfig (single source of truth)
 export const getPlanBasePrice = (planId: string): number => {
-  const plan = PLANS.find(p => p.id === planId);
-  return plan?.price || 169;
+  const config = getPlanConfig(planId);
+  return config?.basePrice ?? 169;
 };
 
 // Calculate 2026 AI-Savings price (current promotional price)

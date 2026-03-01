@@ -38,7 +38,6 @@ import {
   ADDON_CATALOG,
   BASIC_ADDONS, 
   PREMIUM_ADDONS, 
-  OVERAGE_PRICES,
   getYardMultiplier,
   getPlanAllowance,
   getPlanAllowanceLabel,
@@ -48,6 +47,7 @@ import {
   getAddonById,
   calculate2026Price
 } from "@/data/plans";
+import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
 import { 
   COMMITMENT_TERMS, 
   HOA_PROMO_CODES,
@@ -55,7 +55,6 @@ import {
   calculateActualMonthly,
   calculateTermFreeMonths,
   getFreeMonthsBreakdown,
-  getAnniversaryBonus,
 } from "@/data/promotions";
 
 const STEPS = [
@@ -136,10 +135,10 @@ export default function StreamlinedWizard() {
   const promoDiscount = promoValid ? (HOA_PROMO_CODES[promoCode.toUpperCase()]?.discount || 0) : 0;
   
   // Calculate complimentary service months based on commitment model
-  // Commitment months: 1 (1-year) or 2 (2-year) — doubled if pay-in-full
-  // Anniversary Enrollment Bonus: +2 (before March 25) — NOT doubled
-  const totalFreeMonths = calculateTermFreeMonths(term, payInFull);
+  // Commitment months: 1 (1-year) or 3 (2-year) — doubled if pay-in-full
+  // Birthday Bonus terminology maps to commitment months (no extra stacking)
   const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
+  const totalFreeMonths = freeMonthsBreakdown.total;
   
   const isExecutive = plan === 'executive';
   const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
@@ -157,8 +156,6 @@ export default function StreamlinedWizard() {
   );
   const extraBasicCount = basicOverage;
   const extraPremiumCount = premiumOverage;
-  const addonExtraCost = totalOverage;
-
   const calculateBasePrice = () => {
     if (!selectedPlan || !selectedYard) return 0;
     let basePrice = selectedPlan.price;
@@ -174,10 +171,16 @@ export default function StreamlinedWizard() {
   };
 
   const basePrice = calculateBasePrice();
-  const monthlySubscription = isHOA ? 0 : calculateActualMonthly(basePrice + addonExtraCost, term);
+  const monthlySubscription = isHOA ? 0 : calculateActualMonthly(basePrice + totalOverage, term);
   const termMonths = selectedTerm?.months || 12;
   const billedMonths = termMonths - totalFreeMonths;
   const actualMonthly = monthlySubscription;
+  const totalCommitmentSavings = monthlySubscription * totalFreeMonths;
+  const payInFullExtraMonths = Math.max(
+    0,
+    freeMonthsBreakdown.commitmentMonths - freeMonthsBreakdown.commitmentBase
+  );
+  const payInFullExtraSavings = monthlySubscription * payInFullExtraMonths;
 
   const handleNext = () => {
     if (isHOA && step === 1) {
@@ -204,11 +207,19 @@ export default function StreamlinedWizard() {
         return true;
       case 2: return !!yardSize || isHOA;
       case 3: return !!plan;
-      case 4: return true;
+      case 4:
+        if (isHOA) return true;
+        return basicAddons.length >= effectiveBasicAllowance && premiumAddons.length >= effectivePremiumAllowance;
       case 5: return true;
       case 6: return name && phone;
       default: return true;
     }
+  };
+
+  const getSlotRequirementMessage = () => {
+    if (plan === "basic") return `Select ${effectiveBasicAllowance} Basic upgrade${effectiveBasicAllowance === 1 ? "" : "s"} to proceed.`;
+    if (plan === "premium") return `Select ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"} to proceed. Conversion available.`;
+    return `Select ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"} to proceed. Conversion available.`;
   };
 
   const handleSubmit = async () => {
@@ -289,7 +300,7 @@ export default function StreamlinedWizard() {
               </span>
             ) : (
               <span data-testid="text-free-months-available" className="text-sm bg-white/20 px-3 py-1 rounded-full">
-                Complimentary billing months may apply based on commitment
+                Complimentary months may apply based on commitment
               </span>
             )}
           </div>
@@ -503,6 +514,41 @@ export default function StreamlinedWizard() {
                 <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming, and blowing.</p>
               </div>
 
+              {/* Feature comparison matrix */}
+              <div className="bg-muted/30 rounded-xl border border-border overflow-x-auto">
+                <table className="w-full text-sm min-w-[480px]">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-3 px-3 text-muted-foreground font-medium">Feature</th>
+                      <th className="text-center py-3 px-3 font-bold text-primary">Basic</th>
+                      <th className="text-center py-3 px-3 font-bold text-primary">Premium</th>
+                      <th className="text-center py-3 px-3 font-bold text-accent">Executive</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {PLAN_COMPARISON_ROWS.map((row, i) => {
+                      const basicVal = row.basic;
+                      const premiumDiff = row.premium !== basicVal;
+                      const execDiff = row.executive !== basicVal;
+                      return (
+                        <tr key={i} className="border-b border-border/50 last:border-b-0">
+                          <td className="py-2.5 px-3 text-muted-foreground">{row.feature}</td>
+                          <td className={`py-2.5 px-3 text-center font-medium ${basicVal === "✓" ? "text-green-600" : ""}`}>
+                            {basicVal}
+                          </td>
+                          <td className={`py-2.5 px-3 text-center ${premiumDiff ? "bg-accent/5 font-medium text-primary" : ""} ${row.premium === "✓" ? "text-green-600" : ""}`}>
+                            {row.premium}
+                          </td>
+                          <td className={`py-2.5 px-3 text-center ${execDiff ? "bg-accent/5 font-medium text-accent" : ""} ${row.executive === "✓" ? "text-green-600" : ""}`}>
+                            {row.executive}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
               <div className="space-y-3">
                 {PLANS.map((p) => {
                   const isSelected = plan === p.id;
@@ -613,6 +659,12 @@ export default function StreamlinedWizard() {
                 </p>
               </div>
 
+              {!isHOA && !canProceed() && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 font-medium" data-testid="slot-requirement-message">
+                  {getSlotRequirementMessage()}
+                </div>
+              )}
+
               {/* Swap Toggle - Available for all plans with allowsSwap */}
               {selectedPlan?.allowsSwap && swapOptions.length > 1 && (
                 <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
@@ -675,18 +727,12 @@ export default function StreamlinedWizard() {
                 </div>
                 {(extraBasicCount > 0 || extraPremiumCount > 0) && (
                   <div className="flex justify-between items-center pt-1 border-t border-border/50 text-amber-600">
-                    <span>Overage:</span>
+                    <span>Extra:</span>
                     <span className="font-bold">
-                      {extraBasicCount > 0 && `+${extraBasicCount} Basic (+$${extraBasicCount * OVERAGE_PRICES.basic}/mo)`}
+                      {extraBasicCount > 0 && `+${extraBasicCount} Basic`}
                       {extraBasicCount > 0 && extraPremiumCount > 0 && ', '}
-                      {extraPremiumCount > 0 && `+${extraPremiumCount} Premium (+$${extraPremiumCount * OVERAGE_PRICES.premium}/mo)`}
+                      {extraPremiumCount > 0 && `+${extraPremiumCount} Premium`}
                     </span>
-                  </div>
-                )}
-                {totalOverage > 0 && (
-                  <div className="flex justify-between items-center font-bold text-amber-700 bg-amber-50 -mx-3 -mb-3 px-3 py-2 rounded-b-lg">
-                    <span>Extra upgrade cost:</span>
-                    <span>+${totalOverage}/mo</span>
                   </div>
                 )}
               </div>
@@ -864,7 +910,6 @@ export default function StreamlinedWizard() {
                   <div className="pt-3 border-t border-accent/30">
                     <div className="text-xs font-bold text-accent uppercase tracking-wider mb-2 sticky top-0 bg-background py-1">
                       Premium Upgrades ({premiumAddons.length}/{effectivePremiumAllowance} included free)
-                      {effectivePremiumAllowance === 0 && <span className="text-amber-600 ml-1">(+$40/mo each)</span>}
                     </div>
                     
                     {/* Premium Landscaping */}
@@ -1042,7 +1087,10 @@ export default function StreamlinedWizard() {
                 {COMMITMENT_TERMS.map((t) => {
                   const isSelected = term === t.id;
                   const isBestValue = t.id === '2-year';
-                  const displayFreeMonths = calculateTermFreeMonths(t.id as '1-year' | '2-year', isSelected ? payInFull : false);
+                  const optionPayInFull = isSelected ? payInFull : false;
+                  const displayFreeMonths = calculateTermFreeMonths(t.id as '1-year' | '2-year', optionPayInFull);
+                  const optionMonthly = isHOA ? 0 : calculateActualMonthly(basePrice + totalOverage, t.id as '1-year' | '2-year');
+                  const optionSavings = optionMonthly * displayFreeMonths;
                   return (
                     <div key={t.id}>
                       <button
@@ -1074,6 +1122,11 @@ export default function StreamlinedWizard() {
                             <>
                               <div className="text-xl font-bold text-green-600">+{displayFreeMonths}</div>
                               <div className="text-xs text-muted-foreground">complimentary</div>
+                              {optionSavings > 0 && (
+                                <div className="text-[11px] text-green-700 font-semibold">
+                                  Save ${optionSavings.toLocaleString()}
+                                </div>
+                              )}
                             </>
                           ) : (
                             <div className="text-sm text-muted-foreground">{t.badge}</div>
@@ -1084,55 +1137,15 @@ export default function StreamlinedWizard() {
                       {/* Pay-in-Full Accelerator Toggle - Optional for 1-year and 2-year */}
                       {t.allowsPayInFull && isSelected && (
                         <div className="mt-3 ml-4 space-y-2">
-                          {/* Commitment Bonus Section */}
+                          {/* Birthday Bonus Section */}
                           <div className="p-2 bg-primary/5 border border-primary/20 rounded-lg">
-                            <div className="text-xs font-bold text-primary mb-1">Commitment Bonus</div>
+                            <div className="text-xs font-bold text-primary mb-1">Birthday Bonus</div>
                             <div className="text-[10px] text-muted-foreground space-y-0.5">
                               <div className="flex justify-between"><span>1-Year:</span><span>+1 month</span></div>
-                              <div className="flex justify-between"><span>2-Year:</span><span>+2 months</span></div>
-                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>doubles commitment</span></div>
+                              <div className="flex justify-between"><span>2-Year:</span><span>+3 months</span></div>
+                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>doubles birthday bonus</span></div>
                             </div>
                           </div>
-                          
-                          {/* 25-Year Birthday Bonus Section */}
-                          {(() => {
-                            const bonus = getAnniversaryBonus();
-                            if (bonus.isActive) {
-                              return (
-                                <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg">
-                                  <div className="text-xs font-bold text-amber-700 mb-1">
-                                    🎉 25-Year Birthday Bonus
-                                  </div>
-                                  <div className="text-[10px] text-amber-600 space-y-0.5">
-                                    <div className="flex justify-between font-bold">
-                                      <span>Enroll by Mar 25:</span><span>+2 months</span>
-                                    </div>
-                                    <div className="flex justify-between text-muted-foreground">
-                                      <span>After Mar 25:</span><span>Bonus concluded</span>
-                                    </div>
-                                  </div>
-                                  <div className="text-[10px] text-center text-amber-700 font-bold mt-1">
-                                    Your bonus: +{bonus.months} month{bonus.months > 1 ? 's' : ''}
-                                  </div>
-                                  <div className="text-[9px] text-center text-amber-600 mt-0.5">
-                                    Fixed bonus based on enrollment date
-                                  </div>
-                                </div>
-                              );
-                            } else {
-                              return (
-                                <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg">
-                                  <div className="text-xs font-medium text-muted-foreground mb-1">
-                                    25-Year Birthday Bonus
-                                  </div>
-                                  <div className="text-[10px] text-muted-foreground space-y-0.5">
-                                    <div className="flex justify-between line-through"><span>Enroll by Mar 25:</span><span>+2 months</span></div>
-                                    <div className="flex justify-between"><span>After Mar 25:</span><span className="italic">Bonus concluded</span></div>
-                                  </div>
-                                </div>
-                              );
-                            }
-                          })()}
                           
                           <button
                             data-testid="toggle-pay-in-full"
@@ -1151,22 +1164,27 @@ export default function StreamlinedWizard() {
                               </div>
                               <div className="text-left">
                                 <div className="font-medium">Pay-in-Full Option</div>
-                                <div className="text-xs text-muted-foreground">Doubles commitment months. Birthday Bonus adds on top.</div>
+                                <div className="text-xs text-muted-foreground">Doubles birthday bonus months.</div>
                               </div>
                             </div>
                             <div className="text-right">
                               <div className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
-                                ×2 COMMITMENT
+                                ×2 BONUS
                               </div>
                               <div className="text-xs text-green-600 font-bold mt-1">
-                                {t.id === '1-year' ? '1 → 2 + bonus' : '2 → 4 + bonus'}
+                                {t.id === '1-year' ? '1 → 2 + bonus' : '3 → 6 + bonus'}
                               </div>
                             </div>
                           </button>
                           
                           <p className="text-[10px] text-center text-muted-foreground">
-                            Pay monthly is always available. Pay in full to double your commitment months.
+                            Pay monthly is always available. Pay in full to double your birthday bonus months.
                           </p>
+                          {payInFull && payInFullExtraSavings > 0 && (
+                            <p className="text-[11px] text-center text-green-700 font-semibold">
+                              Pay-in-full adds +{payInFullExtraMonths} month{payInFullExtraMonths === 1 ? '' : 's'} = +${payInFullExtraSavings.toLocaleString()} savings
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1197,7 +1215,7 @@ export default function StreamlinedWizard() {
                     </div>
                     <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
                       <div className="flex justify-between">
-                        <span>• Commitment Bonus:</span>
+                        <span>• Birthday Bonus:</span>
                         <span>{payInFull ? `${freeMonthsBreakdown.commitmentBase} × 2 = ${freeMonthsBreakdown.commitmentMonths}` : `+${freeMonthsBreakdown.commitmentBase}`} mo</span>
                       </div>
                       {freeMonthsBreakdown.anniversaryBonus > 0 && (
@@ -1211,6 +1229,12 @@ export default function StreamlinedWizard() {
                       <span>Billed months:</span>
                       <span className="font-medium">{billedMonths} of {termMonths}</span>
                     </div>
+                    {totalCommitmentSavings > 0 && (
+                      <div className="flex justify-between text-green-700 font-semibold">
+                        <span>Total commitment savings:</span>
+                        <span>${totalCommitmentSavings.toLocaleString()}</span>
+                      </div>
+                    )}
                   </div>
                   
                   {payInFull && (
@@ -1229,12 +1253,6 @@ export default function StreamlinedWizard() {
                 </div>
               )}
 
-              {/* Complimentary Months Disclaimer */}
-              <div className="p-3 bg-muted/50 rounded-lg border border-border text-center">
-                <p className="text-xs text-muted-foreground">
-                  Complimentary months are applied as credits at the end of the agreement term.
-                </p>
-              </div>
             </motion.div>
           )}
 
@@ -1290,14 +1308,7 @@ export default function StreamlinedWizard() {
                       <span className="text-muted-foreground">Included:</span>
                       <span>{effectiveBasicAllowance} Basic + {effectivePremiumAllowance} Premium</span>
                     </div>
-                    {totalOverage > 0 && (
-                      <div className="flex justify-between text-amber-600 font-medium">
-                        <span>Upgrade overages:</span>
-                        <span>+${totalOverage}/mo</span>
-                      </div>
-                    )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Complimentary months are applied as credits at the end of the agreement term.</p>
                 </div>
               )}
 
@@ -1411,7 +1422,6 @@ export default function StreamlinedWizard() {
                       <span className="text-xs text-muted-foreground block">Upgrades</span>
                       <span data-testid="text-confirm-addons" className="font-bold">
                         {basicAddons.length} Basic, {premiumAddons.length} Premium
-                        {totalOverage > 0 && <span className="text-amber-600"> (+${totalOverage}/mo overages)</span>}
                       </span>
                     </div>
                   </div>
@@ -1428,14 +1438,6 @@ export default function StreamlinedWizard() {
                   <strong>What's next?</strong> We'll reach out within 1 business day to {isHOA ? "discuss your custom quote" : "schedule your free consultation"}.
                 </p>
               </div>
-
-              {/* Important Disclaimer - Residential only */}
-              {!isHOA && (
-                <div className="text-left text-xs text-muted-foreground bg-amber-50 rounded-lg p-3 border border-amber-200">
-                  <p className="font-medium mb-1 text-amber-800">About Complimentary Months:</p>
-                  <p className="text-amber-700">Complimentary months are skipped billing months applied at the end of your term. Your subscription still ends on your 12-month or 24-month anniversary date. You receive the same term length—you simply pay for fewer months.</p>
-                </div>
-              )}
 
               {/* Cancellation Policy - Residential only */}
               {!isHOA && (
