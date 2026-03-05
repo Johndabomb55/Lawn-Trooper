@@ -22,6 +22,8 @@ import {
   CheckCircle2,
   Leaf
 } from "lucide-react";
+import PlanBadge from "@/components/PlanBadge";
+import ValueMeter from "@/components/ValueMeter";
 import { 
   MILITARY_RANKS, 
   LOCAL_TIPS, 
@@ -489,7 +491,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           <div className="font-bold text-primary">{planData?.name}</div>
         </div>
         <div>
-          <div className="text-xs text-muted-foreground uppercase font-bold">Add-ons</div>
+          <div className="text-xs text-muted-foreground uppercase font-bold">Upgrades</div>
           <div className="font-bold text-primary">{basicAddons.length}B + {premiumAddons.length}P</div>
         </div>
         <div>
@@ -499,7 +501,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       </div>
       {showAddonsDetail && (basicAddons.length > 0 || premiumAddons.length > 0) && (
         <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
-          <div className="font-semibold text-primary mb-2">Selected Add-ons:</div>
+          <div className="font-semibold text-primary mb-2">Selected Upgrades:</div>
           <div className="flex flex-wrap gap-1.5 justify-center">
             {basicAddons.map(id => {
               const addon = BASIC_ADDONS.find(a => a.id === id);
@@ -782,9 +784,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                                 : 'border-2 border-border hover:border-primary/50 bg-muted/30'
                           }`}
                         >
-                          {isExecutive && (
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                              Command Tier
+                          {(isExecutive || p.id === 'premium') && (
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                              <PlanBadge planId={p.id} />
                             </div>
                           )}
                           <div className="flex items-center gap-2">
@@ -804,6 +806,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                               <span className="text-sm font-normal text-muted-foreground">/mo</span>
                             </div>
                             <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
+                          </div>
+                          <div className="mt-3 w-full">
+                            <ValueMeter planId={p.id} />
                           </div>
                           <div className="mt-3">
                             <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-1">Pre-selected upgrades</div>
@@ -904,7 +909,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 </motion.div>
               )}
 
-              {/* Step 3: Add-ons */}
+              {/* Step 3: Upgrades */}
               {currentStep === 3 && (
                 <motion.div
                   key="step3"
@@ -965,10 +970,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                   )}
 
-                  {/* Basic Add-ons */}
+                  {/* Basic Upgrades */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h5 className="font-bold text-primary">Basic Add-ons</h5>
+                      <h5 className="font-bold text-primary">Basic Upgrades</h5>
                       <span className="text-sm text-muted-foreground">
                         {basicAddons.length}/{allowance.basic} included
                         {extraBasicCount > 0 && <span className="text-accent ml-1">(+{extraBasicCount} extra)</span>}
@@ -997,11 +1002,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                   </div>
 
-                  {/* Premium Add-ons */}
+                  {/* Premium Upgrades */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <h5 className="font-bold text-accent flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-accent" /> Premium Add-ons
+                        <Star className="w-4 h-4 fill-accent" /> Premium Upgrades
                       </h5>
                       <span className="text-xs md:text-sm text-muted-foreground">
                         {premiumAddons.length}/{allowance.premium} included
@@ -1178,7 +1183,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                     {(basicAddons.length > 0 || premiumAddons.length > 0) && (
                       <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
-                        <div className="font-semibold text-primary mb-2">Selected Add-ons:</div>
+                        <div className="font-semibold text-primary mb-2">Selected Upgrades:</div>
                         <div className="flex flex-wrap gap-1.5 justify-center">
                           {basicAddons.map(id => {
                             const addon = BASIC_ADDONS.find(a => a.id === id);
@@ -1371,7 +1376,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
                 style={{ backgroundColor: '#1a3d24', color: 'white' }}
               >
-                {isSubmitting ? "Transmitting..." : "Get Instant Quote"}
+                {isSubmitting ? "Transmitting..." : "Get Your AI Yard Quote"}
               </Button>
             )}
           </div>

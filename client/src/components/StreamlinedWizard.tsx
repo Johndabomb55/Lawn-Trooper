@@ -31,6 +31,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import PlanDetailsPanel from "@/components/PlanDetailsPanel";
+import WizardProgress from "@/components/WizardProgress";
+import YardScorecard from "@/components/YardScorecard";
+import TransformationPreview from "@/components/TransformationPreview";
+import UpgradeDetails from "@/components/UpgradeDetails";
+import PromoBanner from "@/components/PromoBanner";
+import PlanBadge from "@/components/PlanBadge";
+import ValueMeter from "@/components/ValueMeter";
 import { 
   PLANS, 
   YARD_SIZES, 
@@ -62,9 +69,11 @@ const STEPS = [
   { id: 2, title: "Yard Size", icon: MapPin },
   { id: 3, title: "Plan", icon: Star },
   { id: 4, title: "Upgrades", icon: Gift },
-  { id: 5, title: "Commitment", icon: Calendar },
-  { id: 6, title: "Contact", icon: User },
-  { id: 7, title: "Complete", icon: Trophy },
+  { id: 5, title: "Yard Analysis", icon: Sparkles },
+  { id: 6, title: "Transformation", icon: Zap },
+  { id: 7, title: "Commitment", icon: Calendar },
+  { id: 8, title: "Contact", icon: User },
+  { id: 9, title: "Complete", icon: Trophy },
 ];
 
 interface InfoPopupProps {
@@ -184,14 +193,14 @@ export default function StreamlinedWizard() {
 
   const handleNext = () => {
     if (isHOA && step === 1) {
-      setStep(6);
-    } else if (step < 7) {
+      setStep(8);
+    } else if (step < 9) {
       setStep(step + 1);
     }
   };
 
   const handleBack = () => {
-    if (isHOA && step === 6) {
+    if (isHOA && step === 8) {
       setStep(1);
     } else if (step > 1) {
       setStep(step - 1);
@@ -211,7 +220,9 @@ export default function StreamlinedWizard() {
         if (isHOA) return true;
         return basicAddons.length >= effectiveBasicAllowance && premiumAddons.length >= effectivePremiumAllowance;
       case 5: return true;
-      case 6: return name && phone;
+      case 6: return true;
+      case 7: return true;
+      case 8: return name && phone;
       default: return true;
     }
   };
@@ -252,7 +263,7 @@ export default function StreamlinedWizard() {
       
       if (response.ok) {
         setIsComplete(true);
-        setStep(7);
+        setStep(9);
       } else {
         throw new Error('Failed to submit');
       }
@@ -271,16 +282,16 @@ export default function StreamlinedWizard() {
     setInfoPopup({ open: true, title, content });
   };
 
-  const progressPercent = ((step - 1) / 6) * 100;
+  const progressPercent = ((step - 1) / 8) * 100;
 
   return (
     <div className="bg-card rounded-2xl shadow-2xl border-2 border-primary/20 overflow-hidden max-w-2xl mx-auto">
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-primary to-green-700 p-4 text-white">
         <div className="flex items-center justify-between mb-3">
-          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Build My Subscription</h2>
+          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Get Your AI Yard Quote</h2>
           <span data-testid="text-step-badge" className="text-sm bg-white/20 px-3 py-1 rounded-full">
-            Step {step} of 7
+            Step {step} of 9
           </span>
         </div>
         <div className="h-2 bg-white/20 rounded-full overflow-hidden">
@@ -291,9 +302,9 @@ export default function StreamlinedWizard() {
             transition={{ duration: 0.3 }}
           />
         </div>
-        {!isHOA && step > 1 && step < 7 && (
+        {!isHOA && step > 1 && step < 9 && (
           <div className="mt-2 text-center">
-            {step >= 5 && totalFreeMonths > 0 ? (
+            {step >= 7 && totalFreeMonths > 0 ? (
               <span data-testid="text-free-months-unlocked" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
                 <Sparkles className="w-3 h-3 inline mr-1" />
                 {totalFreeMonths} Complimentary Month{totalFreeMonths > 1 ? 's' : ''} Earned!
@@ -305,7 +316,7 @@ export default function StreamlinedWizard() {
             )}
           </div>
         )}
-        {isHOA && step > 1 && step < 7 && (
+        {isHOA && step > 1 && step < 9 && (
           <div className="mt-2 text-center">
             <span data-testid="text-custom-quote" className="text-sm bg-accent/30 px-3 py-1 rounded-full">
               Custom Quote Request
@@ -313,6 +324,13 @@ export default function StreamlinedWizard() {
           </div>
         )}
       </div>
+
+      {/* Step Progress Labels */}
+      {!isHOA && step > 1 && step < 9 && (
+        <div className="px-4 pt-2 bg-muted/20">
+          <WizardProgress currentStep={step} steps={STEPS} />
+        </div>
+      )}
 
       {/* Step Content */}
       <div className="p-6 min-h-[400px]">
@@ -509,6 +527,8 @@ export default function StreamlinedWizard() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-4"
             >
+              <PromoBanner />
+
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose your Total Maintenance Plan</h3>
                 <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming, and blowing.</p>
@@ -579,14 +599,9 @@ export default function StreamlinedWizard() {
                                 : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        {isPremium && (
-                          <div className="absolute -top-2 left-4 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            MOST POPULAR
-                          </div>
-                        )}
-                        {isExecutive && (
-                          <div className="absolute -top-2 right-4 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            BEST VALUE
+                        {(isPremium || isExecutive) && (
+                          <div className="absolute -top-3 left-4">
+                            <PlanBadge planId={p.id} />
                           </div>
                         )}
                         <div className="flex items-center justify-between">
@@ -598,6 +613,9 @@ export default function StreamlinedWizard() {
                             <div className="text-2xl font-bold text-primary">${calculate2026Price(p.id, yardSize || "1/3")}</div>
                             <div className="text-xs text-muted-foreground">/mo</div>
                           </div>
+                        </div>
+                        <div className="mt-3 mb-1">
+                          <ValueMeter planId={p.id} />
                         </div>
                         <div className="mt-2 pt-2 border-t border-border/50 flex items-center justify-between text-xs">
                           <div>
@@ -749,37 +767,40 @@ export default function StreamlinedWizard() {
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'landscaping').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
                     return (
-                      <div key={addon.id} className="flex items-center gap-2 mb-1">
-                        <button
-                          data-testid={`addon-${addon.id}`}
-                          onClick={() => {
-                            if (isSelected) {
-                              setBasicAddons(basicAddons.filter(id => id !== addon.id));
-                            } else {
-                              setBasicAddons([...basicAddons, addon.id]);
-                            }
-                          }}
-                          className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
-                            isSelected
-                              ? 'border-primary bg-primary/10'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                          </div>
-                          <span className="font-medium text-sm">{addon.name}</span>
-                        </button>
-                        <button
-                          type="button"
-                          data-testid={`info-addon-${addon.id}`}
-                          onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-                          className="text-muted-foreground hover:text-primary p-1"
-                        >
-                          <Info className="w-4 h-4" />
-                        </button>
+                      <div key={addon.id} className="mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <button
+                            data-testid={`addon-${addon.id}`}
+                            onClick={() => {
+                              if (isSelected) {
+                                setBasicAddons(basicAddons.filter(id => id !== addon.id));
+                              } else {
+                                setBasicAddons([...basicAddons, addon.id]);
+                              }
+                            }}
+                            className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
+                              isSelected
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:border-primary/50'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
+                            }`}>
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <span className="font-medium text-sm">{addon.name}</span>
+                          </button>
+                          <button
+                            type="button"
+                            data-testid={`info-addon-${addon.id}`}
+                            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+                            className="text-muted-foreground hover:text-primary p-1"
+                          >
+                            <Info className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <UpgradeDetails upgradeId={addon.id} />
                       </div>
                     );
                   })}
@@ -789,37 +810,40 @@ export default function StreamlinedWizard() {
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'cleaning').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
                     return (
-                      <div key={addon.id} className="flex items-center gap-2 mb-1">
-                        <button
-                          data-testid={`addon-${addon.id}`}
-                          onClick={() => {
-                            if (isSelected) {
-                              setBasicAddons(basicAddons.filter(id => id !== addon.id));
-                            } else {
-                              setBasicAddons([...basicAddons, addon.id]);
-                            }
-                          }}
-                          className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
-                            isSelected
-                              ? 'border-primary bg-primary/10'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                          </div>
-                          <span className="font-medium text-sm">{addon.name}</span>
-                        </button>
-                        <button
-                          type="button"
-                          data-testid={`info-addon-${addon.id}`}
-                          onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-                          className="text-muted-foreground hover:text-primary p-1"
-                        >
-                          <Info className="w-4 h-4" />
-                        </button>
+                      <div key={addon.id} className="mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <button
+                            data-testid={`addon-${addon.id}`}
+                            onClick={() => {
+                              if (isSelected) {
+                                setBasicAddons(basicAddons.filter(id => id !== addon.id));
+                              } else {
+                                setBasicAddons([...basicAddons, addon.id]);
+                              }
+                            }}
+                            className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
+                              isSelected
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:border-primary/50'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
+                            }`}>
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <span className="font-medium text-sm">{addon.name}</span>
+                          </button>
+                          <button
+                            type="button"
+                            data-testid={`info-addon-${addon.id}`}
+                            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+                            className="text-muted-foreground hover:text-primary p-1"
+                          >
+                            <Info className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <UpgradeDetails upgradeId={addon.id} />
                       </div>
                     );
                   })}
@@ -829,37 +853,40 @@ export default function StreamlinedWizard() {
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'trash').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
                     return (
-                      <div key={addon.id} className="flex items-center gap-2 mb-1">
-                        <button
-                          data-testid={`addon-${addon.id}`}
-                          onClick={() => {
-                            if (isSelected) {
-                              setBasicAddons(basicAddons.filter(id => id !== addon.id));
-                            } else {
-                              setBasicAddons([...basicAddons, addon.id]);
-                            }
-                          }}
-                          className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
-                            isSelected
-                              ? 'border-primary bg-primary/10'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                          </div>
-                          <span className="font-medium text-sm">{addon.name}</span>
-                        </button>
-                        <button
-                          type="button"
-                          data-testid={`info-addon-${addon.id}`}
-                          onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-                          className="text-muted-foreground hover:text-primary p-1"
-                        >
-                          <Info className="w-4 h-4" />
-                        </button>
+                      <div key={addon.id} className="mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <button
+                            data-testid={`addon-${addon.id}`}
+                            onClick={() => {
+                              if (isSelected) {
+                                setBasicAddons(basicAddons.filter(id => id !== addon.id));
+                              } else {
+                                setBasicAddons([...basicAddons, addon.id]);
+                              }
+                            }}
+                            className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
+                              isSelected
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:border-primary/50'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
+                            }`}>
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <span className="font-medium text-sm">{addon.name}</span>
+                          </button>
+                          <button
+                            type="button"
+                            data-testid={`info-addon-${addon.id}`}
+                            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+                            className="text-muted-foreground hover:text-primary p-1"
+                          >
+                            <Info className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <UpgradeDetails upgradeId={addon.id} />
                       </div>
                     );
                   })}
@@ -869,37 +896,40 @@ export default function StreamlinedWizard() {
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'seasonal').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
                     return (
-                      <div key={addon.id} className="flex items-center gap-2 mb-1">
-                        <button
-                          data-testid={`addon-${addon.id}`}
-                          onClick={() => {
-                            if (isSelected) {
-                              setBasicAddons(basicAddons.filter(id => id !== addon.id));
-                            } else {
-                              setBasicAddons([...basicAddons, addon.id]);
-                            }
-                          }}
-                          className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
-                            isSelected
-                              ? 'border-primary bg-primary/10'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                          </div>
-                          <span className="font-medium text-sm">{addon.name}</span>
-                        </button>
-                        <button
-                          type="button"
-                          data-testid={`info-addon-${addon.id}`}
-                          onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-                          className="text-muted-foreground hover:text-primary p-1"
-                        >
-                          <Info className="w-4 h-4" />
-                        </button>
+                      <div key={addon.id} className="mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <button
+                            data-testid={`addon-${addon.id}`}
+                            onClick={() => {
+                              if (isSelected) {
+                                setBasicAddons(basicAddons.filter(id => id !== addon.id));
+                              } else {
+                                setBasicAddons([...basicAddons, addon.id]);
+                              }
+                            }}
+                            className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
+                              isSelected
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:border-primary/50'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-primary border-primary' : 'border-muted-foreground'
+                            }`}>
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <span className="font-medium text-sm">{addon.name}</span>
+                          </button>
+                          <button
+                            type="button"
+                            data-testid={`info-addon-${addon.id}`}
+                            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+                            className="text-muted-foreground hover:text-primary p-1"
+                          >
+                            <Info className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <UpgradeDetails upgradeId={addon.id} />
                       </div>
                     );
                   })}
@@ -917,38 +947,41 @@ export default function StreamlinedWizard() {
                     {ADDON_CATALOG.filter(a => a.tier === 'premium' && a.category === 'landscaping').map((addon) => {
                       const isSelected = premiumAddons.includes(addon.id);
                       return (
-                        <div key={addon.id} className="flex items-center gap-2 mb-1">
-                          <button
-                            data-testid={`addon-${addon.id}`}
-                            onClick={() => {
-                              if (isSelected) {
-                                setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
-                              } else {
-                                setPremiumAddons([...premiumAddons, addon.id]);
-                              }
-                            }}
-                            className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
-                              isSelected
-                                ? 'border-accent bg-accent/10'
-                                : 'border-border hover:border-accent/50'
-                            }`}
-                          >
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                              isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
-                            }`}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
-                            </div>
-                            <span className="font-medium text-sm">{addon.name}</span>
-                            <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
-                          </button>
-                          <button
-                            type="button"
-                            data-testid={`info-addon-${addon.id}`}
-                            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-                            className="text-muted-foreground hover:text-accent p-1"
-                          >
-                            <Info className="w-4 h-4" />
-                          </button>
+                        <div key={addon.id} className="mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <button
+                              data-testid={`addon-${addon.id}`}
+                              onClick={() => {
+                                if (isSelected) {
+                                  setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
+                                } else {
+                                  setPremiumAddons([...premiumAddons, addon.id]);
+                                }
+                              }}
+                              className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
+                                isSelected
+                                  ? 'border-accent bg-accent/10'
+                                  : 'border-border hover:border-accent/50'
+                              }`}
+                            >
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
+                              }`}>
+                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                              </div>
+                              <span className="font-medium text-sm">{addon.name}</span>
+                              <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
+                            </button>
+                            <button
+                              type="button"
+                              data-testid={`info-addon-${addon.id}`}
+                              onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+                              className="text-muted-foreground hover:text-accent p-1"
+                            >
+                              <Info className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <UpgradeDetails upgradeId={addon.id} />
                         </div>
                       );
                     })}
@@ -958,38 +991,41 @@ export default function StreamlinedWizard() {
                     {ADDON_CATALOG.filter(a => a.tier === 'premium' && a.category === 'cleaning').map((addon) => {
                       const isSelected = premiumAddons.includes(addon.id);
                       return (
-                        <div key={addon.id} className="flex items-center gap-2 mb-1">
-                          <button
-                            data-testid={`addon-${addon.id}`}
-                            onClick={() => {
-                              if (isSelected) {
-                                setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
-                              } else {
-                                setPremiumAddons([...premiumAddons, addon.id]);
-                              }
-                            }}
-                            className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
-                              isSelected
-                                ? 'border-accent bg-accent/10'
-                                : 'border-border hover:border-accent/50'
-                            }`}
-                          >
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                              isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
-                            }`}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
-                            </div>
-                            <span className="font-medium text-sm">{addon.name}</span>
-                            <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
-                          </button>
-                          <button
-                            type="button"
-                            data-testid={`info-addon-${addon.id}`}
-                            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-                            className="text-muted-foreground hover:text-accent p-1"
-                          >
-                            <Info className="w-4 h-4" />
-                          </button>
+                        <div key={addon.id} className="mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <button
+                              data-testid={`addon-${addon.id}`}
+                              onClick={() => {
+                                if (isSelected) {
+                                  setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
+                                } else {
+                                  setPremiumAddons([...premiumAddons, addon.id]);
+                                }
+                              }}
+                              className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
+                                isSelected
+                                  ? 'border-accent bg-accent/10'
+                                  : 'border-border hover:border-accent/50'
+                              }`}
+                            >
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
+                              }`}>
+                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                              </div>
+                              <span className="font-medium text-sm">{addon.name}</span>
+                              <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
+                            </button>
+                            <button
+                              type="button"
+                              data-testid={`info-addon-${addon.id}`}
+                              onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+                              className="text-muted-foreground hover:text-accent p-1"
+                            >
+                              <Info className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <UpgradeDetails upgradeId={addon.id} />
                         </div>
                       );
                     })}
@@ -999,38 +1035,41 @@ export default function StreamlinedWizard() {
                     {ADDON_CATALOG.filter(a => a.tier === 'premium' && a.category === 'seasonal').map((addon) => {
                       const isSelected = premiumAddons.includes(addon.id);
                       return (
-                        <div key={addon.id} className="flex items-center gap-2 mb-1">
-                          <button
-                            data-testid={`addon-${addon.id}`}
-                            onClick={() => {
-                              if (isSelected) {
-                                setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
-                              } else {
-                                setPremiumAddons([...premiumAddons, addon.id]);
-                              }
-                            }}
-                            className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
-                              isSelected
-                                ? 'border-accent bg-accent/10'
-                                : 'border-border hover:border-accent/50'
-                            }`}
-                          >
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                              isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
-                            }`}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
-                            </div>
-                            <span className="font-medium text-sm">{addon.name}</span>
-                            <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
-                          </button>
-                          <button
-                            type="button"
-                            data-testid={`info-addon-${addon.id}`}
-                            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-                            className="text-muted-foreground hover:text-accent p-1"
-                          >
-                            <Info className="w-4 h-4" />
-                          </button>
+                        <div key={addon.id} className="mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <button
+                              data-testid={`addon-${addon.id}`}
+                              onClick={() => {
+                                if (isSelected) {
+                                  setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
+                                } else {
+                                  setPremiumAddons([...premiumAddons, addon.id]);
+                                }
+                              }}
+                              className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
+                                isSelected
+                                  ? 'border-accent bg-accent/10'
+                                  : 'border-border hover:border-accent/50'
+                              }`}
+                            >
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
+                              }`}>
+                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                              </div>
+                              <span className="font-medium text-sm">{addon.name}</span>
+                              <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
+                            </button>
+                            <button
+                              type="button"
+                              data-testid={`info-addon-${addon.id}`}
+                              onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+                              className="text-muted-foreground hover:text-accent p-1"
+                            >
+                              <Info className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <UpgradeDetails upgradeId={addon.id} />
                         </div>
                       );
                     })}
@@ -1069,8 +1108,32 @@ export default function StreamlinedWizard() {
             </motion.div>
           )}
 
-          {/* Step 5: Commitment */}
+          {/* Step 5: Yard Analysis */}
           {step === 5 && (
+            <motion.div
+              key="step5"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <YardScorecard />
+            </motion.div>
+          )}
+
+          {/* Step 6: Transformation Preview */}
+          {step === 6 && (
+            <motion.div
+              key="step6"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <TransformationPreview />
+            </motion.div>
+          )}
+
+          {/* Step 7: Commitment */}
+          {step === 7 && (
             <motion.div
               key="step5"
               initial={{ opacity: 0, x: 20 }}
@@ -1256,8 +1319,8 @@ export default function StreamlinedWizard() {
             </motion.div>
           )}
 
-          {/* Step 6: Contact */}
-          {step === 6 && (
+          {/* Step 8: Contact */}
+          {step === 8 && (
             <motion.div
               key="step6"
               initial={{ opacity: 0, x: 20 }}
@@ -1355,8 +1418,8 @@ export default function StreamlinedWizard() {
             </motion.div>
           )}
 
-          {/* Step 7: Complete */}
-          {step === 7 && (
+          {/* Step 9: Complete */}
+          {step === 9 && (
             <motion.div
               key="step7"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -1455,7 +1518,7 @@ export default function StreamlinedWizard() {
       {/* Footer Navigation */}
       <div className="border-t border-border p-4 bg-muted/30">
         <div className="flex gap-3">
-          {step > 1 && step < 7 && (
+          {step > 1 && step < 9 && (
             <Button
               variant="outline"
               onClick={handleBack}
@@ -1467,30 +1530,30 @@ export default function StreamlinedWizard() {
             </Button>
           )}
           
-          {step < 6 && (
+          {step < 8 && (
             <Button
               onClick={handleNext}
               disabled={!canProceed()}
               className="flex-1 bg-primary hover:bg-primary/90"
               data-testid="button-next"
             >
-              {step === 1 ? "Build My Subscription" : "Continue"}
+              {step === 1 ? "Get Your AI Yard Quote" : "Continue"}
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           )}
 
-          {step === 6 && (
+          {step === 8 && (
             <Button
               onClick={handleSubmit}
               disabled={!canProceed() || isSubmitting}
               className="flex-1 bg-accent hover:bg-accent/90 text-white"
               data-testid="button-submit"
             >
-              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "Get My Free Quote")}
+              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "Get Your AI Yard Quote")}
             </Button>
           )}
 
-          {step === 7 && (
+          {step === 9 && (
             <Button
               onClick={() => {
                 setStep(1);

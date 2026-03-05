@@ -31,6 +31,8 @@ import {
   getFeatureFlag
 } from "@/data/marketing";
 import { TRUST_MESSAGES } from "@/data/promotions";
+import NeighborhoodOffer from "@/components/NeighborhoodOffer";
+import RobotWaitlist from "@/components/RobotWaitlist";
 
 interface MissionAccomplishedProps {
   quoteData: {
@@ -124,15 +126,15 @@ SERVICE DETAILS
 Yard Size: ${yardData?.label} (${quoteData.yardSize} Acre)
 Service Plan: ${planData?.name}
 
-INCLUDED ADD-ONS
+BUNDLED UPGRADES
 ----------------
-Basic Add-ons (${quoteData.basicAddons.length}):
+Basic Upgrades (${quoteData.basicAddons.length}):
 ${quoteData.basicAddons.map(id => {
   const addon = BASIC_ADDONS.find(a => a.id === id);
   return addon ? `  • ${addon.label}` : '';
 }).filter(Boolean).join('\n')}
 
-Premium Add-ons (${quoteData.premiumAddons.length}):
+Premium Upgrades (${quoteData.premiumAddons.length}):
 ${quoteData.premiumAddons.map(id => {
   const addon = PREMIUM_ADDONS.find(a => a.id === id);
   return addon ? `  • ${addon.label}` : '';
@@ -234,10 +236,10 @@ Contact: John@lawn-trooper.com | (256) 555-LAWN
             </div>
           </div>
 
-          {/* Selected Add-ons */}
+          {/* Selected Upgrades */}
           {(quoteData.basicAddons.length > 0 || quoteData.premiumAddons.length > 0) && (
             <div className="border-t border-primary/10 pt-4 mb-4">
-              <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Selected Add-ons</span>
+              <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Bundled Upgrades</span>
               <div className="flex flex-wrap gap-1.5">
                 {quoteData.basicAddons.map(id => {
                   const addon = BASIC_ADDONS.find(a => a.id === id);
@@ -309,6 +311,12 @@ Contact: John@lawn-trooper.com | (256) 555-LAWN
             <span className="text-2xl font-bold text-primary">${quoteData.totalPrice}/mo</span>
           </div>
         </div>
+
+        {/* Neighborhood Offer */}
+        <NeighborhoodOffer />
+
+        {/* Robot Mowing Waitlist */}
+        <RobotWaitlist />
 
         {/* No Obligation Message */}
         <div className="bg-accent/10 rounded-xl p-4 border border-accent/30 text-center">

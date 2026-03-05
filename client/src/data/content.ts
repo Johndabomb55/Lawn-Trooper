@@ -157,8 +157,8 @@ export const FOOTER_CONTENT = {
 export const SEASONAL_DISCLAIMER = "Some upgrade services are seasonal in nature and may be scheduled during appropriate times of the year or during off-season periods when Lawn Trooper's service schedule allows. Timing and availability may vary based on weather, workload, and operational considerations.";
 
 export const CTA_BUTTONS = {
-  buildMyPlan: "Build My Subscription",
-  getStarted: "Get Started",
+  buildMyPlan: "Get Your AI Yard Quote",
+  getStarted: "Design Your Lawn Plan",
   viewPlans: "View Plans",
 };
 

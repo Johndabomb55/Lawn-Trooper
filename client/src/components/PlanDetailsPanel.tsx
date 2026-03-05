@@ -16,6 +16,7 @@ import {
   type Addon,
 } from "@/data/plans";
 import { getPlanConfig } from "@/data/planConfig";
+import UpgradeDetails from "@/components/UpgradeDetails";
 
 interface LockedFeature {
   label: string;
@@ -139,49 +140,52 @@ export default function PlanDetailsPanel({
   ) => {
     const isPremiumTier = tier === "premium";
     return (
-      <div key={addon.id} className="flex items-center gap-2 mb-1.5">
-        <button
-          data-testid={`step2-addon-${addon.id}`}
-          onClick={onToggle}
-          className={`flex-1 p-2.5 rounded-lg border transition-all text-left flex items-center gap-2 ${
-            isSelected
-              ? isPremiumTier
-                ? "border-accent bg-accent/10"
-                : "border-primary bg-primary/10"
-              : "border-border hover:border-primary/50"
-          }`}
-        >
-          <div
-            className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+      <div key={addon.id} className="mb-1.5">
+        <div className="flex items-center gap-2">
+          <button
+            data-testid={`step2-addon-${addon.id}`}
+            onClick={onToggle}
+            className={`flex-1 p-2.5 rounded-lg border transition-all text-left flex items-center gap-2 ${
               isSelected
                 ? isPremiumTier
-                  ? "bg-accent border-accent"
-                  : "bg-primary border-primary"
-                : "border-muted-foreground/40"
+                  ? "border-accent bg-accent/10"
+                  : "border-primary bg-primary/10"
+                : "border-border hover:border-primary/50"
             }`}
           >
-            {isSelected && <Check className="w-3 h-3 text-white" />}
-          </div>
-          <div className="flex-1 min-w-0">
-            <span className="font-medium text-sm">{addon.name}</span>
-            {isOverage && isSelected && (
-              <span className="text-[10px] text-amber-600 ml-1">
-                (extra)
-              </span>
+            <div
+              className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                isSelected
+                  ? isPremiumTier
+                    ? "bg-accent border-accent"
+                    : "bg-primary border-primary"
+                  : "border-muted-foreground/40"
+              }`}
+            >
+              {isSelected && <Check className="w-3 h-3 text-white" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="font-medium text-sm">{addon.name}</span>
+              {isOverage && isSelected && (
+                <span className="text-[10px] text-amber-600 ml-1">
+                  (extra)
+                </span>
+              )}
+            </div>
+            {isPremiumTier && (
+              <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
             )}
-          </div>
-          {isPremiumTier && (
-            <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
-          )}
-        </button>
-        <button
-          type="button"
-          data-testid={`step2-info-${addon.id}`}
-          onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
-          className="text-muted-foreground hover:text-primary p-1"
-        >
-          <Info className="w-4 h-4" />
-        </button>
+          </button>
+          <button
+            type="button"
+            data-testid={`step2-info-${addon.id}`}
+            onClick={() => showInfo(addon.name, <p>{addon.description}</p>)}
+            className="text-muted-foreground hover:text-primary p-1"
+          >
+            <Info className="w-4 h-4" />
+          </button>
+        </div>
+        <UpgradeDetails upgradeId={addon.id} />
       </div>
     );
   };
@@ -429,7 +433,7 @@ export default function PlanDetailsPanel({
               <div>
                 {effectivePremiumAllowance === 0 && (
                   <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg mb-2">
-                    No Premium slots included. Each selection is an extra add-on.
+                    No Premium slots included. Each selection is an extra upgrade.
                   </div>
                 )}
                 {groupByCategory(premiumCatalog).map((cat) => (

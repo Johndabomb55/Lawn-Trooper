@@ -34,6 +34,7 @@ import {
   PROMO_CONFIG
 } from "@/data/plans";
 import { WHY_DIFFERENT } from "@/data/content";
+import PromoBanner from "@/components/PromoBanner";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -196,7 +197,7 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
             <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
-              Get Instant Quote
+              Get Your AI Yard Quote
             </Button>
           </div>
 
@@ -219,7 +220,7 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Quote</Button>
+                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Your AI Yard Quote</Button>
               </div>
             </motion.div>
           )}
@@ -378,6 +379,9 @@ export default function LandingPage() {
       {/* Quote Wizard Section - Primary CTA */}
       <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
+          <div className="mb-6">
+            <PromoBanner />
+          </div>
           <MultiStepQuoteWizard />
         </div>
       </section>
