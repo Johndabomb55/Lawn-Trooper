@@ -36,6 +36,8 @@ import YardScorecard from "@/components/YardScorecard";
 import TransformationPreview from "@/components/TransformationPreview";
 import UpgradeDetails from "@/components/UpgradeDetails";
 import PromoBanner from "@/components/PromoBanner";
+import NeighborhoodOffer from "@/components/NeighborhoodOffer";
+import RobotWaitlist from "@/components/RobotWaitlist";
 import PlanBadge from "@/components/PlanBadge";
 import ValueMeter from "@/components/ValueMeter";
 import { 
@@ -289,7 +291,7 @@ export default function StreamlinedWizard() {
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-primary to-green-700 p-4 text-white">
         <div className="flex items-center justify-between mb-3">
-          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Get Your AI Yard Quote</h2>
+          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Get Your Free Quote</h2>
           <span data-testid="text-step-badge" className="text-sm bg-white/20 px-3 py-1 rounded-full">
             Step {step} of 9
           </span>
@@ -671,9 +673,9 @@ export default function StreamlinedWizard() {
               className="space-y-4"
             >
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-2">Customize with upgrades</h3>
+                <h3 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h3>
                 <p className="text-muted-foreground text-sm">
-                  Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
+                  Bundling saves you money. Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
                 </p>
               </div>
 
@@ -1135,7 +1137,7 @@ export default function StreamlinedWizard() {
           {/* Step 7: Commitment */}
           {step === 7 && (
             <motion.div
-              key="step5"
+              key="step7"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
@@ -1171,7 +1173,7 @@ export default function StreamlinedWizard() {
                       >
                         {isBestValue && (
                           <div className="absolute -top-2 left-4 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            BEST VALUE
+                            RECOMMENDED
                           </div>
                         )}
                         <div>
@@ -1200,13 +1202,13 @@ export default function StreamlinedWizard() {
                       {/* Pay-in-Full Accelerator Toggle - Optional for 1-year and 2-year */}
                       {t.allowsPayInFull && isSelected && (
                         <div className="mt-3 ml-4 space-y-2">
-                          {/* Birthday Bonus Section */}
+                          {/* Anniversary Commitment Bonus Section */}
                           <div className="p-2 bg-primary/5 border border-primary/20 rounded-lg">
-                            <div className="text-xs font-bold text-primary mb-1">Birthday Bonus</div>
+                            <div className="text-xs font-bold text-primary mb-1">Commitment Bonus</div>
                             <div className="text-[10px] text-muted-foreground space-y-0.5">
-                              <div className="flex justify-between"><span>1-Year:</span><span>+1 month</span></div>
-                              <div className="flex justify-between"><span>2-Year:</span><span>+3 months</span></div>
-                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>doubles birthday bonus</span></div>
+                              <div className="flex justify-between"><span>1-Year:</span><span>+1 complimentary month</span></div>
+                              <div className="flex justify-between"><span>2-Year:</span><span>+3 complimentary months</span></div>
+                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>doubles complimentary months</span></div>
                             </div>
                           </div>
                           
@@ -1227,21 +1229,21 @@ export default function StreamlinedWizard() {
                               </div>
                               <div className="text-left">
                                 <div className="font-medium">Pay-in-Full Option</div>
-                                <div className="text-xs text-muted-foreground">Doubles birthday bonus months.</div>
+                                <div className="text-xs text-muted-foreground">Doubles your complimentary months.</div>
                               </div>
                             </div>
                             <div className="text-right">
                               <div className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
-                                ×2 BONUS
+                                ×2 MONTHS
                               </div>
                               <div className="text-xs text-green-600 font-bold mt-1">
-                                {t.id === '1-year' ? '1 → 2 + bonus' : '3 → 6 + bonus'}
+                                {t.id === '1-year' ? '1 → 2 months' : '3 → 6 months'}
                               </div>
                             </div>
                           </button>
                           
                           <p className="text-[10px] text-center text-muted-foreground">
-                            Pay monthly is always available. Pay in full to double your birthday bonus months.
+                            Pay monthly is always available. Pay in full to double your complimentary months.
                           </p>
                           {payInFull && payInFullExtraSavings > 0 && (
                             <p className="text-[11px] text-center text-green-700 font-semibold">
@@ -1278,12 +1280,12 @@ export default function StreamlinedWizard() {
                     </div>
                     <div className="text-xs text-muted-foreground space-y-0.5 ml-2">
                       <div className="flex justify-between">
-                        <span>• Birthday Bonus:</span>
+                        <span>• Commitment Bonus:</span>
                         <span>{payInFull ? `${freeMonthsBreakdown.commitmentBase} × 2 = ${freeMonthsBreakdown.commitmentMonths}` : `+${freeMonthsBreakdown.commitmentBase}`} mo</span>
                       </div>
                       {freeMonthsBreakdown.anniversaryBonus > 0 && (
                         <div className="flex justify-between">
-                          <span>• Birthday Bonus (fixed):</span>
+                          <span>• Anniversary Bonus:</span>
                           <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
                         </div>
                       )}
@@ -1322,7 +1324,7 @@ export default function StreamlinedWizard() {
           {/* Step 8: Contact */}
           {step === 8 && (
             <motion.div
-              key="step6"
+              key="step8"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
@@ -1421,7 +1423,7 @@ export default function StreamlinedWizard() {
           {/* Step 9: Complete */}
           {step === 9 && (
             <motion.div
-              key="step7"
+              key="step9"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="text-center space-y-6"
@@ -1502,6 +1504,15 @@ export default function StreamlinedWizard() {
                 </p>
               </div>
 
+              {/* Anniversary Promo Reminder */}
+              <PromoBanner />
+
+              {/* Neighborhood Offer */}
+              {!isHOA && <NeighborhoodOffer />}
+
+              {/* Robot Mowing Waitlist */}
+              {!isHOA && <RobotWaitlist />}
+
               {/* Cancellation Policy - Residential only */}
               {!isHOA && (
                 <div className="text-left text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
@@ -1537,7 +1548,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-primary hover:bg-primary/90"
               data-testid="button-next"
             >
-              {step === 1 ? "Get Your AI Yard Quote" : "Continue"}
+              {step === 1 ? "Get Your Free Quote" : "Continue"}
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           )}
@@ -1549,7 +1560,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-accent hover:bg-accent/90 text-white"
               data-testid="button-submit"
             >
-              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "Get Your AI Yard Quote")}
+              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "Get Your Free Quote")}
             </Button>
           )}
 

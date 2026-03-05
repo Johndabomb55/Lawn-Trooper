@@ -91,7 +91,7 @@ export default function PromotionsPage() {
                   <div>
                     <div className="font-medium">Pay-in-Full Option</div>
                     <div className="text-sm text-muted-foreground">
-                      Doubles commitment months ({selectedTerm === '1-year' ? '1 → 2' : '3 → 6'}).
+                      Doubles complimentary months ({selectedTerm === '1-year' ? '1 → 2' : '3 → 6'}).
                     </div>
                   </div>
                   <Switch
@@ -102,7 +102,7 @@ export default function PromotionsPage() {
                 </div>
               </div>
               <p className="text-xs text-center text-muted-foreground">
-                Pay monthly is always available. Pay in full to double your commitment months.
+                Pay monthly is always available. Pay in full to double your complimentary months.
               </p>
             </div>
           </div>
@@ -150,7 +150,7 @@ export default function PromotionsPage() {
             </div>
             <div className="bg-green-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-green-600">{freeMonths}</div>
-              <div className="text-xs text-muted-foreground">Complimentary Months</div>
+              <div className="text-xs text-muted-foreground">Complimentary Mo.</div>
             </div>
             <div className="bg-accent/10 rounded-lg p-4">
               <div className="text-2xl font-bold text-accent">{billedMonths}</div>
@@ -169,14 +169,14 @@ export default function PromotionsPage() {
         <div className="bg-primary/5 rounded-xl p-6 border border-primary/20 mb-8">
           <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" />
-            Understanding Complimentary Months
+            How Complimentary Months Work
           </h2>
           <div className="space-y-3 text-sm">
             <div className="bg-white rounded-lg p-4 border">
               <p className="font-medium mb-2">Example: 2-Year + Pay-in-Full</p>
               <ul className="space-y-1 text-muted-foreground">
-                <li>• Commitment Bonus (2-year): 3 months</li>
-                <li>• Pay-in-Full doubles commitment: 3 × 2 = 6 months</li>
+                <li>• Complimentary months (2-year): 3 months</li>
+                <li>• Pay-in-full doubles them: 3 × 2 = 6 months</li>
                 <li>• Total: 6 complimentary months</li>
                 <li>• Term: 24 months of service</li>
                 <li>• Months billed: 18</li>
@@ -185,8 +185,8 @@ export default function PromotionsPage() {
             <div className="bg-white rounded-lg p-4 border mt-3">
               <p className="font-medium mb-2">Example: 1-Year + Pay-in-Full</p>
               <ul className="space-y-1 text-muted-foreground">
-                <li>• Commitment Bonus (1-year): 1 month</li>
-                <li>• Pay-in-Full doubles commitment: 1 × 2 = 2 months</li>
+                <li>• Complimentary months (1-year): 1 month</li>
+                <li>• Pay-in-full doubles them: 1 × 2 = 2 months</li>
                 <li>• Total: 2 complimentary months</li>
                 <li>• Term: 12 months of service</li>
                 <li>• Months billed: 10</li>
@@ -198,7 +198,7 @@ export default function PromotionsPage() {
         <div className="text-center">
           <Link href="/">
             <Button size="lg" className="bg-accent hover:bg-accent/90 text-white">
-              Start My Free Quote
+              Get Your Free Quote
             </Button>
           </Link>
         </div>

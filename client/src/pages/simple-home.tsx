@@ -33,10 +33,12 @@ export default function SimpleHome() {
             <span data-testid="text-brand" className="font-heading font-bold text-xl tracking-tight">LAWN TROOPER</span>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm">
-            <a data-testid="link-phone-header" href="tel:+12565550000" className="flex items-center gap-1 hover:text-accent transition-colors">
-              <Phone className="w-4 h-4" />
-              {FOOTER_CONTENT.phone}
-            </a>
+            {FOOTER_CONTENT.phone && (
+              <a data-testid="link-phone-header" href={`tel:${FOOTER_CONTENT.phone}`} className="flex items-center gap-1 hover:text-accent transition-colors">
+                <Phone className="w-4 h-4" />
+                {FOOTER_CONTENT.phone}
+              </a>
+            )}
           </div>
         </div>
       </header>
@@ -126,7 +128,7 @@ export default function SimpleHome() {
                     }`}
                     aria-label={`Build my ${summary.name} plan`}
                   >
-                    Design Your Lawn Plan
+                    Get Your Free Quote
                   </button>
                 </article>
               );
@@ -210,7 +212,7 @@ export default function SimpleHome() {
             className="bg-accent text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-accent/90 transition-colors"
             aria-label="Get started with your free quote"
           >
-            Get Your AI Yard Quote
+            Get Your Free Quote
           </button>
         </div>
       </section>
@@ -223,10 +225,12 @@ export default function SimpleHome() {
               <Mail className="w-4 h-4" />
               {FOOTER_CONTENT.email}
             </a>
-            <a data-testid="link-phone-footer" href="tel:+12565550000" className="flex items-center gap-1 hover:text-accent transition-colors">
-              <Phone className="w-4 h-4" />
-              {FOOTER_CONTENT.phone}
-            </a>
+            {FOOTER_CONTENT.phone && (
+              <a data-testid="link-phone-footer" href={`tel:${FOOTER_CONTENT.phone}`} className="flex items-center gap-1 hover:text-accent transition-colors">
+                <Phone className="w-4 h-4" />
+                {FOOTER_CONTENT.phone}
+              </a>
+            )}
           </div>
           <p data-testid="text-service-area" className="text-white/60">
             {FOOTER_CONTENT.serviceArea}

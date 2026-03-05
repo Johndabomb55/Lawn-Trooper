@@ -117,8 +117,8 @@ export const FUN_FACTS = [
 export const PROMO_BANNERS = [
   {
     id: "birthday",
-    title: "25-Year Birthday Bonus",
-    subtitle: "Celebrating 25 years — long-term subscribers may qualify for our Birthday Bonus",
+    title: "25th Anniversary Bonus",
+    subtitle: "Celebrating 25 years — long-term subscribers earn complimentary months",
     cta: "Get Your Quote",
     active: true,
     priority: 1

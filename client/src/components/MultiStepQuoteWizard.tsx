@@ -17,7 +17,6 @@ import {
   Shield,
   Award,
   Target,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
   Leaf
@@ -28,7 +27,6 @@ import {
   MILITARY_RANKS, 
   LOCAL_TIPS, 
   FEATURE_FLAGS, 
-  CELEBRATION_MESSAGES,
   getFeatureFlag
 } from "@/data/marketing";
 import {
@@ -108,34 +106,6 @@ const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
 
 const getAddonName = (id: string) => ADDON_CATALOG.find((a) => a.id === id)?.name ?? id;
 
-// Confetti particle component
-const ConfettiParticle = ({ delay, x }: { delay: number; x: number }) => (
-  <motion.div
-    className="absolute w-2 h-2 rounded-full"
-    style={{ 
-      left: `${x}%`,
-      backgroundColor: ['#facc15', '#1a3d24', '#22c55e', '#f97316'][Math.floor(Math.random() * 4)]
-    }}
-    initial={{ y: 0, opacity: 1, scale: 1 }}
-    animate={{ 
-      y: [0, -100, 200], 
-      opacity: [1, 1, 0],
-      scale: [1, 1.2, 0.5],
-      rotate: [0, 180, 360]
-    }}
-    transition={{ duration: 2, delay: delay * 0.1, ease: "easeOut" }}
-  />
-);
-
-// Confetti burst component
-const ConfettiBurst = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none z-50">
-    {Array.from({ length: 20 }).map((_, i) => (
-      <ConfettiParticle key={i} delay={i} x={10 + Math.random() * 80} />
-    ))}
-  </div>
-);
-
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email().or(z.literal("")),
@@ -185,8 +155,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
   
@@ -196,8 +164,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
-  const [showPromoUnlocked, setShowPromoUnlocked] = useState(false);
-  const [previousAppliedCount, setPreviousAppliedCount] = useState(0);
   const [promoCode, setPromoCode] = useState('');
   const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
   
@@ -291,22 +257,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
   const handleNext = () => {
     if (currentStep < 4) {
-      // Trigger confetti and celebration message
-      if (getFeatureFlag('showConfetti', true)) {
-        setShowConfetti(true);
-        const messages = [
-          CELEBRATION_MESSAGES.step1Complete,
-          CELEBRATION_MESSAGES.step2Complete,
-          CELEBRATION_MESSAGES.step3Complete,
-        ];
-        setCelebrationMessage(messages[currentStep - 1] || null);
-        
-        setTimeout(() => {
-          setShowConfetti(false);
-          setCelebrationMessage(null);
-        }, 2500);
-      }
-      
       setCurrentStep(currentStep + 1);
     }
   };
@@ -457,22 +407,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const appliedTotals = applyPromotions({ monthlyTotal: baseMonthlyTotal, term }, promotionResult);
   const totalPrice = appliedTotals.displayedMonthly;
 
-  // Detect when a new promo is unlocked for animation
-  useEffect(() => {
-    if (promotionResult.applied.length > previousAppliedCount) {
-      setShowPromoUnlocked(true);
-      if (getFeatureFlag('showConfetti', true)) {
-        setShowConfetti(true);
-        toast({
-          title: "Discount Unlocked!",
-          description: promotionResult.applied[promotionResult.applied.length - 1]?.title,
-        });
-        setTimeout(() => setShowConfetti(false), 2000);
-      }
-      setTimeout(() => setShowPromoUnlocked(false), 1500);
-    }
-    setPreviousAppliedCount(promotionResult.applied.length);
-  }, [promotionResult.applied.length]);
 
   // Check if add-on requirements are met
   const addonsRequirementMet = basicAddons.length >= allowance.basic && premiumAddons.length >= allowance.premium;
@@ -539,7 +473,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     setTerm('2-year');
     setPayUpfront(false);
     setSegments([]);
-    setPreviousAppliedCount(0);
   };
 
   // If showing Mission Accomplished, render that instead
@@ -592,27 +525,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
   return (
     <div className={`bg-card rounded-2xl shadow-2xl border-2 border-primary/30 relative ${isModal ? '' : ''}`}>
-      {/* Confetti Animation */}
-      <AnimatePresence>
-        {showConfetti && <ConfettiBurst />}
-      </AnimatePresence>
-
-      {/* Celebration Message */}
-      <AnimatePresence>
-        {celebrationMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute top-0 left-0 right-0 z-40 bg-accent text-accent-foreground text-center py-2 px-4 text-sm font-bold rounded-t-2xl flex items-center justify-center gap-2"
-          >
-            <Sparkles className="w-4 h-4" />
-            {celebrationMessage}
-            <Sparkles className="w-4 h-4" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Trust Badge at Top */}
       <div className="bg-green-50 px-4 py-2 border-b border-green-200">
         <TrustBadge variant="compact" message={TRUST_MESSAGES.ctaTop} />
@@ -904,7 +816,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     appliedTotals={appliedTotals}
                     term={term}
                     payUpfront={payUpfront}
-                    showUnlockedAnimation={showPromoUnlocked}
+                    showUnlockedAnimation={false}
                   />
                 </motion.div>
               )}
@@ -919,9 +831,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   className="space-y-6"
                 >
                   <div className="text-center mb-4">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Select Upgrade Services</h4>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h4>
                     <p className="text-muted-foreground">
-                      {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades
+                      Bundling saves you money. {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades.
                     </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}

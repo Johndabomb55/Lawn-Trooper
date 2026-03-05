@@ -15,7 +15,6 @@ import {
   Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { 
   PLANS, 
@@ -24,8 +23,6 @@ import {
   YARD_SIZES 
 } from "@/data/plans";
 import { 
-  FEATURE_FLAGS, 
-  WAITLIST_CONFIG, 
   SOCIAL_SHARING,
   PDF_QUOTE_CONFIG,
   getFeatureFlag
@@ -33,6 +30,7 @@ import {
 import { TRUST_MESSAGES } from "@/data/promotions";
 import NeighborhoodOffer from "@/components/NeighborhoodOffer";
 import RobotWaitlist from "@/components/RobotWaitlist";
+import PromoBanner from "@/components/PromoBanner";
 
 interface MissionAccomplishedProps {
   quoteData: {
@@ -55,9 +53,6 @@ interface MissionAccomplishedProps {
 }
 
 export default function MissionAccomplished({ quoteData, onClose, onReset }: MissionAccomplishedProps) {
-  const [waitlistEmail, setWaitlistEmail] = useState(quoteData.email || "");
-  const [isJoiningWaitlist, setIsJoiningWaitlist] = useState(false);
-  const [waitlistJoined, setWaitlistJoined] = useState(false);
   const [copied, setCopied] = useState(false);
   
   const { toast } = useToast();
@@ -65,45 +60,6 @@ export default function MissionAccomplished({ quoteData, onClose, onReset }: Mis
   const planData = PLANS.find(p => p.id === quoteData.plan);
   const yardData = YARD_SIZES.find(y => y.id === quoteData.yardSize);
 
-  const handleJoinWaitlist = async () => {
-    if (!waitlistEmail) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email to join the waitlist.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsJoiningWaitlist(true);
-    try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: waitlistEmail }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setWaitlistJoined(true);
-        toast({
-          title: "Welcome, Commander!",
-          description: WAITLIST_CONFIG.successMessage,
-        });
-      } else {
-        throw new Error(data.message);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to join waitlist. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsJoiningWaitlist(false);
-    }
-  };
 
   const handleDownloadPDF = () => {
     const quoteContent = `
@@ -312,6 +268,9 @@ Contact: John@lawn-trooper.com | (256) 555-LAWN
           </div>
         </div>
 
+        {/* Anniversary Promo Reminder */}
+        <PromoBanner />
+
         {/* Neighborhood Offer */}
         <NeighborhoodOffer />
 
@@ -354,53 +313,6 @@ Contact: John@lawn-trooper.com | (256) 555-LAWN
           </Button>
         )}
 
-        {/* Waitlist Signup */}
-        {getFeatureFlag('showWaitlistSignup', true) && !waitlistJoined && (
-          <div className="bg-gradient-to-r from-accent/10 to-yellow-50 rounded-xl p-5 border border-accent/30">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="bg-accent rounded-full p-2 shrink-0">
-                <Sparkles className="w-5 h-5 text-accent-foreground" />
-              </div>
-              <div>
-                <h4 className="font-bold text-primary">{WAITLIST_CONFIG.title}</h4>
-                <p className="text-sm text-muted-foreground">{WAITLIST_CONFIG.subtitle}</p>
-              </div>
-            </div>
-            
-            <ul className="grid grid-cols-2 gap-2 mb-4 text-xs">
-              {WAITLIST_CONFIG.features.map((feature, i) => (
-                <li key={i} className="flex items-center gap-1.5">
-                  <Check className="w-3 h-3 text-green-600" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-            
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                value={waitlistEmail}
-                onChange={(e) => setWaitlistEmail(e.target.value)}
-                className="flex-1"
-              />
-              <Button
-                onClick={handleJoinWaitlist}
-                disabled={isJoiningWaitlist}
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
-              >
-                {isJoiningWaitlist ? "..." : WAITLIST_CONFIG.buttonText}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {waitlistJoined && (
-          <div className="bg-green-50 rounded-xl p-4 border border-green-200 flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6 text-green-600" />
-            <p className="text-green-700 font-medium">{WAITLIST_CONFIG.successMessage}</p>
-          </div>
-        )}
 
         {/* Social Sharing */}
         {getFeatureFlag('showSocialSharing', true) && (

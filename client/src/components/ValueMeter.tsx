@@ -7,19 +7,19 @@ interface ValueMeterProps {
 const METER_CONFIG: Record<string, { percent: number; description: string; colorClass: string; bgClass: string }> = {
   basic: {
     percent: 45,
-    description: "Essential yard maintenance.",
+    description: "Reliable bi-weekly maintenance with essential upgrades.",
     colorClass: "bg-primary",
     bgClass: "bg-primary/20",
   },
   premium: {
     percent: 75,
-    description: "Balanced value and flexibility.",
+    description: "Weekly service, account manager, and landscape allowance.",
     colorClass: "bg-amber-500",
     bgClass: "bg-amber-500/20",
   },
   executive: {
     percent: 100,
-    description: "Complete property care with maximum value.",
+    description: "Full-service turf defense, dedicated manager, and premier allowance.",
     colorClass: "bg-emerald-600",
     bgClass: "bg-emerald-600/20",
   },

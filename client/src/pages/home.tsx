@@ -17,7 +17,6 @@ import {
   Zap,
   Leaf,
   Info,
-  AlertCircle,
   Facebook,
   Instagram,
   Mail
@@ -30,8 +29,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { 
-  GLOBAL_CONSTANTS, 
-  PROMO_CONFIG
+  GLOBAL_CONSTANTS
 } from "@/data/plans";
 import { WHY_DIFFERENT } from "@/data/content";
 import PromoBanner from "@/components/PromoBanner";
@@ -73,64 +71,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-// Countdown Timer Component
-function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, minutes: number, seconds: number} | null>(null);
-  const [hasEnded, setHasEnded] = useState(false);
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const difference = +new Date(PROMO_CONFIG.cutoffDate) - +new Date();
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60)
-        });
-        setHasEnded(false);
-      } else {
-        setTimeLeft(null);
-        setHasEnded(true);
-      }
-    };
-
-    const timer = setInterval(calculateTimeLeft, 1000);
-    calculateTimeLeft(); // Initial call
-
-    return () => clearInterval(timer);
-  }, []);
-
-  if (hasEnded) {
-    return (
-      <div className="bg-destructive/90 text-white py-2 px-4 shadow-lg text-center">
-        <div className="font-bold uppercase tracking-widest text-xs md:text-sm">
-          Early Bird Bonus Expired
-        </div>
-      </div>
-    );
-  }
-
-  if (!timeLeft) return null;
-
-  return (
-    <div className="bg-destructive/90 text-white py-2 px-4 shadow-lg text-center relative z-50">
-      <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 font-bold uppercase tracking-widest text-xs md:text-sm">
-        <div className="flex items-center gap-2 animate-pulse">
-          <AlertCircle className="w-4 h-4" />
-          <span>{PROMO_CONFIG.saleLabel}</span>
-        </div>
-        <div className="bg-black/20 px-3 py-1 rounded font-mono text-base flex gap-2 items-center">
-           <span>{String(timeLeft.days).padStart(2, '0')}d</span>:
-           <span>{String(timeLeft.hours).padStart(2, '0')}h</span>:
-           <span>{String(timeLeft.minutes).padStart(2, '0')}m</span>:
-           <span>{String(timeLeft.seconds).padStart(2, '0')}s</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -197,7 +137,7 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
             <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
-              Get Your AI Yard Quote
+              Get Your Free Quote
             </Button>
           </div>
 
@@ -220,7 +160,7 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Your AI Yard Quote</Button>
+                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Your Free Quote</Button>
               </div>
             </motion.div>
           )}
@@ -637,8 +577,8 @@ export default function LandingPage() {
                  </div>
                  <p className="text-muted-foreground italic mb-4 flex-1">"The tactical approach is no joke. My yard has never looked this sharp. The pricing is transparent and the crew is incredibly disciplined."</p>
                  <div>
-                   <div className="font-bold font-heading text-primary">Lt. Col. James R. (Ret)</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Command Member</div>
+                   <div className="font-bold font-heading text-primary">James R.</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Plan Member</div>
                  </div>
               </div>
             </motion.div>
@@ -695,7 +635,7 @@ export default function LandingPage() {
                    <Star className="w-4 h-4 fill-accent" />
                    <Star className="w-4 h-4 fill-accent" />
                  </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Early Bird deal. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Anniversary pricing. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">The Davidson Family</div>
                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Basic Patrol Members</div>

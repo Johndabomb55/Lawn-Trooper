@@ -149,7 +149,7 @@ export const TRUST_BAR = {
 
 export const FOOTER_CONTENT = {
   email: "John@lawn-trooper.com",
-  phone: "(256) 555-0000",
+  phone: "",
   serviceArea: "Serving Athens, Huntsville, Madison, Decatur, and all of North Alabama",
 };
 
@@ -157,8 +157,8 @@ export const FOOTER_CONTENT = {
 export const SEASONAL_DISCLAIMER = "Some upgrade services are seasonal in nature and may be scheduled during appropriate times of the year or during off-season periods when Lawn Trooper's service schedule allows. Timing and availability may vary based on weather, workload, and operational considerations.";
 
 export const CTA_BUTTONS = {
-  buildMyPlan: "Get Your AI Yard Quote",
-  getStarted: "Design Your Lawn Plan",
+  buildMyPlan: "Get Your Free Quote",
+  getStarted: "Get Your Free Quote",
   viewPlans: "View Plans",
 };
 

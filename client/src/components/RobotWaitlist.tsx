@@ -1,9 +1,16 @@
 import React, { useState } from "react";
-import { Bot, CheckCircle2 } from "lucide-react";
+import { Bot, CheckCircle2, Check, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+
+const BENEFITS = [
+  "Daily autonomous mowing",
+  "Weekly-plan pricing",
+  "Priority early access",
+  "Exclusive member perks",
+];
 
 export default function RobotWaitlist() {
   const [email, setEmail] = useState("");
@@ -27,7 +34,7 @@ export default function RobotWaitlist() {
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, neighborhood }),
       });
 
       const data = await response.json();
@@ -36,7 +43,7 @@ export default function RobotWaitlist() {
         setIsJoined(true);
         toast({
           title: "You're on the list!",
-          description: "We'll notify you when Smart Robot Mowing is available in your area.",
+          description: "We'll notify you when Smart Robot Mowing launches in your area.",
         });
       } else {
         throw new Error(data.message || "Failed to join waitlist");
@@ -62,22 +69,36 @@ export default function RobotWaitlist() {
   }
 
   return (
-    <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-5 border border-purple-200" data-testid="robot-waitlist">
-      <div className="flex items-start gap-3 mb-3">
-        <div className="bg-purple-600 rounded-full p-2 shrink-0">
-          <Bot className="w-5 h-5 text-white" />
+    <div className="bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 rounded-xl p-5 border border-purple-200 space-y-4" data-testid="robot-waitlist">
+      <div className="flex items-start gap-3">
+        <div className="bg-purple-600 rounded-xl p-2.5 shrink-0 shadow-md">
+          <Bot className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h4 className="font-bold text-primary text-lg" data-testid="text-robot-title">Coming Soon: Smart Robot Mowing</h4>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4 className="font-bold text-primary text-lg" data-testid="text-robot-title">Smart Robot Mowing</h4>
+            <span className="bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Coming Soon</span>
+          </div>
           <p className="text-sm text-muted-foreground mt-1">
-            Be the first to know when autonomous mowing arrives in your neighborhood. Sign up for early access.
+            Autonomous daily mowing at weekly-plan pricing. Be first in line when we launch in your neighborhood.
           </p>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
+        {BENEFITS.map((benefit, i) => (
+          <li key={i} className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <div className="bg-purple-100 rounded-full p-0.5">
+              <Zap className="w-3 h-3 text-purple-600" />
+            </div>
+            {benefit}
+          </li>
+        ))}
+      </ul>
+
+      <div className="space-y-2">
         <div>
-          <Label htmlFor="robot-email">Email *</Label>
+          <Label htmlFor="robot-email" className="text-xs">Email *</Label>
           <Input
             id="robot-email"
             data-testid="input-robot-email"
@@ -88,7 +109,7 @@ export default function RobotWaitlist() {
           />
         </div>
         <div>
-          <Label htmlFor="robot-neighborhood">Address / Neighborhood (optional)</Label>
+          <Label htmlFor="robot-neighborhood" className="text-xs">Neighborhood (optional)</Label>
           <Input
             id="robot-neighborhood"
             data-testid="input-robot-neighborhood"
@@ -102,7 +123,7 @@ export default function RobotWaitlist() {
           data-testid="button-robot-waitlist"
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="w-full bg-purple-600 text-white hover:bg-purple-700"
+          className="w-full bg-purple-600 text-white hover:bg-purple-700 font-bold"
         >
           {isSubmitting ? "Joining..." : "Join the Waitlist"}
         </Button>
