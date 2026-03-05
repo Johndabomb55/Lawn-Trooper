@@ -8,6 +8,7 @@ import SimpleHome from "@/pages/simple-home";
 import LandingPage from "@/pages/home";
 import PromotionsPage from "@/pages/promotions";
 import EmbedWizard from "@/pages/embed-wizard";
+import MultiStepQuoteWizard from "./components/MultiStepQuoteWizard";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/promotions" component={PromotionsPage} />
       <Route path="/embed" component={EmbedWizard} />
       <Route component={NotFound} />
+      <Route path="/quotewizard" component={MultiStepQuoteWizard} />
     </Switch>
   );
 }
