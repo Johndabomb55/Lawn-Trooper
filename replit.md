@@ -36,6 +36,14 @@ The project is organized into `client/` for the React application, `server/` for
 13. **No Month-to-Month**: All subscriptions require minimum 12-month commitment. Two options only: 1-Year Subscription and 2-Year Subscription (Best Value). Complimentary months are applied as credits at the end of the agreement term.
 14. **Slot Counts (Source of Truth)**: Basic=2B, Premium=3B+1P, Executive=3B+3P, Executive+ adds +1B+1P. Turf Defense only on Executive (7 apps/year).
 15. **Company Logo**: Transparent logo at `attached_assets/LT_TRANSPARENT_LOGO_1772295732190.png`, imported via `@assets` alias.
+16. **AI Yard Designer UX**: The quote wizard includes an "AI Yard Analysis" step (animated loading → Property Scorecard with 5 categories) and a "Transformation Preview" step (bulleted yard outcomes). The wizard is now 9 steps: Welcome → Yard Size → Plan → Upgrades → Yard Analysis → Transformation → Commitment → Contact → Complete.
+17. **Unified Terminology**: All customer-facing text uses "Upgrades" (not "Add-ons"). CTAs consistently say "Get Your AI Yard Quote" (primary) and "Design Your Lawn Plan" (secondary).
+18. **Plan Badges**: Premium cards show "Most Popular" badge, Executive cards show "Best Value" badge. Purely presentational.
+19. **Value Meter**: Each plan card shows "Total Property Coverage" progress bar (Basic=45%, Premium=75%, Executive=100%) with descriptive text.
+20. **Upgrade Details Accordion**: Every upgrade in the wizard has a tappable "View details" accordion showing What/When/Why, powered by centralized metadata in `client/src/data/upgradeDetails.ts`.
+21. **Neighborhood Launch Offer**: Shown on the final quote page. "Invite Your Neighbors" button copies URL with `?ref=neighbor` param.
+22. **Robot Mowing Waitlist**: "Coming Soon: Smart Robot Mowing" teaser on final quote page with email signup form posting to `/api/waitlist`.
+23. **Anniversary Promo Banner**: Dismissible `PromoBanner` component showing "Anniversary Launch Special — ends March 25" with consistent copy across wizard and landing page.
 
 ## External Dependencies
 

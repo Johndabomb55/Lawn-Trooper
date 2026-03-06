@@ -210,7 +210,7 @@ export const PROMOTIONS: Promotion[] = [
   // 1-Year Birthday Bonus (commitment-based)
   {
     id: 'commitment_1year',
-    title: '1-Year Birthday Bonus',
+    title: '1-Year Commitment Bonus',
     shortDescription: '+1 complimentary month',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
@@ -223,7 +223,7 @@ export const PROMOTIONS: Promotion[] = [
   // 2-Year Birthday Bonus (commitment-based)
   {
     id: 'commitment_2year',
-    title: '2-Year Birthday Bonus',
+    title: '2-Year Commitment Bonus',
     shortDescription: '+3 complimentary months',
     type: 'termFreeMonths',
     stackGroup: 'freeMonths',
