@@ -116,17 +116,17 @@ export const FUN_FACTS = [
 // Promotional Banners for Rotating Display
 export const PROMO_BANNERS = [
   {
-    id: "birthday",
-    title: "25-Year Birthday Bonus",
-    subtitle: "Celebrating 25 years — long-term subscribers may qualify for our Birthday Bonus",
+    id: "efficiencyPricing",
+    title: "2026 Efficiency Pricing",
+    subtitle: "Smarter routing and automation help keep monthly pricing lower.",
     cta: "Get Your Quote",
     active: true,
     priority: 1
   },
   {
-    id: "referral",
-    title: "Refer a Neighbor",
-    subtitle: "Get in touch to learn more",
+    id: "commitment",
+    title: "Commitment Bonus",
+    subtitle: "Choose a 1-year or 2-year subscription and earn complimentary months.",
     cta: "Learn More",
     active: true,
     priority: 2
