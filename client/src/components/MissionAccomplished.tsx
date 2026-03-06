@@ -53,6 +53,7 @@ interface MissionAccomplishedProps {
 }
 
 export default function MissionAccomplished({ quoteData, onClose, onReset }: MissionAccomplishedProps) {
+  const BUSINESS_FACEBOOK_URL = "https://www.facebook.com/profile.php?id=61588087766755";
   const [copied, setCopied] = useState(false);
   
   const { toast } = useToast();
@@ -128,7 +129,7 @@ Contact: John@lawn-trooper.com | (256) 555-LAWN
       const hashtags = SOCIAL_SHARING.twitter.hashtags.join(',');
       window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}&hashtags=${hashtags}`, '_blank');
     } else if (platform === 'facebook') {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(SOCIAL_SHARING.facebook.quote)}`, '_blank');
+      window.open(BUSINESS_FACEBOOK_URL, '_blank');
     } else if (platform === 'copy') {
       navigator.clipboard.writeText(`${SOCIAL_SHARING.referralMessage} ${shareUrl}`);
       setCopied(true);

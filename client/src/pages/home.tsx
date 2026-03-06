@@ -71,10 +71,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { trackEvent } from "../lib/analytics";
+import { getExperimentVariant, trackExperimentExposure } from "../lib/experiments";
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showPromoBar, setShowPromoBar] = useState(true);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -82,6 +83,11 @@ export default function LandingPage() {
       element.scrollIntoView({ behavior: "smooth" });
       setIsMenuOpen(false);
     }
+  };
+
+  const handleQuoteCtaClick = (source: string) => {
+    trackEvent("hero_cta_click", { source });
+    scrollToSection("quote");
   };
 
 
@@ -102,28 +108,17 @@ export default function LandingPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const variant = getExperimentVariant("hero_simplification", "variant");
+    trackExperimentExposure("hero_simplification", variant);
+  }, []);
+
   return (
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
-      {/* Launch-ready promo banner: single, concise, dismissible */}
-      {showPromoBar && (
-        <div className="fixed top-0 left-0 right-0 z-[70] bg-[#5D4037] text-white border-b border-white/10">
-          <div className="container mx-auto px-4 py-2 text-center text-sm md:text-base font-bold tracking-wide relative">
-            <span>25th Anniversary Pricing Event — Ends March 25</span>
-            <button
-              aria-label="Dismiss promotion banner"
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white/80 hover:text-white transition-colors"
-              onClick={() => setShowPromoBar(false)}
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Navigation */}
       <nav
-        className={`sticky md:fixed ${showPromoBar ? "top-11" : "top-0"} w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border`}
+        className="sticky md:fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border"
       >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -136,8 +131,8 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
-            <Button onClick={() => scrollToSection('quote')} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
-              Get Your Free Quote
+            <Button onClick={() => handleQuoteCtaClick("desktop_nav")} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
+              Get Instant Price
             </Button>
           </div>
 
@@ -160,7 +155,8 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => scrollToSection('quote')} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Your Free Quote</Button>
+                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Price</Button>
+                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Price</Button>
               </div>
             </motion.div>
           )}
@@ -190,31 +186,37 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
             <img src={mascotLogo} alt="Lawn Trooper Premium Exterior Care logo" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[450px] mb-6" />
             
-            {/* Big Intimidating Camo Banner */}
+            {/* Plain-language value proposition */}
             <div className="mt-4 relative z-20 w-full">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase mb-4 leading-none text-white drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)] [-webkit-text-stroke:2px_rgba(134,239,172,0.9)]">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase mb-4 leading-none text-white drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]">
                 Lawn Trooper
               </h1>
-              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-6 leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] [-webkit-text-stroke:2px_rgba(134,239,172,0.9)]">
-                Landscape Maintenance<br/>& Exterior Home Care
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-4 leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                Reliable Local Lawn Care
               </h2>
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-white/90 uppercase tracking-widest mt-2 drop-shadow-md bg-black/40 px-4 py-2 rounded inline-block backdrop-blur-sm border border-[#8B7355]/30 max-w-3xl leading-relaxed">
-                Total maintenance plans for under-1-acre neighborhood yards starting at $169/month
-              </h3>
+              <p className="text-lg md:text-2xl font-bold text-white/95 mt-2 mb-3">
+                Get exact monthly pricing in about 60 seconds.
+              </p>
+              <p className="text-sm md:text-base text-white/80 max-w-2xl mx-auto">
+                Licensed and insured. Serving the Tennessee Valley for 25+ years with transparent plan pricing.
+              </p>
             </div>
             
             <div className="mt-6 flex flex-col items-center gap-4">
-              <button
-                onClick={() => scrollToSection('quote')}
-                className="text-white/80 hover:text-white underline underline-offset-4 text-sm font-medium transition-colors"
+              <Button
+                onClick={() => handleQuoteCtaClick("hero_primary")}
+                className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider px-8 py-6 text-base md:text-lg"
               >
-                Get your free quote below
-              </button>
+                Get Instant Price
+              </Button>
+              <p className="text-xs md:text-sm text-white/80">
+                No payment required. Local account manager follow-up within 1 business day.
+              </p>
             </div>
           </motion.div>
 
           
-          {/* Mission Plan (Moved Up) */}
+          {/* How It Works */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -222,8 +224,8 @@ export default function LandingPage() {
             id="how-it-works" className="w-full max-w-6xl mx-auto mb-12 scroll-mt-24 relative"
           >
             <div className="text-center mb-8">
-               <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2 drop-shadow-md">Your Mission Plan</h3>
-               <p className="text-white/80 max-w-2xl mx-auto text-sm">Three simple steps to a yard that commands respect.</p>
+               <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2 drop-shadow-md">How It Works</h3>
+               <p className="text-white/80 max-w-2xl mx-auto text-sm">Three simple steps to a healthier, better-looking yard.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6">
@@ -231,17 +233,17 @@ export default function LandingPage() {
                 { 
                   icon: MapPin, 
                   title: "1. Choose Plan & Size", 
-                  desc: "Select your service level and yard size. Pricing is clear and upfront based on acreage." 
+                  desc: "Select your plan and yard size. Pricing is transparent and shown instantly." 
                 },
                 { 
                   icon: Zap, 
-                  title: "2. We Deploy The Crew", 
-                  desc: "Our pro troopers and smart tech mobilize to keep your perimeter secure and tidy." 
+                  title: "2. We Schedule Service", 
+                  desc: "Our local crew handles recurring maintenance and keeps your property on track." 
                 },
                 { 
                   icon: Leaf, 
                   title: "3. Enjoy The Results", 
-                  desc: "Your yard stays always-ready. Just set and forget. No scheduling calls, no equipment maintenance." 
+                  desc: "Your yard stays clean and consistent with less effort from you." 
                 }
               ].map((step, i) => (
                 <div 
@@ -288,8 +290,8 @@ export default function LandingPage() {
       {/* 2026 Savings Banner — prominent selling point, stands out from rest of page */}
       <section className="py-8 px-4 bg-amber-100 border-y-4 border-amber-400">
         <div className="container mx-auto max-w-4xl text-center">
-          <p className="text-xl md:text-2xl lg:text-3xl font-extrabold text-amber-900 leading-snug drop-shadow-sm" style={{ textShadow: '0 0 0 3px #facc15, 0 0 0 5px #facc15, 0 0 0 6px #eab308, 0 2px 4px rgba(0,0,0,0.1)' }}>
-            New technology and automation have lowered our costs in 2026, and we are passing the savings on to our customers.
+          <p className="text-xl md:text-2xl lg:text-3xl font-extrabold text-amber-900 leading-snug drop-shadow-sm">
+            2026 Efficiency Pricing is live: smarter routing and automation help keep monthly rates lower.
           </p>
         </div>
       </section>
@@ -321,6 +323,20 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
           <div className="mb-6">
             <PromoBanner />
+          </div>
+          <div className="mb-6 grid gap-3 md:grid-cols-3 text-sm">
+            <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-primary">Serving local neighborhoods</p>
+              <p className="text-muted-foreground text-xs mt-1">Athens, Huntsville, Madison, Harvest, and nearby Tennessee Valley communities.</p>
+            </div>
+            <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-primary">Proven experience</p>
+              <p className="text-muted-foreground text-xs mt-1">25+ years serving homeowners and 100+ beautification awards.</p>
+            </div>
+            <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-primary">Fast follow-up</p>
+              <p className="text-muted-foreground text-xs mt-1">No payment required. Account manager outreach within 1 business day.</p>
+            </div>
           </div>
           <MultiStepQuoteWizard />
         </div>
@@ -549,8 +565,8 @@ export default function LandingPage() {
       <section className="py-20 bg-background relative border-t border-border">
         <div className="container mx-auto px-4">
            <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Field Reports</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Debriefings from homeowners across the sector.</p>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Customer Reviews</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">What homeowners across the Tennessee Valley say about their results.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -668,7 +684,7 @@ export default function LandingPage() {
       <section id="faq" aria-labelledby="faq-heading" className="py-16 bg-background border-t border-border">
         <div className="container mx-auto px-4 max-w-4xl">
           <h2 id="faq-heading" className="text-3xl font-heading font-bold text-center text-primary mb-10">
-            Mission Intel (FAQ)
+            Frequently Asked Questions
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-4">
             Most-asked questions first. Scroll for the full list.
@@ -683,7 +699,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol is bi-weekly mowing with 2 Basic Upgrades. Premium Patrol is weekly mowing with 3 Basic + 1 Premium Upgrades, bed weed control, Account Manager access, and a Seasonal Landscape Refresh Allowance\u2122. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Basic + 3 Premium Upgrades, Dedicated Account Manager, and Premier Landscape Allowance\u2122."
+                  a: "Basic Patrol is bi-weekly mowing with 2 Basic Upgrades and a Dedicated Account Manager. Premium Patrol is weekly mowing with 3 Basic + 1 Premium Upgrades, bed weed control, a Dedicated Account Manager, and a Seasonal Landscape Refresh Allowance\u2122. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Basic + 3 Premium Upgrades, a Dedicated Account Manager, and Premier Landscape Allowance\u2122."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
@@ -695,7 +711,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "What is Dream Yard Recon\u2122?",
-                  a: "Dream Yard Recon\u2122 is an AI-generated landscape plan personalized to your property and goals. Every plan includes it. Premium and Executive members also receive a personalized review with their Account Manager."
+                  a: "Dream Yard Recon\u2122 is an AI-generated landscape plan personalized to your property and goals. Every plan includes it, along with a personalized review from your Dedicated Account Manager."
                 },
                 {
                   q: "Can I convert Basic Upgrades to Premium?",
@@ -820,7 +836,7 @@ export default function LandingPage() {
                 Deploying elite lawn care services across North Alabama. Professional, reliable, and always mission-ready.
               </p>
               <div className="flex gap-4">
-                <a href="https://www.facebook.com/share/18D5pQyZio/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" data-testid="link-facebook" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="#social" data-testid="link-facebook" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
                   <Facebook size={20} />
                 </a>
                 <a href="https://www.instagram.com/lawntrooper" target="_blank" rel="noopener noreferrer" data-testid="link-instagram" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">

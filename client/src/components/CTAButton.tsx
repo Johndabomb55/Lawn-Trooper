@@ -17,7 +17,7 @@ export default function CTAButton({
   variant = "primary", 
   size = "default",
   showIcon = true,
-  children = "Get Instant Quote",
+  children = "Get Instant Price",
   className = "",
   urgentText
 }: CTAButtonProps) {

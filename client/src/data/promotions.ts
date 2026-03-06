@@ -46,7 +46,7 @@ export const PROMO_CAPS = {
   maxFreeMonths: 6,  // Max: 2-Year PIF = 6 complimentary months
 };
 
-// 25-Year Birthday Bonus (25th Anniversary Enrollment Bonus) - Single deadline March 25
+// Enrollment bonus metadata - single deadline March 25
 export const BIRTHDAY_BONUS = {
   endDate: new Date('2026-03-25T23:59:59'),  // Enroll by March 25: +2 months
   tier1EndDate: new Date('2026-03-25T23:59:59'),  // Legacy alias
@@ -54,15 +54,15 @@ export const BIRTHDAY_BONUS = {
   bonusMonths: 2,  // +2 bonus months if enrolled by March 25
   tier1Months: 2,  // Legacy alias
   tier2Months: 0,  // No second tier
-  marketingName: '25-Year Birthday Bonus',
-  formalName: '25th Anniversary Enrollment Bonus',
+  marketingName: '2026 Efficiency Enrollment Bonus',
+  formalName: '2026 Efficiency Enrollment Bonus',
 };
 
 // Legacy alias
 export const ANNIVERSARY_BONUS = BIRTHDAY_BONUS;
 
 /**
- * Get 25-Year Birthday Bonus status
+ * Get enrollment bonus status
  * - Enroll by March 25: +2 bonus months
  * - After March 25: +0 bonus months (Concluded)
  * 
@@ -166,7 +166,7 @@ export function calculate2YearFreeMonths(payInFull: boolean): number {
  * Get itemized breakdown of complimentary months
  * Useful for displaying in UI
  *
- * Birthday Bonus terminology maps to the commitment bonus.
+ * Legacy birthday naming maps to commitment bonus terminology.
  * 1-year=1, 2-year=3. Pay-in-full doubles commitment months.
  */
 export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boolean): {
@@ -207,7 +207,7 @@ export function calculateActualMonthly(basePrice: number, term: '1-year' | '2-ye
 
 // All available promotions - SIMPLIFIED for new commitment model
 export const PROMOTIONS: Promotion[] = [
-  // 1-Year Birthday Bonus (commitment-based)
+  // 1-Year commitment bonus
   {
     id: 'commitment_1year',
     title: '1-Year Commitment Bonus',
@@ -220,7 +220,7 @@ export const PROMOTIONS: Promotion[] = [
     active: true,
   },
   
-  // 2-Year Birthday Bonus (commitment-based)
+  // 2-Year commitment bonus
   {
     id: 'commitment_2year',
     title: '2-Year Commitment Bonus',
