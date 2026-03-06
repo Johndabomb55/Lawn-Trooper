@@ -32,6 +32,7 @@ import {
   GLOBAL_CONSTANTS
 } from "@/data/plans";
 import { WHY_DIFFERENT } from "@/data/content";
+import PromoBanner from "@/components/PromoBanner";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -154,6 +155,7 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
+                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Price</Button>
                 <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Price</Button>
               </div>
             </motion.div>
@@ -319,6 +321,9 @@ export default function LandingPage() {
       {/* Quote Wizard Section - Primary CTA */}
       <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
+          <div className="mb-6">
+            <PromoBanner />
+          </div>
           <div className="mb-6 grid gap-3 md:grid-cols-3 text-sm">
             <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
               <p className="font-semibold text-primary">Serving local neighborhoods</p>
@@ -588,8 +593,8 @@ export default function LandingPage() {
                  </div>
                  <p className="text-muted-foreground italic mb-4 flex-1">"The tactical approach is no joke. My yard has never looked this sharp. The pricing is transparent and the crew is incredibly disciplined."</p>
                  <div>
-                   <div className="font-bold font-heading text-primary">Lt. Col. James R. (Ret)</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Command Member</div>
+                   <div className="font-bold font-heading text-primary">James R.</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Executive Plan Member</div>
                  </div>
               </div>
             </motion.div>
@@ -646,7 +651,7 @@ export default function LandingPage() {
                    <Star className="w-4 h-4 fill-accent" />
                    <Star className="w-4 h-4 fill-accent" />
                  </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Early Bird deal. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Anniversary pricing. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">The Davidson Family</div>
                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Basic Patrol Members</div>

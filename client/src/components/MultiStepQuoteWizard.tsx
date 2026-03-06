@@ -17,16 +17,16 @@ import {
   Shield,
   Award,
   Target,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
   Leaf
 } from "lucide-react";
+import PlanBadge from "@/components/PlanBadge";
+import ValueMeter from "@/components/ValueMeter";
 import { 
   MILITARY_RANKS, 
   LOCAL_TIPS, 
   FEATURE_FLAGS, 
-  CELEBRATION_MESSAGES,
   getFeatureFlag
 } from "@/data/marketing";
 import {
@@ -109,34 +109,6 @@ const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
 
 const getAddonName = (id: string) => ADDON_CATALOG.find((a) => a.id === id)?.name ?? id;
 
-// Confetti particle component
-const ConfettiParticle = ({ delay, x }: { delay: number; x: number }) => (
-  <motion.div
-    className="absolute w-2 h-2 rounded-full"
-    style={{ 
-      left: `${x}%`,
-      backgroundColor: ['#facc15', '#1a3d24', '#22c55e', '#f97316'][Math.floor(Math.random() * 4)]
-    }}
-    initial={{ y: 0, opacity: 1, scale: 1 }}
-    animate={{ 
-      y: [0, -100, 200], 
-      opacity: [1, 1, 0],
-      scale: [1, 1.2, 0.5],
-      rotate: [0, 180, 360]
-    }}
-    transition={{ duration: 2, delay: delay * 0.1, ease: "easeOut" }}
-  />
-);
-
-// Confetti burst component
-const ConfettiBurst = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none z-50">
-    {Array.from({ length: 20 }).map((_, i) => (
-      <ConfettiParticle key={i} delay={i} x={10 + Math.random() * 80} />
-    ))}
-  </div>
-);
-
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email().or(z.literal("")),
@@ -186,8 +158,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
   
@@ -197,8 +167,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
-  const [showPromoUnlocked, setShowPromoUnlocked] = useState(false);
-  const [previousAppliedCount, setPreviousAppliedCount] = useState(0);
   const [promoCode, setPromoCode] = useState('');
   const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
   const [showOptionalDetails, setShowOptionalDetails] = useState(false);
@@ -540,7 +508,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           <div className="font-bold text-primary">{planData?.name}</div>
         </div>
         <div>
-          <div className="text-xs text-muted-foreground uppercase font-bold">Add-ons</div>
+          <div className="text-xs text-muted-foreground uppercase font-bold">Upgrades</div>
           <div className="font-bold text-primary">{basicAddons.length}B + {premiumAddons.length}P</div>
         </div>
         <div>
@@ -550,7 +518,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       </div>
       {showAddonsDetail && (basicAddons.length > 0 || premiumAddons.length > 0) && (
         <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
-          <div className="font-semibold text-primary mb-2">Selected Add-ons:</div>
+          <div className="font-semibold text-primary mb-2">Selected Upgrades:</div>
           <div className="flex flex-wrap gap-1.5 justify-center">
             {basicAddons.map(id => {
               const addon = BASIC_ADDONS.find(a => a.id === id);
@@ -642,27 +610,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
   return (
     <div className={`bg-card rounded-2xl shadow-2xl border-2 border-primary/30 relative ${isModal ? '' : ''}`}>
-      {/* Confetti Animation */}
-      <AnimatePresence>
-        {showConfetti && <ConfettiBurst />}
-      </AnimatePresence>
-
-      {/* Celebration Message */}
-      <AnimatePresence>
-        {celebrationMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute top-0 left-0 right-0 z-40 bg-accent text-accent-foreground text-center py-2 px-4 text-sm font-bold rounded-t-2xl flex items-center justify-center gap-2"
-          >
-            <Sparkles className="w-4 h-4" />
-            {celebrationMessage}
-            <Sparkles className="w-4 h-4" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Trust Badge at Top */}
       <div className="bg-green-50 px-4 py-2 border-b border-green-200">
         <TrustBadge variant="compact" message={TRUST_MESSAGES.ctaTop} />
@@ -841,9 +788,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                                 : 'border-2 border-border hover:border-primary/50 bg-muted/30'
                           }`}
                         >
-                          {isExecutive && (
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                              Command Tier
+                          {(isExecutive || p.id === 'premium') && (
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                              <PlanBadge planId={p.id} />
                             </div>
                           )}
                           <div className="flex items-center gap-2">
@@ -863,6 +810,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                               <span className="text-sm font-normal text-muted-foreground">/mo</span>
                             </div>
                             <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
+                          </div>
+                          <div className="mt-3 w-full">
+                            <ValueMeter planId={p.id} />
                           </div>
                           <div className="mt-3">
                             <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-1">Pre-selected upgrades</div>
@@ -958,12 +908,12 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     appliedTotals={appliedTotals}
                     term={term}
                     payUpfront={payUpfront}
-                    showUnlockedAnimation={showPromoUnlocked}
+                    showUnlockedAnimation={false}
                   />
                 </motion.div>
               )}
 
-              {/* Step 3: Add-ons */}
+              {/* Step 3: Upgrades */}
               {currentStep === 3 && (
                 <motion.div
                   key="step3"
@@ -973,9 +923,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   className="space-y-6"
                 >
                   <div className="text-center mb-4">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Select Upgrade Services</h4>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h4>
                     <p className="text-muted-foreground">
-                      {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades
+                      Bundling saves you money. {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades.
                     </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
@@ -1042,10 +992,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                   )}
 
-                  {/* Basic Add-ons */}
+                  {/* Basic Upgrades */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h5 className="font-bold text-primary">Basic Add-ons</h5>
+                      <h5 className="font-bold text-primary">Basic Upgrades</h5>
                       <span className="text-sm text-muted-foreground">
                         {basicAddons.length}/{allowance.basic} included
                         {extraBasicCount > 0 && <span className="text-accent ml-1">(+{extraBasicCount} extra)</span>}
@@ -1074,11 +1024,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                   </div>
 
-                  {/* Premium Add-ons */}
+                  {/* Premium Upgrades */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <h5 className="font-bold text-accent flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-accent" /> Premium Add-ons
+                        <Star className="w-4 h-4 fill-accent" /> Premium Upgrades
                       </h5>
                       <span className="text-xs md:text-sm text-muted-foreground">
                         {premiumAddons.length}/{allowance.premium} included
@@ -1256,7 +1206,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                     {(basicAddons.length > 0 || premiumAddons.length > 0) && (
                       <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
-                        <div className="font-semibold text-primary mb-2">Selected Add-ons:</div>
+                        <div className="font-semibold text-primary mb-2">Selected Upgrades:</div>
                         <div className="flex flex-wrap gap-1.5 justify-center">
                           {basicAddons.map(id => {
                             const addon = BASIC_ADDONS.find(a => a.id === id);

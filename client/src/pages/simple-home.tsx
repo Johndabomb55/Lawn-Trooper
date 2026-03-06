@@ -3,6 +3,8 @@ import StreamlinedWizard from "@/components/StreamlinedWizard";
 import { Shield, Mail, Phone, Leaf, Award, Cpu, Star, ChevronRight } from "lucide-react";
 import { HERO_CONTENT, TRUST_BAR_COMPACT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
 import { PLANS } from "@/data/plans";
+import PlanBadge from "@/components/PlanBadge";
+import ValueMeter from "@/components/ValueMeter";
 import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_1771794280044.png";
 import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
 
@@ -31,10 +33,12 @@ export default function SimpleHome() {
             <span data-testid="text-brand" className="font-heading font-bold text-xl tracking-tight">LAWN TROOPER</span>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm">
-            <a data-testid="link-phone-header" href="tel:+12565550000" className="flex items-center gap-1 hover:text-accent transition-colors">
-              <Phone className="w-4 h-4" />
-              {FOOTER_CONTENT.phone}
-            </a>
+            {FOOTER_CONTENT.phone && (
+              <a data-testid="link-phone-header" href={`tel:${FOOTER_CONTENT.phone}`} className="flex items-center gap-1 hover:text-accent transition-colors">
+                <Phone className="w-4 h-4" />
+                {FOOTER_CONTENT.phone}
+              </a>
+            )}
           </div>
         </div>
       </header>
@@ -91,12 +95,12 @@ export default function SimpleHome() {
                   }`}
                   aria-label={`${summary.name} plan`}
                 >
-                  {isExecutive && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">
-                      BEST VALUE
+                  {(summary.id === 'premium' || isExecutive) && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <PlanBadge planId={summary.id} />
                     </div>
                   )}
-                  <h3 className="font-heading font-bold text-xl text-primary mb-1">{summary.name}</h3>
+                  <h3 className="font-heading font-bold text-xl text-primary mb-1 mt-1">{summary.name}</h3>
                   <div className="text-2xl font-bold text-foreground mb-2">
                     from ${planData?.price || "---"}<span className="text-sm font-normal text-muted-foreground">/mo</span>
                   </div>
@@ -111,6 +115,9 @@ export default function SimpleHome() {
                       </li>
                     ))}
                   </ul>
+                  <div className="mb-4">
+                    <ValueMeter planId={summary.id} />
+                  </div>
                   <button
                     data-testid={`button-build-plan-${summary.id}`}
                     onClick={scrollToWizard}
@@ -121,7 +128,7 @@ export default function SimpleHome() {
                     }`}
                     aria-label={`Build my ${summary.name} plan`}
                   >
-                    Build My Plan
+                    Get Your Free Quote
                   </button>
                 </article>
               );
@@ -218,10 +225,12 @@ export default function SimpleHome() {
               <Mail className="w-4 h-4" />
               {FOOTER_CONTENT.email}
             </a>
-            <a data-testid="link-phone-footer" href="tel:+12565550000" className="flex items-center gap-1 hover:text-accent transition-colors">
-              <Phone className="w-4 h-4" />
-              {FOOTER_CONTENT.phone}
-            </a>
+            {FOOTER_CONTENT.phone && (
+              <a data-testid="link-phone-footer" href={`tel:${FOOTER_CONTENT.phone}`} className="flex items-center gap-1 hover:text-accent transition-colors">
+                <Phone className="w-4 h-4" />
+                {FOOTER_CONTENT.phone}
+              </a>
+            )}
           </div>
           <p data-testid="text-service-area" className="text-white/60">
             {FOOTER_CONTENT.serviceArea}

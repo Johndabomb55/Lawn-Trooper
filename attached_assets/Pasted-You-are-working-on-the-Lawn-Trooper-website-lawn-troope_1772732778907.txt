@@ -1,0 +1,171 @@
+You are working on the Lawn Trooper website (lawn-trooper.com) codebase in Replit.
+
+GOAL
+Implement an “AI Yard Designer” quote experience upgrade with unified language across the site, using minimal-risk changes that do NOT break pricing logic.
+
+HARD CONSTRAINTS (DO NOT VIOLATE)
+- Do NOT change backend pricing formulas, plan pricing calculations, or quote totals.
+- Do NOT change plan inclusion logic or upgrade selection limits.
+- Do NOT change mowing frequency rules or any existing frequency text logic (keep whatever the site currently uses).
+- Do NOT introduce fake social proof (no “3 homes near you already joined” unless it is true and derived from real data).
+- Do NOT add countdown timers or time-pressure UI.
+- Do NOT break responsiveness; mobile-first must remain clean.
+- Prefer minimal diffs: add small components and insert them cleanly.
+
+SCOPE: CHANGES TO IMPLEMENT
+A) Global terminology + language unification
+1) Replace “Add-ons” with “Upgrades” everywhere across the website:
+   - plan cards
+   - quote wizard
+   - checkout/summary pages
+   - FAQs, tooltips, helper text, any marketing copy
+2) Wherever the UI refers to “X included add-ons”, change it to:
+   “X Bundled Upgrades included”
+3) Add one helper line near “Bundled Upgrades” (wherever that appears):
+   “Pick your upgrades. Bundling saves you money.”
+4) If the site currently uses “Instant Price” wording, rename CTAs consistently to:
+   - Primary CTA: “Get Your AI Yard Quote”
+   - Secondary CTA (optional): “Design Your Lawn Plan”
+   Keep language consistent across hero buttons, header buttons, quote wizard start button, etc.
+
+B) Plan selection psychology (badges + value meter)
+1) Add plan badges wherever plan cards/options appear:
+   - Premium: badge “Most Popular”
+   - Executive: badge “Best Value”
+   - Basic: no badge
+   Badges must be purely presentational and not change selection logic unless a default already exists.
+2) Add a “Value Meter” section in each plan card/plan option:
+   - Label: “Total Property Coverage”
+   - Simple progress bar + percent label (must not depend on price)
+   - Use constant values:
+     Basic: 45%
+     Premium: 75%
+     Executive: 100%
+   - Under the meter add a one-line description:
+     Basic: “Essential yard maintenance.”
+     Premium: “Balanced value and flexibility.”
+     Executive: “Complete property care with maximum value.”
+3) IMPORTANT: If a savings meter already exists, keep it. Do NOT modify its calculations. If it is missing in some places, do not remove anything—only add the Value Meter.
+
+C) Upgrade details UI (click/tap for clarity)
+1) For every upgrade listed in the quote flow / plan customization UI, add a “Details” affordance:
+   Preferred: accordion toggle under each upgrade item (best for mobile)
+   Alternative: info icon popover if accordion is impractical
+2) Details content MUST be short and consistent:
+   - What it is (1 sentence)
+   - When it happens / frequency (1 sentence)
+   - Why it matters (1 sentence)
+3) Reuse existing upgrade description data if it exists in the codebase.
+   If it does not exist, create ONE centralized metadata map/object, e.g.:
+   upgradeId -> { title, what, when, why }
+   Render details from that map. Do NOT hardcode repeated strings across components.
+
+D) Quote Wizard flow improvements (AI Yard Designer screens)
+Without changing pricing logic, insert two new lightweight screens into the quote wizard flow:
+
+1) Progress steps UI
+Add a simple progress indicator across the wizard:
+   1. Yard Size
+   2. Choose Plan
+   3. Pick Upgrades
+   4. Yard Analysis
+   5. Your AI Quote
+No timers, no countdown.
+
+2) “Yard Analysis” screen (new step)
+After upgrades are picked (and before final quote), show:
+   - Title: “AI Yard Analysis”
+   - Short loading animation (2–3 seconds) with bullet points like:
+     “Analyzing yard size”
+     “Checking seasonal needs”
+     “Building your plan”
+   - Then show a simple “Property Scorecard” (static / non-claim-y):
+     “Your Yard Score” with 4–5 categories and numeric values
+     Example categories:
+       Grass Health
+       Bed Condition
+       Edge Definition
+       Outdoor Comfort
+       Seasonal Readiness
+   - Then show: “Estimated Score After Lawn Trooper Care: 90+”
+IMPORTANT: This is a UI/psychology feature; do NOT claim satellite analysis or real measurement unless you actually do it.
+
+3) “Transformation Preview” screen (new step)
+Immediately after Yard Analysis, show:
+   - Title: “Your Yard Transformation”
+   - Bulleted outcomes:
+     “Clean mowing lines”
+     “Crisp bed edges”
+     “Healthier turf”
+     “More comfortable outdoor space”
+   Keep it general; do not promise specific results.
+
+E) Price shielding + info capture (without harming conversions)
+- Keep your existing “small/medium/large” approach and do NOT force address entry at the start.
+- The final quote screen can request address/contact info if it already does.
+- If you move fields, do it minimally:
+  Only ask for address/contact near the end (final quote step), not first.
+
+F) Neighborhood Launch Offer (truthful, conditional)
+On the final quote page (AFTER price is displayed), add a new section:
+
+Title: “Neighborhood Launch Offer”
+Body:
+  “Lawn Trooper is expanding service routes in your area.
+   When 3 homes nearby join Lawn Trooper, everyone receives an extra bundled upgrade.”
+
+Add a button: “Invite Your Neighbors”
+Implementation:
+- If referral/share infrastructure exists, use it.
+- If not, implement a simple “Copy Link” share that copies the current quote/landing URL with a basic referral param (e.g. ?ref=neighbor) but do NOT implement a full referral tracking system in this pass.
+
+G) Robot mowing waitlist teaser (coming soon, no details)
+Also on the final quote page (below Neighborhood Launch Offer), add:
+
+Title: “Coming Soon: Smart Robot Mowing”
+Short body:
+  “Your lawn could maintain itself with autonomous mowing technology.
+   Join the early access list.”
+
+Add a small waitlist form:
+- Email (required)
+- Optional: Address or Neighborhood (optional)
+Submit action:
+- If GoHighLevel / webhook / backend endpoint already exists, post to it.
+- If not, store submissions in a simple database/table/log for now (or send to an email) but do not block the page.
+IMPORTANT: Keep it lightweight and reliable.
+
+H) Anniversary promotion copy (real urgency, no pressure)
+Add a promotional banner or section (plan cards area + final quote page):
+- Headline: “Anniversary Launch Special — ends March 25”
+- Offer text (clear + simple):
+   “Sign up before March 25 and get 1 free month.
+    Pay annually: 2 months free total.
+    2-year agreement paid in full: 6 months free total.”
+Rules:
+- Do NOT implement billing logic changes in this pass.
+- This is display copy + can be enforced later operationally or in checkout if supported.
+- Make sure wording is consistent everywhere the promotion appears.
+
+IMPLEMENTATION GUIDANCE
+- Prefer creating small reusable components:
+  <PlanBadge />, <ValueMeter />, <UpgradeDetails />, <WizardProgress />, <YardScorecard />, <TransformationPreview />, <NeighborhoodOffer />, <RobotWaitlist />, <PromoBanner />
+- Insert them without redesigning layouts.
+- Match existing styling system (Tailwind/classes/components). Do not introduce a new design language.
+
+QA CHECKLIST (MUST DO)
+1) Regression: Before/after quotes for the same inputs must match exactly.
+2) Upgrade selection limits must remain identical.
+3) Mobile view:
+   - badges wrap cleanly
+   - value meter scales to width
+   - accordions are tappable and don’t overflow
+4) No console errors.
+5) Wizard flow can be completed end-to-end.
+6) Robot waitlist form submits successfully or fails gracefully without blocking.
+7) Neighborhood offer button works (copy link or share) with no errors.
+
+DELIVERABLE
+- Implement the above, commit changes with a clear message:
+  “Add AI Yard Designer UX: badges, value meter, upgrade details, scorecard, offers”
+- Provide a brief summary of what files were changed and where each feature appears in the UI.
