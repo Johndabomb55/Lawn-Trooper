@@ -156,7 +156,6 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
                 <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Price</Button>
-                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Price</Button>
               </div>
             </motion.div>
           )}
