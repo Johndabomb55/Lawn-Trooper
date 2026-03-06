@@ -33,10 +33,8 @@ const LOCKED_FEATURES: LockedFeature[] = [
   { label: "Executive Turf Defense™ (up to 7 applications)", planIds: ["executive"] },
   { label: "Weed-Free Turf Guarantee", planIds: ["executive"] },
   { label: "Priority Storm Service", planIds: ["executive"] },
-  { label: "Account Manager Access", planIds: ["premium"] },
-  { label: "Dedicated Account Manager", planIds: ["executive"] },
-  { label: "Dream Yard Recon™: AI-generated landscape plan", planIds: ["basic"] },
-  { label: "Dream Yard Recon™ + Personalized Review", planIds: ["premium", "executive"] },
+  { label: "Dedicated Account Manager", planIds: ["basic", "premium", "executive"] },
+  { label: "Dream Yard Recon™ + Personalized Review", planIds: ["basic", "premium", "executive"] },
   { label: "Service Photo Updates", planIds: ["premium", "executive"] },
 ];
 

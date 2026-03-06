@@ -14,90 +14,91 @@ export interface PlanComparisonRow {
 }
 
 export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
-  // Mowing & Service
+  // Core service outcomes
   {
     category: "Mowing",
-    feature: "Mowing frequency (growing season)",
-    basic: "Bi-weekly",
-    premium: "Weekly May–August",
-    executive: "Weekly May–August",
-  },
-  {
-    category: "Mowing",
-    feature: "Off-season service",
-    basic: "Monthly property check",
-    premium: "Bi-weekly",
-    executive: "Year-round weekly",
-  },
-  {
-    category: "Mowing",
-    feature: "Every visit: Edging, trimming, blowing",
+    feature: "Every visit includes edging, trimming, and blowing",
     basic: "✓",
     premium: "✓",
     executive: "✓",
   },
-  // Turf & Beds
   {
-    category: "Turf & Beds",
+    category: "Mowing",
+    feature: "Mowing frequency (growing season)",
+    basic: "Bi-weekly",
+    premium: "Weekly",
+    executive: "Weekly",
+  },
+  {
+    category: "Mowing",
+    feature: "Off-season visits",
+    basic: "Monthly check",
+    premium: "Bi-weekly",
+    executive: "Year-round weekly",
+  },
+  {
+    category: "Turf",
+    feature: "Lawn treatment applications per year",
+    basic: "2",
+    premium: "4",
+    executive: "7",
+  },
+  {
+    category: "Turf",
     feature: "Flower bed weed control",
     basic: "✓",
     premium: "✓",
     executive: "✓",
   },
   {
-    category: "Turf & Beds",
-    feature: "Executive Turf Defense™",
-    basic: "—",
-    premium: "—",
-    executive: "7 apps/year",
-  },
-  {
-    category: "Turf & Beds",
-    feature: "Weed-Free Turf Guarantee",
+    category: "Turf",
+    feature: "Weed-free turf guarantee",
     basic: "—",
     premium: "—",
     executive: "✓",
   },
-  // Support & Extras
+
+  // Support and communication
   {
     category: "Support",
-    feature: "Dream Yard Recon™",
-    basic: "AI-generated plan",
-    premium: "+ Personalized review",
-    executive: "+ Personalized review",
+    feature: "Dream Yard Recon (landscape plan)",
+    basic: "AI plan + personal review",
+    premium: "AI plan + personal review",
+    executive: "AI plan + personal review",
   },
   {
     category: "Support",
-    feature: "Account manager",
-    basic: "—",
-    premium: "Access",
-    executive: "Dedicated",
+    feature: "Dedicated account manager",
+    basic: "Included",
+    premium: "Included",
+    executive: "Dedicated account manager",
   },
   {
     category: "Support",
     feature: "Service photo updates",
     basic: "—",
-    premium: "✓",
-    executive: "✓",
+    premium: "Included",
+    executive: "Included",
   },
   {
     category: "Support",
-    feature: "Priority storm service",
+    feature: "Priority storm scheduling",
     basic: "—",
     premium: "—",
-    executive: "✓",
+    executive: "Included",
   },
-  // Allowance & Upgrades
+
+  // Included upgrades
   {
     category: "Allowance",
-    feature: "Landscape Allowance™",
+    feature: "Landscape allowance",
     basic: "—",
-    premium: "Seasonal Refresh",
-    executive: "Premier",
+    premium: "Seasonal refresh",
+    executive: "Premier allowance",
   },
   {
     category: "Allowance",
-    feature: "Upgrades included",
+    feature: "Included upgrades",
     basic: "2 Basic",
     premium: "3 Basic + 1 Premium",
     executive: "3 Basic + 3 Premium",

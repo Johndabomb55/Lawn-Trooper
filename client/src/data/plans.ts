@@ -11,11 +11,10 @@ export const PROMO_CONFIG = {
   saleLabel: "25th Anniversary Sale — Ends March 25th"
 };
 
-// Anniversary add-on bonus (limited-time event through cutoffDate):
-// - Basic and Premium: +1 included Basic add-on
-// - Executive: no additional bonus (base already includes 3 Premium)
+// Add-on bonus disabled so included upgrade counts stay consistent across
+// plan cards, comparison table, and wizard selection limits.
 export const ANNIVERSARY_ADDON_BONUS = {
-  basicNonExecutive: 1,
+  basicNonExecutive: 0,
   executivePremium: 0,
 };
 
@@ -28,6 +27,9 @@ export const GLOBAL_CONSTANTS = {
   CONSULTATION_REFUND_POLICY: "After the first month is paid, schedule a consultation + walkthrough (virtual or in-person). At the time of the consultation, if the customer decides it's not the right fit, provide a full refund.",
   AI_TECH_EXPLANATION: "We sometimes will deploy robotic AI vision, LiDAR sensor, satellite-linked mowing units to achieve the best cut quality and highest efficiency at no additional expense to the customer. Lawn Trooper reserves the right to choose which robot will be best for each property, although customer can weigh in of course."
 };
+
+export const PRICE_CALCULATION_NOTE =
+  "Monthly base price = selected plan rate multiplied by your yard-size tier. Add-ons are flat monthly rates shown in your total before submission.";
 
 export type PlanId = PlanConfigId;
 
@@ -67,7 +69,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
         "Flower bed weed control (included)",
         "Turf Applications: Not Included (Premium & Executive)",
-        "Account Manager: Not Included (Premium & Executive)",
+        "Dedicated Account Manager",
         "Landscape Allowance\u2122: Not Included (Premium & Executive)"
       ]
     },
@@ -86,7 +88,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Flower bed weed control (included)",
         "<span class='font-bold text-primary'>3 Basic + 1 Premium Upgrades included</span>",
         "Service Photo Updates",
-        "Account Manager Access (remote + visit request)",
+        "Dedicated Account Manager",
         "Dream Yard Recon\u2122 + Personalized Review",
         "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
         "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
@@ -244,6 +246,14 @@ export const ADDON_CATALOG: Addon[] = [
     category: "landscaping",
     price: 20,
     description: "Get your yard weed-free, in shape, and green faster with 3 additional lawn applications—fertilizer, pre-emergent weed prevention, and targeted weed-killer—beyond what's included in your plan."
+  },
+  {
+    id: "mosquito_control",
+    name: "Mosquito Control",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description: "Targeted mosquito treatment for common yard harborage areas to help reduce mosquito activity around your property."
   },
   {
     id: "pine_straw_basic",

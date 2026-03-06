@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -77,9 +77,12 @@ import {
   calculate2026Price,
   calculate2025Price,
   YARD_SIZES,
-  calculateOverageCost
+  calculateOverageCost,
+  PRICE_CALCULATION_NOTE
 } from "@/data/plans";
 import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
+import { trackEvent } from "../lib/analytics";
+import { getExperimentVariant, trackExperimentExposure } from "../lib/experiments";
 
 const STEPS = [
   { id: 1, title: "Yard Size", icon: MapPin, rank: "Recruit", rankIcon: Shield },
@@ -92,15 +95,15 @@ const STEPS = [
 const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
   basic: {
     frequency: "Bi-Weekly",
-    tagline: "Reliable maintenance with Dream Yard Recon\u2122.",
+    tagline: "Reliable maintenance with a dedicated account manager.",
   },
   premium: {
     frequency: "Weekly",
-    tagline: "Weekly upkeep with Account Manager access.",
+    tagline: "Weekly upkeep with a dedicated account manager.",
   },
   executive: {
     frequency: "Year-Round Weekly",
-    tagline: "Top-tier weekly command with Turf Defense\u2122.",
+    tagline: "Top-tier weekly command with a dedicated account manager.",
   },
 };
 
@@ -198,6 +201,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [previousAppliedCount, setPreviousAppliedCount] = useState(0);
   const [promoCode, setPromoCode] = useState('');
   const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
+  const [showOptionalDetails, setShowOptionalDetails] = useState(false);
+  const wizardStartedAtRef = useRef<number>(Date.now());
+  const currentStepRef = useRef<number>(1);
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -217,6 +223,23 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   } | null>(null);
   
   const { toast } = useToast();
+
+  useEffect(() => {
+    trackEvent("quote_wizard_start", { source: isModal ? "modal" : "page" });
+    trackExperimentExposure("addons_optional_flow", getExperimentVariant("addons_optional_flow", "variant"));
+    trackExperimentExposure("short_contact_form", getExperimentVariant("short_contact_form", "variant"));
+    return () => {
+      trackEvent("quote_wizard_exit", {
+        step: currentStepRef.current,
+        durationSeconds: Math.round((Date.now() - wizardStartedAtRef.current) / 1000),
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    currentStepRef.current = currentStep;
+    trackEvent("quote_step_view", { step: currentStep });
+  }, [currentStep]);
 
   // Rotate local tips every 5 seconds
   useEffect(() => {
@@ -289,6 +312,13 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
   const handleNext = () => {
     if (currentStep < 4) {
+      if (currentStep === 3 && !addonsRequirementMet) {
+        toast({
+          title: "Continuing with your current picks",
+          description: "You can still adjust upgrade services during your walkthrough.",
+        });
+      }
+
       // Trigger confetti and celebration message
       if (getFeatureFlag('showConfetti', true)) {
         setShowConfetti(true);
@@ -304,7 +334,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           setCelebrationMessage(null);
         }, 2500);
       }
-      
+      trackEvent("quote_step_complete", { step: currentStep });
       setCurrentStep(currentStep + 1);
     }
   };
@@ -344,6 +374,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
+    trackEvent("quote_submit_attempt", { step: currentStep });
     try {
       const photos = selectedPhotos.length > 0 ? await filesToBase64(selectedPhotos) : [];
       
@@ -409,10 +440,16 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
         
         // Show the Mission Accomplished page
         setShowMissionAccomplished(true);
+        trackEvent("quote_submit_success", {
+          step: currentStep,
+          durationSeconds: Math.round((Date.now() - wizardStartedAtRef.current) / 1000),
+          totalPrice,
+        });
       } else {
         throw new Error(data.message || "Submission failed");
       }
     } catch (error) {
+      trackEvent("quote_submit_error", { step: currentStep });
       toast({
         title: "Transmission Error",
         description: "Failed to submit request. Please try again.",
@@ -461,10 +498,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       setShowPromoUnlocked(true);
       if (getFeatureFlag('showConfetti', true)) {
         setShowConfetti(true);
-        toast({
-          title: "Discount Unlocked!",
-          description: promotionResult.applied[promotionResult.applied.length - 1]?.title,
-        });
         setTimeout(() => setShowConfetti(false), 2000);
       }
       setTimeout(() => setShowPromoUnlocked(false), 1500);
@@ -474,7 +507,25 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
   // Check if add-on requirements are met
   const addonsRequirementMet = basicAddons.length >= allowance.basic && premiumAddons.length >= allowance.premium;
-  const canProceedFromStep3 = !getFeatureFlag('requireAddons', true) || addonsRequirementMet;
+  const canProceedFromStep3 = true;
+
+  const applyRecommendedSelections = useCallback(() => {
+    const recommendationKey = executivePlus && plan === "executive" ? "executive+" : plan;
+    const recommendation = RECOMMENDED_ADDONS[recommendationKey];
+    if (!recommendation) return;
+
+    setBasicAddons(recommendation.basic.slice(0, allowance.basic));
+    setPremiumAddons(recommendation.premium.slice(0, allowance.premium));
+    trackEvent("quote_addons_apply_recommended", { plan: recommendationKey });
+  }, [allowance.basic, allowance.premium, executivePlus, plan]);
+
+  const skipAddonsForNow = useCallback(() => {
+    setBasicAddons([]);
+    setPremiumAddons([]);
+    trackEvent("quote_addons_skip_for_now", { plan });
+    trackEvent("quote_step_complete", { step: 3, action: "skip_addons" });
+    setCurrentStep(4);
+  }, [plan]);
 
   // Summary card component for reuse
   const SelectionSummaryCard = ({ showAddonsDetail = false }: { showAddonsDetail?: boolean }) => (
@@ -538,6 +589,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     setPayUpfront(false);
     setSegments([]);
     setPreviousAppliedCount(0);
+    setShowOptionalDetails(false);
   };
 
   // If showing Mission Accomplished, render that instead
@@ -620,10 +672,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       <div className="bg-primary text-primary-foreground p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Get Your Instant Quote</h3>
-            <p className="text-xs text-primary-foreground/70 mt-1">
-              Rank: <span className="font-bold text-accent">{STEPS[currentStep - 1]?.rank}</span>
-            </p>
+            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Get Your Instant Price</h3>
+            <p className="text-xs text-primary-foreground/70 mt-1">Step {currentStep} of {STEPS.length}</p>
           </div>
           {isModal && onClose && (
             <button onClick={onClose} className="text-white/70 hover:text-white text-2xl">&times;</button>
@@ -718,6 +768,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-6">
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Total Maintenance Plan</h4>
                     <p className="text-muted-foreground">One-stop exterior maintenance with full lawn coverage.</p>
+                    <div className="mt-3 flex flex-wrap justify-center gap-2 text-xs">
+                      <span className="bg-green-50 text-green-700 border border-green-200 px-2.5 py-1 rounded-full">Licensed &amp; insured</span>
+                      <span className="bg-primary/5 text-primary border border-primary/20 px-2.5 py-1 rounded-full">25+ years in Tennessee Valley</span>
+                      <span className="bg-muted text-foreground border border-border px-2.5 py-1 rounded-full">Response within 1 business day</span>
+                    </div>
                   </div>
 
                   {/* Feature comparison matrix */}
@@ -753,6 +808,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         })}
                       </tbody>
                     </table>
+                  </div>
+
+                  <div className="bg-muted/30 rounded-lg border border-border p-3 text-xs text-muted-foreground">
+                    Pricing note: {PRICE_CALCULATION_NOTE}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -921,6 +980,24 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
                     </p>
+                    <div className="mt-3 flex flex-wrap justify-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={applyRecommendedSelections}
+                        className="text-xs"
+                      >
+                        Use Recommended Upgrades
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={skipAddonsForNow}
+                        className="text-xs"
+                      >
+                        Skip For Now
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Upgrade Conversion (Swap) - all plans */}
@@ -1085,6 +1162,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
                     <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your FREE property walk-through.</p>
+                    <p className="text-xs text-primary mt-2 font-semibold">Typical response time: within 1 business day.</p>
                   </div>
 
                   {/* Trust Badge */}
@@ -1289,47 +1367,59 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       )}
                     />
 
-                    {/* Photo Upload */}
-                    <div className="space-y-2">
-                      <Label className="flex items-center gap-2">
-                        <Camera className="w-4 h-4" />
-                        Yard Photos (Optional)
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        For the fastest estimate, upload 4 photos: front, back, left side, and right side of the property.
-                      </p>
-                      <Input 
-                        type="file" 
-                        accept="image/*" 
-                        multiple 
-                        className="cursor-pointer bg-white border-2 border-border" 
-                        onChange={handlePhotoChange}
-                      />
-                      {selectedPhotos.length > 0 && (
-                        <p className="text-xs text-green-600 font-medium">
-                          {selectedPhotos.length} photo(s) selected
-                        </p>
-                      )}
-                      {photoError && <p className="text-xs text-amber-600">{photoError}</p>}
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Special Instructions (Optional)</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Gate codes, pet info, special requests..." 
-                              className="resize-none"
-                              {...field} 
+                    <div className="rounded-lg border border-border bg-muted/20 p-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowOptionalDetails((prev) => !prev)}
+                        className="text-sm font-semibold text-primary hover:text-primary/80"
+                      >
+                        {showOptionalDetails ? "Hide optional details" : "Add photos or special instructions (optional)"}
+                      </button>
+                      {showOptionalDetails && (
+                        <div className="space-y-4 mt-3">
+                          <div className="space-y-2">
+                            <Label className="flex items-center gap-2">
+                              <Camera className="w-4 h-4" />
+                              Yard Photos (Optional)
+                            </Label>
+                            <p className="text-xs text-muted-foreground">
+                              For the fastest estimate, upload 4 photos: front, back, left side, and right side of the property.
+                            </p>
+                            <Input 
+                              type="file" 
+                              accept="image/*" 
+                              multiple 
+                              className="cursor-pointer bg-white border-2 border-border" 
+                              onChange={handlePhotoChange}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                            {selectedPhotos.length > 0 && (
+                              <p className="text-xs text-green-600 font-medium">
+                                {selectedPhotos.length} photo(s) selected
+                              </p>
+                            )}
+                            {photoError && <p className="text-xs text-amber-600">{photoError}</p>}
+                          </div>
+
+                          <FormField
+                            control={form.control}
+                            name="notes"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Special Instructions (Optional)</FormLabel>
+                                <FormControl>
+                                  <Textarea 
+                                    placeholder="Gate codes, pet info, special requests..." 
+                                    className="resize-none"
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
                       )}
-                    />
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -1371,7 +1461,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
                 style={{ backgroundColor: '#1a3d24', color: 'white' }}
               >
-                {isSubmitting ? "Transmitting..." : "Get Instant Quote"}
+                {isSubmitting ? "Transmitting..." : "Get Instant Price"}
               </Button>
             )}
           </div>

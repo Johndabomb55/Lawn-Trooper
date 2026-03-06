@@ -71,7 +71,7 @@ export const PLAN_SUMMARIES = {
         "Bi-weekly off-season service",
         "Flower bed weed control (included)",
         "3 Basic + 1 Premium Upgrades",
-        "Account Manager access",
+        "Dedicated Account Manager",
         "Seasonal Landscape Refresh Allowance\u2122"
       ]
     },
@@ -179,8 +179,8 @@ export const WHY_DIFFERENT = {
       desc: "Your pricing decreases over time as a loyal customer. We reward commitment, not punish it.",
     },
     {
-      title: "Dedicated Account Manager (Premium & Executive)",
-      desc: "Premium and Executive members get a real person managing their property — not a call center.",
+      title: "Dedicated Account Manager",
+      desc: "Every plan includes a real person managing your property — not a call center.",
     },
     {
       title: "AI-assisted Dream Yard Recon™",
