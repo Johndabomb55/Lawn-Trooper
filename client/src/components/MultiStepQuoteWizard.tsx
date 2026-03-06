@@ -172,6 +172,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [showOptionalDetails, setShowOptionalDetails] = useState(false);
   const wizardStartedAtRef = useRef<number>(Date.now());
   const currentStepRef = useRef<number>(1);
+  const previousAppliedCountRef = useRef<number>(0);
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -285,22 +286,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           title: "Continuing with your current picks",
           description: "You can still adjust upgrade services during your walkthrough.",
         });
-      }
-
-      // Trigger confetti and celebration message
-      if (getFeatureFlag('showConfetti', true)) {
-        setShowConfetti(true);
-        const messages = [
-          CELEBRATION_MESSAGES.step1Complete,
-          CELEBRATION_MESSAGES.step2Complete,
-          CELEBRATION_MESSAGES.step3Complete,
-        ];
-        setCelebrationMessage(messages[currentStep - 1] || null);
-        
-        setTimeout(() => {
-          setShowConfetti(false);
-          setCelebrationMessage(null);
-        }, 2500);
       }
       trackEvent("quote_step_complete", { step: currentStep });
       setCurrentStep(currentStep + 1);
@@ -462,15 +447,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
   // Detect when a new promo is unlocked for animation
   useEffect(() => {
-    if (promotionResult.applied.length > previousAppliedCount) {
-      setShowPromoUnlocked(true);
-      if (getFeatureFlag('showConfetti', true)) {
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 2000);
-      }
-      setTimeout(() => setShowPromoUnlocked(false), 1500);
+    if (promotionResult.applied.length > previousAppliedCountRef.current) {
+      // Promotion state change is tracked by UI totals; no extra animation state needed.
     }
-    setPreviousAppliedCount(promotionResult.applied.length);
+    previousAppliedCountRef.current = promotionResult.applied.length;
   }, [promotionResult.applied.length]);
 
   // Check if add-on requirements are met
@@ -556,7 +536,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     setTerm('2-year');
     setPayUpfront(false);
     setSegments([]);
-    setPreviousAppliedCount(0);
+    previousAppliedCountRef.current = 0;
     setShowOptionalDetails(false);
   };
 
