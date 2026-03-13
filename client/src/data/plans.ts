@@ -69,8 +69,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
         "Flower bed weed control (included)",
         "Turf Applications: Not Included (Premium & Executive)",
-        "Standard Support",
-        "Landscape Allowance\u2122: Not Included (Premium & Executive)"
+        "Standard Support"
       ]
     },
     premium: {
@@ -78,8 +77,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
       keyStats: [
         { label: "Mowing", value: "Weekly" },
         { label: "Off-Season", value: "Bi-Weekly" },
-        { label: "Upgrades", value: "3B + 1P" },
-        { label: "Allowance", value: "Seasonal" }
+        { label: "Upgrades", value: "3B + 1P" }
       ],
       description: "Includes: 3 Basic + 1 Premium Upgrades",
       features: [
@@ -90,8 +88,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Service Photo Updates",
         "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
-        "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
-        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
+        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades → 1 Premium Upgrade</span>"
       ]
     },
     executive: {
@@ -99,8 +96,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
       keyStats: [
         { label: "Service", value: "Year-Round Weekly" },
         { label: "Turf Defense", value: "7 Apps/Year" },
-        { label: "Upgrades", value: "3B + 3P" },
-        { label: "Allowance", value: "Premier" }
+        { label: "Upgrades", value: "3B + 3P" }
       ],
       description: "Includes: 3 Basic + 3 Premium Upgrades",
       features: [
@@ -112,8 +108,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Service Photo Updates",
         "<span class='font-bold text-accent'>Priority Storm Service</span>",
         "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
-        "<span class='font-bold text-accent'>Premier Landscape Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
-        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
+        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades → 1 Premium Upgrade</span>"
       ]
     }
   };
@@ -153,7 +148,7 @@ export const EXECUTIVE_PLUS = {
   perks: [
     "Quarterly Strategy Session",
     "Rapid Response Priority",
-    "Expanded Landscape Allowance\u2122 tier"
+    "Enhanced service coverage"
   ]
 };
 
@@ -398,7 +393,6 @@ export const EXECUTIVE_EXTRAS = [
   "Weed-Free Turf Guarantee",
   "Priority Storm Service",
   "Dedicated Account Manager",
-  "Premier Landscape Allowance\u2122"
 ];
 
 export const EXECUTIVE_PERKS = [
@@ -406,8 +400,7 @@ export const EXECUTIVE_PERKS = [
   "Executive Turf Defense\u2122 — up to 7 turf applications annually",
   "Weed-Free Turf Guarantee (progressive improvement)",
   "Priority storm service",
-  "Dedicated Account Manager",
-  "Premier Landscape Allowance\u2122"
+  "Dedicated Account Manager"
 ];
 
 // OVERAGE PRICING (LOCKED)

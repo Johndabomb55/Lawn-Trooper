@@ -1,0 +1,178 @@
+Update the Lawn Trooper website quote flow and plan presentation to make it simpler, clearer, and more customer-friendly.
+
+IMPORTANT:
+- Do NOT break layout, styling, responsiveness, forms, animations, routing, or existing functionality.
+- Preserve the strong visual design and yard imagery.
+- Keep the military-inspired premium brand voice.
+- The site should feel like we are helping homeowners choose the best plan for their yard, not selling rigid packages.
+- Keep the current plan builder structure unless explicitly changed below.
+
+GOALS:
+1. Keep the beautiful visual plan cards and yard imagery.
+2. Remove remaining confusion around pre-selected upgrades.
+3. Make the plans feel flexible, valuable, and trustworthy.
+4. Highlight the Founder’s Birthday Bonus clearly.
+5. Remove anything that adds unnecessary confusion.
+
+MAKE THESE CHANGES:
+
+1. REMOVE LANDSCAPE ALLOWANCE / CREDIT LANGUAGE
+- Remove the “Landscape allowance” row from the comparison table.
+- Remove any “Seasonal refresh” / “Premier allowance” wording if it is currently part of that allowance row.
+- Do NOT replace it with credits or allowances in this version.
+
+2. KEEP THE VISUAL PLAN CARDS
+- Keep the yard imagery and attractive plan card visuals.
+- These visuals are important and should remain part of the plan picker experience.
+- Do NOT strip the design down into plain boxes.
+
+3. REMOVE PRE-SELECTED UPGRADE LISTS FROM THE PLAN CARDS
+- In the visual plan cards, remove the section that lists specific pre-selected upgrades such as mulch, gutter cleaning, aeration, trash can cleaning, etc.
+- Remove any wording like “Pre-selected upgrades” and “Swap in next step.”
+- Customers should NOT feel like they are locked into those specific services.
+
+4. REPLACE PRE-SELECTED UPGRADE LISTS WITH SIMPLE INCLUDED UPGRADE COUNTS
+On each plan card, replace the old upgrade list with clean included-upgrade summary text.
+
+Use this exact structure:
+
+Basic Patrol
+Includes 2 Basic Bundled Upgrades
+
+Premium Patrol
+Includes 3 Basic Bundled Upgrades
+Includes 1 Premium Bundled Upgrade
+
+Executive Command
+Includes 3 Basic Bundled Upgrades
+Includes 2 Premium Bundled Upgrades
+
+Keep it visually clean and easy to scan.
+
+5. ADD FOUNDER’S BIRTHDAY BONUS TO THE PLAN CARDS
+Show the Founder’s Birthday Bonus clearly on each plan card in a visually appealing way.
+
+Use this wording:
+
+Founder’s Birthday Bonus
+
+Basic:
++1 Basic Upgrade
+
+Premium:
++1 Basic Upgrade
+
+Executive:
++1 Premium Upgrade
+
+Make the Executive bonus feel especially valuable and noticeable, since it helps push customers toward the top plan.
+This should feel like a limited-time value boost, not a gimmick.
+
+6. ADD UPGRADE EXAMPLES WITHOUT MAKING THEM FEEL REQUIRED
+Add a lightweight “View upgrade examples” interaction on each plan card.
+
+This can be:
+- a small hover tooltip
+- a click-to-expand popover
+- or a compact accordion
+
+When opened, it should show example upgrade categories only.
+
+Use headings like:
+
+Basic upgrade examples
+- Shrub / hedge trimming
+- Basic mulch install
+- Quarterly trash can cleaning
+- Gutter cleaning
+- Mosquito control
+- Additional weed control & fertilization
+
+Premium upgrade examples
+- Pressure-wash package
+- House soft wash
+- Aeration & dethatching
+- Seasonal lighting
+- Tree trimming
+- Full yard cleanout
+
+IMPORTANT:
+- These are examples only.
+- Make it clear the customer will choose their upgrades later.
+- Do NOT make it look like these are automatically included by default.
+
+7. CHANGE THE FEEL OF THE PLAN PICKER
+Make sure the plan picker feels like:
+“We’re helping you choose the best plan for your yard.”
+
+Not:
+“We’re forcing you into packages.”
+
+Adjust wording where needed to feel more helpful, flexible, and customer-first.
+
+8. RENAME OR IMPROVE THE DUPLICATE PLAN STEP
+There is currently a step in the plan builder where users select the plan again after already moving through the process.
+
+Keep the nice plan visuals, but reduce confusion.
+
+Preferred solution:
+- Rename that step from a plain selection feel to something like:
+  “Confirm Your Plan”
+  or
+  “Choose the Best Fit for Your Yard”
+
+The point is to make it feel like guided confirmation, not repetitive reselection.
+
+If there is any unnecessary duplicate wording that makes the user feel like they are choosing the same thing twice, simplify it.
+
+9. IMPROVE THE STEP 3 MICROCOPY
+Where the builder currently says things like:
+“Select exactly 2 Basic upgrades to proceed”
+
+Change the tone to something more helpful and customer-friendly, such as:
+“Choose your 2 bundled upgrades”
+
+Use this softer style throughout the upgrade selection step where appropriate.
+
+10. KEEP THE UPGRADE SELECTION STEP
+Do NOT remove the actual upgrade selection step.
+That step is working well and should stay.
+It already helps users customize their plan and understand the flexibility.
+
+11. KEEP THE FINAL FORMS AND FINAL PAGE FUNCTIONAL
+Do NOT break:
+- the main quote submission form
+- the HOA form
+- the Smart Robot Mowing waitlist
+- the final confirmation / offer page
+- download quote summary functionality if currently working
+
+12. PHONE NUMBER CONSISTENCY
+Check the whole site for phone number consistency.
+Use:
+256-795-2949
+
+Replace outdated or placeholder numbers where appropriate, especially anywhere customer-facing.
+
+13. FINAL BRAND / TRUST TONE
+Make sure the updated experience feels:
+- helpful
+- trustworthy
+- flexible
+- premium
+- professional
+- safe for first-time visitors
+
+The site should feel like Lawn Trooper wants people in the right plan for their property and is trying to provide the best fit, not pressure them into the highest package.
+
+14. FINAL QA
+After making all changes, verify:
+- buttons still work
+- wizard flow still works
+- forms still submit
+- hover or click interactions work on desktop and mobile
+- layout is clean on mobile
+- no broken styling
+- no broken anchors
+- no accidental pricing changes
+- no accidental logic changes to the included upgrade counts

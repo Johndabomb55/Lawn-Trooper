@@ -7,6 +7,7 @@ import {
   Check, 
   ChevronLeft, 
   ChevronRight, 
+  ChevronDown,
   Star, 
   Info,
   MapPin,
@@ -141,6 +142,71 @@ const formSchema = z.object({
     });
   }
 });
+
+const BASIC_UPGRADE_EXAMPLES = [
+  "Shrub / hedge trimming",
+  "Basic mulch install",
+  "Quarterly trash can cleaning",
+  "Gutter cleaning",
+  "Mosquito control",
+  "Additional weed control & fertilization"
+];
+
+const PREMIUM_UPGRADE_EXAMPLES = [
+  "Pressure-wash package",
+  "House soft wash",
+  "Aeration & dethatching",
+  "Seasonal lighting",
+  "Tree trimming",
+  "Full yard cleanout"
+];
+
+function UpgradeExamplesAccordion() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        data-testid="upgrade-examples-toggle"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 text-xs text-primary font-medium hover:underline mx-auto"
+      >
+        <Info className="w-3.5 h-3.5" />
+        View upgrade examples
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="bg-muted/40 rounded-lg p-3 border border-border">
+            <h6 className="text-xs font-bold text-primary mb-2">Basic upgrade examples</h6>
+            <ul className="space-y-1">
+              {BASIC_UPGRADE_EXAMPLES.map((ex) => (
+                <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                  <span className="text-primary/60 mt-0.5">•</span>
+                  <span>{ex}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-muted/40 rounded-lg p-3 border border-border">
+            <h6 className="text-xs font-bold text-accent mb-2">Premium upgrade examples</h6>
+            <ul className="space-y-1">
+              {PREMIUM_UPGRADE_EXAMPLES.map((ex) => (
+                <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                  <span className="text-accent/60 mt-0.5">•</span>
+                  <span>{ex}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="text-[10px] text-muted-foreground italic sm:col-span-2 text-center">
+            These are examples only — you'll choose your upgrades in the next step.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface MultiStepQuoteWizardProps {
   onClose?: () => void;
@@ -494,14 +560,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const getAddOnInstructionText = () => {
     if (plan === "basic") {
       if (allowance.premium > 0) {
-        return `Select exactly ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed.`;
+        return `Choose your ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"}`;
       }
-      return `Select exactly ${allowance.basic} Basic upgrade${allowance.basic === 1 ? "" : "s"} to proceed.`;
+      return `Choose your ${allowance.basic} bundled upgrade${allowance.basic === 1 ? "" : "s"}`;
     }
     if (plan === "premium") {
-      return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
+      return `Choose your ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"}`;
     }
-    return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
+    return `Choose your ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"}`;
   };
 
   const MissionReadyIndicator = () => (
@@ -631,8 +697,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   className="space-y-6"
                 >
                   <div className="text-center mb-6">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Lawn Care Plan</h4>
-                    <p className="text-muted-foreground">Trusted by North Alabama homeowners for 25+ years. One-stop exterior maintenance with full lawn coverage.</p>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Choose the Best Fit for Your Yard</h4>
+                    <p className="text-muted-foreground">We'll help you find the right plan for your property. Trusted by North Alabama homeowners for 25+ years.</p>
                   </div>
 
                   {/* Feature comparison matrix */}
@@ -728,28 +794,31 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           <div className="mt-3 w-full">
                             <ValueMeter planId={p.id} />
                           </div>
-                          <div className="mt-3">
-                            <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-1">Pre-selected upgrades</div>
-                            <ul className="space-y-0.5">
-                              {(RECOMMENDED_ADDONS[p.id]?.basic ?? []).map((id) => (
-                                <li key={id} className="text-xs text-foreground/85 flex items-start gap-1.5">
-                                  <Check className="w-3.5 h-3.5 text-green-600 shrink-0 mt-[1px]" />
-                                  <span>{getAddonName(id)}</span>
-                                </li>
-                              ))}
-                              {(RECOMMENDED_ADDONS[p.id]?.premium ?? []).map((id) => (
-                                <li key={id} className="text-xs text-accent/90 flex items-start gap-1.5">
-                                  <Star className="w-3.5 h-3.5 fill-accent shrink-0 mt-[1px]" />
-                                  <span>{getAddonName(id)}</span>
-                                </li>
-                              ))}
-                            </ul>
-                            <p className="text-[10px] text-muted-foreground italic mt-1">Swap in next step.</p>
+                          <div className="mt-3 space-y-1.5">
+                            <div className="text-xs text-foreground/85 flex items-center gap-1.5">
+                              <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                              <span>Includes {p.allowance.basic} Basic Bundled Upgrade{p.allowance.basic === 1 ? '' : 's'}</span>
+                            </div>
+                            {p.allowance.premium > 0 && (
+                              <div className="text-xs text-accent/90 flex items-center gap-1.5">
+                                <Star className="w-3.5 h-3.5 fill-accent shrink-0" />
+                                <span>Includes {p.allowance.premium} Premium Bundled Upgrade{p.allowance.premium === 1 ? '' : 's'}</span>
+                              </div>
+                            )}
+                            <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
+                              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Founder's Birthday Bonus</div>
+                              <div className={`text-xs font-bold mt-0.5 ${isExecutive ? 'text-accent' : 'text-primary'}`}>
+                                {isExecutive ? '+1 Premium Upgrade' : '+1 Basic Upgrade'}
+                              </div>
+                            </div>
                           </div>
                         </button>
                       );
                     })}
                   </div>
+
+                  {/* View Upgrade Examples */}
+                  <UpgradeExamplesAccordion />
 
                   {/* Executive+ Toggle */}
                   {plan === 'executive' && (
@@ -1183,7 +1252,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                               Phone {(selectedContactMethod === "text" || selectedContactMethod === "phone") && <span className="text-red-500">*</span>}
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="(555) 123-4567" {...field} />
+                              <Input placeholder="(256) 795-2949" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

@@ -28,8 +28,8 @@ The project is organized into `client/` for the React application, `server/` for
 5.  **Property Type Selection**: The wizard intelligently adapts its flow based on whether the user selects "Residential" (standard pricing) or "HOA/Commercial" (custom quote request).
 6.  **Accessibility**: The website adheres to accessibility standards with smooth scrolling, ARIA labels, proper heading hierarchy, and `data-testid` attributes.
 7.  **Enhanced Landing Page**: Includes sections for plan overview, testimonials, trust messaging, "Why We're Different", "Limited Spots" messaging, and social media embeds (Facebook, Instagram).
-8.  **Landscape Allowance™ Tiers**: Premium gets Seasonal Landscape Refresh Allowance™, Executive gets Premier Landscape Allowance™. No dollar values are exposed publicly. Terms are disclosed in FAQ.
-9.  **Executive+ Toggle**: Optional +$99/mo upgrade for Executive Command that adds +1 Basic, +1 Premium upgrade, Quarterly Strategy Session, Rapid Response Priority, and Expanded Landscape Allowance™.
+8.  **Landscape Allowance™ Tiers**: REMOVED from customer-facing UI (comparison table, plan cards, FAQ, feature lists). Internal config fields still exist but set to null.
+9.  **Executive+ Toggle**: Optional +$99/mo upgrade for Executive Command that adds +1 Basic, +1 Premium upgrade, Quarterly Strategy Session, Rapid Response Priority, and enhanced service coverage.
 10. **Upgrade Conversion (Swap)**: Basic, Premium, and Executive plans support converting 2 Basic Upgrades → 1 Premium Upgrade. The `getSwapOptions()` function generates swap options for eligible plans.
 11. **Dream Yard Recon™**: AI-generated landscape plan included with every plan. Premium/Executive get personalized review with Account Manager.
 12. **Step 2 Plan Details Panel**: `PlanDetailsPanel.tsx` renders inline below the selected plan card in Step 3 (Plan Selection) of the Streamlined Wizard. Shows locked features, swappable upgrade slots with live counters, tabbed Basic/Premium upgrade selection, and conversion controls (2B→1P / reverse). Executive+ toggle is embedded in this panel. Selections carry to Step 4 via shared state (`basicAddons`, `premiumAddons`, `swapCount`, `executivePlus`).
@@ -42,8 +42,11 @@ The project is organized into `client/` for the React application, `server/` for
 19. **Value Meter (Property Care Level)**: Each plan card shows "Property Care Level" progress bar (Basic=45% "Essential Care", Premium=75% "Complete Care", Executive=100% "Total Care") with descriptive text.
 20. **Support Level Progression**: Basic = Standard support, Premium = Priority support, Executive = Dedicated account manager. Shown in comparison table and consistent across FAQ and plan features.
 21. **Company Phone**: 256-795-2949 — displayed in footer, HOA form placeholder, and simple-home header.
-22. **Plan Section Headings**: "Choose Your Lawn Care Plan" used consistently across landing page, quote wizard, and streamlined wizard. Trust line ("Trusted by North Alabama homeowners for 25+ years") above plans. One-stop-shop messaging near plan cards.
-23. **Comparison Table Order**: Shared features first (edging/trimming, weed control, service photos, Dream Yard Recon, fall leaf control), then differentiating features (mowing frequency, off-season, lawn treatments, property care level, support, allowance, bundled upgrades), then Executive-only features (turf guarantee, storm priority).
+22. **Plan Section Headings**: "Choose the Best Fit for Your Yard" used in wizard plan steps. Trust line ("Trusted by North Alabama homeowners for 25+ years") above plans. One-stop-shop messaging near plan cards.
+23. **Comparison Table Order**: Shared features first (edging/trimming, weed control, service photos, Dream Yard Recon, fall leaf control), then differentiating features (mowing frequency, off-season, lawn treatments, property care level, support, bundled upgrades), then Executive-only features (turf guarantee, storm priority).
+34. **Upgrade Examples Accordion**: Both wizards show a "View upgrade examples" accordion below plan cards with Basic and Premium upgrade category examples. Clearly labeled as examples only — customer chooses in the next step.
+35. **Simplified Plan Cards**: Plan cards show "Includes X Basic Bundled Upgrades" / "Includes X Premium Bundled Upgrades" counts instead of listing specific pre-selected upgrades. No "Swap in next step" text.
+36. **Softer Upgrade Instructions**: Upgrade step says "Choose your X bundled upgrades" instead of "Select exactly X to proceed".
 24. **Dream Yard Recon™**: All plans show "AI-generated plan + personalized review" in comparison table.
 25. **Fall Leaf Control**: Added to comparison table — Basic/Premium: Bi-weekly, Executive: Bi-weekly priority cleanup.
 26. **Lawn Treatment Applications**: Basic=2, Premium=4, Executive=7 — shown with "Applications" label in comparison table.

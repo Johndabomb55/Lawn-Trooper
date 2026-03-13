@@ -72,7 +72,7 @@ export const PLAN_SUMMARIES = {
         "Flower bed weed control (included)",
         "3 Basic + 1 Premium Upgrades",
         "Priority Support",
-        "Seasonal Landscape Refresh Allowance\u2122"
+        "Service Photo Updates"
       ]
     },
     {
@@ -85,7 +85,6 @@ export const PLAN_SUMMARIES = {
         "Weed-Free Turf Guarantee",
         "3 Basic + 3 Premium Upgrades",
         "Dedicated Account Manager",
-        "Premier Landscape Allowance\u2122",
         "Service Photo Updates"
       ]
     }

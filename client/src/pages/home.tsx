@@ -745,15 +745,11 @@ export default function LandingPage() {
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol is bi-weekly mowing with 2 Basic Upgrades and standard support. Premium Patrol is weekly mowing with 3 Basic + 1 Premium Upgrades, bed weed control, priority support, and a Seasonal Landscape Refresh Allowance\u2122. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Basic + 3 Premium Upgrades, a dedicated account manager, and Premier Landscape Allowance\u2122."
+                  a: "Basic Patrol is bi-weekly mowing with 2 Basic Upgrades and standard support. Premium Patrol is weekly mowing with 3 Basic + 1 Premium Upgrades, bed weed control, and priority support. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Basic + 3 Premium Upgrades, and a dedicated account manager."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
-                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Basic and +1 Premium Upgrade, Quarterly Strategy Sessions, Rapid Response Priority, and an Expanded Landscape Allowance\u2122 tier."
-                },
-                {
-                  q: "What is the Landscape Allowance\u2122?",
-                  a: "The Landscape Allowance\u2122 is included with Premium and Executive plans. It covers standard materials and installation for seasonal bed refresh, mulch, or pine straw. It resets annually, does not roll over, and specialty materials may require an additional upgrade. Installation is scheduled seasonally based on availability."
+                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Basic and +1 Premium Upgrade, Quarterly Strategy Sessions, Rapid Response Priority, and enhanced service coverage."
                 },
                 {
                   q: "What is Dream Yard Recon\u2122?",

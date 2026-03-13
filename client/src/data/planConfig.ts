@@ -48,7 +48,7 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     mowingCadence: "Weekly (growing season)",
     offSeasonCadence: "Bi-weekly off-season",
     bedWeedControlCadence: "Monthly",
-    allowanceTierLabel: "Seasonal Landscape Refresh Allowance™",
+    allowanceTierLabel: null,
     executivePlusEligible: false,
   },
   {
@@ -62,7 +62,7 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     mowingCadence: "Year-round weekly monitoring",
     offSeasonCadence: "Year-round weekly monitoring",
     bedWeedControlCadence: "Monthly",
-    allowanceTierLabel: "Premier Landscape Allowance™",
+    allowanceTierLabel: null,
     executivePlusEligible: true,
   },
 ];
@@ -72,7 +72,7 @@ export const EXECUTIVE_PLUS_CONFIG = {
   priceAdd: 99,
   basicSlotsAdd: 1,
   premiumSlotsAdd: 1,
-  allowanceTierLabel: "Expanded Landscape Allowance™",
+  allowanceTierLabel: null,
 };
 
 export const getPlanConfig = (planId: string): PlanConfig | undefined =>

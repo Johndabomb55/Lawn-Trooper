@@ -34,19 +34,11 @@ const LOCKED_FEATURES: LockedFeature[] = [
   { label: "Executive Turf Defense™ (up to 7 applications)", planIds: ["executive"] },
   { label: "Weed-Free Turf Guarantee", planIds: ["executive"] },
   { label: "Priority Storm Service", planIds: ["executive"] },
-  { label: "Dedicated Account Manager", planIds: ["basic", "premium", "executive"] },
+  { label: "Dedicated Account Manager", planIds: ["executive"] },
   { label: "Dream Yard Recon™ + Personalized Review", planIds: ["basic", "premium", "executive"] },
   { label: "Service Photo Updates", planIds: ["premium", "executive"] },
 ];
 
-const LANDSCAPE_ALLOWANCE: Record<string, { label: string; show: boolean }> = {
-  basic: { label: "", show: false },
-  premium: { label: "Seasonal Landscape Refresh Allowance™", show: true },
-  executive: { label: "Premier Landscape Allowance™", show: true },
-  "executive+": { label: "Expanded Landscape Allowance™", show: true },
-};
-
-const ALLOWANCE_HELPER = "An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.";
 
 interface PlanDetailsPanelProps {
   plan: PlanId;
@@ -79,8 +71,6 @@ export default function PlanDetailsPanel({
 }: PlanDetailsPanelProps) {
   const [activeTab, setActiveTab] = useState<"basic" | "premium">("basic");
   const lockedFeatures = LOCKED_FEATURES.filter((f) => f.planIds.includes(plan));
-  const allowanceKey = plan === "executive" && executivePlus ? "executive+" : plan;
-  const landscapeAllowance = LANDSCAPE_ALLOWANCE[allowanceKey];
   const allowsSwap = getPlanConfig(plan)?.allowConversion ?? false;
 
   const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
@@ -271,19 +261,6 @@ export default function PlanDetailsPanel({
                 <span className="text-foreground/90">{feature.label}</span>
               </div>
             ))}
-            {landscapeAllowance?.show && (
-              <div className="flex items-start gap-2 text-sm py-1">
-                <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-medium text-accent">
-                    {landscapeAllowance.label}
-                  </span>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    {ALLOWANCE_HELPER}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

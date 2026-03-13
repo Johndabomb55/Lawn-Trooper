@@ -82,13 +82,6 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
   },
   {
     category: "Allowance",
-    feature: "Landscape allowance",
-    basic: "—",
-    premium: "Seasonal refresh",
-    executive: "Premier allowance",
-  },
-  {
-    category: "Allowance",
     feature: "Bundled upgrades included",
     basic: "2 Basic",
     premium: "3 Basic + 1 Premium",

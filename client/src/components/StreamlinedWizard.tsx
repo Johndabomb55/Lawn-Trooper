@@ -103,6 +103,71 @@ function InfoPopup({ open, onClose, title, content }: InfoPopupProps) {
   );
 }
 
+const BASIC_UPGRADE_EXAMPLES = [
+  "Shrub / hedge trimming",
+  "Basic mulch install",
+  "Quarterly trash can cleaning",
+  "Gutter cleaning",
+  "Mosquito control",
+  "Additional weed control & fertilization"
+];
+
+const PREMIUM_UPGRADE_EXAMPLES = [
+  "Pressure-wash package",
+  "House soft wash",
+  "Aeration & dethatching",
+  "Seasonal lighting",
+  "Tree trimming",
+  "Full yard cleanout"
+];
+
+function UpgradeExamplesAccordion() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        data-testid="upgrade-examples-toggle"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 text-xs text-primary font-medium hover:underline mx-auto"
+      >
+        <Info className="w-3.5 h-3.5" />
+        View upgrade examples
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="bg-muted/40 rounded-lg p-3 border border-border">
+            <h6 className="text-xs font-bold text-primary mb-2">Basic upgrade examples</h6>
+            <ul className="space-y-1">
+              {BASIC_UPGRADE_EXAMPLES.map((ex) => (
+                <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                  <span className="text-primary/60 mt-0.5">•</span>
+                  <span>{ex}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-muted/40 rounded-lg p-3 border border-border">
+            <h6 className="text-xs font-bold text-accent mb-2">Premium upgrade examples</h6>
+            <ul className="space-y-1">
+              {PREMIUM_UPGRADE_EXAMPLES.map((ex) => (
+                <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                  <span className="text-accent/60 mt-0.5">•</span>
+                  <span>{ex}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="text-[10px] text-muted-foreground italic sm:col-span-2 text-center">
+            These are examples only — you'll choose your upgrades in the next step.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export type PropertyType = 'residential' | 'hoa';
 
 export default function StreamlinedWizard() {
@@ -230,9 +295,9 @@ export default function StreamlinedWizard() {
   };
 
   const getSlotRequirementMessage = () => {
-    if (plan === "basic") return `Select ${effectiveBasicAllowance} Basic upgrade${effectiveBasicAllowance === 1 ? "" : "s"} to proceed.`;
-    if (plan === "premium") return `Select ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"} to proceed. Conversion available.`;
-    return `Select ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"} to proceed. Conversion available.`;
+    if (plan === "basic") return `Choose your ${effectiveBasicAllowance} bundled upgrade${effectiveBasicAllowance === 1 ? "" : "s"}`;
+    if (plan === "premium") return `Choose your ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"}`;
+    return `Choose your ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"}`;
   };
 
   const handleSubmit = async () => {
@@ -532,8 +597,8 @@ export default function StreamlinedWizard() {
               <PromoBanner />
 
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-2">Choose Your Lawn Care Plan</h3>
-                <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming, and blowing.</p>
+                <h3 className="text-2xl font-bold text-primary mb-2">Choose the Best Fit for Your Yard</h3>
+                <p className="text-muted-foreground text-sm">We'll help you find the right plan. All plans include mowing, edging, trimming, and blowing.</p>
               </div>
 
               {/* Feature comparison matrix */}
@@ -619,17 +684,23 @@ export default function StreamlinedWizard() {
                         <div className="mt-3 mb-1">
                           <ValueMeter planId={p.id} />
                         </div>
-                        <div className="mt-2 pt-2 border-t border-border/50 flex items-center justify-between text-xs">
-                          <div>
-                            <span className="text-muted-foreground">Slots: </span>
-                            <span className="font-bold text-primary">{p.allowance.basic}B</span>
-                            {p.allowance.premium > 0 && (
-                              <span className="font-bold text-accent"> + {p.allowance.premium}P</span>
-                            )}
+                        <div className="mt-2 pt-2 border-t border-border/50 space-y-1">
+                          <div className="text-xs text-foreground/85 flex items-center gap-1.5">
+                            <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                            <span>Includes {p.allowance.basic} Basic Bundled Upgrade{p.allowance.basic === 1 ? '' : 's'}</span>
                           </div>
-                          {p.allowsSwap && (
-                            <span className="text-primary/70">Swap: 2B → 1P</span>
+                          {p.allowance.premium > 0 && (
+                            <div className="text-xs text-accent/90 flex items-center gap-1.5">
+                              <Star className="w-3.5 h-3.5 fill-accent shrink-0" />
+                              <span>Includes {p.allowance.premium} Premium Bundled Upgrade{p.allowance.premium === 1 ? '' : 's'}</span>
+                            </div>
                           )}
+                          <div className={`mt-1.5 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Founder's Birthday Bonus</div>
+                            <div className={`text-xs font-bold mt-0.5 ${isExecutive ? 'text-accent' : 'text-primary'}`}>
+                              {isExecutive ? '+1 Premium Upgrade' : '+1 Basic Upgrade'}
+                            </div>
+                          </div>
                         </div>
                         {isSelected && (
                           <div className="absolute top-3 right-3 flex items-center gap-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -660,6 +731,9 @@ export default function StreamlinedWizard() {
                   );
                 })}
               </div>
+
+              {/* View Upgrade Examples */}
+              <UpgradeExamplesAccordion />
             </motion.div>
           )}
 

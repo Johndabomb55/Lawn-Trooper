@@ -102,7 +102,7 @@ ${'='.repeat(50)}
 
 ${PDF_QUOTE_CONFIG.footerText}
 
-Contact: John@lawn-trooper.com | (256) 555-LAWN
+Contact: John@lawn-trooper.com | (256) 795-2949
     `.trim();
 
     const blob = new Blob([quoteContent], { type: 'text/plain' });
