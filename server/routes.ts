@@ -106,6 +106,10 @@ export async function registerRoutes(
   app.post("/api/quote", async (req, res) => {
     try {
       const data = quoteRequestSchema.parse(req.body);
+      
+      // Send to GoHighLevel webhook (fire and forget)
+      sendToGHL(data).catch(err => console.error("GHL webhook background error:", err));
+      
       const result = await sendQuoteEmails(data as QuoteRequestData);
 
       if (result.businessEmailSent || (result as any).degraded) {
