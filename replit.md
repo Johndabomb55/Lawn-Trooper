@@ -37,7 +37,7 @@ The project is organized into `client/` for the React application, `server/` for
 14. **Slot Counts (Source of Truth)**: Basic=2B, Premium=3B+1P, Executive=3B+3P, Executive+ adds +1B+1P. Turf Defense only on Executive (7 apps/year).
 15. **Company Logo**: Transparent logo at `attached_assets/LT_TRANSPARENT_LOGO_1772295732190.png`, imported via `@assets` alias.
 16. **AI Yard Designer UX**: The quote wizard includes an "AI Yard Analysis" step (animated loading → Property Scorecard with 5 categories) and a "Transformation Preview" step (bulleted yard outcomes). The wizard is now 9 steps: Welcome → Yard Size → Plan → Upgrades → Yard Analysis → Transformation → Commitment → Contact → Complete.
-17. **Unified Terminology**: All customer-facing text uses "Bundled Upgrades" in comparison/selection contexts and "Upgrades" in general references (not "Add-ons"). CTAs consistently say "Get Your AI Yard Quote" (primary) and "Design Your Lawn Plan" (secondary).
+17. **Unified Terminology**: All customer-facing text uses "Bundled Upgrades" in comparison/selection contexts and "Upgrades" in general references (not "Add-ons"). CTAs consistently say "See My Instant Price" (primary) and "Design Your Lawn Plan" (secondary). Wizard header says "See Your Instant Price". Submit button says "See My Instant Price".
 18. **Plan Badges**: Premium cards show "Most Popular" badge, Executive cards show "Best Value" badge. Purely presentational. **Founder's Birthday Bonus** badges on each plan card: Basic/Premium get +1 Basic Upgrade, Executive gets +1 Premium Upgrade.
 19. **Value Meter (Property Care Level)**: Each plan card shows "Property Care Level" progress bar (Basic=45% "Essential Care", Premium=75% "Complete Care", Executive=100% "Total Care") with descriptive text.
 20. **Support Level Progression**: Basic = Standard support, Premium = Priority support, Executive = Dedicated account manager. Shown in comparison table and consistent across FAQ and plan features.
@@ -47,7 +47,10 @@ The project is organized into `client/` for the React application, `server/` for
 24. **Dream Yard Recon™**: All plans show "AI-generated plan + personalized review" in comparison table.
 25. **Fall Leaf Control**: Added to comparison table — Basic/Premium: Bi-weekly, Executive: Bi-weekly priority cleanup.
 26. **Lawn Treatment Applications**: Basic=2, Premium=4, Executive=7 — shown with "Applications" label in comparison table.
-27. **Upgrade Details Accordion**: Every upgrade in the wizard has a tappable "View details" accordion showing What/When/Why, powered by centralized metadata in `client/src/data/upgradeDetails.ts`.
+27. **Upgrade Details Accordion**: Every upgrade in both wizards (MultiStep and Streamlined) has a tappable "View details" accordion showing What/When/Why, powered by centralized metadata in `client/src/data/upgradeDetails.ts`.
+31. **Plan Selection Visual State**: Selected plan cards show a "Selected" pill badge (checkmark + text), stronger border/ring effects, and elevated shadow. Applied consistently across both wizards.
+32. **Sticky Summary Footer**: Both quote wizards have a sticky footer that stays visible while scrolling, showing selected plan name, yard size, current monthly price, and a Continue button. Critical for mobile usability.
+33. **Plan Image Card CTAs**: Each plan image card on the landing page includes a "See My Instant Price →" link that scrolls to the quote wizard, plus plan name, starting price, and value label (Essential Care / Most Popular / Total Care).
 28. **Neighborhood Launch Offer**: Shown on the final quote page. "Invite Your Neighbors" button copies URL with `?ref=neighbor` param.
 29. **Robot Mowing Waitlist**: "Coming Soon: Smart Robot Mowing" teaser on final quote page with email signup form posting to `/api/waitlist`.
 30. **Anniversary Promo Banner**: Dismissible `PromoBanner` component showing "Anniversary Launch Special — ends March 25" with consistent copy across wizard and landing page.

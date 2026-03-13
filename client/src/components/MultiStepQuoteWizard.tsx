@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import PlanBadge from "@/components/PlanBadge";
 import ValueMeter from "@/components/ValueMeter";
+import UpgradeDetails from "@/components/UpgradeDetails";
 import { 
   MILITARY_RANKS, 
   LOCAL_TIPS, 
@@ -534,7 +535,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       <div className="bg-primary text-primary-foreground p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Get Your Instant Quote</h3>
+            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">See Your Instant Price</h3>
             <p className="text-xs text-primary-foreground/70 mt-1">
               Rank: <span className="font-bold text-accent">{STEPS[currentStep - 1]?.rank}</span>
             </p>
@@ -690,15 +691,20 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           }}
                           className={`p-5 rounded-xl transition-all text-left relative flex flex-col items-start h-full justify-start ${
                             isExecutive 
-                              ? `border-3 border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`
+                              ? `border-3 ${isSelected ? 'border-accent ring-2 ring-accent/40 ring-offset-2 shadow-2xl bg-gradient-to-br from-accent/15 to-accent/5' : 'border-accent/60 bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl hover:border-accent'}`
                               : isSelected
-                                ? 'border-2 border-primary bg-primary/10 shadow-lg'
+                                ? 'border-2 border-primary bg-primary/10 shadow-xl ring-2 ring-primary/30 ring-offset-2'
                                 : 'border-2 border-border hover:border-primary/50 bg-muted/30'
                           }`}
                         >
                           {(isExecutive || p.id === 'premium') && (
                             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                               <PlanBadge planId={p.id} />
+                            </div>
+                          )}
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 flex items-center gap-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                              <Check className="w-3 h-3" /> Selected
                             </div>
                           )}
                           <div className="flex items-center gap-2">
@@ -740,11 +746,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             </ul>
                             <p className="text-[10px] text-muted-foreground italic mt-1">Swap in next step.</p>
                           </div>
-                          {isSelected && (
-                            <div className="absolute top-2 right-2">
-                              <Check className="w-5 h-5 text-primary" />
-                            </div>
-                          )}
                         </button>
                       );
                     })}
@@ -833,7 +834,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Pick Your Bundled Upgrades</h4>
                     <p className="text-muted-foreground">
-                      Bundling saves you money. {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades.
+                      Pick the upgrades that fit your property best. Your {planData?.name} plan includes {allowance.basic} Basic + {allowance.premium} Premium upgrades at no extra cost.
                     </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
@@ -895,20 +896,20 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {BASIC_ADDONS.map((addon) => {
                         const isSelected = basicAddons.includes(addon.id);
                         return (
-                          <Label
-                            key={addon.id}
-                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2 ${
-                              isSelected 
-                                ? 'border-primary bg-primary/10' 
-                                : 'border-border hover:border-primary/50'
-                            }`}
-                          >
-                            <Checkbox 
-                              checked={isSelected} 
-                              onCheckedChange={() => handleBasicAddonToggle(addon.id)} 
-                            />
-                            <span className="text-sm font-medium">{addon.label}</span>
-                          </Label>
+                          <div key={addon.id} className={`p-3 rounded-lg border text-left transition-all ${
+                            isSelected 
+                              ? 'border-primary bg-primary/10' 
+                              : 'border-border hover:border-primary/50'
+                          }`}>
+                            <Label className="cursor-pointer flex items-center gap-2">
+                              <Checkbox 
+                                checked={isSelected} 
+                                onCheckedChange={() => handleBasicAddonToggle(addon.id)} 
+                              />
+                              <span className="text-sm font-medium">{addon.label}</span>
+                            </Label>
+                            <UpgradeDetails upgradeId={addon.id} />
+                          </div>
                         );
                       })}
                     </div>
@@ -929,20 +930,20 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {PREMIUM_ADDONS.map((addon) => {
                         const isSelected = premiumAddons.includes(addon.id);
                         return (
-                          <Label
-                            key={addon.id}
-                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2 ${
-                              isSelected 
-                                ? 'border-accent bg-accent/10' 
-                                : 'border-border hover:border-accent/50'
-                            }`}
-                          >
-                            <Checkbox 
-                              checked={isSelected} 
-                              onCheckedChange={() => handlePremiumAddonToggle(addon.id)} 
-                            />
-                            <span className="text-sm font-medium">{addon.label}</span>
-                          </Label>
+                          <div key={addon.id} className={`p-3 rounded-lg border text-left transition-all ${
+                            isSelected 
+                              ? 'border-accent bg-accent/10' 
+                              : 'border-border hover:border-accent/50'
+                          }`}>
+                            <Label className="cursor-pointer flex items-center gap-2">
+                              <Checkbox 
+                                checked={isSelected} 
+                                onCheckedChange={() => handlePremiumAddonToggle(addon.id)} 
+                              />
+                              <span className="text-sm font-medium">{addon.label}</span>
+                            </Label>
+                            <UpgradeDetails upgradeId={addon.id} />
+                          </div>
                         );
                       })}
                     </div>
@@ -1253,44 +1254,68 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
             </AnimatePresence>
           </div>
 
-          {/* Navigation Footer */}
-          <div className="border-t border-border p-4 md:p-6 flex items-center justify-between gap-4">
-            {currentStep > 1 ? (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleBack}
-                className="flex items-center gap-2"
-              >
-                <ChevronLeft className="w-4 h-4" /> Back
-              </Button>
-            ) : (
-              <div />
+          {/* Sticky Summary + Navigation Footer */}
+          <div className="sticky bottom-0 z-20 bg-card border-t-2 border-primary/20 shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
+            {currentStep >= 2 && (
+              <div className="px-4 py-2 bg-primary/5 border-b border-primary/10">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <span className="text-muted-foreground">
+                      <span className="font-bold text-primary">{planData?.name}</span>
+                    </span>
+                    <span className="text-muted-foreground text-xs">
+                      {YARD_SIZES.find(y => y.id === yardSize)?.label} yard
+                    </span>
+                    {currentStep >= 3 && (
+                      <span className="text-muted-foreground text-xs">
+                        {basicAddons.length}B + {premiumAddons.length}P upgrades
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-bold text-primary text-lg whitespace-nowrap">
+                    ${totalPrice}/mo
+                  </div>
+                </div>
+              </div>
             )}
+            <div className="p-4 md:p-6 flex items-center justify-between gap-4">
+              {currentStep > 1 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBack}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Back
+                </Button>
+              ) : (
+                <div />
+              )}
 
-            {currentStep < 4 ? (
-              <Button
-                type="button"
-                onClick={handleNext}
-                disabled={currentStep === 3 && !canProceedFromStep3}
-                className={`flex items-center gap-2 ${
-                  currentStep === 3 && !canProceedFromStep3 
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                }`}
-              >
-                Next <ChevronRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
-                style={{ backgroundColor: '#1a3d24', color: 'white' }}
-              >
-                {isSubmitting ? "Transmitting..." : "Get Your AI Yard Quote"}
-              </Button>
-            )}
+              {currentStep < 4 ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={currentStep === 3 && !canProceedFromStep3}
+                  className={`flex items-center gap-2 px-6 py-3 text-base font-bold ${
+                    currentStep === 3 && !canProceedFromStep3 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  }`}
+                >
+                  Continue <ChevronRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
+                  style={{ backgroundColor: '#1a3d24', color: 'white' }}
+                >
+                  {isSubmitting ? "Transmitting..." : "See My Instant Price"}
+                </Button>
+              )}
+            </div>
           </div>
         </form>
       </Form>

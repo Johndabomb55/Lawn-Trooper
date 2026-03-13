@@ -1,0 +1,116 @@
+Improve the usability of the Lawn Trooper pricing/quote flow without redesigning the whole site.
+
+IMPORTANT:
+- Do NOT break layout, styling, responsiveness, animations, or component structure.
+- Preserve the current brand look and feel.
+- Focus on clarity, trust, ease of use, and conversion.
+- Make the site easier for first-time viewers to understand.
+
+Make these improvements:
+
+1. CTA WORDING
+Change generic CTA wording like “Get Instant Price” to:
+
+See My Instant Price
+
+Use this wording wherever it makes sense in the pricing/quote flow.
+
+2. PLAN SELECTION CLARITY
+Make the selected plan much easier to identify.
+
+When a plan is selected, add a strong but tasteful visual state such as:
+- stronger border
+- checkmark
+- slight highlight or glow
+- clear “Selected” state
+
+Keep it premium and clean, not flashy.
+
+3. STICKY SUMMARY IN THE QUOTE FLOW
+In the pricing/plan builder flow, add a sticky summary area or sticky footer that stays visible as the user moves through the process.
+
+It should clearly show:
+- selected plan
+- yard size
+- current estimated monthly price
+- a clear Continue button
+
+This is especially important on mobile so users do not get lost while scrolling.
+
+4. BUTTON AND WIZARD USABILITY
+The current wizard is too easy to lose track of because critical buttons are lower on the page.
+
+Improve this by:
+- making Next/Continue buttons easier to find
+- reducing the chance that users think the flow is stuck
+- keeping the experience smooth on mobile
+
+Do not radically redesign the flow.
+Use lightweight UX improvements only.
+
+5. PLAN IMAGE SECTION CONFUSION
+There is a section near the top with three plan images/cards that can feel unclear before the user reaches the full comparison table.
+
+Make sure each card quickly communicates:
+- plan name
+- starting price
+- simple value label
+- clear next action
+
+Use these labels:
+
+Basic Patrol — Essential Care Plan
+Premium Patrol — Most Popular Plan
+Executive Command — Total Care Plan
+
+6. BUNDLED UPGRADE EXPLANATION
+Where upgrades are introduced, make the language easy to understand.
+
+Use:
+Bundled Upgrades
+
+Add a short helper line such as:
+Pick the upgrades that fit your property best.
+
+Keep it simple and reassuring.
+Do not overwhelm the user with too much explanation on the first view.
+
+7. OPTIONAL DETAILS UI FOR UPGRADES
+If there is already a good place in the quote builder or later in the flow, allow users to tap/click for more details on upgrades.
+
+Use a lightweight solution like:
+- accordion
+- tooltip
+- expandable details
+
+Do NOT clutter the main plans section.
+Only add details where it helps users understand choices without making the pricing page feel busy.
+
+8. TRUST AND SAFETY FEEL
+Throughout the pricing and quote experience, make sure the tone feels:
+- safe
+- helpful
+- professional
+- honest
+- customer-first
+
+The site should feel like we want customers to choose the best plan for their needs, not like we are forcing the highest package.
+
+9. TYPO / COPY CLEANUP
+Fix any obvious copy issues or awkward wording that reduce trust.
+For example, fix grammar problems like:
+“Customize you plan”
+to
+“Customize your plan”
+
+10. FINAL QA
+After changes, verify:
+- all buttons still work
+- all anchors still work
+- the quote flow still works
+- forms still work
+- mobile layout still works
+- no styling/classes were broken
+- nothing important was removed
+
+Keep the final result simpler, clearer, and more trustworthy for first-time visitors.

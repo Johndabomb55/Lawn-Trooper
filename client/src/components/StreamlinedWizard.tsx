@@ -291,7 +291,7 @@ export default function StreamlinedWizard() {
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-primary to-green-700 p-4 text-white">
         <div className="flex items-center justify-between mb-3">
-          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Get Your Free Quote</h2>
+          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">See Your Instant Price</h2>
           <span data-testid="text-step-badge" className="text-sm bg-white/20 px-3 py-1 rounded-full">
             Step {step} of 9
           </span>
@@ -593,11 +593,11 @@ export default function StreamlinedWizard() {
                         }}
                         className={`w-full p-4 rounded-xl border-2 transition-all text-left relative ${
                           isPremium
-                            ? `border-primary ${isSelected ? 'bg-primary/10 shadow-lg ring-2 ring-primary/30' : 'bg-primary/5'}`
+                            ? `border-primary ${isSelected ? 'bg-primary/10 shadow-xl ring-2 ring-primary/30 ring-offset-2' : 'bg-primary/5 hover:border-primary'}`
                             : isExecutive 
-                              ? `border-accent ${isSelected ? 'bg-accent/10 shadow-lg' : 'bg-accent/5'}`
+                              ? `border-accent ${isSelected ? 'bg-accent/10 shadow-xl ring-2 ring-accent/30 ring-offset-2' : 'bg-accent/5 hover:border-accent'}`
                               : isSelected
-                                ? 'border-primary bg-primary/10 shadow-lg'
+                                ? 'border-primary bg-primary/10 shadow-xl ring-2 ring-primary/30 ring-offset-2'
                                 : 'border-border hover:border-primary/50'
                         }`}
                       >
@@ -632,8 +632,8 @@ export default function StreamlinedWizard() {
                           )}
                         </div>
                         {isSelected && (
-                          <div className="absolute top-4 right-4">
-                            <Check className="w-6 h-6 text-primary" />
+                          <div className="absolute top-3 right-3 flex items-center gap-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <Check className="w-3 h-3" /> Selected
                           </div>
                         )}
                       </button>
@@ -675,7 +675,7 @@ export default function StreamlinedWizard() {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Pick Your Bundled Upgrades</h3>
                 <p className="text-muted-foreground text-sm">
-                  Bundling saves you money. Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
+                  Pick the upgrades that fit your property best. Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
                 </p>
               </div>
 
@@ -1526,9 +1526,26 @@ export default function StreamlinedWizard() {
         </AnimatePresence>
       </div>
 
-      {/* Footer Navigation */}
-      <div className="border-t border-border p-4 bg-muted/30">
-        <div className="flex gap-3">
+      {/* Sticky Footer Navigation */}
+      <div className="sticky bottom-0 z-20 border-t-2 border-primary/20 bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
+        {step >= 3 && step < 9 && !isHOA && selectedPlan && (
+          <div className="px-4 py-2 bg-primary/5 border-b border-primary/10">
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="font-bold text-primary">{selectedPlan.name}</span>
+                {yardSize && (
+                  <span className="text-muted-foreground text-xs">
+                    {YARD_SIZES.find(y => y.id === yardSize)?.label} yard
+                  </span>
+                )}
+              </div>
+              <div className="font-bold text-primary text-lg whitespace-nowrap">
+                ${actualMonthly}/mo
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="p-4 flex gap-3">
           {step > 1 && step < 9 && (
             <Button
               variant="outline"
@@ -1548,7 +1565,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-primary hover:bg-primary/90"
               data-testid="button-next"
             >
-              {step === 1 ? "Get Your Free Quote" : "Continue"}
+              {step === 1 ? "See My Instant Price" : "Continue"}
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           )}
@@ -1560,7 +1577,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-accent hover:bg-accent/90 text-white"
               data-testid="button-submit"
             >
-              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "Get Your Free Quote")}
+              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "See My Instant Price")}
             </Button>
           )}
 

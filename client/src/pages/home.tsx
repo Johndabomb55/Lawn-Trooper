@@ -132,7 +132,7 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
             <Button onClick={() => handleQuoteCtaClick("desktop_nav")} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
-              Get Instant Price
+              See My Instant Price
             </Button>
           </div>
 
@@ -155,7 +155,7 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Get Instant Price</Button>
+                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">See My Instant Price</Button>
               </div>
             </motion.div>
           )}
@@ -206,7 +206,7 @@ export default function LandingPage() {
                 onClick={() => handleQuoteCtaClick("hero_primary")}
                 className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider px-8 py-6 text-base md:text-lg"
               >
-                Get Instant Price
+                See My Instant Price
               </Button>
               <p className="text-xs md:text-sm text-white/80">
                 No payment required. Local account manager follow-up within 1 business day.
@@ -430,6 +430,9 @@ export default function LandingPage() {
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">Founder's Birthday Bonus: +1 Basic Upgrade</span>
                   </div>
+                  <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
+                    See My Instant Price →
+                  </button>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-amber-400/40">
@@ -444,6 +447,9 @@ export default function LandingPage() {
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">Founder's Birthday Bonus: +1 Basic Upgrade</span>
                   </div>
+                  <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
+                    See My Instant Price →
+                  </button>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-accent/30">
@@ -458,6 +464,9 @@ export default function LandingPage() {
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">Founder's Birthday Bonus: +1 Premium Upgrade</span>
                   </div>
+                  <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
+                    See My Instant Price →
+                  </button>
                 </div>
               </div>
             </div>
