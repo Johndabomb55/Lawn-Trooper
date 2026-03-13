@@ -532,7 +532,7 @@ export default function StreamlinedWizard() {
               <PromoBanner />
 
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-2">Choose your Total Maintenance Plan</h3>
+                <h3 className="text-2xl font-bold text-primary mb-2">Choose Your Lawn Care Plan</h3>
                 <p className="text-muted-foreground text-sm">All plans include mowing, edging, trimming, and blowing.</p>
               </div>
 
@@ -673,7 +673,7 @@ export default function StreamlinedWizard() {
               className="space-y-4"
             >
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h3>
+                <h3 className="text-2xl font-bold text-primary mb-2">Pick Your Bundled Upgrades</h3>
                 <p className="text-muted-foreground text-sm">
                   Bundling saves you money. Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
                 </p>
@@ -1395,7 +1395,7 @@ export default function StreamlinedWizard() {
                     data-testid="input-phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(256) 555-0000"
+                    placeholder="(256) 795-2949"
                   />
                 </div>
                 <div>

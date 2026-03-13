@@ -69,7 +69,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
         "Flower bed weed control (included)",
         "Turf Applications: Not Included (Premium & Executive)",
-        "Dedicated Account Manager",
+        "Standard Support",
         "Landscape Allowance\u2122: Not Included (Premium & Executive)"
       ]
     },
@@ -88,7 +88,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Flower bed weed control (included)",
         "<span class='font-bold text-primary'>3 Basic + 1 Premium Upgrades included</span>",
         "Service Photo Updates",
-        "Dedicated Account Manager",
+        "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
         "<span class='font-bold text-primary'>Seasonal Landscape Refresh Allowance\u2122</span><br/><span class='text-xs text-muted-foreground'>An included allowance you can apply toward mulch/pine straw refreshes, bed enhancements, pruning upgrades, and cleanups. Resets annually. Specialty materials may require additional upgrade.</span>",
         "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Basic Upgrades \u2192 1 Premium Upgrade</span>"
@@ -283,11 +283,11 @@ export const ADDON_CATALOG: Addon[] = [
   // --- PREMIUM ADD-ONS ($40/mo overage) ---
   {
     id: "weekly_growth_season_mowing",
-    name: "Weekly Growth Season Mowing (May–August)",
+    name: "Weekly Growth Season Mowing",
     tier: "premium",
     category: "landscaping",
     price: 40,
-    description: "Upgrades mowing frequency to weekly during peak growth months (May–August). Reverts to bi-weekly outside growth season. Weather delays apply."
+    description: "Upgrades mowing frequency to weekly during peak growth months. Reverts to bi-weekly outside growth season. Weather delays apply."
   },
   {
     id: "premium_pressure_wash",

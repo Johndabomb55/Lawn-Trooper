@@ -1,0 +1,172 @@
+Update the Lawn Trooper website pricing and plans experience to make it clearer, more trustworthy, and easier for first-time visitors to understand.
+
+IMPORTANT:
+- Do NOT break layout, styling, responsiveness, animations, or component structure.
+- Preserve the military brand voice.
+- Keep the site feeling premium, trustworthy, and helpful.
+- Do NOT redesign the whole site. Improve the current version.
+- Keep existing pricing unless explicitly stated otherwise.
+
+Make the following changes:
+
+1. TRUST LINE ABOVE THE PLANS
+Add this trust line above the plan section:
+
+Trusted by North Alabama homeowners for 25+ years
+Licensed • Insured • Satisfaction Guaranteed
+
+2. SECTION TITLE
+Change the plans section heading from a generic “Plans” style heading to:
+
+Choose Your Lawn Care Plan
+
+3. SUPPORT LEVELS
+Replace the confusing account manager/support row with this exact progression:
+
+Basic: Standard support
+Premium: Priority support
+Executive: Dedicated account manager
+
+4. PROPERTY CARE WORDING
+Replace the confusing “Total Property Coverage %” row with:
+
+Property Care Level
+
+And use these values:
+
+Basic: Essential Care
+Description: Keeps the HOA off your back and handles the basics.
+
+Premium: Complete Care
+Description: Covers most of your yard so you rarely have to worry about it.
+
+Executive: Total Care
+Description: Full-property attention for homeowners who want the closest thing to perfection.
+
+Display this in a clean way that fits the existing comparison table or plan display.
+
+5. SERVICE PHOTO UPDATES
+Ensure Service Photo Updates are included for all three plans:
+- Basic
+- Premium
+- Executive
+
+6. GROWING SEASON MOWING FREQUENCY
+Ensure this row reads:
+
+Basic: Bi-weekly
+Premium: Weekly
+Executive: Weekly
+
+Remove any wording that mentions May through August.
+
+7. LAWN TREATMENT APPLICATIONS
+Ensure this row reads:
+
+Basic: 2 Applications
+Premium: 4 Applications
+Executive: 7 Applications
+
+8. DREAMYARD RECON
+For all three plans, use exactly:
+
+AI-generated plan + personalized review
+
+9. FALL LEAF CONTROL
+Add or update a row called:
+
+Fall Leaf Control
+
+And show:
+
+Basic: Bi-weekly
+Premium: Bi-weekly
+Executive: Bi-weekly priority cleanup
+
+10. BUNDLED UPGRADES
+Use the term “Bundled Upgrades” instead of add-ons.
+
+Show the included upgrade counts clearly by plan:
+
+Basic:
+2 Basic Bundled Upgrades included
+
+Premium:
+3 Basic Bundled Upgrades included
+1 Premium Bundled Upgrade included
+
+Executive:
+3 Basic Bundled Upgrades included
+2 Premium Bundled Upgrades included
+
+Also include this rule somewhere near the upgrade explanation in a clear and concise way:
+
+2 Basic Upgrades can be exchanged for 1 Premium Upgrade
+
+11. FOUNDER’S BIRTHDAY BONUS
+Show a promotional badge or callout on each plan card and also include it in the plan details.
+
+Use the exact phrase:
+
+Founder’s Birthday Bonus
+
+Show the bonus by plan as:
+
+Basic:
++1 Basic Upgrade
+
+Premium:
++1 Basic Upgrade
+
+Executive:
++1 Premium Upgrade
+
+Do NOT mention March 25 unless that text is already part of the current promo system and must remain for consistency.
+If a deadline is already displayed elsewhere on the site and tied to the existing promotion logic, keep it consistent.
+Otherwise just use “Founder’s Birthday Bonus” without a date.
+
+12. PLAN CARD CLARITY
+In the section with the three plan images/cards near the top of the page, add a short clear summary under each plan so first-time visitors immediately understand the difference.
+
+Use:
+
+Basic Patrol
+Starting at $169/mo
+Essential Care Plan
+
+Premium Patrol
+Starting at $299/mo
+Most Popular Plan
+
+Executive Command
+Starting at $399/mo
+Total Care Plan
+
+Also add a clear button or anchor link that takes users to the comparison/pricing section, such as:
+Compare Plans
+
+13. ONE-STOP-SHOP MESSAGING
+Add a short reassuring statement near the plans section that communicates this idea clearly and professionally:
+
+We’re not just a guy with a mower.
+Lawn Trooper is a complete property maintenance service.
+No matter which plan you choose, we help keep your yard looking sharp so you don’t have to worry about it.
+
+Polish the wording if needed, but keep this meaning and tone.
+
+14. PHONE NUMBER UPDATE
+Update the phone number anywhere it appears on the website to:
+
+256-795-2949
+
+15. TABLE ORDER
+In the comparison table, move the rows/features shared by all plans closer to the top.
+Then show rows where Premium and Executive differ from Basic.
+Then show rows unique to Executive.
+
+Do not remove rows. Just improve the order for readability and conversion.
+
+16. KEEP IT SIMPLE
+Do NOT overload the user with too much detail on the plan cards.
+The plan cards should stay simple and clean.
+Detailed customization should happen later in the plan builder or quote flow.

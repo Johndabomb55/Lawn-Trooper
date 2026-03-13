@@ -48,7 +48,7 @@ export const WHY_LAWN_TROOPER = {
 };
 
 export const PLAN_SUMMARIES = {
-  sectionTitle: "Choose Your Total Maintenance Plan",
+  sectionTitle: "Choose Your Lawn Care Plan",
   sectionSubtitle: "All plans include mowing, edging, trimming, and blowing.",
   plans: [
     {
@@ -71,7 +71,7 @@ export const PLAN_SUMMARIES = {
         "Bi-weekly off-season service",
         "Flower bed weed control (included)",
         "3 Basic + 1 Premium Upgrades",
-        "Dedicated Account Manager",
+        "Priority Support",
         "Seasonal Landscape Refresh Allowance\u2122"
       ]
     },
@@ -85,7 +85,8 @@ export const PLAN_SUMMARIES = {
         "Weed-Free Turf Guarantee",
         "3 Basic + 3 Premium Upgrades",
         "Dedicated Account Manager",
-        "Premier Landscape Allowance\u2122"
+        "Premier Landscape Allowance\u2122",
+        "Service Photo Updates"
       ]
     }
   ]
@@ -149,7 +150,7 @@ export const TRUST_BAR = {
 
 export const FOOTER_CONTENT = {
   email: "John@lawn-trooper.com",
-  phone: "",
+  phone: "256-795-2949",
   serviceArea: "Serving Athens, Huntsville, Madison, Decatur, and all of North Alabama",
 };
 

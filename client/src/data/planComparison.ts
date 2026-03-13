@@ -1,8 +1,3 @@
-/**
- * Plan comparison matrix — single source for feature-by-plan comparison.
- * Used by the Feature Matrix in Step 2 of the quote wizard.
- */
-
 export type PlanId = "basic" | "premium" | "executive";
 
 export interface PlanComparisonRow {
@@ -14,81 +9,77 @@ export interface PlanComparisonRow {
 }
 
 export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
-  // Core service outcomes
   {
-    category: "Mowing",
+    category: "Core",
     feature: "Every visit includes edging, trimming, and blowing",
     basic: "✓",
     premium: "✓",
     executive: "✓",
   },
   {
-    category: "Mowing",
-    feature: "Mowing frequency (growing season)",
-    basic: "Bi-weekly",
-    premium: "Weekly",
-    executive: "Weekly",
-  },
-  {
-    category: "Mowing",
-    feature: "Off-season visits",
-    basic: "Monthly check",
-    premium: "Bi-weekly",
-    executive: "Year-round weekly",
-  },
-  {
-    category: "Turf",
-    feature: "Lawn treatment applications per year",
-    basic: "2",
-    premium: "4",
-    executive: "7",
-  },
-  {
-    category: "Turf",
+    category: "Core",
     feature: "Flower bed weed control",
     basic: "✓",
     premium: "✓",
     executive: "✓",
   },
   {
-    category: "Turf",
-    feature: "Weed-free turf guarantee",
-    basic: "—",
-    premium: "—",
+    category: "Core",
+    feature: "Service photo updates",
+    basic: "✓",
+    premium: "✓",
     executive: "✓",
   },
-
-  // Support and communication
   {
-    category: "Support",
-    feature: "Dream Yard Recon (landscape plan)",
-    basic: "AI plan + personal review",
-    premium: "AI plan + personal review",
-    executive: "AI plan + personal review",
+    category: "Core",
+    feature: "Dream Yard Recon\u2122 (landscape plan)",
+    basic: "AI-generated plan + personalized review",
+    premium: "AI-generated plan + personalized review",
+    executive: "AI-generated plan + personalized review",
+  },
+  {
+    category: "Core",
+    feature: "Fall leaf control",
+    basic: "Bi-weekly",
+    premium: "Bi-weekly",
+    executive: "Bi-weekly priority cleanup",
+  },
+
+  {
+    category: "Service",
+    feature: "Mowing frequency (growing season)",
+    basic: "Bi-weekly",
+    premium: "Weekly",
+    executive: "Weekly",
+  },
+  {
+    category: "Service",
+    feature: "Off-season visits",
+    basic: "Monthly check",
+    premium: "Bi-weekly",
+    executive: "Year-round weekly",
+  },
+  {
+    category: "Service",
+    feature: "Lawn treatment applications per year",
+    basic: "2 Applications",
+    premium: "4 Applications",
+    executive: "7 Applications",
+  },
+  {
+    category: "Service",
+    feature: "Property care level",
+    basic: "Essential Care",
+    premium: "Complete Care",
+    executive: "Total Care",
   },
   {
     category: "Support",
-    feature: "Dedicated account manager",
-    basic: "Included",
-    premium: "Included",
+    feature: "Support level",
+    basic: "Standard support",
+    premium: "Priority support",
     executive: "Dedicated account manager",
   },
-  {
-    category: "Support",
-    feature: "Service photo updates",
-    basic: "—",
-    premium: "Included",
-    executive: "Included",
-  },
-  {
-    category: "Support",
-    feature: "Priority storm scheduling",
-    basic: "—",
-    premium: "—",
-    executive: "Included",
-  },
-
-  // Included upgrades
   {
     category: "Allowance",
     feature: "Landscape allowance",
@@ -98,9 +89,24 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
   },
   {
     category: "Allowance",
-    feature: "Included upgrades",
+    feature: "Bundled upgrades included",
     basic: "2 Basic",
     premium: "3 Basic + 1 Premium",
     executive: "3 Basic + 3 Premium",
+  },
+
+  {
+    category: "Executive",
+    feature: "Weed-free turf guarantee",
+    basic: "—",
+    premium: "—",
+    executive: "✓",
+  },
+  {
+    category: "Executive",
+    feature: "Priority storm scheduling",
+    basic: "—",
+    premium: "—",
+    executive: "Included",
   },
 ];

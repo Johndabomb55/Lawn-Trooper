@@ -51,7 +51,7 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
   growing_season_boost: {
     title: "Wet-Month Weekly Mow Boost (Basic Plan)",
     what: "6 extra weekly mowing visits during heavy-growth months for Basic Patrol homes that normally receive bi-weekly service.",
-    when: "Scheduled during peak growth season (typically May–August) when grass grows fastest. Must be booked at least 1 week in advance.",
+    when: "Scheduled during peak growth season when grass grows fastest. Must be booked at least 1 week in advance.",
     why: "Prevents your lawn from becoming overgrown during rainy, fast-growth periods and keeps it looking consistently maintained."
   },
   extra_weed_control: {
@@ -79,9 +79,9 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Removes heavy leaf coverage that can smother your lawn, harbor pests, and create a messy appearance during fall and winter."
   },
   weekly_growth_season_mowing: {
-    title: "Weekly Growth Season Mowing (May–August)",
-    what: "Upgrades mowing frequency to weekly during peak growth months (May–August). Reverts to bi-weekly outside growth season.",
-    when: "Active from May through August when grass grows fastest. Weather delays may apply during extreme conditions.",
+    title: "Weekly Growth Season Mowing",
+    what: "Upgrades mowing frequency to weekly during peak growth months. Reverts to bi-weekly outside growth season.",
+    when: "Active during peak growing season when grass grows fastest. Weather delays may apply during extreme conditions.",
     why: "Keeps your lawn at optimal height during the fastest growth period, preventing scalping and maintaining a manicured appearance."
   },
   premium_pressure_wash: {

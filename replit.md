@@ -37,13 +37,20 @@ The project is organized into `client/` for the React application, `server/` for
 14. **Slot Counts (Source of Truth)**: Basic=2B, Premium=3B+1P, Executive=3B+3P, Executive+ adds +1B+1P. Turf Defense only on Executive (7 apps/year).
 15. **Company Logo**: Transparent logo at `attached_assets/LT_TRANSPARENT_LOGO_1772295732190.png`, imported via `@assets` alias.
 16. **AI Yard Designer UX**: The quote wizard includes an "AI Yard Analysis" step (animated loading → Property Scorecard with 5 categories) and a "Transformation Preview" step (bulleted yard outcomes). The wizard is now 9 steps: Welcome → Yard Size → Plan → Upgrades → Yard Analysis → Transformation → Commitment → Contact → Complete.
-17. **Unified Terminology**: All customer-facing text uses "Upgrades" (not "Add-ons"). CTAs consistently say "Get Your AI Yard Quote" (primary) and "Design Your Lawn Plan" (secondary).
-18. **Plan Badges**: Premium cards show "Most Popular" badge, Executive cards show "Best Value" badge. Purely presentational.
-19. **Value Meter**: Each plan card shows "Total Property Coverage" progress bar (Basic=45%, Premium=75%, Executive=100%) with descriptive text.
-20. **Upgrade Details Accordion**: Every upgrade in the wizard has a tappable "View details" accordion showing What/When/Why, powered by centralized metadata in `client/src/data/upgradeDetails.ts`.
-21. **Neighborhood Launch Offer**: Shown on the final quote page. "Invite Your Neighbors" button copies URL with `?ref=neighbor` param.
-22. **Robot Mowing Waitlist**: "Coming Soon: Smart Robot Mowing" teaser on final quote page with email signup form posting to `/api/waitlist`.
-23. **Anniversary Promo Banner**: Dismissible `PromoBanner` component showing "Anniversary Launch Special — ends March 25" with consistent copy across wizard and landing page.
+17. **Unified Terminology**: All customer-facing text uses "Bundled Upgrades" in comparison/selection contexts and "Upgrades" in general references (not "Add-ons"). CTAs consistently say "Get Your AI Yard Quote" (primary) and "Design Your Lawn Plan" (secondary).
+18. **Plan Badges**: Premium cards show "Most Popular" badge, Executive cards show "Best Value" badge. Purely presentational. **Founder's Birthday Bonus** badges on each plan card: Basic/Premium get +1 Basic Upgrade, Executive gets +1 Premium Upgrade.
+19. **Value Meter (Property Care Level)**: Each plan card shows "Property Care Level" progress bar (Basic=45% "Essential Care", Premium=75% "Complete Care", Executive=100% "Total Care") with descriptive text.
+20. **Support Level Progression**: Basic = Standard support, Premium = Priority support, Executive = Dedicated account manager. Shown in comparison table and consistent across FAQ and plan features.
+21. **Company Phone**: 256-795-2949 — displayed in footer, HOA form placeholder, and simple-home header.
+22. **Plan Section Headings**: "Choose Your Lawn Care Plan" used consistently across landing page, quote wizard, and streamlined wizard. Trust line ("Trusted by North Alabama homeowners for 25+ years") above plans. One-stop-shop messaging near plan cards.
+23. **Comparison Table Order**: Shared features first (edging/trimming, weed control, service photos, Dream Yard Recon, fall leaf control), then differentiating features (mowing frequency, off-season, lawn treatments, property care level, support, allowance, bundled upgrades), then Executive-only features (turf guarantee, storm priority).
+24. **Dream Yard Recon™**: All plans show "AI-generated plan + personalized review" in comparison table.
+25. **Fall Leaf Control**: Added to comparison table — Basic/Premium: Bi-weekly, Executive: Bi-weekly priority cleanup.
+26. **Lawn Treatment Applications**: Basic=2, Premium=4, Executive=7 — shown with "Applications" label in comparison table.
+27. **Upgrade Details Accordion**: Every upgrade in the wizard has a tappable "View details" accordion showing What/When/Why, powered by centralized metadata in `client/src/data/upgradeDetails.ts`.
+28. **Neighborhood Launch Offer**: Shown on the final quote page. "Invite Your Neighbors" button copies URL with `?ref=neighbor` param.
+29. **Robot Mowing Waitlist**: "Coming Soon: Smart Robot Mowing" teaser on final quote page with email signup form posting to `/api/waitlist`.
+30. **Anniversary Promo Banner**: Dismissible `PromoBanner` component showing "Anniversary Launch Special — ends March 25" with consistent copy across wizard and landing page.
 
 ## External Dependencies
 

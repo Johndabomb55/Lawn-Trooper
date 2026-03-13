@@ -4,22 +4,25 @@ interface ValueMeterProps {
   planId: string;
 }
 
-const METER_CONFIG: Record<string, { percent: number; description: string; colorClass: string; bgClass: string }> = {
+const METER_CONFIG: Record<string, { percent: number; label: string; description: string; colorClass: string; bgClass: string }> = {
   basic: {
     percent: 45,
-    description: "Reliable bi-weekly maintenance with essential upgrades.",
+    label: "Essential Care",
+    description: "Keeps the HOA off your back and handles the basics.",
     colorClass: "bg-primary",
     bgClass: "bg-primary/20",
   },
   premium: {
     percent: 75,
-    description: "Weekly service, account manager, and landscape allowance.",
+    label: "Complete Care",
+    description: "Covers most of your yard so you rarely have to worry about it.",
     colorClass: "bg-amber-500",
     bgClass: "bg-amber-500/20",
   },
   executive: {
     percent: 100,
-    description: "Full-service turf defense, dedicated manager, and premier allowance.",
+    label: "Total Care",
+    description: "Full-property attention for homeowners who want the closest thing to perfection.",
     colorClass: "bg-emerald-600",
     bgClass: "bg-emerald-600/20",
   },
@@ -32,8 +35,8 @@ export default function ValueMeter({ planId }: ValueMeterProps) {
   return (
     <div data-testid={`value-meter-${planId}`} className="w-full space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold text-muted-foreground">Total Property Coverage</span>
-        <span className="font-bold text-foreground">{config.percent}%</span>
+        <span className="font-semibold text-muted-foreground">Property Care Level</span>
+        <span className="font-bold text-foreground">{config.label}</span>
       </div>
       <div className={`h-2 rounded-full overflow-hidden ${config.bgClass}`}>
         <div

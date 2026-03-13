@@ -394,39 +394,77 @@ export default function LandingPage() {
         <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
+          {/* Trust Line */}
+          <div className="text-center mb-6">
+            <p className="text-lg font-semibold text-[#0f2f1a]">Trusted by North Alabama homeowners for 25+ years</p>
+            <p className="text-sm text-[#1a3d24]">Licensed &bull; Insured &bull; Satisfaction Guaranteed</p>
+          </div>
+
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#0f2f1a] mb-4">
-              Service <span className="text-amber-500">Deployment</span> Levels
+              Choose Your <span className="text-amber-500">Lawn Care</span> Plan
             </h2>
             <p className="text-[#1a3d24] text-lg font-bold max-w-2xl mx-auto tracking-wide">
               Transparent pricing. Simple annual plans. No hidden fees.
             </p>
           </div>
+
+          {/* One-stop-shop messaging */}
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <p className="text-base text-[#1a3d24] leading-relaxed">
+              We're not just a mower on a trailer. <span className="font-bold text-[#0f2f1a]">Lawn Trooper is a complete property maintenance service.</span> No matter which plan you choose, we help keep your yard looking sharp so you don't have to worry about it.
+            </p>
+          </div>
           
-          {/* Alabama Yards Gallery — order matches plan builder: Basic, Premium, Executive */}
+          {/* Plan Cards with pricing info */}
           <div className="mb-16">
-            <h3 className="text-center text-xl font-bold text-[#0f2f1a] mb-6">
-              Examples of Maintained Tennessee Valley Yards
-            </h3>
             <div className="grid md:grid-cols-3 gap-4">
-              <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
-                <img src={imgAlabamaYardBasic} alt="Athens, AL - Basic Patrol - Middle class Alabama home with nice landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Athens, AL - Basic Patrol</span>
+              <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-white/20">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={imgAlabamaYardBasic} alt="Athens, AL - Basic Patrol - Middle class Alabama home with nice landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="bg-white p-4 text-center">
+                  <h3 className="font-heading font-bold text-lg text-primary">Basic Patrol</h3>
+                  <p className="text-sm text-muted-foreground">Starting at $169/mo</p>
+                  <p className="text-xs font-semibold text-primary/80 mt-1">Essential Care Plan</p>
+                  <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
+                    <span className="text-xs font-bold text-amber-800">Founder's Birthday Bonus: +1 Basic Upgrade</span>
+                  </div>
                 </div>
               </div>
-              <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
-                <img src={imgAlabamaYardPremium} alt="Huntsville, AL - Premium Patrol - Southern home front yard" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Huntsville, AL - Premium Patrol</span>
+              <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-amber-400/40">
+                <div className="absolute top-2 right-2 z-10 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">Most Popular</div>
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={imgAlabamaYardPremium} alt="Huntsville, AL - Premium Patrol - Southern home front yard" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="bg-white p-4 text-center">
+                  <h3 className="font-heading font-bold text-lg text-primary">Premium Patrol</h3>
+                  <p className="text-sm text-muted-foreground">Starting at $299/mo</p>
+                  <p className="text-xs font-semibold text-amber-600 mt-1">Most Popular Plan</p>
+                  <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
+                    <span className="text-xs font-bold text-amber-800">Founder's Birthday Bonus: +1 Basic Upgrade</span>
+                  </div>
                 </div>
               </div>
-              <div className="relative group overflow-hidden rounded-xl aspect-[16/10] shadow-lg border-2 border-white/20">
-                <img src={imgAlabamaYardExecutive} alt="Madison, AL - Executive Command - Beautiful Alabama home with landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold">Madison, AL - Executive Command</span>
+              <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-accent/30">
+                <div className="absolute top-2 right-2 z-10 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">Best Value</div>
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={imgAlabamaYardExecutive} alt="Madison, AL - Executive Command - Beautiful Alabama home with landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="bg-white p-4 text-center">
+                  <h3 className="font-heading font-bold text-lg text-primary">Executive Command</h3>
+                  <p className="text-sm text-muted-foreground">Starting at $399/mo</p>
+                  <p className="text-xs font-semibold text-accent mt-1">Total Care Plan</p>
+                  <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
+                    <span className="text-xs font-bold text-amber-800">Founder's Birthday Bonus: +1 Premium Upgrade</span>
+                  </div>
                 </div>
               </div>
+            </div>
+            <div className="text-center mt-6">
+              <Button onClick={() => scrollToSection('quote')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
+                Compare Plans
+              </Button>
             </div>
           </div>
 
@@ -493,7 +531,7 @@ export default function LandingPage() {
                   <input 
                     type="tel" 
                     data-testid="input-hoa-phone"
-                    placeholder="(256) 555-0000"
+                    placeholder="(256) 795-2949"
                     className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
@@ -698,7 +736,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol is bi-weekly mowing with 2 Basic Upgrades and a Dedicated Account Manager. Premium Patrol is weekly mowing with 3 Basic + 1 Premium Upgrades, bed weed control, a Dedicated Account Manager, and a Seasonal Landscape Refresh Allowance\u2122. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Basic + 3 Premium Upgrades, a Dedicated Account Manager, and Premier Landscape Allowance\u2122."
+                  a: "Basic Patrol is bi-weekly mowing with 2 Basic Upgrades and standard support. Premium Patrol is weekly mowing with 3 Basic + 1 Premium Upgrades, bed weed control, priority support, and a Seasonal Landscape Refresh Allowance\u2122. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Basic + 3 Premium Upgrades, a dedicated account manager, and Premier Landscape Allowance\u2122."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
@@ -848,7 +886,11 @@ export default function LandingPage() {
               <h4 className="font-bold text-lg mb-6 text-accent">Headquarters</h4>
               <p className="text-primary-foreground/80 mb-4">Athens, AL</p>
               <div className="space-y-4 text-primary-foreground/80">
-                <div className="flex items-center gap-3 mt-6">
+                <div className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 shrink-0 text-accent" />
+                  <a href="tel:256-795-2949" className="hover:text-white transition-colors">256-795-2949</a>
+                </div>
+                <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />
                   <a href="mailto:John@lawn-trooper.com" className="hover:text-white transition-colors">John@lawn-trooper.com</a>
                 </div>
