@@ -83,7 +83,7 @@ SERVICE DETAILS
 Yard Size: ${yardData?.label} (${quoteData.yardSize} Acre)
 Service Plan: ${planData?.name}
 
-BUNDLED UPGRADES
+SELECTED UPGRADES
 ----------------
 Basic Upgrades (${quoteData.basicAddons.length}):
 ${quoteData.basicAddons.map(id => {
@@ -196,7 +196,7 @@ Contact: John@lawn-trooper.com | (256) 795-2949
           {/* Selected Upgrades */}
           {(quoteData.basicAddons.length > 0 || quoteData.premiumAddons.length > 0) && (
             <div className="border-t border-primary/10 pt-4 mb-4">
-              <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Bundled Upgrades</span>
+              <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Selected Upgrades</span>
               <div className="flex flex-wrap gap-1.5">
                 {quoteData.basicAddons.map(id => {
                   const addon = BASIC_ADDONS.find(a => a.id === id);

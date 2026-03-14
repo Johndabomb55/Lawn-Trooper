@@ -121,15 +121,97 @@ const PREMIUM_UPGRADE_EXAMPLES = [
   "Full yard cleanout"
 ];
 
-function UpgradeExamplesAccordion() {
+const MOBILE_PLAN_CARDS_SW = [
+  {
+    id: "basic" as const,
+    name: "Basic Patrol",
+    badge: null,
+    careLevel: "Essential Care",
+    mowing: "Bi-weekly mowing",
+    treatments: "2 lawn treatments",
+    totalUpgrades: 2,
+    breakdown: "2 Basic upgrades",
+    bonus: "+1 upgrade",
+  },
+  {
+    id: "premium" as const,
+    name: "Premium Patrol",
+    badge: "Most Popular",
+    careLevel: "Complete Care",
+    mowing: "Weekly mowing",
+    treatments: "4 lawn treatments",
+    totalUpgrades: 4,
+    breakdown: "3 Basic + 1 Premium",
+    bonus: "+1 upgrade",
+  },
+  {
+    id: "executive" as const,
+    name: "Executive Command",
+    badge: "Best Value",
+    careLevel: "Total Care",
+    mowing: "Weekly mowing",
+    treatments: "7 lawn treatments",
+    totalUpgrades: 6,
+    breakdown: "3 Basic + 3 Premium",
+    bonus: "+1 Premium upgrade",
+  },
+];
+
+function MobileComparisonCards() {
+  return (
+    <div className="space-y-3 md:hidden" data-testid="mobile-comparison-cards">
+      {MOBILE_PLAN_CARDS_SW.map((p) => (
+        <div key={p.id} className={`rounded-xl border-2 p-4 ${p.id === 'executive' ? 'border-accent/60 bg-accent/5' : p.id === 'premium' ? 'border-primary/60 bg-primary/5' : 'border-border bg-muted/20'}`}>
+          <div className="flex items-center justify-between mb-2">
+            <h4 className={`font-bold text-base ${p.id === 'executive' ? 'text-accent' : 'text-primary'}`}>{p.name}</h4>
+            {p.badge && (
+              <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${p.id === 'executive' ? 'bg-accent/20 text-accent' : 'bg-primary/20 text-primary'}`}>
+                {p.badge}
+              </span>
+            )}
+          </div>
+          <div className="space-y-1.5 text-sm">
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-600 shrink-0" />
+              <span>{p.careLevel}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-600 shrink-0" />
+              <span>{p.mowing}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-600 shrink-0" />
+              <span>{p.treatments}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-600 shrink-0" />
+              <span className="font-medium">{p.totalUpgrades} upgrades included</span>
+            </div>
+            <div className="text-xs text-muted-foreground ml-6">{p.breakdown}</div>
+          </div>
+          <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${p.id === 'executive' ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Birthday Bonus</div>
+            <div className={`text-xs font-bold ${p.id === 'executive' ? 'text-accent' : 'text-primary'}`}>{p.bonus}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function UpgradeFlexibilitySection() {
   const [open, setOpen] = React.useState(false);
   return (
-    <div className="mt-3">
+    <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-4" data-testid="upgrade-flexibility-section">
+      <div className="text-center mb-2">
+        <h5 className="text-sm font-bold text-primary">Flexible Upgrade System</h5>
+        <p className="text-xs text-muted-foreground">Choose the upgrades your yard needs.</p>
+      </div>
       <button
         type="button"
         data-testid="upgrade-examples-toggle"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-xs text-primary font-medium hover:underline mx-auto"
+        className="flex items-center gap-1.5 text-xs text-primary font-medium hover:underline mx-auto mt-1"
       >
         <Info className="w-3.5 h-3.5" />
         View upgrade examples
@@ -137,8 +219,8 @@ function UpgradeExamplesAccordion() {
       </button>
       {open && (
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-muted/40 rounded-lg p-3 border border-border">
-            <h6 className="text-xs font-bold text-primary mb-2">Basic upgrade examples</h6>
+          <div className="bg-background/80 rounded-lg p-3 border border-border">
+            <h6 className="text-xs font-bold text-primary mb-2">Basic upgrades may include</h6>
             <ul className="space-y-1">
               {BASIC_UPGRADE_EXAMPLES.map((ex) => (
                 <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
@@ -148,8 +230,8 @@ function UpgradeExamplesAccordion() {
               ))}
             </ul>
           </div>
-          <div className="bg-muted/40 rounded-lg p-3 border border-border">
-            <h6 className="text-xs font-bold text-accent mb-2">Premium upgrade examples</h6>
+          <div className="bg-background/80 rounded-lg p-3 border border-border">
+            <h6 className="text-xs font-bold text-accent mb-2">Premium upgrades may include</h6>
             <ul className="space-y-1">
               {PREMIUM_UPGRADE_EXAMPLES.map((ex) => (
                 <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
@@ -159,11 +241,11 @@ function UpgradeExamplesAccordion() {
               ))}
             </ul>
           </div>
-          <p className="text-[10px] text-muted-foreground italic sm:col-span-2 text-center">
-            These are examples only — you'll choose your upgrades in the next step.
-          </p>
         </div>
       )}
+      <div className="mt-3 text-center">
+        <p className="text-xs font-medium text-primary/80">Trade 2 Basic upgrades for 1 Premium upgrade anytime.</p>
+      </div>
     </div>
   );
 }
@@ -295,7 +377,7 @@ export default function StreamlinedWizard() {
   };
 
   const getSlotRequirementMessage = () => {
-    if (plan === "basic") return `Choose your ${effectiveBasicAllowance} bundled upgrade${effectiveBasicAllowance === 1 ? "" : "s"}`;
+    if (plan === "basic") return `Choose your ${effectiveBasicAllowance} Basic upgrade${effectiveBasicAllowance === 1 ? "" : "s"}`;
     if (plan === "premium") return `Choose your ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"}`;
     return `Choose your ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"}`;
   };
@@ -602,9 +684,12 @@ export default function StreamlinedWizard() {
                 <p className="text-xs text-muted-foreground/70 mt-1">Licensed • Insured • Satisfaction Guaranteed</p>
               </div>
 
-              {/* Feature comparison matrix */}
-              <div className="bg-muted/30 rounded-xl border border-border overflow-x-auto">
-                <table className="w-full text-sm min-w-[480px]">
+              {/* Mobile comparison cards */}
+              <MobileComparisonCards />
+
+              {/* Desktop comparison table */}
+              <div className="hidden md:block bg-muted/30 rounded-xl border border-border overflow-x-auto">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border">
                       <th className="text-left py-3 px-3 text-muted-foreground font-medium">Feature</th>
@@ -688,19 +773,22 @@ export default function StreamlinedWizard() {
                         <div className="mt-2 pt-2 border-t border-border/50 space-y-1">
                           <div className="text-xs text-foreground/85 flex items-center gap-1.5">
                             <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                            <span>Includes {p.allowance.basic} Bundled Upgrade{p.allowance.basic === 1 ? '' : 's'}</span>
+                            <span className="font-medium">Includes {p.allowance.basic + p.allowance.premium} upgrade{(p.allowance.basic + p.allowance.premium) === 1 ? '' : 's'}</span>
                           </div>
-                          {p.allowance.premium > 0 && (
-                            <div className="text-xs text-accent/90 flex items-center gap-1.5">
-                              <Star className="w-3.5 h-3.5 fill-accent shrink-0" />
-                              <span>+ {p.allowance.premium} Premium Upgrade{p.allowance.premium === 1 ? '' : 's'}</span>
+                          {p.allowance.premium > 0 ? (
+                            <div className="text-[11px] text-muted-foreground ml-5">
+                              {p.allowance.basic} Basic + {p.allowance.premium} Premium
+                            </div>
+                          ) : (
+                            <div className="text-[11px] text-muted-foreground ml-5">
+                              {p.allowance.basic} Basic upgrade{p.allowance.basic === 1 ? '' : 's'}
                             </div>
                           )}
                           <div className={`mt-1.5 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Birthday Bonus</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Birthday Bonus</div>
                             <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
                             <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
-                              {isExecutive ? '+1 Premium Upgrade' : '+1 Bundled Upgrade'}
+                              {isExecutive ? '+1 Premium upgrade' : '+1 upgrade'}
                             </div>
                           </div>
                         </div>
@@ -735,7 +823,7 @@ export default function StreamlinedWizard() {
               </div>
 
               {/* View Upgrade Examples */}
-              <UpgradeExamplesAccordion />
+              <UpgradeFlexibilitySection />
             </motion.div>
           )}
 
@@ -749,7 +837,7 @@ export default function StreamlinedWizard() {
               className="space-y-4"
             >
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-2">Pick Your Bundled Upgrades</h3>
+                <h3 className="text-2xl font-bold text-primary mb-2">Choose Your Upgrades</h3>
                 <p className="text-muted-foreground text-sm">
                   Pick the upgrades that fit your property best. Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
                 </p>
@@ -767,7 +855,7 @@ export default function StreamlinedWizard() {
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <div className="font-medium text-sm">Upgrade Conversion</div>
-                      <div className="text-xs text-muted-foreground">Convert 2 Bundled → 1 Premium</div>
+                      <div className="text-xs text-muted-foreground">Trade 2 Basic → 1 Premium</div>
                     </div>
                     <div className="text-right text-xs">
                       <div className="font-bold text-primary">{effectiveBasicAllowance}B</div>

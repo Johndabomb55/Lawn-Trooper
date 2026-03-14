@@ -663,11 +663,11 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    '3 Bundled + 1 Premium Upgrades',
+    '4 upgrades (3 Basic + 1 Premium)',
   ],
   executive: [
     'Executive Turf Defense\u2122 — up to 7 applications/year',
     'Weed-Free Turf Guarantee (progressive improvement)',
-    '3 Bundled + 3 Premium Upgrades',
+    '6 upgrades (3 Basic + 3 Premium)',
   ],
 };

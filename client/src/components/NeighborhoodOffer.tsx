@@ -14,7 +14,7 @@ export default function NeighborhoodOffer() {
       setTimeout(() => setCopied(false), 2000);
       toast({
         title: "Link Copied!",
-        description: "Share this link with your neighbors to unlock a free bundled upgrade.",
+        description: "Share this link with your neighbors to unlock a free upgrade.",
       });
     }).catch(() => {
       toast({
@@ -34,7 +34,7 @@ export default function NeighborhoodOffer() {
         <div>
           <h4 className="font-bold text-primary text-lg" data-testid="text-neighborhood-title">Neighborhood Launch Offer</h4>
           <p className="text-sm text-muted-foreground mt-1" data-testid="text-neighborhood-desc">
-            Lawn Trooper is expanding service routes in your area. When 3 homes nearby join Lawn Trooper, everyone receives an extra bundled upgrade.
+            Lawn Trooper is expanding service routes in your area. When 3 homes nearby join Lawn Trooper, everyone receives an extra upgrade.
           </p>
         </div>
       </div>

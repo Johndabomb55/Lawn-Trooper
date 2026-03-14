@@ -82,10 +82,10 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
   },
   {
     category: "Service",
-    feature: "Bundled upgrades included",
-    basic: "2 Bundled",
-    premium: "3 Bundled + 1 Premium",
-    executive: "3 Bundled + 3 Premium",
+    feature: "Total upgrades included",
+    basic: "2 upgrades",
+    premium: "4 upgrades (3B + 1P)",
+    executive: "6 upgrades (3B + 3P)",
   },
 
   {

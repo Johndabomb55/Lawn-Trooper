@@ -61,11 +61,11 @@ function buildPlansFromConfig(): PlanDefinition[] {
         { label: "Upgrades", value: "2 Basic" },
         { label: "Dream Yard", value: "AI Recon" }
       ],
-      description: "Includes: 2 Bundled Upgrades",
+      description: "Includes 2 upgrades",
       features: [
         "Mowing: Bi-weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Monthly property check",
-        "<span class='font-bold text-primary'>2 Bundled Upgrades included</span>",
+        "<span class='font-bold text-primary'>2 upgrades included</span>",
         "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
         "Flower bed weed control (included)",
         "Turf Applications: Not Included (Premium & Executive)",
@@ -79,16 +79,16 @@ function buildPlansFromConfig(): PlanDefinition[] {
         { label: "Off-Season", value: "Bi-Weekly" },
         { label: "Upgrades", value: "3B + 1P" }
       ],
-      description: "Includes: 3 Bundled + 1 Premium Upgrades",
+      description: "Includes 4 upgrades (3 Basic + 1 Premium)",
       features: [
         "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Bi-weekly service",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-primary'>3 Bundled + 1 Premium Upgrades included</span>",
+        "<span class='font-bold text-primary'>4 upgrades included (3 Basic + 1 Premium)</span>",
         "Service Photo Updates",
         "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
-        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Bundled Upgrades → 1 Premium Upgrade</span>"
+        "<span class='text-xs text-muted-foreground'>Trade 2 Basic upgrades for 1 Premium upgrade anytime</span>"
       ]
     },
     executive: {
@@ -98,26 +98,27 @@ function buildPlansFromConfig(): PlanDefinition[] {
         { label: "Turf Defense", value: "7 Apps/Year" },
         { label: "Upgrades", value: "3B + 3P" }
       ],
-      description: "Includes: 3 Bundled + 3 Premium Upgrades",
+      description: "Includes 6 upgrades (3 Basic + 3 Premium)",
       features: [
         "<span class='font-bold text-accent'>Year-Round Weekly Property Monitoring</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
         "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-accent'>3 Bundled + 3 Premium Upgrades included</span>",
+        "<span class='font-bold text-accent'>6 upgrades included (3 Basic + 3 Premium)</span>",
         "Service Photo Updates",
         "<span class='font-bold text-accent'>Priority Storm Service</span>",
         "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
-        "<span class='text-xs text-muted-foreground'>Upgrade option: Convert 2 Bundled Upgrades → 1 Premium Upgrade</span>"
+        "<span class='text-xs text-muted-foreground'>Trade 2 Basic upgrades for 1 Premium upgrade anytime</span>"
       ]
     }
   };
 
   return PLAN_CONFIGS.map((c) => {
     const override = uiOverrides[c.id];
+    const totalSlots = c.basicSlots + c.premiumSlots;
     const allowanceLabel = c.premiumSlots === 0
-      ? `${c.basicSlots} Bundled Upgrades`
-      : `${c.basicSlots} Bundled + ${c.premiumSlots} Premium Upgrades`;
+      ? `${totalSlots} upgrades`
+      : `${totalSlots} upgrades (${c.basicSlots} Basic + ${c.premiumSlots} Premium)`;
     return {
       id: c.id as PlanId,
       name: c.name,
@@ -130,7 +131,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
       allowance: { basic: c.basicSlots, premium: c.premiumSlots },
       allowsSwap: c.allowConversion,
       allowanceLabel,
-      swapLabel: c.allowConversion ? "Convert 2 Bundled → 1 Premium" : undefined,
+      swapLabel: c.allowConversion ? "Trade 2 Basic → 1 Premium" : undefined,
     };
   });
 }
@@ -522,7 +523,7 @@ export const getExecutiveSwapOptions = (asOf: Date = new Date()) => getSwapOptio
 
 export const SWAP_OPTIONS = [
   { value: 0, label: "No swap" },
-  { value: 1, label: "Convert 2 Bundled → 1 Premium" }
+  { value: 1, label: "Trade 2 Basic → 1 Premium" }
 ];
 
 // Acre multipliers for pricing: 20% increase per yard size tier

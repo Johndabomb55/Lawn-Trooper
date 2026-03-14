@@ -428,7 +428,7 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground">Starting at $169/mo</p>
                   <p className="text-xs font-semibold text-primary/80 mt-1">Essential Care Plan</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">Birthday Bonus: +1 Bundled Upgrade</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Birthday Bonus: +1 upgrade</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -445,7 +445,7 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground">Starting at $299/mo</p>
                   <p className="text-xs font-semibold text-amber-600 mt-1">Most Popular Plan</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">Birthday Bonus: +1 Bundled Upgrade</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Birthday Bonus: +1 upgrade</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -462,7 +462,7 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground">Starting at $399/mo</p>
                   <p className="text-xs font-semibold text-accent mt-1">Total Care Plan</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">Birthday Bonus: +1 Premium Upgrade</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Birthday Bonus: +1 Premium upgrade</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -741,11 +741,11 @@ export default function LandingPage() {
               {[
                 {
                   q: "What does the Basic Patrol plan include?",
-                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly property checks in the off-season, 2 Bundled Upgrades, and a Dream Yard Recon\u2122 AI landscape plan. You can also convert 2 Bundled Upgrades into 1 Premium Upgrade."
+                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly property checks in the off-season, 2 upgrades, and a Dream Yard Recon\u2122 AI landscape plan."
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol is bi-weekly mowing with 2 Bundled Upgrades and standard support. Premium Patrol is weekly mowing with 3 Bundled + 1 Premium Upgrades, bed weed control, and priority support. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 3 Bundled + 3 Premium Upgrades, and a dedicated account manager."
+                  a: "Basic Patrol is bi-weekly mowing with 2 upgrades and standard support. Premium Patrol is weekly mowing with 4 upgrades (3 Basic + 1 Premium), bed weed control, and priority support. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 6 upgrades (3 Basic + 3 Premium), and a dedicated account manager."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
@@ -757,7 +757,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "Can I convert Basic Upgrades to Premium?",
-                  a: "Yes. Premium and Executive plans allow you to convert 2 Bundled Upgrades into 1 Premium Upgrade, giving you flexibility to choose higher-tier services."
+                  a: "Yes. Premium and Executive plans allow you to trade 2 Basic upgrades for 1 Premium upgrade, giving you flexibility to choose higher-tier services."
                 },
                 {
                   q: "Do I have to sign a contract?",

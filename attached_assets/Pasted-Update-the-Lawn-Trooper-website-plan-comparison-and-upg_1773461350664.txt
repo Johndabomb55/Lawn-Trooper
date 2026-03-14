@@ -1,0 +1,148 @@
+Update the Lawn Trooper website plan comparison and upgrade messaging to improve clarity, mobile usability, and perceived value.
+
+IMPORTANT:
+Do NOT break layout, styling, responsiveness, animations, forms, routing, or pricing logic.
+
+Maintain the premium design and strong yard imagery.
+
+GOALS:
+1. Fix mobile comparison usability
+2. Clarify bundled upgrade structure
+3. Advertise upgrade flexibility
+4. Increase perceived value
+5. Keep the UI clean and simple
+
+----------------------------------
+
+1. MOBILE COMPARISON FIX
+
+Replace the horizontal scrolling plan comparison table on mobile devices with vertically stacked comparison cards.
+
+Each card should show:
+
+Plan Name  
+Care Level  
+Mowing Frequency  
+Lawn Treatments  
+Total Upgrades Included  
+Birthday Bonus
+
+Example structure:
+
+Basic Patrol  
+Essential Care  
+Bi-weekly mowing  
+2 lawn treatments  
+2 Basic upgrades included  
+Birthday Bonus: +1 upgrade
+
+Premium Patrol (Most Popular)  
+Complete Care  
+Weekly mowing  
+4 lawn treatments  
+4 upgrades included  
+3 Basic + 1 Premium  
+Birthday Bonus: +1 upgrade
+
+Executive Command (Best Value)  
+Total Care  
+Weekly mowing  
+7 lawn treatments  
+5 upgrades included  
+3 Basic + 2 Premium  
+Birthday Bonus: +1 Premium upgrade
+
+Desktop may keep the comparison table.
+
+----------------------------------
+
+2. CLARIFY UPGRADE LANGUAGE
+
+Replace wording like:
+
+“3 bundled upgrades + 1 premium upgrade”
+
+with clearer wording:
+
+“Includes 4 upgrades”
+
+Then list the types:
+
+3 Basic upgrades  
+1 Premium upgrade
+
+Premium upgrades should still appear visually distinct.
+
+----------------------------------
+
+3. ADVERTISE UPGRADE FLEXIBILITY
+
+Add a small section near the plan cards that explains:
+
+Flexible Upgrade System
+
+Choose the upgrades your yard needs.
+
+Basic upgrades may include:
+
+- hedge trimming  
+- mulch refresh  
+- trash can cleaning  
+- gutter cleaning  
+- mosquito control  
+- weed control
+
+Premium upgrades may include:
+
+- pressure washing  
+- aeration and dethatching  
+- house soft wash  
+- seasonal lighting  
+- tree trimming  
+- yard cleanup
+
+Then show this clearly:
+
+Trade 2 Basic upgrades for 1 Premium upgrade anytime.
+
+----------------------------------
+
+4. BIRTHDAY BONUS WORDING
+
+Change wording to:
+
+25-Year Birthday Bonus
+
+Subtext:
+
+Celebrating 25 years of Lawn Trooper
+
+Basic: +1 upgrade  
+Premium: +1 upgrade  
+Executive: +1 premium upgrade
+
+----------------------------------
+
+5. MAINTAIN PLAN SIMPLICITY
+
+Keep the plan cards visually simple.
+
+Avoid listing individual services directly on the plan cards.
+
+Upgrade examples should appear in a hover or expandable section only.
+
+----------------------------------
+
+6. VERIFY
+
+After implementing changes verify:
+
+Mobile plan comparison works without horizontal scrolling
+
+Upgrade flexibility message appears clearly
+
+Birthday Bonus appears on all plan cards
+
+Desktop layout remains unchanged
+
+Forms, quote builder, and animations still function

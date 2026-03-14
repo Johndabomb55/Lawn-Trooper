@@ -314,7 +314,7 @@ export default function PlanDetailsPanel({
                     Upgrade Conversion
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    Trade 2 Bundled slots for 1 Premium slot
+                    Trade 2 Basic for 1 Premium
                   </div>
                 </div>
               </div>
@@ -329,7 +329,7 @@ export default function PlanDetailsPanel({
                       : "border-primary/30 bg-background hover:border-primary/50 text-foreground"
                   }`}
                 >
-                  +2 Bundled ← 1 Premium
+                  +2 Basic ← 1 Premium
                 </button>
                 <div className="flex items-center px-2 text-xs font-bold text-primary">
                   {swapCount > 0 ? `${swapCount}×` : "0"}
@@ -344,7 +344,7 @@ export default function PlanDetailsPanel({
                       : "border-primary bg-primary/10 hover:bg-primary/20 text-primary"
                   }`}
                 >
-                  2 Bundled → +1 Premium
+                  2 Basic → +1 Premium
                 </button>
               </div>
             </div>
