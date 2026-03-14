@@ -1,0 +1,389 @@
+Update the Lawn Trooper website, plan builder, and promotional messaging to make the experience clearer, more premium, more flexible, and more conversion-focused.
+
+IMPORTANT:
+- Do NOT break layout, styling, responsiveness, forms, animations, routing, pricing logic, or existing functionality.
+- Preserve the military-inspired premium brand voice.
+- Preserve the strong yard imagery and polished optics.
+- The site should feel like Lawn Trooper is helping customers choose the best plan for their yard, not forcing them into rigid packages.
+- Keep the experience simple, high-value, trustworthy, and easy to understand for first-time visitors.
+
+MAIN GOALS:
+1. Keep the beautiful visual plan cards and imagery.
+2. Make the plans easy to understand.
+3. Remove confusion around upgrades and promotions.
+4. Highlight strong bundled value without exposing internal pricing strategy.
+5. Make the promotions feel real, valuable, and professional.
+6. Keep the UI clean, motivating, and premium.
+
+==================================================
+1. PLAN STRUCTURE AND MESSAGING
+==================================================
+
+Keep the visual plan cards with yard imagery.
+
+Use this plan structure and wording consistently:
+
+Basic Patrol
+Essential Care
+Starting at $169/mo
+
+Premium Patrol
+Most Popular
+Starting at $299/mo
+
+Executive Command
+Best Value
+Starting at $399/mo
+
+Do NOT overload the cards with too much text.
+
+==================================================
+2. REMOVE CONFUSING CREDIT / ALLOWANCE LANGUAGE
+==================================================
+
+Remove any remaining language related to:
+- Landscape Allowance
+- Seasonal Refresh allowance
+- Premier Allowance
+- Credits
+- Landscape Credits
+
+Do NOT show this concept on the website in this version.
+
+==================================================
+3. BUNDLED UPGRADES LANGUAGE
+==================================================
+
+Use the word “Upgrade” consistently throughout the site.
+Do NOT use “Add-on” unless it is absolutely required somewhere technical that cannot be changed.
+
+In plan cards and comparison sections, use this exact bundled upgrade structure:
+
+Basic Patrol
+Includes 2 Bundled Upgrades
+
+Premium Patrol
+Includes 3 Bundled Upgrades + 1 Premium Upgrade
+
+Executive Command
+Includes 3 Bundled Upgrades + 2 Premium Upgrades
+
+Where useful, clarify elsewhere in the builder that:
+2 bundled upgrades may be exchanged for 1 premium upgrade
+
+Keep this clean and easy to scan.
+
+==================================================
+4. REMOVE PRE-SELECTED UPGRADE CONFUSION
+==================================================
+
+Remove any sections on plan cards that show specific pre-selected upgrades.
+Remove wording like:
+- Pre-selected upgrades
+- Swap in next step
+
+Customers should not feel locked into mulch, trash can cleaning, gutter cleaning, or any other specific service just because they see it on a card.
+
+==================================================
+5. ADD UPGRADE EXAMPLES IN A LIGHTWEIGHT WAY
+==================================================
+
+Add a small “View upgrade examples” interaction on the plan cards.
+
+This can be:
+- a hover tooltip
+- a click-to-expand popover
+- a compact accordion
+
+It should feel elegant and not clutter the design.
+
+Use example wording like:
+
+Basic upgrade examples
+- Shrub / hedge trimming
+- Mulch refresh
+- Quarterly trash can cleaning
+- Gutter cleaning
+- Mosquito control
+- Additional weed control
+
+Premium upgrade examples
+- Pressure wash package
+- House soft wash
+- Aeration and dethatching
+- Seasonal lighting
+- Tree trimming
+- Full yard cleanup
+
+IMPORTANT:
+- Make it clear these are examples only.
+- Make it clear customers choose their upgrades later.
+- Do NOT make these look automatically included.
+
+==================================================
+6. MULCH WORDING FIX
+==================================================
+
+Do NOT describe mulch using hard quantity limits like:
+- 4 yards of mulch
+- up to X yards
+
+Instead, use more professional and flexible wording such as:
+- Seasonal mulch refresh
+- Mulch refresh for standard landscape beds
+- Seasonal mulch refresh for common bed areas
+
+This prevents customers from feeling shorted if they need less, and avoids problems on very large beds.
+
+==================================================
+7. SUPPORT LEVELS
+==================================================
+
+Use this exact support progression:
+
+Basic: Standard support
+Premium: Priority support
+Executive: Dedicated account manager
+
+==================================================
+8. PROPERTY CARE LEVELS
+==================================================
+
+Use this exact property care structure:
+
+Property Care Level
+
+Basic: Essential Care
+Description: Keeps the HOA off your back and handles the basics.
+
+Premium: Complete Care
+Description: Covers most of your yard so you rarely have to worry about it.
+
+Executive: Total Care
+Description: Full-property attention for homeowners who want the closest thing to perfection.
+
+Keep this clean and professional.
+
+==================================================
+9. TABLE / COMPARISON CONTENT
+==================================================
+
+Ensure the comparison table includes these corrected values:
+
+Growing Season Mowing Frequency
+Basic: Bi-weekly
+Premium: Weekly
+Executive: Weekly
+
+Lawn Treatment Applications
+Basic: 2 Applications
+Premium: 4 Applications
+Executive: 7 Applications
+
+DreamYard Recon
+All plans: AI-generated plan + personalized review
+
+Service Photo Updates
+Included for all three plans
+
+Fall Leaf Control
+Basic: Bi-weekly
+Premium: Bi-weekly
+Executive: Bi-weekly priority cleanup
+
+Reorder rows so that:
+- shared features appear first
+- then Premium/Executive differences
+- then Executive-only advantages
+
+==================================================
+10. ANNIVERSARY / BIRTHDAY BONUS PROMOTION
+==================================================
+
+Use the alliterative phrase:
+
+Birthday Bonus
+
+But make it clear that it is tied to the company’s 25-year milestone, not a person’s literal birthday.
+
+Preferred wording:
+
+Birthday Bonus
+Celebrating 25 years of Lawn Trooper
+
+Show the bonus clearly on each plan card in a tasteful, premium way.
+
+Use this bonus structure:
+
+Basic:
++1 Bundled Upgrade
+
+Premium:
++1 Bundled Upgrade
+
+Executive:
++1 Premium Upgrade
+
+This should be easy to notice and especially make the Executive plan feel high value.
+
+If a deadline is shown, use March 25 consistently.
+
+Preferred supporting line:
+Get your quote in before March 25 to qualify for the Birthday Bonus.
+
+Do NOT require the site language to imply immediate purchase if that is not operationally ideal.
+The wording should allow the bonus to be honored for customers who complete their quote before the deadline.
+
+==================================================
+11. SEPARATE THE TWO PROMOTIONS CLEARLY
+==================================================
+
+There are two different promotions and they should not compete or blur together.
+
+Promotion 1:
+Birthday Bonus
+This is the extra upgrade.
+
+Promotion 2:
+Commitment Savings
+This is the free month(s) for longer commitments.
+
+Keep these clearly separated in the UI and messaging.
+
+Do NOT merge them into one confusing offer.
+
+==================================================
+12. FREE MONTHS / COMMITMENT SAVINGS
+==================================================
+
+Make the free month promotion more visible, but not gimmicky.
+
+Use professional wording such as:
+- Commitment Savings
+- Annual Commitment Savings
+- Receive 1 free month with annual service
+- Receive additional savings with longer commitments
+
+Make sure this value is visible enough on plan cards or in the commitment section so customers understand they are saving real money.
+
+Do NOT make it feel spammy.
+Do NOT let it overpower the main plan structure.
+
+==================================================
+13. PLAN PICKER / CONFIRMATION STEP
+==================================================
+
+Keep the plan visuals inside the builder because they help justify the price and improve emotional engagement.
+
+However, make the step feel like guidance instead of duplicate selection.
+
+Use wording like:
+Confirm the plan that fits your yard best
+
+Do NOT make the user feel like they are starting over or choosing the same thing twice.
+
+==================================================
+14. MICROCOPY IMPROVEMENTS
+==================================================
+
+Replace strict wording like:
+Select exactly 2 upgrades
+
+with softer, more customer-friendly wording like:
+Choose your bundled upgrades
+
+Use this helpful tone throughout the builder.
+
+The overall feel should be:
+safe
+helpful
+flexible
+professional
+premium
+local but polished
+
+==================================================
+15. TRUST MESSAGING
+==================================================
+
+Keep or add this trust line above the plans section:
+
+Trusted by North Alabama homeowners for 25+ years
+Licensed • Insured • Satisfaction Guaranteed
+
+Also make sure the site tone supports:
+We’re not just a guy with a mower.
+Lawn Trooper is a complete property maintenance service.
+No matter which plan you choose, we help keep your yard looking sharp so you don’t have to worry about it.
+
+Polish wording if needed, but preserve the meaning.
+
+==================================================
+16. PHONE NUMBER CONSISTENCY
+==================================================
+
+Use this phone number consistently across the site:
+
+256-795-2949
+
+Replace outdated, placeholder, or inconsistent numbers in all customer-facing areas.
+
+==================================================
+17. FORMS AND FINAL PAGE
+==================================================
+
+Do NOT break:
+- the main quote request form
+- the HOA form
+- the Smart Robot Mowing waitlist
+- the final confirmation page
+- the download quote summary feature if currently working
+
+Keep the final page reassuring and professional.
+
+==================================================
+18. AD / LANDING PAGE ALIGNMENT
+==================================================
+
+Make sure the website messaging aligns with ad concepts like:
+
+Do you have weeds?
+We can spray them, keep your grass cut, refresh your mulch, trim your bushes, and help keep your yard maintained year-round.
+
+Use “refresh your mulch” language instead of hard mulch quantity promises.
+
+The website should support this broad value message without over-explaining every included detail on the first screen.
+
+==================================================
+19. UI / UX PRIORITIES
+==================================================
+
+The site should reach these goals:
+- simplicity
+- strong bundled value
+- beautiful optics
+- motivating visuals
+- easy first-time understanding
+- curiosity that encourages clicks
+- flexibility without confusion
+
+Keep the visuals strong and premium.
+Do not flatten the design into something boring.
+Do not clutter the cards with too much text.
+
+==================================================
+20. FINAL QA
+==================================================
+
+After implementing, verify:
+- all buttons still work
+- all anchors still work
+- wizard flow still works
+- forms still submit
+- mobile layout still works
+- hover/click interactions work cleanly
+- no styling breaks
+- no accidental price changes
+- no accidental logic changes
+- no promo contradictions
+- Birthday Bonus and Commitment Savings are clearly distinct

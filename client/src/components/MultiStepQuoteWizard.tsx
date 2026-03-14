@@ -145,7 +145,7 @@ const formSchema = z.object({
 
 const BASIC_UPGRADE_EXAMPLES = [
   "Shrub / hedge trimming",
-  "Basic mulch install",
+  "Seasonal mulch refresh",
   "Quarterly trash can cleaning",
   "Gutter cleaning",
   "Mosquito control",
@@ -699,6 +699,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-6">
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose the Best Fit for Your Yard</h4>
                     <p className="text-muted-foreground">We'll help you find the right plan for your property. Trusted by North Alabama homeowners for 25+ years.</p>
+                    <p className="text-sm text-muted-foreground/70 mt-1">Licensed • Insured • Satisfaction Guaranteed</p>
                   </div>
 
                   {/* Feature comparison matrix */}
@@ -797,18 +798,19 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           <div className="mt-3 space-y-1.5">
                             <div className="text-xs text-foreground/85 flex items-center gap-1.5">
                               <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                              <span>Includes {p.allowance.basic} Basic Bundled Upgrade{p.allowance.basic === 1 ? '' : 's'}</span>
+                              <span>Includes {p.allowance.basic} Bundled Upgrade{p.allowance.basic === 1 ? '' : 's'}</span>
                             </div>
                             {p.allowance.premium > 0 && (
                               <div className="text-xs text-accent/90 flex items-center gap-1.5">
                                 <Star className="w-3.5 h-3.5 fill-accent shrink-0" />
-                                <span>Includes {p.allowance.premium} Premium Bundled Upgrade{p.allowance.premium === 1 ? '' : 's'}</span>
+                                <span>+ {p.allowance.premium} Premium Upgrade{p.allowance.premium === 1 ? '' : 's'}</span>
                               </div>
                             )}
                             <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-                              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Founder's Birthday Bonus</div>
-                              <div className={`text-xs font-bold mt-0.5 ${isExecutive ? 'text-accent' : 'text-primary'}`}>
-                                {isExecutive ? '+1 Premium Upgrade' : '+1 Basic Upgrade'}
+                              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Birthday Bonus</div>
+                              <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
+                              <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
+                                {isExecutive ? '+1 Premium Upgrade' : '+1 Bundled Upgrade'}
                               </div>
                             </div>
                           </div>
@@ -916,7 +918,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <div className="font-medium text-sm">Upgrade Conversion</div>
-                          <div className="text-xs text-muted-foreground">Convert 2 Basic → 1 Premium</div>
+                          <div className="text-xs text-muted-foreground">Convert 2 Bundled → 1 Premium</div>
                         </div>
                         <div className="text-right text-xs">
                           <div className="font-bold text-primary">{allowance.basic}B</div>

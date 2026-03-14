@@ -81,11 +81,11 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
     executive: "Dedicated account manager",
   },
   {
-    category: "Allowance",
+    category: "Service",
     feature: "Bundled upgrades included",
-    basic: "2 Basic",
-    premium: "3 Basic + 1 Premium",
-    executive: "3 Basic + 3 Premium",
+    basic: "2 Bundled",
+    premium: "3 Bundled + 1 Premium",
+    executive: "3 Bundled + 3 Premium",
   },
 
   {

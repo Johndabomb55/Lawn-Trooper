@@ -31,7 +31,7 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Fills in bare spots, chokes out weeds naturally, and creates a thicker, more resilient lawn over time."
   },
   mulch_install_4yards: {
-    title: "Basic Mulch Install (Up to 4 Yards)",
+    title: "Seasonal Mulch Refresh",
     what: "Mulch installation for defined garden or bed areas. Includes brown, red, black hardwood or pine bark mulch with delivery and installation.",
     when: "Typically installed in spring to refresh beds for the growing season, or in fall to protect root systems over winter.",
     why: "Refreshes landscape appearance, retains soil moisture, regulates soil temperature, and suppresses weed growth in beds."

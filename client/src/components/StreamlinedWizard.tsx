@@ -105,7 +105,7 @@ function InfoPopup({ open, onClose, title, content }: InfoPopupProps) {
 
 const BASIC_UPGRADE_EXAMPLES = [
   "Shrub / hedge trimming",
-  "Basic mulch install",
+  "Seasonal mulch refresh",
   "Quarterly trash can cleaning",
   "Gutter cleaning",
   "Mosquito control",
@@ -599,6 +599,7 @@ export default function StreamlinedWizard() {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose the Best Fit for Your Yard</h3>
                 <p className="text-muted-foreground text-sm">We'll help you find the right plan. All plans include mowing, edging, trimming, and blowing.</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">Licensed • Insured • Satisfaction Guaranteed</p>
               </div>
 
               {/* Feature comparison matrix */}
@@ -687,18 +688,19 @@ export default function StreamlinedWizard() {
                         <div className="mt-2 pt-2 border-t border-border/50 space-y-1">
                           <div className="text-xs text-foreground/85 flex items-center gap-1.5">
                             <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                            <span>Includes {p.allowance.basic} Basic Bundled Upgrade{p.allowance.basic === 1 ? '' : 's'}</span>
+                            <span>Includes {p.allowance.basic} Bundled Upgrade{p.allowance.basic === 1 ? '' : 's'}</span>
                           </div>
                           {p.allowance.premium > 0 && (
                             <div className="text-xs text-accent/90 flex items-center gap-1.5">
                               <Star className="w-3.5 h-3.5 fill-accent shrink-0" />
-                              <span>Includes {p.allowance.premium} Premium Bundled Upgrade{p.allowance.premium === 1 ? '' : 's'}</span>
+                              <span>+ {p.allowance.premium} Premium Upgrade{p.allowance.premium === 1 ? '' : 's'}</span>
                             </div>
                           )}
                           <div className={`mt-1.5 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Founder's Birthday Bonus</div>
-                            <div className={`text-xs font-bold mt-0.5 ${isExecutive ? 'text-accent' : 'text-primary'}`}>
-                              {isExecutive ? '+1 Premium Upgrade' : '+1 Basic Upgrade'}
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Birthday Bonus</div>
+                            <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
+                            <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
+                              {isExecutive ? '+1 Premium Upgrade' : '+1 Bundled Upgrade'}
                             </div>
                           </div>
                         </div>
@@ -765,7 +767,7 @@ export default function StreamlinedWizard() {
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <div className="font-medium text-sm">Upgrade Conversion</div>
-                      <div className="text-xs text-muted-foreground">Convert 2 Basic → 1 Premium</div>
+                      <div className="text-xs text-muted-foreground">Convert 2 Bundled → 1 Premium</div>
                     </div>
                     <div className="text-right text-xs">
                       <div className="font-bold text-primary">{effectiveBasicAllowance}B</div>
@@ -1278,7 +1280,7 @@ export default function StreamlinedWizard() {
                         <div className="mt-3 ml-4 space-y-2">
                           {/* Anniversary Commitment Bonus Section */}
                           <div className="p-2 bg-primary/5 border border-primary/20 rounded-lg">
-                            <div className="text-xs font-bold text-primary mb-1">Commitment Bonus</div>
+                            <div className="text-xs font-bold text-primary mb-1">Commitment Savings</div>
                             <div className="text-[10px] text-muted-foreground space-y-0.5">
                               <div className="flex justify-between"><span>1-Year:</span><span>+1 complimentary month</span></div>
                               <div className="flex justify-between"><span>2-Year:</span><span>+3 complimentary months</span></div>
