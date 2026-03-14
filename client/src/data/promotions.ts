@@ -43,7 +43,7 @@ export interface Promotion {
 // Stacking caps
 export const PROMO_CAPS = {
   maxPercentOff: 30,
-  maxFreeMonths: 7,  // Max during anniversary sale: 2-Year PIF (6) + 1 anniversary month
+  maxFreeMonths: 6,  // Max: 2-Year PIF = 6 complimentary months
 };
 
 // Enrollment bonus metadata - single deadline March 25
@@ -51,11 +51,11 @@ export const BIRTHDAY_BONUS = {
   endDate: new Date('2026-03-25T23:59:59'),  // Enroll by March 25: +1 month
   tier1EndDate: new Date('2026-03-25T23:59:59'),  // Legacy alias
   tier2EndDate: new Date('2026-03-25T23:59:59'),  // Legacy alias (same as tier1)
-  bonusMonths: 1,  // +1 bonus month if enrolled by March 25
-  tier1Months: 1,  // Legacy alias
+  bonusMonths: 0,  // Bonus months are not used in current offer structure
+  tier1Months: 0,  // Legacy alias
   tier2Months: 0,  // No second tier
-  marketingName: '25th Anniversary Free Month Sale',
-  formalName: '25th Anniversary Free Month Sale',
+  marketingName: '25-Year Anniversary Client Rewards',
+  formalName: '25-Year Anniversary Client Rewards',
 };
 
 // Legacy alias
@@ -155,8 +155,7 @@ export const COMMITMENT_TERMS = [
 export function calculateTermFreeMonths(term: '1-year' | '2-year', payInFull: boolean): number {
   const commitmentBase = term === '1-year' ? 1 : 3;
   const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
-  const anniversaryMonths = getBirthdayBonus().months;
-  return commitmentMonths + anniversaryMonths;
+  return commitmentMonths;
 }
 
 // Legacy alias for backward compatibility
@@ -184,8 +183,8 @@ export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boo
 } {
   const commitmentBase = term === '1-year' ? 1 : 3;
   const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
-  const anniversaryBonus = getBirthdayBonus().months;
-  const total = commitmentMonths + anniversaryBonus;
+  const anniversaryBonus = 0;
+  const total = commitmentMonths;
 
   return {
     commitmentBase,
@@ -403,7 +402,7 @@ export function getApplicablePromotions(
     if (freeMonthsBreakdown.anniversaryBonus > 0) {
       const anniversaryPromo: Promotion = {
         id: 'anniversary_enrollment_bonus',
-        title: '25th Anniversary Free Month Sale',
+        title: '25-Year Anniversary Client Rewards',
         shortDescription: `+${freeMonthsBreakdown.anniversaryBonus} complimentary months`,
         type: 'termFreeMonths',
         stackGroup: 'freeMonths',
@@ -641,19 +640,19 @@ export const SEGMENT_OPTIONS = [
 ];
 
 // Recommended add-ons by plan and season (IDs must exist in ADDON_CATALOG)
-// Pre-selected defaults per plan (slot counts must match: Basic 3B/0P, Premium 2B+2P, Executive 3B+3P)
+// Pre-selected defaults per plan (slot counts must match: Basic 3B/0P, Premium 3B+1P, Executive 3B+2P)
 export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: string[] }> = {
   basic: {
     basic: ['extra_weed_control', 'gutter_cleaning', 'mulch_install_4yards'],
     premium: [],
   },
   premium: {
-    basic: ['mulch_install_4yards', 'gutter_cleaning'],
-    premium: ['aeration_dethatching', 'premium_pressure_wash'],
+    basic: ['mulch_install_4yards', 'gutter_cleaning', 'extra_weed_control'],
+    premium: ['aeration_dethatching'],
   },
   executive: {
     basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning'],
-    premium: ['premium_pressure_wash', 'aeration_dethatching', 'christmas_lights_premium'],
+    premium: ['premium_pressure_wash', 'aeration_dethatching'],
   },
   "executive+": {
     basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning', 'extra_weed_control'],
@@ -665,11 +664,11 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    '4 upgrades (2 Basic + 2 Premium)',
+    '4 upgrades (3 Basic + 1 Premium)',
   ],
   executive: [
     'Executive Turf Defense\u2122 — up to 7 applications/year',
     'Weed-Free Turf Guarantee (progressive improvement)',
-    '6 upgrades (3 Basic + 3 Premium)',
+    '5 upgrades (3 Basic + 2 Premium)',
   ],
 };

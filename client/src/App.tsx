@@ -20,6 +20,7 @@ function Router() {
       <Route path="/full" component={LandingPage} />
       <Route path="/promotions" component={PromotionsPage} />
       <Route path="/embed" component={EmbedWizard} />
+      <Route path="/quote-wizard" component={QuoteWizardPage} />
       <Route path="/quotewizard" component={QuoteWizardPage} />
       <Route path="/privacy-policy" component={PrivacyPolicyPage} />
       <Route path="/terms-of-service" component={TermsOfServicePage} />

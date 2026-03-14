@@ -138,7 +138,7 @@ const MOBILE_PLAN_CARDS_SW = [
     treatments: "2 lawn treatments",
     totalUpgrades: 3,
     breakdown: "Includes 3 Basic upgrades",
-    bonus: "+1 complimentary month",
+    bonus: "25-Year Client Rewards",
   },
   {
     id: "premium" as const,
@@ -148,8 +148,8 @@ const MOBILE_PLAN_CARDS_SW = [
     mowing: "Weekly mowing",
     treatments: "4 lawn treatments",
     totalUpgrades: 4,
-    breakdown: "Includes 2 Basic upgrades and 2 Premium upgrades",
-    bonus: "+1 complimentary month",
+    breakdown: "Includes 3 Basic upgrades + 1 Premium upgrade",
+    bonus: "25-Year Client Rewards",
   },
   {
     id: "executive" as const,
@@ -158,9 +158,9 @@ const MOBILE_PLAN_CARDS_SW = [
     careLevel: "Total Care",
     mowing: "Weekly mowing",
     treatments: "7 lawn treatments",
-    totalUpgrades: 6,
-    breakdown: "Includes 3 Basic upgrades and 3 Premium upgrades",
-    bonus: "+1 complimentary month",
+    totalUpgrades: 5,
+    breakdown: "Includes 3 Basic upgrades + 2 Premium upgrades",
+    bonus: "25-Year Client Rewards",
   },
 ];
 
@@ -196,7 +196,7 @@ function MobileComparisonCards() {
             </div>
           </div>
           <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${p.id === 'executive' ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25th Anniversary Free Month Sale</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Anniversary Client Rewards</div>
             <div className={`text-xs font-bold ${p.id === 'executive' ? 'text-accent' : 'text-primary'}`}>{p.bonus}</div>
           </div>
         </div>
@@ -250,7 +250,7 @@ function UpgradeFlexibilitySection() {
         </div>
       )}
       <div className="mt-3 text-center">
-        <p className="text-xs font-medium text-primary/80">Premium and Executive plans can exchange 2 Basic upgrades for 1 Premium upgrade.</p>
+        <p className="text-xs font-medium text-primary/80">2 Basic upgrades can be exchanged for 1 Premium upgrade.</p>
       </div>
     </div>
   );
@@ -782,7 +782,7 @@ export default function StreamlinedWizard() {
                             <span className="font-medium">{formatIncludedUpgradeCopy(p.allowance.basic, p.allowance.premium)}</span>
                           </div>
                           <div className={`mt-1.5 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25th Anniversary Free Month Sale</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Anniversary Client Rewards</div>
                             <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
                             <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
                               +1 complimentary month

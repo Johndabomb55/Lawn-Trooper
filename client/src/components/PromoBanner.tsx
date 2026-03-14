@@ -23,10 +23,10 @@ export default function PromoBanner() {
         </div>
         <div>
           <h4 className="font-bold text-amber-900 text-base" data-testid="text-promo-title">
-            25th Anniversary Free Month Sale — Ends March 25
+            25-Year Anniversary Client Rewards
           </h4>
           <p className="text-sm text-amber-800 mt-1" data-testid="text-promo-details">
-            Limited-time offer: +1 complimentary month with enrollment by March 25. Commitment months still apply, and pay in full doubles commitment months.
+            1-Year Plan includes 1 complimentary month, 2-Year Plan includes 3 complimentary months, and pay in full doubles your complimentary months.
           </p>
         </div>
       </div>
