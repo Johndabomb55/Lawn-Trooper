@@ -1,0 +1,70 @@
+Update the Lawn Trooper website to simplify the upgrade structure and improve mobile usability.
+
+GOALS:
+1. Make upgrade counts easy to understand by using “total upgrades included” with a clear breakdown of basic and premium upgrades.
+2. Show that 2 basic upgrades can be exchanged for 1 premium upgrade in a clearly visible way.
+3. Replace horizontal scrolling plan comparison on mobile with vertically stacked cards.
+4. Maintain current premium visuals and tone.
+
+CHANGES TO IMPLEMENT:
+
+### 1. Simplify upgrade messaging
+
+For each plan card (Basic, Premium, Executive), replace confusing wording like:
+
+- “3 bundled upgrades + 1 premium upgrade”
+
+with a single line that shows **total upgrades** and a breakdown:
+
+- **Total Upgrades: 4**  
+  - 3 Basic  
+  - 1 Premium
+
+For Basic and Executive, adjust numbers accordingly (Basic: 3 total upgrades; Executive: 5 total upgrades, etc.).
+
+If the “Birthday Bonus” applies, show it after the base count, e.g. “+1 upgrade with Anniversary Bonus” (keep consistent with earlier updates).
+
+### 2. Add a “Trade 2 Basic = 1 Premium” note
+
+Include a clear rule somewhere near the plan cards or in a separate line under the upgrade count:
+
+- **Customize Your Plan:**  
+  2 Basic upgrades may be exchanged for 1 Premium upgrade.
+
+Make this visible in both mobile and desktop views (small italic text or tooltip).
+
+### 3. Optional: Introduce upgrade credits
+
+Consider describing upgrades as “credits” to simplify further. For example:
+
+- Basic plan includes **3 upgrade credits** (each Basic upgrade costs 1 credit, each Premium upgrade costs 2 credits).  
+- Premium plan includes **4 upgrade credits**.  
+- Executive plan includes **5 upgrade credits**.
+
+Add a note that unused credits can be rolled forward or applied to other upgrades (if true in your process). This is optional but helps unify the concept.
+
+### 4. Improve mobile plan comparison
+
+Replace the horizontal comparison table on mobile with a **stacked layout**. Each plan card should stack vertically so that all three plans are fully visible without horizontal scrolling:
+
+- Plan name  
+- Care level and mowing frequency  
+- Lawn treatments  
+- Total upgrades (with breakdown)  
+- Anniversary Bonus line
+
+Desktop can retain the current table.
+
+### 5. Keep premium tone
+
+Do not remove the yard imagery, trust line, or the 25-year anniversary language. Keep the polished design and reassuring messages.
+
+### 6. QA and verification
+
+After changes, confirm:
+
+- The upgrade counts display correctly for all plans.  
+- The trade-in rule appears clearly.  
+- Mobile view no longer scrolls horizontally.  
+- All forms and flows still work.  
+- No unintended styling or logic changes.
