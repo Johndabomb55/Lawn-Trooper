@@ -429,7 +429,7 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground">Starting at $169/mo</p>
                   <p className="text-xs font-semibold text-primary/80 mt-1">Includes 3 Basic upgrades</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25th Anniversary Free Month Sale: +1 complimentary month</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -444,9 +444,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Premium Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $299/mo</p>
-                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 2 Basic upgrades and 2 Premium upgrades</p>
+                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 3 Basic upgrades + 1 Premium upgrade</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25th Anniversary Free Month Sale: +1 complimentary month</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -461,9 +461,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Executive Command</h3>
                   <p className="text-sm text-muted-foreground">Starting at $399/mo</p>
-                  <p className="text-xs font-semibold text-accent mt-1">Includes 3 Basic upgrades and 3 Premium upgrades</p>
+                  <p className="text-xs font-semibold text-accent mt-1">Includes 3 Basic upgrades + 2 Premium upgrades</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25th Anniversary Free Month Sale: +1 complimentary month</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -474,7 +474,7 @@ export default function LandingPage() {
             <div className="mt-5 mx-auto max-w-2xl rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
               <p className="text-sm font-bold text-primary">Flexible Upgrade System</p>
               <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
-              <p className="text-xs font-medium text-primary/90 mt-1">Premium and Executive plans can exchange 2 Basic upgrades for 1 Premium upgrade.</p>
+              <p className="text-xs font-medium text-primary/90 mt-1">2 Basic upgrades can be exchanged for 1 Premium upgrade.</p>
             </div>
             <div className="text-center mt-6">
               <Button onClick={() => scrollToSection('plans')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
@@ -751,11 +751,11 @@ export default function LandingPage() {
               {[
                 {
                   q: "What does the Basic Patrol plan include?",
-                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly property checks in the off-season, 3 Basic upgrades, and a Dream Yard Recon\u2122 AI landscape plan."
+                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Basic upgrades, and a Dream Yard Recon\u2122 landscape plan."
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol is bi-weekly mowing with 3 Basic upgrades and standard support. Premium Patrol is weekly mowing with 2 Basic upgrades and 2 Premium upgrades, plus priority support. Executive Command includes year-round weekly monitoring, advanced turf defense (up to 7 applications), additional seasonal attention, 3 Basic upgrades and 3 Premium upgrades, plus priority service scheduling and dedicated account manager support."
+                  a: "Basic Patrol includes bi-weekly mowing with 3 Basic upgrades. Premium Patrol includes weekly mowing, 3 Basic upgrades, and 1 Premium upgrade. Executive Command includes year-round weekly monitoring, up to 7 turf applications, 3 Basic upgrades, and 2 Premium upgrades with dedicated account-manager support."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
@@ -767,15 +767,31 @@ export default function LandingPage() {
                 },
                 {
                   q: "Can I convert Basic Upgrades to Premium?",
-                  a: "Yes. Premium and Executive plans can exchange 2 Basic upgrades for 1 Premium upgrade, giving you flexibility to prioritize the services your property needs most."
+                  a: "Yes. You can exchange 2 Basic upgrades for 1 Premium upgrade, giving you flexibility to prioritize the services your property needs most."
                 },
                 {
                   q: "Do I have to sign a contract?",
-                  a: `We offer 1-year and 2-year subscription terms. ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY}`
+                  a: `We offer 1-year and 2-year subscriptions (no month-to-month plan at this time). ${GLOBAL_CONSTANTS.CONSULTATION_REFUND_POLICY}`
                 },
                 {
                   q: "How does billing work?",
-                  a: "Billing is automated monthly through Jobber Payments. You receive customer login details by email to manage your account. Complimentary months are applied at the end of your agreement term."
+                  a: "Billing runs monthly through Jobber Payments. You receive customer login details by email to manage your account, and any complimentary months are applied as credits at the end of your agreement term."
+                },
+                {
+                  q: "How do complimentary months work?",
+                  a: "1-year plans include 1 complimentary month, 2-year plans include 3, and paying in full doubles those commitment months. Complimentary months are applied as account credits at the end of your term."
+                },
+                {
+                  q: "Can existing clients use a client code?",
+                  a: "Yes. Existing clients can enter their client code during quote submission. Final eligibility and adjustments are confirmed by your account manager."
+                },
+                {
+                  q: "When does an account manager contact me?",
+                  a: "An account manager typically reaches out within 1 business day using your preferred contact method to confirm property details and next steps."
+                },
+                {
+                  q: "What happens after I submit my quote request?",
+                  a: "You will receive confirmation, then your account manager reviews your selections, confirms fit, and helps finalize service details before onboarding."
                 },
                 {
                   q: "Is the price guaranteed?",
@@ -790,8 +806,8 @@ export default function LandingPage() {
                   a: "If weather prevents service, we reschedule as soon as conditions allow, typically within one to two days."
                 },
                 {
-                  q: "Can I switch plans later?",
-                  a: "Yes. You can upgrade or adjust plans at any time; a plan change starts a new subscription term at the new rate."
+                  q: "Can I change my plan after enrollment?",
+                  a: "Yes. Plan changes are available and are reviewed with your account manager. Approved changes begin a new subscription term at the updated rate."
                 },
                 {
                   q: "What if I need to cancel early?",
@@ -799,7 +815,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "I am an existing customer. Do loyalty discounts still apply?",
-                  a: GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY
+                  a: `${GLOBAL_CONSTANTS.EXISTING_CUSTOMER_LOYALTY} You can also provide your client code in the quote form so your account manager can verify your account.`
                 },
                 {
                   q: "Do you use robots or AI technology?",
