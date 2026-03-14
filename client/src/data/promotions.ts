@@ -43,19 +43,19 @@ export interface Promotion {
 // Stacking caps
 export const PROMO_CAPS = {
   maxPercentOff: 30,
-  maxFreeMonths: 6,  // Max: 2-Year PIF = 6 complimentary months
+  maxFreeMonths: 7,  // Max during anniversary sale: 2-Year PIF (6) + 1 anniversary month
 };
 
 // Enrollment bonus metadata - single deadline March 25
 export const BIRTHDAY_BONUS = {
-  endDate: new Date('2026-03-25T23:59:59'),  // Enroll by March 25: +2 months
+  endDate: new Date('2026-03-25T23:59:59'),  // Enroll by March 25: +1 month
   tier1EndDate: new Date('2026-03-25T23:59:59'),  // Legacy alias
   tier2EndDate: new Date('2026-03-25T23:59:59'),  // Legacy alias (same as tier1)
-  bonusMonths: 2,  // +2 bonus months if enrolled by March 25
-  tier1Months: 2,  // Legacy alias
+  bonusMonths: 1,  // +1 bonus month if enrolled by March 25
+  tier1Months: 1,  // Legacy alias
   tier2Months: 0,  // No second tier
-  marketingName: '2026 Efficiency Enrollment Bonus',
-  formalName: '2026 Efficiency Enrollment Bonus',
+  marketingName: '25th Anniversary Free Month Sale',
+  formalName: '25th Anniversary Free Month Sale',
 };
 
 // Legacy alias
@@ -63,7 +63,7 @@ export const ANNIVERSARY_BONUS = BIRTHDAY_BONUS;
 
 /**
  * Get enrollment bonus status
- * - Enroll by March 25: +2 bonus months
+ * - Enroll by March 25: +1 bonus month
  * - After March 25: +0 bonus months (Concluded)
  * 
  * NOTE: Bonus months are NOT doubled by pay-in-full
@@ -82,7 +82,7 @@ export function getBirthdayBonus(): {
       months: BIRTHDAY_BONUS.bonusMonths,
       tier: 'tier1',
       isActive: true,
-      tierLabel: 'Enroll by Mar 25: +2 months',
+        tierLabel: 'Enroll by Mar 25: +1 complimentary month',
       name: BIRTHDAY_BONUS.marketingName,
     };
   } else {
@@ -150,11 +150,13 @@ export const COMMITMENT_TERMS = [
  * Formula:
  * - 1-Year: +1 complimentary month (PIF doubles to 2)
  * - 2-Year: +3 complimentary months (PIF doubles to 6)
- * - No anniversary stacking, no referral bonus
+ * - Anniversary sale: +1 complimentary month while active (not doubled)
  */
 export function calculateTermFreeMonths(term: '1-year' | '2-year', payInFull: boolean): number {
   const commitmentBase = term === '1-year' ? 1 : 3;
-  return payInFull ? commitmentBase * 2 : commitmentBase;
+  const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
+  const anniversaryMonths = getBirthdayBonus().months;
+  return commitmentMonths + anniversaryMonths;
 }
 
 // Legacy alias for backward compatibility
@@ -166,8 +168,8 @@ export function calculate2YearFreeMonths(payInFull: boolean): number {
  * Get itemized breakdown of complimentary months
  * Useful for displaying in UI
  *
- * Legacy birthday naming maps to commitment bonus terminology.
  * 1-year=1, 2-year=3. Pay-in-full doubles commitment months.
+ * Anniversary sale months are added on top and are not doubled.
  */
 export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boolean): {
   commitmentBase: number;
@@ -182,8 +184,8 @@ export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boo
 } {
   const commitmentBase = term === '1-year' ? 1 : 3;
   const commitmentMonths = payInFull ? commitmentBase * 2 : commitmentBase;
-  const anniversaryBonus = 0;
-  const total = commitmentMonths;
+  const anniversaryBonus = getBirthdayBonus().months;
+  const total = commitmentMonths + anniversaryBonus;
 
   return {
     commitmentBase,
@@ -401,7 +403,7 @@ export function getApplicablePromotions(
     if (freeMonthsBreakdown.anniversaryBonus > 0) {
       const anniversaryPromo: Promotion = {
         id: 'anniversary_enrollment_bonus',
-        title: '25th Anniversary Enrollment Bonus',
+        title: '25th Anniversary Free Month Sale',
         shortDescription: `+${freeMonthsBreakdown.anniversaryBonus} complimentary months`,
         type: 'termFreeMonths',
         stackGroup: 'freeMonths',
@@ -639,19 +641,19 @@ export const SEGMENT_OPTIONS = [
 ];
 
 // Recommended add-ons by plan and season (IDs must exist in ADDON_CATALOG)
-// Pre-selected defaults per plan (slot counts must match: Basic 2B/0P, Premium 3B+1P, Executive 3B+3P)
+// Pre-selected defaults per plan (slot counts must match: Basic 3B/0P, Premium 2B+2P, Executive 3B+3P)
 export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: string[] }> = {
   basic: {
-    basic: ['extra_weed_control', 'gutter_cleaning'],
+    basic: ['extra_weed_control', 'gutter_cleaning', 'mulch_install_4yards'],
     premium: [],
   },
   premium: {
-    basic: ['mulch_install_4yards', 'gutter_cleaning', 'extra_weed_control'],
-    premium: ['aeration_dethatching'],
+    basic: ['mulch_install_4yards', 'gutter_cleaning'],
+    premium: ['aeration_dethatching', 'premium_pressure_wash'],
   },
   executive: {
     basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning'],
-    premium: ['premium_pressure_wash', 'christmas_lights_premium', 'aeration_dethatching'],
+    premium: ['premium_pressure_wash', 'aeration_dethatching', 'christmas_lights_premium'],
   },
   "executive+": {
     basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning', 'extra_weed_control'],
@@ -663,7 +665,7 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    '4 upgrades (3 Basic + 1 Premium)',
+    '4 upgrades (2 Basic + 2 Premium)',
   ],
   executive: [
     'Executive Turf Defense\u2122 — up to 7 applications/year',

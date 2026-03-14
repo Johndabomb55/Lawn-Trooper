@@ -102,11 +102,20 @@ const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
   },
   executive: {
     frequency: "Year-Round Weekly",
-    tagline: "Top-tier weekly command with Turf Defense\u2122.",
+    tagline: "Priority service scheduling with executive-level property care.",
   },
 };
 
 const getAddonName = (id: string) => ADDON_CATALOG.find((a) => a.id === id)?.name ?? id;
+const formatUpgradeMix = (basic: number, premium: number): string => {
+  const basicLabel = `${basic} Basic upgrade${basic === 1 ? "" : "s"}`;
+  if (premium <= 0) return basicLabel;
+  const premiumLabel = `${premium} Premium upgrade${premium === 1 ? "" : "s"}`;
+  return `${basicLabel} and ${premiumLabel}`;
+};
+const formatIncludedUpgradeCopy = (basic: number, premium: number): string => {
+  return `Includes ${formatUpgradeMix(basic, premium)}`;
+};
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -169,9 +178,9 @@ const MOBILE_PLAN_CARDS = [
     careLevel: "Essential Care",
     mowing: "Bi-weekly mowing",
     treatments: "2 lawn treatments",
-    totalUpgrades: 2,
-    breakdown: "2 Basic upgrades",
-    bonus: "+1 upgrade",
+    totalUpgrades: 3,
+    breakdown: "Includes 3 Basic upgrades",
+    bonus: "+1 complimentary month",
     color: "primary" as const,
   },
   {
@@ -182,8 +191,8 @@ const MOBILE_PLAN_CARDS = [
     mowing: "Weekly mowing",
     treatments: "4 lawn treatments",
     totalUpgrades: 4,
-    breakdown: "3 Basic + 1 Premium",
-    bonus: "+1 upgrade",
+    breakdown: "Includes 2 Basic upgrades and 2 Premium upgrades",
+    bonus: "+1 complimentary month",
     color: "primary" as const,
   },
   {
@@ -194,8 +203,8 @@ const MOBILE_PLAN_CARDS = [
     mowing: "Weekly mowing",
     treatments: "7 lawn treatments",
     totalUpgrades: 6,
-    breakdown: "3 Basic + 3 Premium",
-    bonus: "+1 Premium upgrade",
+    breakdown: "Includes 3 Basic upgrades and 3 Premium upgrades",
+    bonus: "+1 complimentary month",
     color: "accent" as const,
   },
 ];
@@ -228,12 +237,11 @@ function MobileComparisonCards() {
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-green-600 shrink-0" />
-              <span className="font-medium">{p.totalUpgrades} upgrades included</span>
+              <span className="font-medium">{p.breakdown}</span>
             </div>
-            <div className="text-xs text-muted-foreground ml-6">{p.breakdown}</div>
           </div>
           <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${p.id === 'executive' ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Birthday Bonus</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25th Anniversary Free Month Sale</div>
             <div className={`text-xs font-bold ${p.id === 'executive' ? 'text-accent' : 'text-primary'}`}>{p.bonus}</div>
           </div>
         </div>
@@ -248,7 +256,7 @@ function UpgradeFlexibilitySection() {
     <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-4" data-testid="upgrade-flexibility-section">
       <div className="text-center mb-2">
         <h5 className="text-sm font-bold text-primary">Flexible Upgrade System</h5>
-        <p className="text-xs text-muted-foreground">Choose the upgrades your yard needs.</p>
+        <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
       </div>
       <button
         type="button"
@@ -287,7 +295,7 @@ function UpgradeFlexibilitySection() {
         </div>
       )}
       <div className="mt-3 text-center">
-        <p className="text-xs font-medium text-primary/80">Trade 2 Basic upgrades for 1 Premium upgrade anytime.</p>
+        <p className="text-xs font-medium text-primary/80">Premium and Executive plans can exchange 2 Basic upgrades for 1 Premium upgrade.</p>
       </div>
     </div>
   );
@@ -886,22 +894,13 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           <div className="mt-3 space-y-1.5">
                             <div className="text-xs text-foreground/85 flex items-center gap-1.5">
                               <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                              <span className="font-medium">Includes {p.allowance.basic + p.allowance.premium} upgrade{(p.allowance.basic + p.allowance.premium) === 1 ? '' : 's'}</span>
+                              <span className="font-medium">{formatIncludedUpgradeCopy(p.allowance.basic, p.allowance.premium)}</span>
                             </div>
-                            {p.allowance.premium > 0 ? (
-                              <div className="text-[11px] text-muted-foreground ml-5">
-                                {p.allowance.basic} Basic + {p.allowance.premium} Premium
-                              </div>
-                            ) : (
-                              <div className="text-[11px] text-muted-foreground ml-5">
-                                {p.allowance.basic} Basic upgrade{p.allowance.basic === 1 ? '' : 's'}
-                              </div>
-                            )}
                             <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-                              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Birthday Bonus</div>
+                              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25th Anniversary Free Month Sale</div>
                               <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
                               <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
-                                {isExecutive ? '+1 Premium upgrade' : '+1 upgrade'}
+                                +1 complimentary month
                               </div>
                             </div>
                           </div>
@@ -964,14 +963,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                   )}
 
-                  {/* Term Selector */}
-                  <TermSelector
-                    term={term}
-                    payUpfront={payUpfront}
-                    onTermChange={setTerm}
-                    onPayUpfrontChange={setPayUpfront}
-                  />
-
                   {/* Savings Panel */}
                   <SavingsPanel
                     baseMonthly={baseMonthlyTotal}
@@ -996,20 +987,23 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Upgrades</h4>
                     <p className="text-muted-foreground">
-                      Pick the upgrades that fit your property best. Your {planData?.name} plan includes {allowance.basic} Basic + {allowance.premium} Premium upgrades at no extra cost.
+                      Choose the upgrades that fit your property best. Your plan includes {formatUpgradeMix(allowance.basic, allowance.premium)} at no extra cost.
                     </p>
+                    {planData?.allowsSwap && (
+                      <p className="text-xs text-muted-foreground mt-1">2 Basic upgrades can be exchanged for 1 Premium upgrade.</p>
+                    )}
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
                     </p>
                   </div>
 
-                  {/* Upgrade Conversion (Swap) - all plans */}
+                  {/* Upgrade Conversion (Swap) - premium/executive plans */}
                   {planData?.allowsSwap && swapOptions.length > 1 && (
                     <div className="bg-primary/5 rounded-lg p-3 border border-primary/20 mb-4">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <div className="font-medium text-sm">Upgrade Conversion</div>
-                          <div className="text-xs text-muted-foreground">Trade 2 Basic → 1 Premium</div>
+                          <div className="text-xs text-muted-foreground">2 Basic upgrades can be exchanged for 1 Premium upgrade</div>
                         </div>
                         <div className="text-right text-xs">
                           <div className="font-bold text-primary">{allowance.basic}B</div>
@@ -1166,6 +1160,13 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
                     <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your FREE property walk-through.</p>
                   </div>
+
+                  <TermSelector
+                    term={term}
+                    payUpfront={payUpfront}
+                    onTermChange={setTerm}
+                    onPayUpfrontChange={setPayUpfront}
+                  />
 
                   {/* Trust Badge */}
                   <TrustBadge variant="full" message={TRUST_MESSAGES.contactStep} />

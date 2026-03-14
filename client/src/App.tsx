@@ -9,6 +9,8 @@ import LandingPage from "@/pages/home";
 import PromotionsPage from "@/pages/promotions";
 import EmbedWizard from "@/pages/embed-wizard";
 import QuoteWizardPage from "@/pages/quote-wizard";
+import PrivacyPolicyPage from "@/pages/privacy-policy";
+import TermsOfServicePage from "@/pages/terms-of-service";
 
 function Router() {
   return (
@@ -19,6 +21,8 @@ function Router() {
       <Route path="/promotions" component={PromotionsPage} />
       <Route path="/embed" component={EmbedWizard} />
       <Route path="/quotewizard" component={QuoteWizardPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicyPage} />
+      <Route path="/terms-of-service" component={TermsOfServicePage} />
       <Route component={NotFound} />
     </Switch>
   );

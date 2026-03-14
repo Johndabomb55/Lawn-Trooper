@@ -74,7 +74,7 @@ export default function SavingsPanel({
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 6 complimentary months).</p>
+                  <p className="text-xs max-w-xs">Maximum discount cap reached (30% off or 7 complimentary months during the sale window).</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

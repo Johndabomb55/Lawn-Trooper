@@ -121,6 +121,13 @@ const PREMIUM_UPGRADE_EXAMPLES = [
   "Full yard cleanout"
 ];
 
+const formatIncludedUpgradeCopy = (basic: number, premium: number): string => {
+  const basicLabel = `${basic} Basic upgrade${basic === 1 ? "" : "s"}`;
+  if (premium <= 0) return `Includes ${basicLabel}`;
+  const premiumLabel = `${premium} Premium upgrade${premium === 1 ? "" : "s"}`;
+  return `Includes ${basicLabel} and ${premiumLabel}`;
+};
+
 const MOBILE_PLAN_CARDS_SW = [
   {
     id: "basic" as const,
@@ -129,9 +136,9 @@ const MOBILE_PLAN_CARDS_SW = [
     careLevel: "Essential Care",
     mowing: "Bi-weekly mowing",
     treatments: "2 lawn treatments",
-    totalUpgrades: 2,
-    breakdown: "2 Basic upgrades",
-    bonus: "+1 upgrade",
+    totalUpgrades: 3,
+    breakdown: "Includes 3 Basic upgrades",
+    bonus: "+1 complimentary month",
   },
   {
     id: "premium" as const,
@@ -141,8 +148,8 @@ const MOBILE_PLAN_CARDS_SW = [
     mowing: "Weekly mowing",
     treatments: "4 lawn treatments",
     totalUpgrades: 4,
-    breakdown: "3 Basic + 1 Premium",
-    bonus: "+1 upgrade",
+    breakdown: "Includes 2 Basic upgrades and 2 Premium upgrades",
+    bonus: "+1 complimentary month",
   },
   {
     id: "executive" as const,
@@ -152,8 +159,8 @@ const MOBILE_PLAN_CARDS_SW = [
     mowing: "Weekly mowing",
     treatments: "7 lawn treatments",
     totalUpgrades: 6,
-    breakdown: "3 Basic + 3 Premium",
-    bonus: "+1 Premium upgrade",
+    breakdown: "Includes 3 Basic upgrades and 3 Premium upgrades",
+    bonus: "+1 complimentary month",
   },
 ];
 
@@ -185,12 +192,11 @@ function MobileComparisonCards() {
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-green-600 shrink-0" />
-              <span className="font-medium">{p.totalUpgrades} upgrades included</span>
+              <span className="font-medium">{p.breakdown}</span>
             </div>
-            <div className="text-xs text-muted-foreground ml-6">{p.breakdown}</div>
           </div>
           <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${p.id === 'executive' ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Birthday Bonus</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25th Anniversary Free Month Sale</div>
             <div className={`text-xs font-bold ${p.id === 'executive' ? 'text-accent' : 'text-primary'}`}>{p.bonus}</div>
           </div>
         </div>
@@ -205,7 +211,7 @@ function UpgradeFlexibilitySection() {
     <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-4" data-testid="upgrade-flexibility-section">
       <div className="text-center mb-2">
         <h5 className="text-sm font-bold text-primary">Flexible Upgrade System</h5>
-        <p className="text-xs text-muted-foreground">Choose the upgrades your yard needs.</p>
+        <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
       </div>
       <button
         type="button"
@@ -244,7 +250,7 @@ function UpgradeFlexibilitySection() {
         </div>
       )}
       <div className="mt-3 text-center">
-        <p className="text-xs font-medium text-primary/80">Trade 2 Basic upgrades for 1 Premium upgrade anytime.</p>
+        <p className="text-xs font-medium text-primary/80">Premium and Executive plans can exchange 2 Basic upgrades for 1 Premium upgrade.</p>
       </div>
     </div>
   );
@@ -294,7 +300,7 @@ export default function StreamlinedWizard() {
   
   // Calculate complimentary service months based on commitment model
   // Commitment months: 1 (1-year) or 3 (2-year) — doubled if pay-in-full
-  // Birthday Bonus terminology maps to commitment months (no extra stacking)
+  // Anniversary sale month is handled in shared commitment/free-month logic.
   const freeMonthsBreakdown = getFreeMonthsBreakdown(term, payInFull);
   const totalFreeMonths = freeMonthsBreakdown.total;
   
@@ -773,22 +779,13 @@ export default function StreamlinedWizard() {
                         <div className="mt-2 pt-2 border-t border-border/50 space-y-1">
                           <div className="text-xs text-foreground/85 flex items-center gap-1.5">
                             <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                            <span className="font-medium">Includes {p.allowance.basic + p.allowance.premium} upgrade{(p.allowance.basic + p.allowance.premium) === 1 ? '' : 's'}</span>
+                            <span className="font-medium">{formatIncludedUpgradeCopy(p.allowance.basic, p.allowance.premium)}</span>
                           </div>
-                          {p.allowance.premium > 0 ? (
-                            <div className="text-[11px] text-muted-foreground ml-5">
-                              {p.allowance.basic} Basic + {p.allowance.premium} Premium
-                            </div>
-                          ) : (
-                            <div className="text-[11px] text-muted-foreground ml-5">
-                              {p.allowance.basic} Basic upgrade{p.allowance.basic === 1 ? '' : 's'}
-                            </div>
-                          )}
                           <div className={`mt-1.5 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Birthday Bonus</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25th Anniversary Free Month Sale</div>
                             <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
                             <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
-                              {isExecutive ? '+1 Premium upgrade' : '+1 upgrade'}
+                              +1 complimentary month
                             </div>
                           </div>
                         </div>
@@ -849,13 +846,13 @@ export default function StreamlinedWizard() {
                 </div>
               )}
 
-              {/* Swap Toggle - Available for all plans with allowsSwap */}
+              {/* Swap Toggle - Available for premium/executive plans with allowsSwap */}
               {selectedPlan?.allowsSwap && swapOptions.length > 1 && (
                 <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <div className="font-medium text-sm">Upgrade Conversion</div>
-                      <div className="text-xs text-muted-foreground">Trade 2 Basic → 1 Premium</div>
+                      <div className="text-xs text-muted-foreground">2 Basic upgrades can be exchanged for 1 Premium upgrade.</div>
                     </div>
                     <div className="text-right text-xs">
                       <div className="font-bold text-primary">{effectiveBasicAllowance}B</div>
@@ -1449,7 +1446,7 @@ export default function StreamlinedWizard() {
                       </div>
                       {freeMonthsBreakdown.anniversaryBonus > 0 && (
                         <div className="flex justify-between">
-                          <span>• Anniversary Bonus:</span>
+                          <span>• Anniversary Sale Bonus:</span>
                           <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
                         </div>
                       )}

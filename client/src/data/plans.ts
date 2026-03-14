@@ -8,11 +8,9 @@ import {
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
   cutoffDate: "2026-03-25T23:59:59", // Sale ends March 25th at 11:59 PM (end of day)
-  saleLabel: "25th Anniversary Sale — Ends March 25th"
+  saleLabel: "25th Anniversary Free Month Sale — Ends March 25th"
 };
 
-// Add-on bonus disabled so included upgrade counts stay consistent across
-// plan cards, comparison table, and wizard selection limits.
 export const ANNIVERSARY_ADDON_BONUS = {
   basicNonExecutive: 0,
   executivePremium: 0,
@@ -58,14 +56,14 @@ function buildPlansFromConfig(): PlanDefinition[] {
       keyStats: [
         { label: "Mowing", value: "Bi-Weekly" },
         { label: "Off-Season", value: "Monthly Check" },
-        { label: "Upgrades", value: "2 Basic" },
+        { label: "Upgrades", value: "3 Basic" },
         { label: "Dream Yard", value: "AI Recon" }
       ],
-      description: "Includes 2 upgrades",
+      description: "Includes 3 Basic upgrades",
       features: [
         "Mowing: Bi-weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Monthly property check",
-        "<span class='font-bold text-primary'>2 upgrades included</span>",
+        "<span class='font-bold text-primary'>Includes 3 Basic upgrades</span>",
         "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
         "Flower bed weed control (included)",
         "Turf Applications: Not Included (Premium & Executive)",
@@ -77,14 +75,14 @@ function buildPlansFromConfig(): PlanDefinition[] {
       keyStats: [
         { label: "Mowing", value: "Weekly" },
         { label: "Off-Season", value: "Bi-Weekly" },
-        { label: "Upgrades", value: "3B + 1P" }
+        { label: "Upgrades", value: "2B + 2P" }
       ],
-      description: "Includes 4 upgrades (3 Basic + 1 Premium)",
+      description: "Includes 2 Basic upgrades and 2 Premium upgrades",
       features: [
         "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Bi-weekly service",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-primary'>4 upgrades included (3 Basic + 1 Premium)</span>",
+        "<span class='font-bold text-primary'>Includes 2 Basic upgrades and 2 Premium upgrades</span>",
         "Service Photo Updates",
         "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
@@ -98,13 +96,13 @@ function buildPlansFromConfig(): PlanDefinition[] {
         { label: "Turf Defense", value: "7 Apps/Year" },
         { label: "Upgrades", value: "3B + 3P" }
       ],
-      description: "Includes 6 upgrades (3 Basic + 3 Premium)",
+      description: "Includes 3 Basic upgrades and 3 Premium upgrades",
       features: [
         "<span class='font-bold text-accent'>Year-Round Weekly Property Monitoring</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
         "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-accent'>6 upgrades included (3 Basic + 3 Premium)</span>",
+        "<span class='font-bold text-accent'>Includes 3 Basic upgrades and 3 Premium upgrades</span>",
         "Service Photo Updates",
         "<span class='font-bold text-accent'>Priority Storm Service</span>",
         "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
@@ -410,21 +408,6 @@ export const OVERAGE_PRICES = {
   premium: 40 // $40/mo per extra premium add-on
 };
 
-export const isAnniversaryPricingEventActive = (asOf: Date = new Date()): boolean => {
-  return asOf <= new Date(PROMO_CONFIG.cutoffDate);
-};
-
-const getAnniversaryBonusForPlan = (planId: string, asOf: Date = new Date()): { basic: number; premium: number } => {
-  if (!isAnniversaryPricingEventActive(asOf)) {
-    return { basic: 0, premium: 0 };
-  }
-
-  return {
-    basic: planId === "executive" ? 0 : ANNIVERSARY_ADDON_BONUS.basicNonExecutive,
-    premium: planId === "executive" ? ANNIVERSARY_ADDON_BONUS.executivePremium : 0,
-  };
-};
-
 // Calculate overage cost
 export const calculateOverageCost = (
   selectedBasic: number,
@@ -443,7 +426,7 @@ export const calculateOverageCost = (
 
 // Helper to get allowance with swap adjustment
 // swapCount: each swap converts 2 Basic slots into 1 Premium slot.
-// Available on ALL plans that have allowConversion: true.
+// Available on plans that have allowConversion: true.
 // executivePlus: adds +1 Basic, +1 Premium (Executive plan only).
 export const getPlanAllowance = (
   planId: string, 
@@ -457,10 +440,6 @@ export const getPlanAllowance = (
 
   let basic = config.basicSlots;
   let premium = config.premiumSlots;
-  const anniversaryBonus = getAnniversaryBonusForPlan(planId, asOf);
-
-  basic += anniversaryBonus.basic;
-  premium += anniversaryBonus.premium;
 
   if (executivePlus && config.executivePlusEligible) {
     basic += EXECUTIVE_PLUS_CONFIG.basicSlotsAdd;
@@ -492,9 +471,19 @@ export const getPlanAllowanceLabel = (
   return `${allowance.basic} Basic Upgrade${allowance.basic === 1 ? "" : "s"} + ${allowance.premium} Premium Upgrade${allowance.premium === 1 ? "" : "s"}`;
 };
 
-// Get swap options for ANY plan (2 Basic → 1 Premium conversion)
+// Get swap options for plans that support conversion (2 Basic → 1 Premium).
 export const getSwapOptions = (planId: string, asOf: Date = new Date(), executivePlus: boolean = false) => {
+  const config = getPlanConfig(planId);
   const baseAllowance = getPlanAllowance(planId, 0, false, asOf, executivePlus);
+  if (!config?.allowConversion) {
+    return [
+      {
+        value: 0,
+        label: `No swap (${baseAllowance.basic} Basic + ${baseAllowance.premium} Premium)`,
+        compactLabel: `${baseAllowance.basic}B + ${baseAllowance.premium}P`,
+      },
+    ];
+  }
   const maxSwaps = Math.floor(baseAllowance.basic / 2);
   const options: Array<{ value: number; label: string; compactLabel: string }> = [];
 

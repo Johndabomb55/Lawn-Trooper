@@ -33,6 +33,7 @@ import {
 } from "@/data/plans";
 import { WHY_DIFFERENT } from "@/data/content";
 import PromoBanner from "@/components/PromoBanner";
+import { Link } from "wouter";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -426,9 +427,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Basic Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $169/mo</p>
-                  <p className="text-xs font-semibold text-primary/80 mt-1">Essential Care Plan</p>
+                  <p className="text-xs font-semibold text-primary/80 mt-1">Includes 3 Basic upgrades</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Birthday Bonus: +1 upgrade</span>
+                    <span className="text-xs font-bold text-amber-800">25th Anniversary Free Month Sale: +1 complimentary month</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -443,9 +444,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Premium Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $299/mo</p>
-                  <p className="text-xs font-semibold text-amber-600 mt-1">Most Popular Plan</p>
+                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 2 Basic upgrades and 2 Premium upgrades</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Birthday Bonus: +1 upgrade</span>
+                    <span className="text-xs font-bold text-amber-800">25th Anniversary Free Month Sale: +1 complimentary month</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -460,9 +461,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Executive Command</h3>
                   <p className="text-sm text-muted-foreground">Starting at $399/mo</p>
-                  <p className="text-xs font-semibold text-accent mt-1">Total Care Plan</p>
+                  <p className="text-xs font-semibold text-accent mt-1">Includes 3 Basic upgrades and 3 Premium upgrades</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Birthday Bonus: +1 Premium upgrade</span>
+                    <span className="text-xs font-bold text-amber-800">25th Anniversary Free Month Sale: +1 complimentary month</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -470,9 +471,18 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+            <div className="mt-5 mx-auto max-w-2xl rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
+              <p className="text-sm font-bold text-primary">Flexible Upgrade System</p>
+              <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
+              <p className="text-xs font-medium text-primary/90 mt-1">Premium and Executive plans can exchange 2 Basic upgrades for 1 Premium upgrade.</p>
+            </div>
             <div className="text-center mt-6">
-              <Button onClick={() => scrollToSection('quote')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
+              <Button onClick={() => scrollToSection('plans')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
                 Compare Plans
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">Review options first, then continue to your instant price builder.</p>
+              <Button onClick={() => scrollToSection('quote')} className="mt-3 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+                Continue to Instant Price
               </Button>
             </div>
           </div>
@@ -741,15 +751,15 @@ export default function LandingPage() {
               {[
                 {
                   q: "What does the Basic Patrol plan include?",
-                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly property checks in the off-season, 2 upgrades, and a Dream Yard Recon\u2122 AI landscape plan."
+                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly property checks in the off-season, 3 Basic upgrades, and a Dream Yard Recon\u2122 AI landscape plan."
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol is bi-weekly mowing with 2 upgrades and standard support. Premium Patrol is weekly mowing with 4 upgrades (3 Basic + 1 Premium), bed weed control, and priority support. Executive Command includes year-round weekly monitoring, Executive Turf Defense\u2122 (up to 7 applications), Weed-Free Turf Guarantee, 6 upgrades (3 Basic + 3 Premium), and a dedicated account manager."
+                  a: "Basic Patrol is bi-weekly mowing with 3 Basic upgrades and standard support. Premium Patrol is weekly mowing with 2 Basic upgrades and 2 Premium upgrades, plus priority support. Executive Command includes year-round weekly monitoring, advanced turf defense (up to 7 applications), additional seasonal attention, 3 Basic upgrades and 3 Premium upgrades, plus priority service scheduling and dedicated account manager support."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
-                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Basic and +1 Premium Upgrade, Quarterly Strategy Sessions, Rapid Response Priority, and enhanced service coverage."
+                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Basic and +1 Premium upgrade, plus quarterly strategy sessions, rapid response priority, advanced turf defense support, and executive-level property care enhancements."
                 },
                 {
                   q: "What is Dream Yard Recon\u2122?",
@@ -757,7 +767,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "Can I convert Basic Upgrades to Premium?",
-                  a: "Yes. Premium and Executive plans allow you to trade 2 Basic upgrades for 1 Premium upgrade, giving you flexibility to choose higher-tier services."
+                  a: "Yes. Premium and Executive plans can exchange 2 Basic upgrades for 1 Premium upgrade, giving you flexibility to prioritize the services your property needs most."
                 },
                 {
                   q: "Do I have to sign a contract?",
@@ -922,8 +932,8 @@ export default function LandingPage() {
               <p className="text-xs italic text-primary-foreground/50">Military-style branding. Landscaping tools only.</p>
             </div>
             <div className="flex gap-8">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>
           </div>
         </div>

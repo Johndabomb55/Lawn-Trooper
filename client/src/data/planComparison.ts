@@ -57,7 +57,7 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
     feature: "Off-season visits",
     basic: "Monthly check",
     premium: "Bi-weekly",
-    executive: "Year-round weekly",
+    executive: "Additional seasonal attention (year-round weekly)",
   },
   {
     category: "Service",
@@ -71,21 +71,21 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
     feature: "Property care level",
     basic: "Essential Care",
     premium: "Complete Care",
-    executive: "Total Care",
+    executive: "Executive-level property care",
   },
   {
     category: "Support",
     feature: "Support level",
     basic: "Standard support",
     premium: "Priority support",
-    executive: "Dedicated account manager",
+    executive: "Priority scheduling + dedicated account manager",
   },
   {
     category: "Service",
     feature: "Total upgrades included",
-    basic: "2 upgrades",
-    premium: "4 upgrades (3B + 1P)",
-    executive: "6 upgrades (3B + 3P)",
+    basic: "3 Basic upgrades",
+    premium: "2 Basic + 2 Premium upgrades",
+    executive: "3 Basic + 3 Premium upgrades",
   },
 
   {

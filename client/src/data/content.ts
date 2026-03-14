@@ -58,7 +58,7 @@ export const PLAN_SUMMARIES = {
       highlights: [
         "Bi-weekly mowing (growing season)",
         "Monthly property check (off-season)",
-        "2 upgrades included",
+        "Includes 3 Basic upgrades",
         "Dream Yard Recon\u2122 — AI landscape plan"
       ]
     },
@@ -70,7 +70,7 @@ export const PLAN_SUMMARIES = {
         "Weekly mowing (growing season)",
         "Bi-weekly off-season service",
         "Flower bed weed control (included)",
-        "4 upgrades included (3 Basic + 1 Premium)",
+        "Includes 2 Basic upgrades and 2 Premium upgrades",
         "Priority Support",
         "Service Photo Updates"
       ]
@@ -83,7 +83,7 @@ export const PLAN_SUMMARIES = {
         "Year-round weekly property monitoring",
         "Executive Turf Defense\u2122 (up to 7 apps/year)",
         "Weed-Free Turf Guarantee",
-        "6 upgrades included (3 Basic + 3 Premium)",
+        "Includes 3 Basic upgrades and 3 Premium upgrades",
         "Dedicated Account Manager",
         "Service Photo Updates"
       ]

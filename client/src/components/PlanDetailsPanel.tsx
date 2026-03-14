@@ -314,7 +314,7 @@ export default function PlanDetailsPanel({
                     Upgrade Conversion
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    Trade 2 Basic for 1 Premium
+                    2 Basic upgrades can be exchanged for 1 Premium upgrade.
                   </div>
                 </div>
               </div>
