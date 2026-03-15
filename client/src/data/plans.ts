@@ -59,11 +59,11 @@ function buildPlansFromConfig(): PlanDefinition[] {
         { label: "Credits", value: "3 Total" },
         { label: "Dream Yard", value: "AI Recon" }
       ],
-      description: "Includes 3 Basic-only maintenance upgrade credits",
+      description: "Includes 3 Basic-only upgrade credits",
       features: [
         "Mowing: Bi-weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Monthly property check",
-        "<span class='font-bold text-primary'>Includes 3 Basic-only maintenance upgrade credits</span>",
+        "<span class='font-bold text-primary'>Includes 3 Basic-only upgrade credits</span>",
         "<span class='font-bold text-primary'>Shrub Care Package:</span> 1 annual visit with trimming, cleanup, clipping removal, and AI shrub assessment",
         "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
         "Flower bed weed control (included)",
@@ -78,17 +78,17 @@ function buildPlansFromConfig(): PlanDefinition[] {
         { label: "Off-Season", value: "Bi-Weekly" },
         { label: "Credits", value: "5 Total" }
       ],
-      description: "Includes 5 total maintenance upgrade credits",
+      description: "Includes 5 total upgrade credits",
       features: [
         "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Bi-weekly service",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-primary'>Includes 5 maintenance upgrade credits (Basic = 1, Premium = 2)</span>",
+        "<span class='font-bold text-primary'>Includes 5 upgrade credits (Basic = 1, Premium = 2)</span>",
         "<span class='font-bold text-primary'>Shrub Care Package Plus:</span> 2 annual shrub-care visits + No Shrub Left Behind initiative",
         "Service Photo Updates",
         "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
-        "<span class='text-xs text-muted-foreground'>Trade anytime: 2 Basic credits = 1 Premium credit (and back)</span>"
+        "<span class='text-xs text-muted-foreground'>2 Basic credits = 1 Premium upgrade</span>"
       ]
     },
     executive: {
@@ -99,18 +99,18 @@ function buildPlansFromConfig(): PlanDefinition[] {
         { label: "Turf Defense", value: "7 Apps/Year" },
         { label: "Credits", value: "9 Total" }
       ],
-      description: "Includes 9 total maintenance upgrade credits",
+      description: "Includes 9 total upgrade credits",
       features: [
         "<span class='font-bold text-accent'>Weekly mowing (growing season) + bi-weekly off-season service</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
         "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-accent'>Includes 9 maintenance upgrade credits (Basic = 1, Premium = 2)</span>",
+        "<span class='font-bold text-accent'>Includes 9 upgrade credits (Basic = 1, Premium = 2)</span>",
         "<span class='font-bold text-accent'>Executive Shrub Command:</span> 3 annual shrub-care visits with proactive climate-stress monitoring",
         "Service Photo Updates",
         "<span class='font-bold text-accent'>Priority Storm Service</span>",
         "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
-        "<span class='text-xs text-muted-foreground'>Trade anytime: 2 Basic credits = 1 Premium credit (and back)</span>"
+        "<span class='text-xs text-muted-foreground'>2 Basic credits = 1 Premium upgrade</span>"
       ]
     }
   };
@@ -118,7 +118,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
   return PLAN_CONFIGS.map((c) => {
     const override = uiOverrides[c.id];
     const totalCredits = c.basicSlots + (c.premiumSlots * 2);
-    const allowanceLabel = `${totalCredits} maintenance upgrade credits (Basic = 1, Premium = 2)`;
+    const allowanceLabel = `${totalCredits} upgrade credits (Basic = 1, Premium = 2)`;
     return {
       id: c.id as PlanId,
       name: c.name,
@@ -131,7 +131,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
       allowance: { basic: c.basicSlots, premium: c.premiumSlots },
       allowsSwap: c.allowConversion,
       allowanceLabel,
-      swapLabel: c.allowConversion ? "2 Basic credits ↔ 1 Premium credit" : undefined,
+      swapLabel: c.allowConversion ? "2 Basic credits = 1 Premium upgrade" : undefined,
     };
   });
 }

@@ -58,14 +58,19 @@ export default function PromoBanner({
           <h4 className={`font-extrabold text-amber-900 ${isSticky ? "text-lg md:text-xl" : "text-base"}`} data-testid="text-promo-title">
             {BIRTHDAY_BONUS.marketingName}
           </h4>
-          <p className="text-sm text-amber-800 mt-1" data-testid="text-promo-details">
-            1-Year Plan includes {COMMITMENT_COPY.oneYearBonus}, 2-Year Plan includes {COMMITMENT_COPY.twoYearBonus}, and {COMMITMENT_COPY.payInFullBonus.toLowerCase()}.
-          </p>
+          <div className="mt-1 space-y-0.5 text-sm text-amber-800" data-testid="text-promo-details">
+            <p>{COMMITMENT_COPY.promoIntro}</p>
+            <p>{COMMITMENT_COPY.oneYearLine}</p>
+            <p>{COMMITMENT_COPY.twoYearLine}</p>
+            <p>{COMMITMENT_COPY.payInFullBonus}</p>
+            <p>{COMMITMENT_COPY.maxLine}</p>
+            <p className="text-xs font-medium text-amber-900">{COMMITMENT_COPY.loyaltyLine}</p>
+          </div>
           {isSticky && (
             <div className="mt-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-amber-900">
                 <Sparkles className="h-4 w-4 text-amber-600" />
-                Anniversary sale is live now - lock in your rewards before checkout.
+                25-Year Anniversary Client Rewards are live now.
               </div>
               <a
                 href={ctaHref}

@@ -128,7 +128,7 @@ export const COMMITMENT_TERMS = [
     months: 12,
     freeMonths: 1,
     badge: '',
-    description: 'Commit to one year and earn +1 complimentary month. Pay monthly or pay in full.',
+    description: 'Choose a longer commitment and receive complimentary service months.',
     shortDescription: '+1 complimentary month',
     allowsPayInFull: true,
   },
@@ -138,7 +138,7 @@ export const COMMITMENT_TERMS = [
     months: 24,
     freeMonths: 3,
     badge: 'Best Value',
-    description: 'Lock in your rate for 2 years and earn +3 complimentary months. Pay monthly or pay in full.',
+    description: 'Choose a longer commitment and receive complimentary service months.',
     shortDescription: '+3 complimentary months',
     allowsPayInFull: true,
   },
@@ -147,7 +147,12 @@ export const COMMITMENT_TERMS = [
 export const COMMITMENT_COPY = {
   oneYearBonus: "+1 complimentary month",
   twoYearBonus: "+3 complimentary months",
-  payInFullBonus: "Pay in full doubles your complimentary months",
+  payInFullBonus: "Pay in full and we'll double your complimentary months.",
+  promoIntro: "Choose a longer commitment and receive complimentary service months.",
+  oneYearLine: "1-Year: 1 complimentary month",
+  twoYearLine: "2-Year: 3 complimentary months",
+  maxLine: "Get up to 6 complimentary months with a 2-year paid-in-full plan.",
+  loyaltyLine: "Existing clients may qualify for loyalty pricing with a client code.",
 };
 
 export interface SavingsSummary {
@@ -662,11 +667,11 @@ export function applyPromotions(
 
 // Trust messaging constants
 export const TRUST_MESSAGES = {
-  ctaTop: "No payment required. This is a FREE Dream Yard Recon request.",
-  contactStep: "No payment required. We never sell your data. An account manager will reach out to schedule a good time for your FREE property walk-through.",
-  confirmation: "Your information is secure. We never sell your data. An account manager will reach out to schedule your FREE property walk-through.",
-  commitment: "Commit to us and we commit to you.",
-  miguelNote: "An account manager will contact you via your preferred method (call, email, or text) to coordinate a good time for your FREE property walk-through and Dream Yard Recon.",
+  ctaTop: "No payment required. This is your Dream Yard Recon request.",
+  contactStep: "No payment required. We never sell your data. An account manager will reach out to schedule a good time for your property walk-through.",
+  confirmation: "Your information is secure. We never sell your data. An account manager will reach out to schedule your property walk-through.",
+  commitment: "Choose a longer commitment and receive complimentary service months.",
+  miguelNote: "An account manager will contact you via your preferred method (call, email, or text) to coordinate a good time for your property walk-through and Dream Yard Recon.",
   referralNudge: "Refer a neighbor — get in touch to learn more.",
 };
 
@@ -703,14 +708,14 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    '5 maintenance upgrade credits (Basic = 1, Premium = 2)',
+    '5 upgrade credits (Basic = 1, Premium = 2)',
     'Shrub Care Package Plus: 2 visits/year + No Shrub Left Behind',
   ],
   executive: [
     'Weekly mowing + bi-weekly off-season service',
     'Executive Turf Defense\u2122 — up to 7 applications/year',
     'Weed-Free Turf Guarantee (progressive improvement)',
-    '9 maintenance upgrade credits (Basic = 1, Premium = 2)',
+    '9 upgrade credits (Basic = 1, Premium = 2)',
     'Executive Shrub Command: 3 visits/year',
   ],
 };

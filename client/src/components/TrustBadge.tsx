@@ -12,7 +12,7 @@ export default function TrustBadge({
   message,
   className = "" 
 }: TrustBadgeProps) {
-  const defaultMessage = "No payment required. This is a FREE Dream Yard Recon request.";
+  const defaultMessage = "No payment required. This is your Dream Yard Recon request.";
   const displayMessage = message || defaultMessage;
 
   if (variant === 'compact') {

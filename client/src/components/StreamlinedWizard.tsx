@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { appendAttributionNotes, getAttributionContext } from "@/lib/attribution";
 import WizardProgress from "@/components/WizardProgress";
 import YardScorecard from "@/components/YardScorecard";
 import TransformationPreview from "@/components/TransformationPreview";
@@ -41,7 +42,6 @@ import imgShrub from "@assets/stock_images/man_trimming_hedges__4f4ec72f.jpg";
 import NeighborhoodOffer from "@/components/NeighborhoodOffer";
 import RobotWaitlist from "@/components/RobotWaitlist";
 import PlanBadge from "@/components/PlanBadge";
-import ValueMeter from "@/components/ValueMeter";
 import { 
   PLANS, 
   YARD_SIZES, 
@@ -127,7 +127,7 @@ const PREMIUM_UPGRADE_EXAMPLES = [
 
 const formatIncludedUpgradeCopy = (basic: number, premium: number): string => {
   const totalCredits = basic + (premium * PREMIUM_CREDIT_COST);
-  return `Includes ${totalCredits} maintenance upgrade credits`;
+  return `Includes ${totalCredits} upgrade credits`;
 };
 
 const getPopularityBadgeClass = (popularity: "trending" | "favorite") =>
@@ -147,7 +147,7 @@ const MOBILE_PLAN_CARDS_SW = [
     mowing: "Bi-weekly in growing season, monthly off-season check",
     treatments: "2 lawn treatments",
     totalUpgrades: 3,
-    breakdown: "Includes 3 maintenance upgrade credits",
+    breakdown: "Includes 3 upgrade credits",
     bonus: COMMITMENT_COPY.twoYearBonus,
   },
   {
@@ -158,7 +158,7 @@ const MOBILE_PLAN_CARDS_SW = [
     mowing: "Weekly in growing season, bi-weekly off-season",
     treatments: "4 lawn treatments",
     totalUpgrades: 5,
-    breakdown: "Includes 5 maintenance upgrade credits",
+    breakdown: "Includes 5 upgrade credits",
     bonus: COMMITMENT_COPY.twoYearBonus,
   },
   {
@@ -169,10 +169,16 @@ const MOBILE_PLAN_CARDS_SW = [
     mowing: "Weekly in growing season, bi-weekly off-season",
     treatments: "7 lawn treatments",
     totalUpgrades: 9,
-    breakdown: "Includes 9 maintenance upgrade credits",
+    breakdown: "Includes 9 upgrade credits",
     bonus: COMMITMENT_COPY.twoYearBonus,
   },
 ];
+
+const PLAN_VALUE_LINES_SW: Record<string, string> = {
+  basic: "Reliable essential care for clean curb appeal year-round.",
+  premium: "Our most popular balance of weekly polish and flexibility.",
+  executive: "Top-tier property care with priority service coverage.",
+};
 
 function MobileComparisonCards() {
   return (
@@ -402,7 +408,7 @@ export default function StreamlinedWizard() {
       if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
       if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
     };
-  }, [step, plan, executivePlus]);
+  }, [step]);
 
   useLayoutEffect(() => {
     if (plan === "basic" && premiumAddons.length > 0) {
@@ -441,6 +447,7 @@ export default function StreamlinedWizard() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      const attribution = getAttributionContext();
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -458,6 +465,7 @@ export default function StreamlinedWizard() {
           promoCode,
           totalPrice: isHOA ? 'custom' : String(actualMonthly),
           freeMonths: isHOA ? '0' : String(totalFreeMonths),
+          notes: appendAttributionNotes(undefined, attribution),
           propertyType,
           hoaName: isHOA ? hoaName : undefined,
           hoaAcreage: isHOA ? hoaAcreage : undefined,
@@ -736,7 +744,7 @@ export default function StreamlinedWizard() {
 
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose the Best Fit for Your Yard</h3>
-                <p className="text-muted-foreground text-sm">We'll help you find the right plan. All plans include mowing, edging, trimming, and blowing.</p>
+                <p className="text-muted-foreground text-sm">Simple plan tiers with clear upgrade credits and commitment rewards.</p>
                 <p className="text-xs text-muted-foreground/70 mt-1">Licensed • Insured • Satisfaction Guaranteed</p>
               </div>
 
@@ -788,7 +796,6 @@ export default function StreamlinedWizard() {
                       <button
                         data-testid={`plan-${p.id}`}
                         onClick={() => {
-                          captureScrollPosition();
                           const previousPlan = plan;
                           setPlan(p.id);
                           if (p.id !== 'executive') {
@@ -816,15 +823,12 @@ export default function StreamlinedWizard() {
                         <div className="flex items-center justify-between">
                           <div>
                             <h4 className="font-bold text-lg">{p.name}</h4>
-                            <p className="text-xs text-muted-foreground mt-0.5">{p.description}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{PLAN_VALUE_LINES_SW[p.id] || PLAN_VALUE_LINES_SW.basic}</p>
                           </div>
                           <div className="text-right">
                             <div className="text-2xl font-bold text-primary">${calculate2026Price(p.id, yardSize || "1/3")}</div>
                             <div className="text-xs text-muted-foreground">/mo</div>
                           </div>
-                        </div>
-                        <div className="mt-3 mb-1">
-                          <ValueMeter planId={p.id} />
                         </div>
                         <div className="mt-2 pt-2 border-t border-border/50 space-y-1">
                           <div className="text-xs text-foreground/85 flex items-center gap-1.5">
@@ -833,7 +837,6 @@ export default function StreamlinedWizard() {
                           </div>
                           <div className={`mt-1.5 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
                             <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Anniversary Client Rewards</div>
-                            <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
                             <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
                               {COMMITMENT_COPY.twoYearBonus}
                             </div>
@@ -869,7 +872,13 @@ export default function StreamlinedWizard() {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose Your Upgrades</h3>
                 <p className="text-muted-foreground text-sm">
-                  Pick the upgrades that fit your property best. Your plan includes {includedCredits} total credits at no extra cost.
+                  Pick the upgrades that fit your property best. Your plan includes {includedCredits} upgrade credits.
+                </p>
+                <p className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                  Selected: {usedCredits} credits ({basicAddons.length} Basic / {premiumAddons.length} Premium). Remaining: {Math.max(0, includedCredits - usedCredits)} credits.
+                </p>
+                <p className="mt-2 text-xs font-bold uppercase tracking-wide text-accent">
+                  2 Basic credits = 1 Premium upgrade.
                 </p>
               </div>
 
@@ -919,6 +928,9 @@ export default function StreamlinedWizard() {
                 <div className="flex justify-between items-center text-accent font-semibold">
                   <span>Remaining:</span>
                   <span>{Math.max(0, includedCredits - usedCredits)} credit{Math.max(0, includedCredits - usedCredits) === 1 ? "" : "s"}</span>
+                </div>
+                <div className="text-[11px] font-semibold text-primary/80">
+                  Rule: 2 Basic credits = 1 Premium upgrade.
                 </div>
                 {extraCredits > 0 && (
                   <div className="flex justify-between items-center pt-1 border-t border-border/50 text-amber-600">
@@ -1352,7 +1364,7 @@ export default function StreamlinedWizard() {
             >
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose your commitment</h3>
-                <p className="text-muted-foreground text-sm">We reward loyalty — longer commitment = more complimentary billing months</p>
+                <p className="text-muted-foreground text-sm">{COMMITMENT_COPY.promoIntro}</p>
               </div>
 
               <div className="space-y-3">
@@ -1413,13 +1425,15 @@ export default function StreamlinedWizard() {
                           <div className="p-2 bg-primary/5 border border-primary/20 rounded-lg">
                             <div className="text-xs font-bold text-primary mb-1">Commitment Savings</div>
                             <div className="text-[10px] text-muted-foreground space-y-0.5">
-                              <div className="flex justify-between"><span>1-Year:</span><span>+1 complimentary month</span></div>
-                              <div className="flex justify-between"><span>2-Year:</span><span>+3 complimentary months</span></div>
-                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>doubles complimentary months</span></div>
+                              <div className="flex justify-between"><span>1-Year:</span><span>{COMMITMENT_COPY.oneYearBonus}</span></div>
+                              <div className="flex justify-between"><span>2-Year:</span><span>{COMMITMENT_COPY.twoYearBonus}</span></div>
+                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>we'll double your complimentary months</span></div>
                             </div>
                             <div className="mt-1 text-[10px] text-muted-foreground">
                               Monthly pricing is primary for launch. Your account manager confirms payment options after quote submission.
                             </div>
+                            <div className="mt-1 text-[10px] text-muted-foreground">{COMMITMENT_COPY.maxLine}</div>
+                            <div className="mt-0.5 text-[10px] text-muted-foreground">{COMMITMENT_COPY.loyaltyLine}</div>
                           </div>
                           
                           <button
@@ -1439,7 +1453,7 @@ export default function StreamlinedWizard() {
                               </div>
                               <div className="text-left">
                                 <div className="font-medium">See Pay-in-Full Savings (Optional)</div>
-                                <div className="text-xs text-muted-foreground">Preview estimate only. No payment is collected here.</div>
+                                <div className="text-xs text-muted-foreground">{COMMITMENT_COPY.payInFullBonus}</div>
                               </div>
                             </div>
                             <div className="text-right">
@@ -1453,7 +1467,7 @@ export default function StreamlinedWizard() {
                           </button>
                           
                           <p className="text-[10px] text-center text-muted-foreground">
-                            Pay monthly is always available. Account manager finalizes any pay-in-full option after your quote request.
+                            Monthly pricing is primary for launch. Your account manager confirms payment options after quote submission.
                           </p>
                           {payInFull && payInFullExtraSavings > 0 && (
                             <p className="text-[11px] text-center text-green-700 font-semibold">
@@ -1622,7 +1636,7 @@ export default function StreamlinedWizard() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email (optional)</Label>
+                  <Label htmlFor="email">Email (Optional)</Label>
                   <Input
                     id="email"
                     data-testid="input-email"

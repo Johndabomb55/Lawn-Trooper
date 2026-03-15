@@ -82,7 +82,7 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
   },
   {
     category: "Service",
-    feature: "Total maintenance upgrade credits",
+    feature: "Total upgrade credits",
     basic: "3 credits",
     premium: "5 credits",
     executive: "9 credits",

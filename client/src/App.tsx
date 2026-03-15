@@ -11,6 +11,7 @@ import EmbedWizard from "@/pages/embed-wizard";
 import QuoteWizardPage from "@/pages/quote-wizard";
 import PrivacyPolicyPage from "@/pages/privacy-policy";
 import TermsOfServicePage from "@/pages/terms-of-service";
+import GhlChatWidget from "@/components/GhlChatWidget";
 
 function Router() {
   return (
@@ -34,6 +35,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <GhlChatWidget />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>

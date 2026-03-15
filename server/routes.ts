@@ -13,6 +13,16 @@ async function sendToGHL(leadData: Record<string, any>) {
   }
 
   try {
+    const notesText = typeof leadData.notes === "string" ? leadData.notes : "";
+    const sourceFromNotes = notesText.match(/\[Attribution\]\s*Source:\s*([^|]+)/i)?.[1]?.trim();
+    const detailFromNotes = notesText.match(/\[Attribution\].*Detail:\s*([^|]+)/i)?.[1]?.trim();
+    const landingFromNotes = notesText.match(/\[Attribution\].*Landing:\s*([^|]+)/i)?.[1]?.trim();
+    const referrerFromNotes = notesText.match(/\[Attribution\].*Referrer:\s*([^|]+)/i)?.[1]?.trim();
+    const resolvedSource = leadData.source || sourceFromNotes || "website_chat";
+    const resolvedSourceDetail = leadData.sourceDetail || detailFromNotes || "";
+    const resolvedLandingPath = leadData.landingPath || landingFromNotes || "";
+    const resolvedReferrer = leadData.referrer || referrerFromNotes || "";
+
     const payload = {
       first_name: leadData.name?.split(" ")[0] || "",
       last_name: leadData.name?.split(" ").slice(1).join(" ") || "",
@@ -38,7 +48,15 @@ async function sendToGHL(leadData: Record<string, any>) {
       hoa_acreage: leadData.hoaAcreage || "",
       hoa_units: leadData.hoaUnits || "",
       hoa_notes: leadData.hoaNotes || "",
-      source: "lawn-trooper-website",
+      source: resolvedSource,
+      source_detail: resolvedSourceDetail,
+      landing_path: resolvedLandingPath,
+      referrer: resolvedReferrer,
+      utm_source: leadData.utmSource || "",
+      utm_medium: leadData.utmMedium || "",
+      utm_campaign: leadData.utmCampaign || "",
+      utm_content: leadData.utmContent || "",
+      utm_term: leadData.utmTerm || "",
     };
 
     const response = await fetch(webhookUrl, {
@@ -74,6 +92,15 @@ const quoteRequestSchema = z.object({
   plan: z.string(),
   basicAddons: z.array(z.string()),
   premiumAddons: z.array(z.string()),
+  source: z.string().optional(),
+  sourceDetail: z.string().optional(),
+  landingPath: z.string().optional(),
+  referrer: z.string().optional(),
+  utmSource: z.string().optional(),
+  utmMedium: z.string().optional(),
+  utmCampaign: z.string().optional(),
+  utmContent: z.string().optional(),
+  utmTerm: z.string().optional(),
   photos: z.array(photoSchema).optional(),
 }).superRefine((data, ctx) => {
   if ((data.contactMethod === "text" || data.contactMethod === "phone") && !data.phone) {

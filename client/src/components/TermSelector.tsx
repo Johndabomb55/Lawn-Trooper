@@ -1,6 +1,6 @@
 import React from "react";
 import { Calendar, Check, Sparkles } from "lucide-react";
-import { calculateTermFreeMonths, COMMITMENT_TERMS, TRUST_MESSAGES } from "@/data/promotions";
+import { calculateTermFreeMonths, COMMITMENT_COPY, COMMITMENT_TERMS, TRUST_MESSAGES } from "@/data/promotions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
@@ -26,6 +26,7 @@ export default function TermSelector({
           <Calendar className="w-4 h-4" />
           Choose Your Commitment
         </div>
+        <p className="mb-2 text-xs text-muted-foreground">{COMMITMENT_COPY.promoIntro}</p>
         <div className="grid grid-cols-2 gap-2">
           {COMMITMENT_TERMS.map((option) => {
             const isSelected = term === option.id;
@@ -73,16 +74,15 @@ export default function TermSelector({
           <Label htmlFor="payUpfront" className="cursor-pointer flex-1">
             <div className="font-bold text-primary flex items-center gap-2">
               See Pay-in-Full Savings (Optional)
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                Doubles your complimentary months
-              </span>
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">×2 complimentary months</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Pay in full and your complimentary months are doubled.
+              {COMMITMENT_COPY.payInFullBonus}
             </p>
             <p className="text-[11px] text-muted-foreground mt-1">
-              Your account manager confirms all payment options after you submit your quote request.
+              {COMMITMENT_COPY.maxLine}
             </p>
+            <p className="text-[11px] text-muted-foreground mt-1">{COMMITMENT_COPY.loyaltyLine}</p>
           </Label>
         </div>
       </div>

@@ -64,6 +64,8 @@
   --ring: 85 45% 25%;
 
   --radius: 0.25rem;
+  --lt-chat-bottom-desktop: 20px;
+  --lt-chat-bottom-mobile: 88px;
 }
 
 .dark {
@@ -112,4 +114,31 @@
   input[type="submit"] {
     min-height: 44px;
   }
+}
+
+/* GHL chat positioning: preserve CTA visibility on mobile/desktop. */
+iframe[src*="msgsndr.com"][style*="position: fixed"],
+iframe[src*="leadconnectorhq.com"][style*="position: fixed"],
+div[class*="lc-chat"][style*="position: fixed"],
+div[id*="chat-widget"][style*="position: fixed"] {
+  bottom: var(--lt-chat-bottom-desktop) !important;
+  right: 16px !important;
+  z-index: 45 !important;
+}
+
+@media (max-width: 768px) {
+  iframe[src*="msgsndr.com"][style*="position: fixed"],
+  iframe[src*="leadconnectorhq.com"][style*="position: fixed"],
+  div[class*="lc-chat"][style*="position: fixed"],
+  div[id*="chat-widget"][style*="position: fixed"] {
+    bottom: var(--lt-chat-bottom-mobile) !important;
+    right: 12px !important;
+  }
+}
+
+body.lt-chat-hidden iframe[src*="msgsndr.com"],
+body.lt-chat-hidden iframe[src*="leadconnectorhq.com"],
+body.lt-chat-hidden div[class*="lc-chat"],
+body.lt-chat-hidden div[id*="chat-widget"] {
+  display: none !important;
 }

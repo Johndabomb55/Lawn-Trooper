@@ -22,7 +22,6 @@ import {
   Leaf
 } from "lucide-react";
 import PlanBadge from "@/components/PlanBadge";
-import ValueMeter from "@/components/ValueMeter";
 import { 
   MILITARY_RANKS, 
   LOCAL_TIPS, 
@@ -33,7 +32,7 @@ import {
   getApplicablePromotions,
   applyPromotions,
   buildSavingsSummary,
-  COMMITMENT_COPY,
+  calculateTermFreeMonths,
   validatePromoCode,
   TRUST_MESSAGES,
   PLAN_VALUE_HIGHLIGHTS,
@@ -67,7 +66,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
+import { appendAttributionNotes, getAttributionContext } from "@/lib/attribution";
 import { 
   PLANS, 
   BASIC_ADDONS, 
@@ -79,7 +80,6 @@ import {
   PREMIUM_CREDIT_COST,
   EXECUTIVE_PLUS,
   calculate2026Price,
-  calculate2025Price,
   YARD_SIZES,
 } from "@/data/plans";
 import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
@@ -93,19 +93,18 @@ const STEPS = [
   { id: 4, title: "Contact", icon: Phone, rank: "General", rankIcon: Award },
 ];
 
-// Step 2 plan cards: simplified — table shows features; cards show price + pre-selected upgrades only
-const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
+const PLAN_CARD_COPY: Record<string, { valueLine: string; creditsLine: string }> = {
   basic: {
-    frequency: "Bi-Weekly",
-    tagline: "3 maintenance upgrade credits + 1 annual shrub care package.",
+    valueLine: "Reliable essential care for clean curb appeal year-round.",
+    creditsLine: "Includes 3 upgrade credits (3 Basic credits).",
   },
   premium: {
-    frequency: "Weekly in Growing Season / Bi-Weekly in Off-Season",
-    tagline: "5 maintenance upgrade credits + No Shrub Left Behind support.",
+    valueLine: "Our most popular balance of weekly polish and flexibility.",
+    creditsLine: "Includes 5 upgrade credits (3 Basic credits + 1 Premium upgrade).",
   },
   executive: {
-    frequency: "Weekly in Growing Season / Bi-Weekly in Off-Season",
-    tagline: "9 maintenance upgrade credits + 3 annual shrub care visits.",
+    valueLine: "Top-tier property care with priority service coverage.",
+    creditsLine: "Includes 9 upgrade credits (5 Basic credits + 2 Premium upgrades).",
   },
 };
 
@@ -322,7 +321,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
       if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
     };
-  }, [currentStep, plan, executivePlus]);
+  }, [currentStep]);
 
   const setDefaultAddonsForPlan = (planId: string) => {
     const rec = RECOMMENDED_ADDONS[planId];
@@ -361,6 +360,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     setIsSubmitting(true);
     try {
       const photos = selectedPhotos.length > 0 ? await filesToBase64(selectedPhotos) : [];
+      const attribution = getAttributionContext();
       
       const submitData = {
         ...values,
@@ -368,6 +368,16 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
         plan,
         basicAddons,
         premiumAddons,
+        notes: appendAttributionNotes(values.notes, attribution),
+        source: attribution.sourceTag,
+        sourceDetail: attribution.sourceDetail,
+        landingPath: attribution.landingPath,
+        referrer: attribution.referrer,
+        utmSource: attribution.utmSource,
+        utmMedium: attribution.utmMedium,
+        utmCampaign: attribution.utmCampaign,
+        utmContent: attribution.utmContent,
+        utmTerm: attribution.utmTerm,
         photos
       };
       
@@ -393,7 +403,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           plan,
           basicAddons,
           premiumAddons,
-          notes: values.notes || null,
+          notes: appendAttributionNotes(values.notes, attribution),
           totalPrice: String(totalPrice),
           term,
           payUpfront: String(payUpfront),
@@ -697,11 +707,41 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 >
                   <div className="text-center mb-6">
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Total Maintenance Plan</h4>
-                    <p className="text-muted-foreground">One-stop exterior maintenance with full lawn coverage.</p>
+                    <p className="text-muted-foreground">Simple plan tiers with clear upgrade credits and commitment rewards.</p>
                   </div>
 
                   {/* Feature comparison matrix */}
-                  <div className="bg-muted/30 rounded-xl border border-border overflow-x-auto">
+                  <div className="rounded-xl border border-border bg-muted/30 p-3 md:hidden">
+                    <p className="mb-2 text-xs font-semibold text-muted-foreground">
+                      Tap each feature to compare Basic, Premium, and Executive.
+                    </p>
+                    <Accordion type="multiple" className="w-full">
+                      {PLAN_COMPARISON_ROWS.map((row, i) => (
+                        <AccordionItem key={`${row.feature}-${i}`} value={`comparison-${i}`} className="border-border/60">
+                          <AccordionTrigger className="py-2 text-left text-sm font-semibold text-primary">
+                            {row.feature}
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="rounded-lg border border-border/70 bg-background p-2 text-xs">
+                              <div className="grid grid-cols-2 gap-1 border-b border-border/60 pb-1">
+                                <span className="font-semibold text-muted-foreground">Basic</span>
+                                <span className="text-right font-medium text-primary">{row.basic}</span>
+                              </div>
+                              <div className="mt-1 grid grid-cols-2 gap-1 border-b border-border/60 pb-1">
+                                <span className="font-semibold text-muted-foreground">Premium</span>
+                                <span className="text-right font-medium text-primary">{row.premium}</span>
+                              </div>
+                              <div className="mt-1 grid grid-cols-2 gap-1">
+                                <span className="font-semibold text-muted-foreground">Executive</span>
+                                <span className="text-right font-bold text-accent">{row.executive}</span>
+                              </div>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </div>
+                  <div className="hidden md:block bg-muted/30 rounded-xl border border-border overflow-x-auto">
                     <table className="w-full text-sm min-w-[480px]">
                       <thead>
                         <tr className="border-b border-border">
@@ -738,7 +778,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {PLANS.map((p) => {
                       const price2026 = calculate2026Price(p.id, yardSize);
-                      const price2025 = calculate2025Price(p.id, yardSize);
                       const isExecutive = p.id === 'executive';
                       const isSelected = plan === p.id;
                       const cardCopy = PLAN_CARD_COPY[p.id] || PLAN_CARD_COPY.basic;
@@ -749,11 +788,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           type="button"
                           data-testid={`wizard-plan-${p.id}`}
                           onClick={() => {
-                            withStableScroll(() => {
-                              setPlan(p.id);
-                              if (p.id !== 'executive') setExecutivePlus(false);
-                              setDefaultAddonsForPlan(p.id);
-                            });
+                            setPlan(p.id);
+                            if (p.id !== 'executive') setExecutivePlus(false);
+                            setDefaultAddonsForPlan(p.id);
                           }}
                           className={`p-5 rounded-xl transition-all text-left relative flex flex-col items-start h-full justify-start ${
                             isExecutive 
@@ -772,25 +809,21 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             <h5 className={`font-bold ${isExecutive ? 'text-xl' : 'text-lg'}`}>{p.name}</h5>
                             {isExecutive && <Star className="w-5 h-5 fill-accent text-accent" />}
                           </div>
-                          <div className="mt-1 text-[11px] font-bold uppercase tracking-wide text-primary/90">
-                            {cardCopy.frequency}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">{cardCopy.tagline}</p>
-                          <div className="mt-2">
-                            <div className="text-xs text-muted-foreground line-through">
-                              2025: ${price2025}/mo
-                            </div>
+                          <p className="mt-1 text-xs text-muted-foreground">{cardCopy.valueLine}</p>
+                          <p className="mt-1 text-xs font-semibold text-primary/90">{cardCopy.creditsLine}</p>
+                          <div className="mt-2 w-full">
                             <div className={`font-bold text-primary ${isExecutive ? 'text-3xl' : 'text-2xl'}`}>
                               ${price2026}
                               <span className="text-sm font-normal text-muted-foreground">/mo</span>
                             </div>
-                            <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
-                            <div className="text-[11px] font-semibold text-accent mt-1">
-                              2-Year bonus: {COMMITMENT_COPY.twoYearBonus}
+                            <div className="mt-2 w-full rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-center">
+                              <div className="text-[10px] font-bold uppercase tracking-wide text-amber-800">
+                                25-Year Anniversary Client Rewards
+                              </div>
+                              <div className="text-[11px] font-semibold text-primary">
+                                +{calculateTermFreeMonths(term, payUpfront)} complimentary month{calculateTermFreeMonths(term, payUpfront) === 1 ? "" : "s"}
+                              </div>
                             </div>
-                          </div>
-                          <div className="mt-3 w-full">
-                            <ValueMeter planId={p.id} />
                           </div>
                           {isSelected && (
                             <div className="absolute top-2 right-2">
@@ -808,11 +841,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       type="button"
                       data-testid="wizard-executive-plus-toggle"
                       onClick={() => {
-                        withStableScroll(() => {
-                          const next = !executivePlus;
-                          setExecutivePlus(next);
-                          setDefaultAddonsForPlan(next ? "executive+" : "executive");
-                        });
+                        const next = !executivePlus;
+                        setExecutivePlus(next);
+                        setDefaultAddonsForPlan(next ? "executive+" : "executive");
                       }}
                       className={`w-full mt-4 p-3 rounded-lg border-2 transition-all text-left ${
                         executivePlus
@@ -887,7 +918,13 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h4>
                     <p className="text-muted-foreground">
-                      Bundling saves you money. {planData?.name} includes {includedCredits} credits. Basic upgrades use 1 credit{plan === "basic" ? "." : `, and Premium upgrades use ${PREMIUM_CREDIT_COST} credits each.`}
+                      Bundling saves you money. {planData?.name} includes {includedCredits} upgrade credits.
+                    </p>
+                    <p className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                      Selected: {usedCredits} credits ({basicAddons.length} Basic / {premiumAddons.length} Premium). Remaining: {Math.max(0, includedCredits - usedCredits)} credits.
+                    </p>
+                    <p className="mt-2 text-xs font-bold uppercase tracking-wide text-accent">
+                      2 Basic credits = 1 Premium upgrade.
                     </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
@@ -903,6 +940,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                     <p className="mt-1 text-sm font-semibold text-accent">
                       {Math.max(0, includedCredits - usedCredits)} credit{Math.max(0, includedCredits - usedCredits) === 1 ? "" : "s"} remaining
+                    </p>
+                    <p className="mt-1 text-[11px] font-semibold text-primary/80">
+                      Rule: 2 Basic credits = 1 Premium upgrade.
                     </p>
                     {extraCredits > 0 && (
                       <p className="mt-1 text-xs font-bold text-amber-700">
@@ -1072,7 +1112,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 >
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
-                    <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your FREE property walk-through.</p>
+                    <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your property walk-through.</p>
                   </div>
 
                   {/* Trust Badge */}
@@ -1088,7 +1128,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
                     <div className="text-sm font-bold text-primary mb-2 flex items-center gap-2">
                       <Award className="w-4 h-4" />
-                      HOA Partner Code (optional)
+                      HOA Partner Code (Optional)
                     </div>
                     <p className="text-xs text-muted-foreground mb-3">
                       Reminder: partnered HOA residents receive <span className="font-bold text-primary">10% off</span>. If your HOA is not partnered yet,{" "}
