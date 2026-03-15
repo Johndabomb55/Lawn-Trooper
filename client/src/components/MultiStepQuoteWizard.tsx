@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -7,7 +7,6 @@ import {
   Check, 
   ChevronLeft, 
   ChevronRight, 
-  ChevronDown,
   Star, 
   Info,
   MapPin,
@@ -23,7 +22,7 @@ import {
   Leaf
 } from "lucide-react";
 import PlanBadge from "@/components/PlanBadge";
-import UpgradeDetails from "@/components/UpgradeDetails";
+import ValueMeter from "@/components/ValueMeter";
 import { 
   MILITARY_RANKS, 
   LOCAL_TIPS, 
@@ -33,6 +32,7 @@ import {
 import {
   getApplicablePromotions,
   applyPromotions,
+  validatePromoCode,
   TRUST_MESSAGES,
   PLAN_VALUE_HIGHLIGHTS,
   RECOMMENDED_ADDONS,
@@ -42,6 +42,7 @@ import MissionAccomplished from "./MissionAccomplished";
 import TrustBadge from "./TrustBadge";
 import SavingsPanel from "./SavingsPanel";
 import TermSelector from "./TermSelector";
+import SegmentCheckboxes from "./SegmentCheckboxes";
 import { Button } from "@/components/ui/button";
 import { 
   Form, 
@@ -74,9 +75,11 @@ import {
   getSwapOptions,
   EXECUTIVE_PLUS,
   calculate2026Price,
+  calculate2025Price,
   YARD_SIZES,
   calculateOverageCost
 } from "@/data/plans";
+import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
 
 const STEPS = [
   { id: 1, title: "Yard Size", icon: MapPin, rank: "Recruit", rankIcon: Shield },
@@ -85,28 +88,24 @@ const STEPS = [
   { id: 4, title: "Contact", icon: Phone, rank: "General", rankIcon: Award },
 ];
 
-const PLAN_CARD_COPY: Record<string, { description: string; included: string }> = {
+// Step 2 plan cards: simplified — table shows features; cards show price + pre-selected upgrades only
+const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
   basic: {
-    description: "Reliable maintenance for smaller properties.",
-    included: "Includes 3 Basic upgrades",
+    frequency: "Bi-Weekly",
+    tagline: "Reliable maintenance with Dream Yard Recon\u2122.",
   },
   premium: {
-    description: "More complete property care.",
-    included: "Includes 2 Basic upgrades + 2 Premium upgrades",
+    frequency: "Weekly",
+    tagline: "Weekly upkeep with Account Manager access.",
   },
   executive: {
-    description: "Top-tier property care.",
-    included: "Includes 3 Basic upgrades + 3 Premium upgrades",
+    frequency: "Year-Round Weekly",
+    tagline: "Top-tier weekly command with Turf Defense\u2122.",
   },
 };
 
 const getAddonName = (id: string) => ADDON_CATALOG.find((a) => a.id === id)?.name ?? id;
-const formatUpgradeMix = (basic: number, premium: number): string => {
-  const basicLabel = `${basic} Basic upgrade${basic === 1 ? "" : "s"}`;
-  if (premium <= 0) return basicLabel;
-  const premiumLabel = `${premium} Premium upgrade${premium === 1 ? "" : "s"}`;
-  return `${basicLabel} and ${premiumLabel}`;
-};
+
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email().or(z.literal("")),
@@ -142,75 +141,6 @@ const formSchema = z.object({
   }
 });
 
-const BASIC_UPGRADE_EXAMPLES = [
-  "Shrub / hedge trimming",
-  "Seasonal mulch refresh",
-  "Quarterly trash can cleaning",
-  "Gutter cleaning",
-  "Mosquito control",
-  "Additional weed control & fertilization"
-];
-
-const PREMIUM_UPGRADE_EXAMPLES = [
-  "Pressure-wash package",
-  "House soft wash",
-  "Aeration & dethatching",
-  "Seasonal lighting",
-  "Tree trimming",
-  "Full yard cleanout"
-];
-
-function UpgradeFlexibilitySection() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-4" data-testid="upgrade-flexibility-section">
-      <div className="text-center mb-2">
-        <h5 className="text-sm font-bold text-primary">Flexible Upgrade System</h5>
-        <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
-      </div>
-      <button
-        type="button"
-        data-testid="upgrade-examples-toggle"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-xs text-primary font-medium hover:underline mx-auto mt-1"
-      >
-        <Info className="w-3.5 h-3.5" />
-        View upgrade examples
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open && (
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-background/80 rounded-lg p-3 border border-border">
-            <h6 className="text-xs font-bold text-primary mb-2">Basic upgrades may include</h6>
-            <ul className="space-y-1">
-              {BASIC_UPGRADE_EXAMPLES.map((ex) => (
-                <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
-                  <span className="text-primary/60 mt-0.5">•</span>
-                  <span>{ex}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="bg-background/80 rounded-lg p-3 border border-border">
-            <h6 className="text-xs font-bold text-accent mb-2">Premium upgrades may include</h6>
-            <ul className="space-y-1">
-              {PREMIUM_UPGRADE_EXAMPLES.map((ex) => (
-                <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
-                  <span className="text-accent/60 mt-0.5">•</span>
-                  <span>{ex}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-      <div className="mt-3 text-center">
-        <p className="text-xs font-medium text-primary/80">2 Basic upgrades can be exchanged for 1 Premium upgrade.</p>
-      </div>
-    </div>
-  );
-}
-
 interface MultiStepQuoteWizardProps {
   onClose?: () => void;
   isModal?: boolean;
@@ -218,7 +148,6 @@ interface MultiStepQuoteWizardProps {
 
 export default function MultiStepQuoteWizard({ onClose, isModal = false }: MultiStepQuoteWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
-  const pendingScrollYRef = useRef<number | null>(null);
   const [yardSize, setYardSize] = useState("1/3");
   const [plan, setPlan] = useState("basic");
   const [basicAddons, setBasicAddons] = useState<string[]>([]);
@@ -235,7 +164,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
   const [payUpfront, setPayUpfront] = useState(false);
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
-  const [clientCode, setClientCode] = useState("");
+  const [promoCode, setPromoCode] = useState('');
+  const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -325,40 +255,17 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     }));
   };
 
-  const changeStep = (nextStep: number) => {
-    if (typeof window !== "undefined") {
-      pendingScrollYRef.current = window.scrollY;
-    }
-    setCurrentStep(nextStep);
-  };
-
   const handleNext = () => {
     if (currentStep < 4) {
-      changeStep(currentStep + 1);
+      setCurrentStep(currentStep + 1);
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      changeStep(currentStep - 1);
+      setCurrentStep(currentStep - 1);
     }
   };
-
-  useLayoutEffect(() => {
-    const scrollY = pendingScrollYRef.current;
-    if (scrollY == null || typeof window === "undefined") return;
-
-    pendingScrollYRef.current = null;
-    window.requestAnimationFrame(() => {
-      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      window.requestAnimationFrame(() => {
-        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      });
-      window.setTimeout(() => {
-        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      }, 180);
-    });
-  }, [currentStep]);
 
   const setDefaultAddonsForPlan = (planId: string) => {
     const rec = RECOMMENDED_ADDONS[planId];
@@ -398,7 +305,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
         plan,
         basicAddons,
         premiumAddons,
-        clientCode: clientCode || null,
         photos
       };
       
@@ -430,7 +336,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           payUpfront: String(payUpfront),
           segments,
           appliedPromos: promotionResult.applied.map(p => p.title),
-          promoCode: clientCode || null,
+          promoCode: promoCodeStatus?.valid ? promoCode : null,
         }),
       }).catch(err => console.error('Lead capture error:', err));
 
@@ -450,7 +356,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           payUpfront,
           segments,
           appliedPromos: promotionResult.applied.map(p => p.title),
-          promoCode: clientCode || undefined,
+          promoCode: promoCodeStatus?.valid ? promoCode : undefined,
         });
         
         // Show the Mission Accomplished page
@@ -494,6 +400,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     segments,
     hasReferral: false, // Will be true when referral system is implemented
     monthlyTotal: baseMonthlyTotal,
+    promoCode: promoCodeStatus?.valid ? promoCode : undefined,
   };
   
   const promotionResult = getApplicablePromotions(userSelections);
@@ -555,7 +462,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   // Reset function for after submission
   const resetForm = () => {
     form.reset();
-    changeStep(1);
+    setCurrentStep(1);
     setYardSize("1/3");
     setPlan("basic");
     setBasicAddons([]);
@@ -585,12 +492,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   // Mission Ready indicator
   const getAddOnInstructionText = () => {
     if (plan === "basic") {
-      return "Choose your 3 Basic upgrades.";
+      if (allowance.premium > 0) {
+        return `Select exactly ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed.`;
+      }
+      return `Select exactly ${allowance.basic} Basic upgrade${allowance.basic === 1 ? "" : "s"} to proceed.`;
     }
     if (plan === "premium") {
-      return "Choose your 2 Basic upgrades and 2 Premium upgrades.";
+      return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
     }
-    return "Choose your 3 Basic upgrades and 3 Premium upgrades.";
+    return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
   };
 
   const MissionReadyIndicator = () => (
@@ -624,7 +534,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       <div className="bg-primary text-primary-foreground p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">See Your Instant Price</h3>
+            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Get Your Instant Quote</h3>
             <p className="text-xs text-primary-foreground/70 mt-1">
               Rank: <span className="font-bold text-accent">{STEPS[currentStep - 1]?.rank}</span>
             </p>
@@ -643,7 +553,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
             return (
               <React.Fragment key={step.id}>
                 <button
-                  onClick={() => step.id < currentStep && changeStep(step.id)}
+                  onClick={() => step.id < currentStep && setCurrentStep(step.id)}
                   disabled={step.id > currentStep}
                   className={`flex flex-col items-center gap-1 transition-all ${
                     isCompleted ? 'opacity-100 cursor-pointer' : 
@@ -720,14 +630,49 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   className="space-y-6"
                 >
                   <div className="text-center mb-6">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Choose Plan</h4>
-                    <p className="text-muted-foreground">Select the service level that fits your property.</p>
-                    <p className="text-sm text-muted-foreground/70 mt-1">Licensed • Insured • 25+ Years Serving North Alabama</p>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Total Maintenance Plan</h4>
+                    <p className="text-muted-foreground">One-stop exterior maintenance with full lawn coverage.</p>
+                  </div>
+
+                  {/* Feature comparison matrix */}
+                  <div className="bg-muted/30 rounded-xl border border-border overflow-x-auto">
+                    <table className="w-full text-sm min-w-[480px]">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-3 px-3 text-muted-foreground font-medium">Feature</th>
+                          <th className="text-center py-3 px-3 font-bold text-primary">Basic</th>
+                          <th className="text-center py-3 px-3 font-bold text-primary">Premium</th>
+                          <th className="text-center py-3 px-3 font-bold text-accent">Executive</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {PLAN_COMPARISON_ROWS.map((row, i) => {
+                          const basicVal = row.basic;
+                          const premiumDiff = row.premium !== basicVal;
+                          const execDiff = row.executive !== basicVal;
+                          return (
+                            <tr key={i} className="border-b border-border/50 last:border-b-0">
+                              <td className="py-2.5 px-3 text-muted-foreground">{row.feature}</td>
+                              <td className={`py-2.5 px-3 text-center font-medium ${basicVal === "✓" ? "text-green-600" : ""}`}>
+                                {basicVal}
+                              </td>
+                              <td className={`py-2.5 px-3 text-center ${premiumDiff ? "bg-accent/5 font-medium text-primary" : ""} ${row.premium === "✓" ? "text-green-600" : ""}`}>
+                                {row.premium}
+                              </td>
+                              <td className={`py-2.5 px-3 text-center ${execDiff ? "bg-accent/5 font-medium text-accent" : ""} ${row.executive === "✓" ? "text-green-600" : ""}`}>
+                                {row.executive}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {PLANS.map((p) => {
-                      const startingPrice = p.price;
+                      const price2026 = calculate2026Price(p.id, yardSize);
+                      const price2025 = calculate2025Price(p.id, yardSize);
                       const isExecutive = p.id === 'executive';
                       const isSelected = plan === p.id;
                       const cardCopy = PLAN_CARD_COPY[p.id] || PLAN_CARD_COPY.basic;
@@ -745,9 +690,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           }}
                           className={`p-5 rounded-xl transition-all text-left relative flex flex-col items-start h-full justify-start ${
                             isExecutive 
-                              ? `border-3 ${isSelected ? 'border-accent ring-2 ring-accent/40 ring-offset-2 shadow-2xl bg-gradient-to-br from-accent/15 to-accent/5' : 'border-accent/60 bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl hover:border-accent'}`
+                              ? `border-3 border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`
                               : isSelected
-                                ? 'border-2 border-primary bg-primary/10 shadow-xl ring-2 ring-primary/30 ring-offset-2'
+                                ? 'border-2 border-primary bg-primary/10 shadow-lg'
                                 : 'border-2 border-border hover:border-primary/50 bg-muted/30'
                           }`}
                         >
@@ -756,31 +701,54 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                               <PlanBadge planId={p.id} />
                             </div>
                           )}
-                          {isSelected && (
-                            <div className="absolute top-2 right-2 flex items-center gap-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                              <Check className="w-3 h-3" /> Selected
-                            </div>
-                          )}
                           <div className="flex items-center gap-2">
                             <h5 className={`font-bold ${isExecutive ? 'text-xl' : 'text-lg'}`}>{p.name}</h5>
                             {isExecutive && <Star className="w-5 h-5 fill-accent text-accent" />}
                           </div>
-                          <div className="mt-1 inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5">
-                            <span className="text-[10px] font-bold uppercase tracking-wide text-accent">25-Year Client Rewards</span>
+                          <div className="mt-1 text-[11px] font-bold uppercase tracking-wide text-primary/90">
+                            {cardCopy.frequency}
                           </div>
-                          <p className="text-sm font-bold text-primary mt-2">Starting at ${startingPrice}/mo</p>
-                          <p className="text-xs text-muted-foreground mt-1">{cardCopy.description}</p>
-                          <div className="mt-3 text-xs text-foreground/85 flex items-center gap-1.5">
-                            <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                            <span className="font-medium">{cardCopy.included}</span>
+                          <p className="text-xs text-muted-foreground mt-1">{cardCopy.tagline}</p>
+                          <div className="mt-2">
+                            <div className="text-xs text-muted-foreground line-through">
+                              2025: ${price2025}/mo
+                            </div>
+                            <div className={`font-bold text-primary ${isExecutive ? 'text-3xl' : 'text-2xl'}`}>
+                              ${price2026}
+                              <span className="text-sm font-normal text-muted-foreground">/mo</span>
+                            </div>
+                            <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
                           </div>
+                          <div className="mt-3 w-full">
+                            <ValueMeter planId={p.id} />
+                          </div>
+                          <div className="mt-3">
+                            <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-1">Pre-selected upgrades</div>
+                            <ul className="space-y-0.5">
+                              {(RECOMMENDED_ADDONS[p.id]?.basic ?? []).map((id) => (
+                                <li key={id} className="text-xs text-foreground/85 flex items-start gap-1.5">
+                                  <Check className="w-3.5 h-3.5 text-green-600 shrink-0 mt-[1px]" />
+                                  <span>{getAddonName(id)}</span>
+                                </li>
+                              ))}
+                              {(RECOMMENDED_ADDONS[p.id]?.premium ?? []).map((id) => (
+                                <li key={id} className="text-xs text-accent/90 flex items-start gap-1.5">
+                                  <Star className="w-3.5 h-3.5 fill-accent shrink-0 mt-[1px]" />
+                                  <span>{getAddonName(id)}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            <p className="text-[10px] text-muted-foreground italic mt-1">Swap in next step.</p>
+                          </div>
+                          {isSelected && (
+                            <div className="absolute top-2 right-2">
+                              <Check className="w-5 h-5 text-primary" />
+                            </div>
+                          )}
                         </button>
                       );
                     })}
                   </div>
-
-                  {/* Upgrade Flexibility Section */}
-                  <UpgradeFlexibilitySection />
 
                   {/* Executive+ Toggle */}
                   {plan === 'executive' && (
@@ -833,6 +801,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                   )}
 
+                  {/* Term Selector */}
+                  <TermSelector
+                    term={term}
+                    payUpfront={payUpfront}
+                    onTermChange={setTerm}
+                    onPayUpfrontChange={setPayUpfront}
+                  />
+
                   {/* Savings Panel */}
                   <SavingsPanel
                     baseMonthly={baseMonthlyTotal}
@@ -855,23 +831,22 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   className="space-y-6"
                 >
                   <div className="text-center mb-4">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Upgrades</h4>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h4>
                     <p className="text-muted-foreground">
-                      Choose the upgrades that fit your property best.
+                      Bundling saves you money. {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades.
                     </p>
-                    <p className="text-sm text-primary font-semibold mt-2">{getAddOnInstructionText()}</p>
-                    {planData?.allowsSwap && (
-                      <p className="text-xs text-muted-foreground mt-1">2 Basic upgrades can be exchanged for 1 Premium upgrade.</p>
-                    )}
+                    <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
+                      {getAddOnInstructionText()}
+                    </p>
                   </div>
 
-                  {/* Upgrade Conversion (Swap) - premium/executive plans */}
+                  {/* Upgrade Conversion (Swap) - all plans */}
                   {planData?.allowsSwap && swapOptions.length > 1 && (
                     <div className="bg-primary/5 rounded-lg p-3 border border-primary/20 mb-4">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <div className="font-medium text-sm">Upgrade Conversion</div>
-                          <div className="text-xs text-muted-foreground">2 Basic upgrades can be exchanged for 1 Premium upgrade</div>
+                          <div className="text-xs text-muted-foreground">Convert 2 Basic → 1 Premium</div>
                         </div>
                         <div className="text-right text-xs">
                           <div className="font-bold text-primary">{allowance.basic}B</div>
@@ -920,20 +895,20 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {BASIC_ADDONS.map((addon) => {
                         const isSelected = basicAddons.includes(addon.id);
                         return (
-                          <div key={addon.id} className={`p-3 rounded-lg border text-left transition-all ${
-                            isSelected 
-                              ? 'border-primary bg-primary/10' 
-                              : 'border-border hover:border-primary/50'
-                          }`}>
-                            <Label className="cursor-pointer flex items-center gap-2">
-                              <Checkbox 
-                                checked={isSelected} 
-                                onCheckedChange={() => handleBasicAddonToggle(addon.id)} 
-                              />
-                              <span className="text-sm font-medium">{addon.label}</span>
-                            </Label>
-                            <UpgradeDetails upgradeId={addon.id} />
-                          </div>
+                          <Label
+                            key={addon.id}
+                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2 ${
+                              isSelected 
+                                ? 'border-primary bg-primary/10' 
+                                : 'border-border hover:border-primary/50'
+                            }`}
+                          >
+                            <Checkbox 
+                              checked={isSelected} 
+                              onCheckedChange={() => handleBasicAddonToggle(addon.id)} 
+                            />
+                            <span className="text-sm font-medium">{addon.label}</span>
+                          </Label>
                         );
                       })}
                     </div>
@@ -954,20 +929,20 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {PREMIUM_ADDONS.map((addon) => {
                         const isSelected = premiumAddons.includes(addon.id);
                         return (
-                          <div key={addon.id} className={`p-3 rounded-lg border text-left transition-all ${
-                            isSelected 
-                              ? 'border-accent bg-accent/10' 
-                              : 'border-border hover:border-accent/50'
-                          }`}>
-                            <Label className="cursor-pointer flex items-center gap-2">
-                              <Checkbox 
-                                checked={isSelected} 
-                                onCheckedChange={() => handlePremiumAddonToggle(addon.id)} 
-                              />
-                              <span className="text-sm font-medium">{addon.label}</span>
-                            </Label>
-                            <UpgradeDetails upgradeId={addon.id} />
-                          </div>
+                          <Label
+                            key={addon.id}
+                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2 ${
+                              isSelected 
+                                ? 'border-accent bg-accent/10' 
+                                : 'border-border hover:border-accent/50'
+                            }`}
+                          >
+                            <Checkbox 
+                              checked={isSelected} 
+                              onCheckedChange={() => handlePremiumAddonToggle(addon.id)} 
+                            />
+                            <span className="text-sm font-medium">{addon.label}</span>
+                          </Label>
                         );
                       })}
                     </div>
@@ -1026,11 +1001,81 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 >
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
-                    <p className="text-muted-foreground">An account manager will confirm your property details and help finalize the best fit for your yard.</p>
+                    <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your FREE property walk-through.</p>
                   </div>
 
                   {/* Trust Badge */}
                   <TrustBadge variant="full" message={TRUST_MESSAGES.contactStep} />
+
+                  {/* Segment Checkboxes for Discounts */}
+                  <SegmentCheckboxes
+                    segments={segments}
+                    onSegmentChange={setSegments}
+                  />
+
+                  {/* Promo Code Field */}
+                  <div className="bg-muted/30 rounded-xl p-4 border border-border">
+                    <div className="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+                      <Award className="w-4 h-4" />
+                      HOA Partner Code (optional)
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Reminder: partnered HOA residents receive <span className="font-bold text-primary">10% off</span>. If your HOA is not partnered yet,{" "}
+                      <a href="#hoa-partnership" className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80">
+                        open the HOA partner form
+                      </a>.
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter promo code"
+                        value={promoCode}
+                        onChange={(e) => {
+                          setPromoCode(e.target.value);
+                          setPromoCodeStatus(null);
+                        }}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          if (promoCode.trim()) {
+                            const result = validatePromoCode(promoCode);
+                            setPromoCodeStatus(result);
+                            if (result.valid) {
+                              toast({
+                                title: "Code Applied!",
+                                description: `${result.hoaName} partner discount: ${result.discount}% off`,
+                              });
+                            } else {
+                              toast({
+                                title: "Invalid Code",
+                                description: "This promo code is not recognized.",
+                                variant: "destructive",
+                              });
+                            }
+                          }
+                        }}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                    {promoCodeStatus && (
+                      <div className={`mt-2 text-xs flex items-center gap-1 ${promoCodeStatus.valid ? 'text-green-600' : 'text-red-500'}`}>
+                        {promoCodeStatus.valid ? (
+                          <>
+                            <CheckCircle2 className="w-3 h-3" />
+                            {promoCodeStatus.hoaName} partner discount applied: {promoCodeStatus.discount}% off
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="w-3 h-3" />
+                            Invalid promo code
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {/* Summary Card */}
                   <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 mb-6">
@@ -1081,7 +1126,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         <FormItem>
                           <FormLabel>Full Name <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter full name" {...field} />
+                            <Input placeholder="John Doe" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1095,7 +1140,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         <FormItem>
                           <FormLabel>Full Street Address <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter full street address" {...field} />
+                            <Input placeholder="123 Maple Ave, Huntsville, AL 35801" {...field} />
                           </FormControl>
                           <FormDescription>Include City and Zip Code</FormDescription>
                           <FormMessage />
@@ -1137,7 +1182,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                               Phone {(selectedContactMethod === "text" || selectedContactMethod === "phone") && <span className="text-red-500">*</span>}
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter phone number" {...field} />
+                              <Input placeholder="(555) 123-4567" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1154,7 +1199,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             Email {selectedContactMethod === "email" && <span className="text-red-500">*</span>}
                           </FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter email address" {...field} />
+                            <Input placeholder="john@example.com" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1193,7 +1238,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           <FormLabel>Special Instructions (Optional)</FormLabel>
                           <FormControl>
                             <Textarea 
-                              placeholder="Gate codes, pet information, or special requests..." 
+                              placeholder="Gate codes, pet info, special requests..." 
                               className="resize-none"
                               {...field} 
                             />
@@ -1202,107 +1247,50 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         </FormItem>
                       )}
                     />
-
-                    <div className="bg-muted/30 rounded-xl p-4 border border-border">
-                      <h5 className="text-lg font-bold text-primary mb-2">25-Year Anniversary Client Rewards</h5>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        To celebrate 25 years of Lawn Trooper, we're offering commitment-based service rewards for both new and existing clients.
-                      </p>
-
-                      <TermSelector
-                        term={term}
-                        payUpfront={payUpfront}
-                        onTermChange={setTerm}
-                        onPayUpfrontChange={setPayUpfront}
-                        className="mb-3"
-                      />
-
-                      <div className="text-sm text-muted-foreground space-y-1">
-                        <div className="flex justify-between"><span>1-Year Plan</span><span className="font-semibold text-primary">Includes 1 complimentary month</span></div>
-                        <div className="flex justify-between"><span>2-Year Plan</span><span className="font-semibold text-primary">Includes 3 complimentary months</span></div>
-                        <div className="flex justify-between"><span>Pay in full</span><span className="font-semibold text-primary">Doubles your complimentary months</span></div>
-                      </div>
-                      <p className="text-sm font-semibold text-accent mt-3">
-                        Up to 6 complimentary months with a 2-year paid-in-full plan.
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Existing clients may qualify for additional loyalty pricing. Enter your client code if applicable.
-                      </p>
-                      <Input
-                        className="mt-2"
-                        placeholder="Client Code (Optional)"
-                        value={clientCode}
-                        onChange={(e) => setClientCode(e.target.value)}
-                      />
-                    </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Sticky Summary + Navigation Footer */}
-          <div className="sticky bottom-0 z-20 bg-card border-t-2 border-primary/20 shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
-            {currentStep >= 2 && (
-              <div className="px-4 py-2 bg-primary/5 border-b border-primary/10">
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <div className="flex items-center gap-4 flex-wrap">
-                    <span className="text-muted-foreground">
-                      <span className="font-bold text-primary">{planData?.name}</span>
-                    </span>
-                    <span className="text-muted-foreground text-xs">
-                      {YARD_SIZES.find(y => y.id === yardSize)?.label} yard
-                    </span>
-                    {currentStep >= 3 && (
-                      <span className="text-muted-foreground text-xs">
-                        {basicAddons.length}B + {premiumAddons.length}P upgrades
-                      </span>
-                    )}
-                  </div>
-                  <div className="font-bold text-primary text-lg whitespace-nowrap">
-                    ${totalPrice}/mo
-                  </div>
-                </div>
-              </div>
+          {/* Navigation Footer */}
+          <div className="border-t border-border p-4 md:p-6 flex items-center justify-between gap-4">
+            {currentStep > 1 ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBack}
+                className="flex items-center gap-2"
+              >
+                <ChevronLeft className="w-4 h-4" /> Back
+              </Button>
+            ) : (
+              <div />
             )}
-            <div className="p-4 md:p-6 flex items-center justify-between gap-4">
-              {currentStep > 1 ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleBack}
-                  className="flex items-center gap-2"
-                >
-                  <ChevronLeft className="w-4 h-4" /> Back
-                </Button>
-              ) : (
-                <div />
-              )}
 
-              {currentStep < 4 ? (
-                <Button
-                  type="button"
-                  onClick={handleNext}
-                  disabled={currentStep === 3 && !canProceedFromStep3}
-                  className={`flex items-center gap-2 px-6 py-3 text-base font-bold ${
-                    currentStep === 3 && !canProceedFromStep3 
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  }`}
-                >
-                  Continue <ChevronRight className="w-4 h-4" />
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
-                  style={{ backgroundColor: '#1a3d24', color: 'white' }}
-                >
-                  {isSubmitting ? "Transmitting..." : "See My Instant Price"}
-                </Button>
-              )}
-            </div>
+            {currentStep < 4 ? (
+              <Button
+                type="button"
+                onClick={handleNext}
+                disabled={currentStep === 3 && !canProceedFromStep3}
+                className={`flex items-center gap-2 ${
+                  currentStep === 3 && !canProceedFromStep3 
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                }`}
+              >
+                Next <ChevronRight className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
+                style={{ backgroundColor: '#1a3d24', color: 'white' }}
+              >
+                {isSubmitting ? "Transmitting..." : "Get Your AI Yard Quote"}
+              </Button>
+            )}
           </div>
         </form>
       </Form>
