@@ -4,12 +4,15 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { PLANS, YARD_SIZES, getYardMultiplier } from "@/data/plans";
 import { 
+  COMMITMENT_COPY,
+  buildSavingsSummary,
   COMMITMENT_TERMS, 
   calculateActualMonthly,
   calculateTermFreeMonths,
   getFreeMonthsBreakdown
 } from "@/data/promotions";
 import { Switch } from "@/components/ui/switch";
+import TotalSavingsBox from "@/components/TotalSavingsBox";
 
 export default function PromotionsPage() {
   const [selectedPlan, setSelectedPlan] = useState("premium");
@@ -32,6 +35,7 @@ export default function PromotionsPage() {
   
   const termMonths = term?.months || 12;
   const billedMonths = Math.max(termMonths - freeMonths, 1);
+  const savingsSummary = buildSavingsSummary(actualMonthly, 0, termMonths, freeMonths);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -73,7 +77,9 @@ export default function PromotionsPage() {
                     <div className="text-xs text-muted-foreground">{t.shortDescription || t.description}</div>
                   </div>
                   {t.freeMonths > 0 && (
-                    <span className="text-green-600 font-bold">+{t.freeMonths} complimentary</span>
+                    <span className="text-green-600 font-bold">
+                      {t.id === "2-year" ? COMMITMENT_COPY.twoYearBonus : COMMITMENT_COPY.oneYearBonus}
+                    </span>
                   )}
                 </button>
               ))}
@@ -102,7 +108,7 @@ export default function PromotionsPage() {
                 </div>
               </div>
               <p className="text-xs text-center text-muted-foreground">
-                Pay monthly is always available. Pay in full to double your complimentary months.
+                Pay monthly is always available. Pay in full and your complimentary months are doubled.
               </p>
             </div>
           </div>
@@ -164,6 +170,25 @@ export default function PromotionsPage() {
               Your final {freeMonths} month{freeMonths > 1 ? 's are' : ' is'} complimentary.
             </div>
           )}
+        </div>
+        <TotalSavingsBox summary={savingsSummary} className="mb-8" />
+
+        <div className="bg-card rounded-xl p-6 border shadow-sm mb-8">
+          <h2 className="font-bold text-lg mb-4">Shrub Care Tier Value</h2>
+          <div className="grid gap-3 md:grid-cols-3 text-sm">
+            <div className="rounded-lg border border-border bg-muted/30 p-3">
+              <p className="font-semibold text-primary">Basic Patrol</p>
+              <p className="text-muted-foreground mt-1">1 shrub care package visit per year with trim, cleanup, clipping removal, and AI shrub assessment.</p>
+            </div>
+            <div className="rounded-lg border border-border bg-muted/30 p-3">
+              <p className="font-semibold text-primary">Premium Patrol</p>
+              <p className="text-muted-foreground mt-1">2 shrub care package visits per year plus No Shrub Left Behind initiative.</p>
+            </div>
+            <div className="rounded-lg border border-border bg-muted/30 p-3">
+              <p className="font-semibold text-primary">Executive Command</p>
+              <p className="text-muted-foreground mt-1">3 shrub care package visits per year with advanced climate-stress monitoring.</p>
+            </div>
+          </div>
         </div>
 
         <div className="bg-primary/5 rounded-xl p-6 border border-primary/20 mb-8">

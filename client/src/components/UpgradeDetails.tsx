@@ -11,11 +11,17 @@ export default function UpgradeDetails({ upgradeId }: UpgradeDetailsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const detail = getUpgradeDetail(upgradeId);
   const addon = getAddonById(upgradeId);
+  const previewText = detail?.what ?? addon?.description ?? "";
 
   if (!detail && !addon) return null;
 
   return (
     <div className="w-full">
+      {previewText && (
+        <p className="ml-1 mb-0.5 text-[11px] leading-tight text-muted-foreground">
+          {previewText}
+        </p>
+      )}
       <button
         data-testid={`upgrade-detail-toggle-${upgradeId}`}
         onClick={(e) => {

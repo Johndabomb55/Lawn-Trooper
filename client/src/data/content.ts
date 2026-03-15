@@ -58,7 +58,8 @@ export const PLAN_SUMMARIES = {
       highlights: [
         "Bi-weekly mowing (growing season)",
         "Monthly property check (off-season)",
-        "Includes 3 Basic upgrades",
+        "Includes 3 Basic-only maintenance upgrade credits",
+        "Shrub Care Package: 1 annual visit + AI shrub assessment",
         "Dream Yard Recon\u2122 — AI landscape plan"
       ]
     },
@@ -70,7 +71,8 @@ export const PLAN_SUMMARIES = {
         "Weekly mowing (growing season)",
         "Bi-weekly off-season service",
         "Flower bed weed control (included)",
-        "Includes 2 Basic upgrades and 2 Premium upgrades",
+        "Includes 5 maintenance upgrade credits (Basic = 1, Premium = 2)",
+        "Shrub Care Package Plus: 2 annual visits + No Shrub Left Behind initiative",
         "Priority Support",
         "Service Photo Updates"
       ]
@@ -80,10 +82,11 @@ export const PLAN_SUMMARIES = {
       name: "Executive Command",
       perfectFor: "Those who want the best lawn on the block without lifting a finger.",
       highlights: [
-        "Year-round weekly property monitoring",
+        "Weekly mowing (growing season) + bi-weekly off-season service",
         "Executive Turf Defense\u2122 (up to 7 apps/year)",
         "Weed-Free Turf Guarantee",
-        "Includes 3 Basic upgrades and 3 Premium upgrades",
+        "Includes 9 maintenance upgrade credits (Basic = 1, Premium = 2)",
+        "Executive Shrub Command: 3 annual shrub-care visits",
         "Dedicated Account Manager",
         "Service Photo Updates"
       ]

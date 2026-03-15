@@ -72,13 +72,16 @@ export default function TermSelector({
           />
           <Label htmlFor="payUpfront" className="cursor-pointer flex-1">
             <div className="font-bold text-primary flex items-center gap-2">
-              Pay-in-Full Option
+              See Pay-in-Full Savings (Optional)
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                Doubles commitment
+                Doubles your complimentary months
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Pay your full term upfront to double commitment months. 1-year goes 1 to 2, and 2-year goes 3 to 6.
+              Pay in full and your complimentary months are doubled.
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Your account manager confirms all payment options after you submit your quote request.
             </p>
           </Label>
         </div>

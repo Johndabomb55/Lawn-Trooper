@@ -37,9 +37,9 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Refreshes landscape appearance, retains soil moisture, regulates soil temperature, and suppresses weed growth in beds."
   },
   quarterly_trash_bin_cleaning: {
-    title: "Quarterly Trash Can Cleaning",
-    what: "Periodic deep cleaning of outdoor trash and recycling bins to remove residue, bacteria, and odor-causing buildup.",
-    when: "Performed every 3 months (quarterly) to maintain freshness year-round, with extra attention during hot summer months.",
+    title: "Every-Other-Month Trash Can Wash",
+    what: "Deep wash service for outdoor trash and recycling bins to remove residue, bacteria, and odor-causing buildup.",
+    when: "Performed every other month to keep bins cleaner through changing seasons, especially during hotter months.",
     why: "Reduces foul odors, discourages pests, and keeps your curbside bins sanitary and presentable."
   },
   christmas_lights_basic: {
@@ -49,10 +49,10 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Adds festive curb appeal during the holidays without the hassle and safety risk of DIY installation."
   },
   growing_season_boost: {
-    title: "Wet-Month Weekly Mow Boost (Basic Plan)",
-    what: "6 extra weekly mowing visits during heavy-growth months for Basic Patrol homes that normally receive bi-weekly service.",
-    when: "Scheduled during peak growth season when grass grows fastest. Must be booked at least 1 week in advance.",
-    why: "Prevents your lawn from becoming overgrown during rainy, fast-growth periods and keeps it looking consistently maintained."
+    title: "Reserve Your Rapid-Response Weekly Cuts (Basic Plan)",
+    what: "Includes 6 weekly mowings you can deploy whenever needed, so you choose exactly which weeks get weekly coverage.",
+    when: "Use during wet months, heavy growth windows, or before events when you want tighter weekly cadence coverage.",
+    why: "Gives you rapid-response coverage during rainy growth spikes and flexible control over exactly when extra weekly service happens."
   },
   extra_weed_control: {
     title: "Additional Weed Control & Fertilization",
@@ -61,8 +61,8 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Accelerates your lawn's path to a weed-free, green, healthy state with more frequent professional treatments."
   },
   pine_straw_basic: {
-    title: "Basic Pine Straw Install (Up to 10 Bales)",
-    what: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 bales of quality pine straw with delivery and professional installation.",
+    title: "Basic Pine Straw Install (Up to 10 Big Bales)",
+    what: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 big bales of quality pine straw with delivery and professional installation.",
     when: "Typically installed in early spring or late fall to refresh beds and provide seasonal ground cover.",
     why: "Pine straw is a natural, attractive ground cover that retains moisture, insulates roots, and gives beds a clean, uniform look."
   },
@@ -79,10 +79,10 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Removes heavy leaf coverage that can smother your lawn, harbor pests, and create a messy appearance during fall and winter."
   },
   weekly_growth_season_mowing: {
-    title: "Weekly Growth Season Mowing",
-    what: "Upgrades mowing frequency to weekly during peak growth months. Reverts to bi-weekly outside growth season.",
-    when: "Active during peak growing season when grass grows fastest. Weather delays may apply during extreme conditions.",
-    why: "Keeps your lawn at optimal height during the fastest growth period, preventing scalping and maintaining a manicured appearance."
+    title: "Weekly Bagging Service",
+    what: "Premium weekly mowing cadence with grass bagging and removal for a cleaner finish and reduced clippings left on turf.",
+    when: "Best during wet months and fast-growth periods when lawns need tighter timing and more cleanup after each cut.",
+    why: "Keeps your lawn neat and consistently clean when growth spikes, with bagging support that improves appearance between visits."
   },
   premium_pressure_wash: {
     title: "Premium Pressure-Wash Package",
@@ -103,8 +103,8 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Provides enhanced curb appeal across larger landscape areas while retaining moisture and suppressing weeds throughout your property."
   },
   monthly_trash_bin_cleaning: {
-    title: "Monthly Trash Can Cleaning",
-    what: "Monthly deep cleaning of outdoor trash and recycling bins to maintain consistent freshness and sanitation.",
+    title: "Monthly Trash Can Wash (+ 2nd Can Free)",
+    what: "Monthly deep wash service for outdoor trash and recycling bins to maintain consistent freshness and sanitation, with your second can included at no extra charge.",
     when: "Performed once per month, every month, for year-round bin hygiene and odor control.",
     why: "More frequent cleaning keeps bins consistently fresh, reduces pest attraction, and eliminates persistent odors especially in warmer months."
   },
@@ -115,8 +115,8 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Creates a stunning holiday display that transforms your property into a neighborhood standout without the risk of climbing ladders."
   },
   pine_straw_premium: {
-    title: "Premium Pine Straw Install (Up to 25 Bales)",
-    what: "Expanded pine straw installation for larger properties. Includes up to 25 bales of premium pine straw with delivery and professional installation.",
+    title: "Premium Pine Straw Install (Up to 25 Big Bales)",
+    what: "Expanded pine straw installation for larger properties. Includes up to 25 big bales of premium pine straw with delivery and professional installation.",
     when: "Installed in early spring or late fall, with attention to detail for comprehensive bed coverage across your entire property.",
     why: "Provides complete, uniform ground cover for larger landscapes, maximizing moisture retention and weed suppression across all beds."
   },

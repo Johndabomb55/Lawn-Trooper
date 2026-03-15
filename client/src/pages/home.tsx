@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MultiStepQuoteWizard from "@/components/MultiStepQuoteWizard";
 import CTAButton from "@/components/CTAButton";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { 
   Check, 
   Shield, 
@@ -28,16 +28,26 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { 
-  GLOBAL_CONSTANTS
+  GLOBAL_CONSTANTS,
+  calculate2026Price,
+  PLANS
 } from "@/data/plans";
+import { buildSavingsSummary, COMMITMENT_COPY } from "@/data/promotions";
 import { WHY_DIFFERENT } from "@/data/content";
 import PromoBanner from "@/components/PromoBanner";
+import TotalSavingsBox from "@/components/TotalSavingsBox";
 import { Link } from "wouter";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_1771794280044.png";
 import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
@@ -46,10 +56,8 @@ import mascotHolidayLights from "@assets/Holiday_lights_on_a_festive_home_177179
 // Stock Assets
 import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
 import imgEstateMadison from "@assets/generated_images/madison_al_home_dark_red_brick.png";
-import imgGardenHuntsville from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
 
 import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
-import imgMulch from "@assets/stock_images/installing_mulch_in__9ec6d6e1.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
 import imgXmasPremium from "@assets/stock_images/christmas_lights_dec_50e6447b.jpg";
@@ -60,8 +68,6 @@ import imgPineStrawInstall from "@assets/stock_images/man_trimming_hedges__4f4ec
 import imgAlabamaYardBasic from "@assets/generated_images/athens_al_middle_class_home_landscaping.png";
 import imgAlabamaYardPremium from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
 import imgAlabamaYardExecutive from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
-import imgSmallYard1 from "@assets/generated_images/athens_al_home_with_pansies.png";
-import imgSmallYard2 from "@assets/generated_images/manicured_small_garden.png";
 import imgHuntsvilleHome from "@assets/generated_images/huntsville_al_home_landscaping.png";
 import bgLandscape from "@assets/generated_images/beautiful_landscaped_yard_background.png";
 
@@ -75,8 +81,48 @@ import {
 import { trackEvent } from "../lib/analytics";
 import { getExperimentVariant, trackExperimentExposure } from "../lib/experiments";
 
+const ANNIVERSARY_SEEN_KEY = "lt_anniversary_seen";
+
+function LaunchConfetti({ active }: { active: boolean }) {
+  if (!active) return null;
+
+  const colors = ["#f59e0b", "#22c55e", "#3b82f6", "#ef4444", "#a855f7", "#eab308"];
+  const pieces = Array.from({ length: 42 }, (_, idx) => ({
+    id: idx,
+    left: (idx * 7.3) % 100,
+    duration: 1.8 + (idx % 6) * 0.25,
+    delay: (idx % 8) * 0.05,
+    rotate: 120 + idx * 9,
+    color: colors[idx % colors.length],
+  }));
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-hidden>
+      {pieces.map((piece) => (
+        <motion.span
+          key={piece.id}
+          className="absolute top-0 h-3 w-2 rounded-sm"
+          style={{ left: `${piece.left}%`, backgroundColor: piece.color }}
+          initial={{ y: -24, opacity: 1, rotate: 0 }}
+          animate={{ y: 920, opacity: 0, rotate: piece.rotate }}
+          transition={{ duration: piece.duration, delay: piece.delay, ease: "easeOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showCelebrationModal, setShowCelebrationModal] = useState(false);
+  const [showLaunchConfetti, setShowLaunchConfetti] = useState(false);
+  const [showHeroCelebration, setShowHeroCelebration] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
+  const savingsSnapshots = PLANS.map((p) => ({
+    id: p.id,
+    name: p.name,
+    summary: buildSavingsSummary(calculate2026Price(p.id, "1/3"), 0, 24, 3),
+  }));
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -114,16 +160,41 @@ export default function LandingPage() {
     trackExperimentExposure("hero_simplification", variant);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.sessionStorage.getItem(ANNIVERSARY_SEEN_KEY) === "1") return;
+
+    window.sessionStorage.setItem(ANNIVERSARY_SEEN_KEY, "1");
+    setShowCelebrationModal(true);
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!prefersReducedMotion) {
+      setShowLaunchConfetti(true);
+      const timer = window.setTimeout(() => setShowLaunchConfetti(false), 2800);
+      return () => window.clearTimeout(timer);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setShowHeroCelebration(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setShowHeroCelebration(false), 6500);
+    return () => window.clearTimeout(timer);
+  }, [shouldReduceMotion]);
+
   return (
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
+      <LaunchConfetti active={showLaunchConfetti} />
       {/* Navigation */}
       <nav
         className="sticky md:fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border"
       >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full" />
+            <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain" />
             <span className="font-heading font-bold text-xl tracking-tight text-primary">LAWN TROOPER</span>
           </div>
 
@@ -162,18 +233,55 @@ export default function LandingPage() {
           )}
         </AnimatePresence>
       </nav>
+      <PromoBanner variant="sticky" storageKey="lt_anniversary_sticky_dismissed" ctaHref="#quote" />
+      <Dialog open={showCelebrationModal} onOpenChange={setShowCelebrationModal}>
+        <DialogContent className="max-w-xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-extrabold text-amber-900">
+              25-Year Anniversary Celebration
+            </DialogTitle>
+            <DialogDescription className="text-amber-800 text-sm">
+              We are celebrating 25 years of Lawn Trooper with our biggest anniversary rewards.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-lg border border-amber-300 bg-white/80 p-4">
+            <ul className="space-y-2 text-sm text-amber-900 font-semibold">
+              <li>- 1-Year plan: {COMMITMENT_COPY.oneYearBonus}</li>
+              <li>- 2-Year plan: {COMMITMENT_COPY.twoYearBonus}</li>
+              <li>- {COMMITMENT_COPY.payInFullBonus}</li>
+            </ul>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setShowCelebrationModal(false)}
+              className="border-amber-400 text-amber-900"
+            >
+              Continue Browsing
+            </Button>
+            <Button
+              onClick={() => {
+                setShowCelebrationModal(false);
+                scrollToSection("quote");
+              }}
+              className="bg-amber-500 hover:bg-amber-600 text-white font-bold"
+            >
+              See Anniversary Pricing
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col pt-32 pb-20 overflow-hidden bg-primary/5">
 
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
-           <img src={bgLandscape} alt="Lawn Trooper Team" className="w-full h-full object-cover brightness-[0.65]" />
+           <img src={bgLandscape} alt="Lawn Trooper Team" className="w-full h-full object-cover brightness-[0.82]" />
            {/* Removed fade to background so image stays visible */}
-           <div className="absolute inset-0 bg-black/50"></div>
-           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
+           <div className="absolute inset-0 bg-black/34"></div>
+           <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         </div>
-        
         <div className="container mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center items-center text-center mt-12">
           
           {/* Logo Centerpiece */}
@@ -183,8 +291,62 @@ export default function LandingPage() {
             transition={{ duration: 0.8, type: "spring" }}
             className="mb-8 relative w-full max-w-4xl"
           >
-            <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full transform scale-150 pointer-events-none"></div>
-            <img src={mascotLogo} alt="Lawn Trooper Premium Exterior Care logo" className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[450px] mb-6" />
+            {showHeroCelebration && (() => {
+              const speechTagline = "Celebrating 25 years serving the Tennessee Valley.";
+              const bannerTagline = "25-Year Anniversary Client Rewards - Proudly serving the Tennessee Valley for 25+ years.";
+              return (
+                <>
+                  {!shouldReduceMotion && (
+                    <>
+                      <motion.div
+                        className="pointer-events-none absolute left-1/2 top-5 h-8 w-[72%] -translate-x-1/2 rounded-full bg-emerald-300/65 blur-[2px]"
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: ["0%", "72%", "72%", "0%"], opacity: [0, 0.85, 0.7, 0] }}
+                        transition={{ duration: 5.2, times: [0, 0.2, 0.78, 1], ease: "easeInOut" }}
+                      />
+                      {Array.from({ length: 16 }).map((_, idx) => (
+                        <motion.span
+                          key={`hero-logo-particle-${idx}`}
+                          className="pointer-events-none absolute top-8 h-1.5 w-1.5 rounded-full bg-emerald-200"
+                          style={{ left: `${18 + idx * 4}%` }}
+                          initial={{ y: 0, opacity: 0 }}
+                          animate={{ y: [0, -10, 12], opacity: [0, 0.9, 0] }}
+                          transition={{ duration: 0.9, delay: 0.8 + idx * 0.05, ease: "easeOut" }}
+                        />
+                      ))}
+                    </>
+                  )}
+                  <motion.div
+                    className="pointer-events-none absolute right-4 top-1 z-20 max-w-[240px] md:max-w-[320px] rounded-2xl border border-amber-200 bg-white/90 px-3 py-2 text-[10px] md:text-xs font-black tracking-wide text-primary shadow-lg"
+                    initial={{ opacity: 0, y: 8, scale: 0.92 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [8, 0, 0, -2], scale: [0.92, 1, 1, 0.99] }}
+                    transition={{ duration: 6.0, times: [0, 0.15, 0.84, 1], ease: "easeInOut" }}
+                  >
+                    {speechTagline}
+                  </motion.div>
+                  <motion.div
+                    className="pointer-events-none absolute inset-x-4 bottom-2 z-20 rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50/95 via-yellow-100/95 to-amber-50/95 px-3 py-2 text-center text-[11px] md:text-sm font-extrabold tracking-wide text-primary shadow-xl"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: [0, 0.95, 0.95, 0], y: [10, 0, 0, -2] }}
+                    transition={{ duration: 6.3, times: [0, 0.12, 0.86, 1], ease: "easeInOut" }}
+                  >
+                    {bannerTagline}
+                  </motion.div>
+                </>
+              );
+            })()}
+            <motion.img
+              src={mascotLogo}
+              alt="Lawn Trooper Premium Exterior Care logo"
+              className="w-full object-contain relative z-10 drop-shadow-2xl max-h-[520px] mb-6"
+              initial={shouldReduceMotion ? { opacity: 1, scale: 1, y: 0, rotate: 0 } : { opacity: 0, scale: 0.58, y: 30, rotate: -4 }}
+              animate={shouldReduceMotion
+                ? { opacity: 1, scale: 1.06, y: 0, rotate: 0 }
+                : { opacity: [0, 1, 1], scale: [0.58, 1.22, 1.14], y: [30, -16, 0], rotate: [-4, 2, 0] }}
+              transition={shouldReduceMotion
+                ? { duration: 0.5 }
+                : { duration: 2.4, times: [0, 0.64, 1], ease: "easeOut" }}
+            />
             
             {/* Plain-language value proposition */}
             <div className="mt-4 relative z-20 w-full">
@@ -274,50 +436,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* About Us Section */}
-      <section className="py-12 bg-background border-b border-border">
-        <div className="container mx-auto px-4 max-w-3xl text-center">
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            <span className="text-primary font-bold">Lawn Trooper</span> is built on commitment, efficiency, and loyalty. 
-            We've spent decades putting relationships before scale. 
-            As we adopt new automation, technology, and processes, 
-            we're passing those savings back to our customers. 
-            <span className="font-semibold text-primary">Commit to us, and we commit to you.</span>
-          </p>
-        </div>
-      </section>
-
-      {/* 2026 Savings Banner — prominent selling point, stands out from rest of page */}
-      <section className="py-8 px-4 bg-amber-100 border-y-4 border-amber-400">
-        <div className="container mx-auto max-w-4xl text-center">
-          <p className="text-xl md:text-2xl lg:text-3xl font-extrabold text-amber-900 leading-snug drop-shadow-sm">
-            2026 Efficiency Pricing is live: smarter routing and automation help keep monthly rates lower.
-          </p>
-        </div>
-      </section>
-
-      {/* Why We're Different — above plan builder */}
-      <section id="why-different" aria-labelledby="why-different-heading" className="py-12 bg-muted/20 border-y border-border">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 id="why-different-heading" className="text-2xl md:text-3xl font-heading font-bold text-center text-primary mb-8">
-            {WHY_DIFFERENT.sectionTitle}
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {WHY_DIFFERENT.bullets.map((item, i) => (
-              <div key={i} className="flex gap-3 p-4 bg-background rounded-lg border border-border" data-testid={`why-different-${i}`}>
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm text-primary">{item.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Quote Wizard Section - Primary CTA */}
       <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
@@ -347,50 +465,6 @@ export default function LandingPage() {
 
       {/* Pricing Plans */}
       
-      {/* Credibility Section */}
-      <section className="bg-background py-8 border-b border-border">
-        <div className="container mx-auto px-4 text-center">
-          <div className="inline-block bg-primary/5 border border-primary/10 rounded-lg px-8 py-4">
-            <h2 className="text-xl md:text-2xl font-heading font-bold text-primary mb-1">
-              Lawn Trooper — 25+ years serving the Tennessee Valley. 100+ beautification awards.
-            </h2>
-            <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest mb-2">
-              Military-level reliability. Premium results.
-            </p>
-            <p className="text-xs text-muted-foreground/80 flex items-center justify-center gap-1">
-               <Shield className="w-3 h-3" />
-               Lawn Trooper LLC is licensed and insured. We take full responsibility for any liability or damage to property while performing services.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Eco-Friendly Operations Section */}
-      <section className="py-12 bg-gradient-to-r from-green-900/20 via-emerald-900/10 to-green-900/20 border-y border-green-500/20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="flex justify-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                <Zap className="w-6 h-6 text-green-400" />
-              </div>
-              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-green-400" />
-              </div>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-heading font-bold text-[#0f2f1a] mb-4">
-              Quietly Powerful. Environmentally Responsible.
-            </h2>
-            <p className="text-[#1a3d24] text-lg leading-relaxed max-w-3xl mx-auto mb-6">
-              Lawn Trooper utilizes <span className="text-amber-500 font-bold">electric service vehicles</span>, <span className="text-amber-500 font-bold">battery-powered mowers</span>, and <span className="text-amber-500 font-bold">electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
-            </p>
-            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/40 rounded-full px-6 py-3">
-              <Zap className="w-5 h-5 text-amber-500" />
-              <span className="text-[#0f2f1a] font-bold">So quiet, you might not even notice we just mowed your lawn.</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section id="plans" className="py-24 bg-primary/5 relative">
         <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         
@@ -427,9 +501,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Basic Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $169/mo</p>
-                  <p className="text-xs font-semibold text-primary/80 mt-1">Includes 3 Basic upgrades</p>
+                  <p className="text-xs font-semibold text-primary/80 mt-1">Includes 3 maintenance upgrade credits</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -444,9 +518,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Premium Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $299/mo</p>
-                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 2 Basic upgrades + 2 Premium upgrades</p>
+                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 5 maintenance upgrade credits</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -461,9 +535,9 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Executive Command</h3>
                   <p className="text-sm text-muted-foreground">Starting at $399/mo</p>
-                  <p className="text-xs font-semibold text-accent mt-1">Includes 3 Basic upgrades + 3 Premium upgrades</p>
+                  <p className="text-xs font-semibold text-accent mt-1">Includes 9 maintenance upgrade credits</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
+                    <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
                   </div>
                   <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
                     See My Instant Price →
@@ -474,7 +548,16 @@ export default function LandingPage() {
             <div className="mt-5 mx-auto max-w-2xl rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
               <p className="text-sm font-bold text-primary">Flexible Upgrade System</p>
               <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
-              <p className="text-xs font-medium text-primary/90 mt-1">2 Basic upgrades can be exchanged for 1 Premium upgrade.</p>
+              <p className="text-xs font-medium text-primary/90 mt-1">Credit system: Basic upgrades use 1 credit and Premium upgrades use 2 credits.</p>
+            </div>
+            <div className="mt-6 grid gap-3 md:grid-cols-3">
+              {savingsSnapshots.map((snap) => (
+                <TotalSavingsBox
+                  key={snap.id}
+                  summary={snap.summary}
+                  title={`${snap.name} 2-Year Savings`}
+                />
+              ))}
             </div>
             <div className="text-center mt-6">
               <Button onClick={() => scrollToSection('plans')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
@@ -484,6 +567,40 @@ export default function LandingPage() {
               <Button onClick={() => scrollToSection('quote')} className="mt-3 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
                 Continue to Instant Price
               </Button>
+            </div>
+          </div>
+
+          <div className="mt-12 rounded-2xl border border-primary/20 bg-white/70 p-6">
+            <h3 className="text-center text-2xl font-heading font-bold text-primary">Trending Upgrades & Shrub Care Tiers</h3>
+            <p className="mt-2 text-center text-sm text-muted-foreground">
+              Popular with Lawn Trooper members: shrub care package, seasonal mulch refresh, premium seasonal color upgrades,
+              mid-size tree trimming, and hotter-month mowing cadence upgrades.
+            </p>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className="rounded-xl border border-border bg-card overflow-hidden">
+                <img src={imgMulchInstall} alt="Fresh mulch installation in flower beds" className="h-40 w-full object-cover" />
+                <div className="p-3">
+                  <p className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">Trending</p>
+                  <p className="mt-2 font-semibold text-primary">Seasonal Mulch Refresh</p>
+                  <p className="text-xs text-muted-foreground">High curb-appeal impact and moisture retention for Alabama heat.</p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-border bg-card overflow-hidden">
+                <img src={imgPineStrawInstall} alt="Healthy shrubs after trimming and cleanup" className="h-40 w-full object-cover" />
+                <div className="p-3">
+                  <p className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">Most Popular</p>
+                  <p className="mt-2 font-semibold text-primary">Shrub Care Package</p>
+                  <p className="text-xs text-muted-foreground">Basic: 1x/yr. Premium: 2x/yr + No Shrub Left Behind. Executive: 3x/yr command care.</p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-border bg-card overflow-hidden">
+                <img src={imgSeasonalFlowers} alt="Seasonal flowers and healthy landscape bed" className="h-40 w-full object-cover" />
+                <div className="p-3">
+                  <p className="inline-block rounded-full bg-fuchsia-100 px-2 py-0.5 text-[10px] font-bold uppercase text-fuchsia-700 border border-fuchsia-200">Premium Favorite</p>
+                  <p className="mt-2 font-semibold text-primary">Premium Seasonal Color Upgrade</p>
+                  <p className="text-xs text-muted-foreground">Abundant flower installations twice a year that make your entire yard feel like a whole vibe.</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -514,109 +631,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HOA Partnership Section */}
-      <section id="hoa-partnership" className="py-16 bg-muted/30 border-t border-border">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2">HOA Partnership Program</h2>
-            <p className="text-muted-foreground">
-              If your HOA partners with Lawn Trooper, residents receive additional benefits.
-            </p>
-          </div>
-          
-          <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); }}>
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">HOA Name</label>
-                <input 
-                  type="text" 
-                  data-testid="input-hoa-name"
-                  placeholder="e.g., Oakwood Estates HOA"
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">Contact Name</label>
-                  <input 
-                    type="text" 
-                    data-testid="input-hoa-contact-name"
-                    placeholder="Your name"
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">Phone</label>
-                  <input 
-                    type="tel" 
-                    data-testid="input-hoa-phone"
-                    placeholder="(256) 795-2949"
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">Email</label>
-                <input 
-                  type="email" 
-                  data-testid="input-hoa-email"
-                  placeholder="contact@hoa.com"
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">Notes / Directions</label>
-                <textarea 
-                  data-testid="input-hoa-notes"
-                  placeholder="Any additional information about your HOA..."
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-                />
-              </div>
-              <Button type="submit" data-testid="button-submit-hoa" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
-                Submit HOA Inquiry
-              </Button>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      {/* Seasonal Services Highlight */}
-      <section className="py-16 bg-gradient-to-b from-[#0a1628] to-[#1a2744] border-t border-border">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
-            <div className="rounded-xl overflow-hidden shadow-2xl border-2 border-white/10">
-              <img 
-                src={mascotHolidayLights} 
-                alt="Lawn Trooper holiday lights installation" 
-                data-testid="img-mascot-holiday-lights"
-                className="w-full h-auto object-cover"
-              />
-            </div>
-            <div className="text-white text-center md:text-left">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">Year-Round Curb Appeal</h2>
-              <p className="text-white/80 text-lg mb-6 leading-relaxed">
-                From spring landscaping to holiday light installation, Lawn Trooper keeps your property looking its best every season.
-              </p>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
-                  <span className="text-white/90">Basic & Premium seasonal lighting packages</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
-                  <span className="text-white/90">Holiday Hustle pre-event cleanup</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
-                  <span className="text-white/90">Full seasonal flower installs</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials - Field Reports */}
       <section className="py-20 bg-background relative border-t border-border">
         <div className="container mx-auto px-4">
@@ -634,7 +648,7 @@ export default function LandingPage() {
                className="bg-card rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
             >
               <div className="h-48 overflow-hidden relative">
-                 <img src={imgSmallYard1} alt="Athens Home" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                 <img src={imgAlabamaYardBasic} alt="Athens, AL lawn care result" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                  <div className="absolute bottom-0 left-0 bg-primary/90 text-white text-xs px-3 py-1 font-bold uppercase tracking-widest">
                    Sector: Athens, AL
                  </div>
@@ -718,24 +732,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Referral section — contact-only, no bonus promise */}
-      <section className="py-14 bg-accent/15 border-t border-border">
-        <div className="container mx-auto px-4 max-w-4xl text-center">
-          <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-3">
-            NO ONE LEFT BEHIND — REFERRAL PROGRAM
-          </h2>
-          <p className="text-muted-foreground mb-7">
-            Know a neighbor who could use a great lawn? Refer them and get in touch to learn more.
-          </p>
-          <Button
-            onClick={() => window.location.href = "mailto:John@lawn-trooper.com?subject=Neighbor%20Referral%20Program"}
-            className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider"
-          >
-            Refer a Neighbor
-          </Button>
-        </div>
-      </section>
-
       {/* Launch FAQ near footer for stronger conversion support */}
       <section id="faq" aria-labelledby="faq-heading" className="py-16 bg-background border-t border-border">
         <div className="container mx-auto px-4 max-w-4xl">
@@ -751,11 +747,11 @@ export default function LandingPage() {
               {[
                 {
                   q: "What does the Basic Patrol plan include?",
-                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Basic upgrades, and a Dream Yard Recon\u2122 landscape plan."
+                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Basic-only maintenance upgrade credits, and a Dream Yard Recon\u2122 landscape plan."
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol includes bi-weekly mowing with 3 Basic upgrades. Premium Patrol includes weekly mowing, 3 Basic upgrades, and 1 Premium upgrade. Executive Command includes year-round weekly monitoring, up to 7 turf applications, 3 Basic upgrades, and 2 Premium upgrades with dedicated account-manager support."
+                  a: "Basic Patrol includes bi-weekly mowing with monthly off-season checks and 3 maintenance upgrade credits. Premium Patrol includes weekly mowing during growing season, bi-weekly off-season service, 5 maintenance upgrade credits, and No Shrub Left Behind support. Executive Command includes weekly mowing during growing season, bi-weekly off-season service, up to 7 turf applications, 9 maintenance upgrade credits, and dedicated account-manager support."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
@@ -767,7 +763,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "Can I convert Basic Upgrades to Premium?",
-                  a: "Yes. You can exchange 2 Basic upgrades for 1 Premium upgrade, giving you flexibility to prioritize the services your property needs most."
+                  a: "Yes. The credit model is flexible: Basic upgrades use 1 credit, Premium upgrades use 2 credits, and you can mix services however you like based on your total credits."
                 },
                 {
                   q: "Do I have to sign a contract?",
@@ -779,7 +775,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "How do complimentary months work?",
-                  a: "1-year plans include 1 complimentary month, 2-year plans include 3, and paying in full doubles those commitment months. Complimentary months are applied as account credits at the end of your term."
+                  a: `1-year plans include 1 complimentary month, 2-year plans include ${COMMITMENT_COPY.twoYearBonus.toLowerCase()}, and paying in full doubles those commitment months. Complimentary months are applied as account credits at the end of your term.`
                 },
                 {
                   q: "Can existing clients use a client code?",
@@ -832,6 +828,127 @@ export default function LandingPage() {
                 </AccordionItem>
               ))}
             </Accordion>
+          </div>
+        </div>
+      </section>
+
+      {/* Referral section — contact-only, no bonus promise */}
+      <section className="py-14 bg-accent/15 border-t border-border">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-3">
+            NO ONE LEFT BEHIND — REFERRAL PROGRAM
+          </h2>
+          <p className="text-muted-foreground mb-7">
+            Know a neighbor who could use a great lawn? Refer them and get in touch to learn more.
+          </p>
+          <Button
+            onClick={() => window.location.href = "mailto:John@lawn-trooper.com?subject=Neighbor%20Referral%20Program"}
+            className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider"
+          >
+            Refer a Neighbor
+          </Button>
+        </div>
+      </section>
+
+      {/* HOA Partnership Section */}
+      <section id="hoa-partnership" className="py-16 bg-muted/30 border-t border-border">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2">HOA Partnership Program</h2>
+            <p className="text-muted-foreground">
+              If your HOA partners with Lawn Trooper, residents receive additional benefits.
+            </p>
+          </div>
+
+          <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); }}>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">HOA Name</label>
+                <input
+                  type="text"
+                  data-testid="input-hoa-name"
+                  placeholder="e.g., Oakwood Estates HOA"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Contact Name</label>
+                  <input
+                    type="text"
+                    data-testid="input-hoa-contact-name"
+                    placeholder="Your name"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    data-testid="input-hoa-phone"
+                    placeholder="(256) 795-2949"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Email</label>
+                <input
+                  type="email"
+                  data-testid="input-hoa-email"
+                  placeholder="contact@hoa.com"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Notes / Directions</label>
+                <textarea
+                  data-testid="input-hoa-notes"
+                  placeholder="Any additional information about your HOA..."
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                />
+              </div>
+              <Button type="submit" data-testid="button-submit-hoa" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+                Submit HOA Inquiry
+              </Button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* Seasonal Services Highlight */}
+      <section className="py-16 bg-gradient-to-b from-[#0a1628] to-[#1a2744] border-t border-border">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+            <div className="rounded-xl overflow-hidden shadow-2xl border-2 border-white/10">
+              <img
+                src={mascotHolidayLights}
+                alt="Lawn Trooper holiday lights installation"
+                data-testid="img-mascot-holiday-lights"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+            <div className="text-white text-center md:text-left">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">Year-Round Curb Appeal</h2>
+              <p className="text-white/80 text-lg mb-6 leading-relaxed">
+                From spring landscaping to holiday light installation, Lawn Trooper keeps your property looking its best every season.
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span className="text-white/90">Basic & Premium seasonal lighting packages</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span className="text-white/90">Holiday Hustle pre-event cleanup</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Star className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span className="text-white/90">Full seasonal flower installs</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -891,6 +1008,95 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Supporting details after core conversion flow */}
+      {/* About Us Section */}
+      <section className="py-12 bg-background border-y border-border">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            <span className="text-primary font-bold">Lawn Trooper</span> is built on commitment, efficiency, and loyalty.
+            We've spent decades putting relationships before scale.
+            As we adopt new automation, technology, and processes,
+            we're passing those savings back to our customers.
+            <span className="font-semibold text-primary">Commit to us, and we commit to you.</span>
+          </p>
+        </div>
+      </section>
+
+      {/* 2026 Savings Banner */}
+      <section className="py-8 px-4 bg-amber-100 border-y-4 border-amber-400">
+        <div className="container mx-auto max-w-4xl text-center">
+          <p className="text-xl md:text-2xl lg:text-3xl font-extrabold text-amber-900 leading-snug drop-shadow-sm">
+            2026 Efficiency Pricing is live: smarter routing and automation help keep monthly rates lower.
+          </p>
+        </div>
+      </section>
+
+      {/* Why We're Different */}
+      <section id="why-different" aria-labelledby="why-different-heading" className="py-12 bg-muted/20 border-y border-border">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <h2 id="why-different-heading" className="text-2xl md:text-3xl font-heading font-bold text-center text-primary mb-8">
+            {WHY_DIFFERENT.sectionTitle}
+          </h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {WHY_DIFFERENT.bullets.map((item, i) => (
+              <div key={i} className="flex gap-3 p-4 bg-background rounded-lg border border-border" data-testid={`why-different-${i}`}>
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-primary">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Credibility Section */}
+      <section className="bg-background py-8 border-b border-border">
+        <div className="container mx-auto px-4 text-center">
+          <div className="inline-block bg-primary/5 border border-primary/10 rounded-lg px-8 py-4">
+            <h2 className="text-xl md:text-2xl font-heading font-bold text-primary mb-1">
+              Lawn Trooper — 25+ years serving the Tennessee Valley. 100+ beautification awards.
+            </h2>
+            <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest mb-2">
+              Military-level reliability. Premium results.
+            </p>
+            <p className="text-xs text-muted-foreground/80 flex items-center justify-center gap-1">
+              <Shield className="w-3 h-3" />
+              Lawn Trooper LLC is licensed and insured. We take full responsibility for any liability or damage to property while performing services.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Eco-Friendly Operations Section */}
+      <section className="py-12 bg-gradient-to-r from-green-900/20 via-emerald-900/10 to-green-900/20 border-y border-green-500/20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="flex justify-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                <Zap className="w-6 h-6 text-green-400" />
+              </div>
+              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                <Leaf className="w-6 h-6 text-green-400" />
+              </div>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-[#0f2f1a] mb-4">
+              Quietly Powerful. Environmentally Responsible.
+            </h2>
+            <p className="text-[#1a3d24] text-lg leading-relaxed max-w-3xl mx-auto mb-6">
+              Lawn Trooper utilizes <span className="text-amber-500 font-bold">electric service vehicles</span>, <span className="text-amber-500 font-bold">battery-powered mowers</span>, and <span className="text-amber-500 font-bold">electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
+            </p>
+            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/40 rounded-full px-6 py-3">
+              <Zap className="w-5 h-5 text-amber-500" />
+              <span className="text-[#0f2f1a] font-bold">So quiet, you might not even notice we just mowed your lawn.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground pt-16 pb-8 border-t border-accent/20">
         <div className="container mx-auto px-4">
@@ -930,22 +1136,39 @@ export default function LandingPage() {
             
             <div>
               <h4 className="font-bold text-lg mb-6 text-accent">Service Area</h4>
-              <ul className="space-y-2 text-primary-foreground/80">
-                <li>Huntsville</li>
-                <li>Madison</li>
-                <li>Harvest</li>
-                <li>Athens</li>
-                <li>Owens Cross Roads</li>
-                <li>Meridianville</li>
-              </ul>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-accent/80 font-semibold mb-2">Core Areas</p>
+                  <ul className="space-y-2 text-primary-foreground/80">
+                    <li>Huntsville</li>
+                    <li>Madison</li>
+                    <li>Harvest</li>
+                    <li>Athens</li>
+                    <li>Hampton Cove</li>
+                    <li>Owens Cross Roads</li>
+                    <li>Meridianville</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-accent/80 font-semibold mb-2">Expanding Areas</p>
+                  <ul className="space-y-2 text-primary-foreground/80">
+                    <li>Monrovia</li>
+                    <li>Toney</li>
+                    <li>Hazel Green</li>
+                    <li>New Market</li>
+                    <li>Gurley</li>
+                  </ul>
+                </div>
+              </div>
+              <p className="mt-3 text-xs text-primary-foreground/70">
+                Plus surrounding Tennessee Valley communities as we continue expanding our routes.
+              </p>
             </div>
           </div>
           
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
               <p>&copy; {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
-              <span className="hidden md:inline text-white/30">|</span>
-              <p className="text-xs italic text-primary-foreground/50">Military-style branding. Landscaping tools only.</p>
             </div>
             <div className="flex gap-8">
               <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>

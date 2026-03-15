@@ -29,7 +29,7 @@ const LOCKED_FEATURES: LockedFeature[] = [
   { label: "Every visit: Precision edging, trimming, blowing", planIds: ["basic", "premium", "executive"] },
   { label: "Off-Season: Monthly property check", planIds: ["basic"] },
   { label: "Off-Season: Bi-weekly service", planIds: ["premium"] },
-  { label: "Year-Round Weekly Property Monitoring", planIds: ["executive"] },
+  { label: "Weekly mowing (growing season) + bi-weekly off-season service", planIds: ["executive"] },
   { label: "Flower bed weed control (included)", planIds: ["basic", "premium", "executive"] },
   { label: "Executive Turf Defense™ (up to 7 applications)", planIds: ["executive"] },
   { label: "Weed-Free Turf Guarantee", planIds: ["executive"] },
@@ -314,7 +314,7 @@ export default function PlanDetailsPanel({
                     Upgrade Conversion
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    2 Basic upgrades can be exchanged for 1 Premium upgrade.
+                    Credit rule: Basic = 1 credit, Premium = 2 credits.
                   </div>
                 </div>
               </div>

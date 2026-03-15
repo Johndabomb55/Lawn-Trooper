@@ -57,7 +57,7 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
     feature: "Off-season visits",
     basic: "Monthly check",
     premium: "Bi-weekly",
-    executive: "Additional seasonal attention (year-round weekly)",
+    executive: "Bi-weekly priority service",
   },
   {
     category: "Service",
@@ -82,10 +82,17 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
   },
   {
     category: "Service",
-    feature: "Total upgrades included",
-    basic: "3 Basic upgrades",
-    premium: "2 Basic + 2 Premium upgrades",
-    executive: "3 Basic + 3 Premium upgrades",
+    feature: "Total maintenance upgrade credits",
+    basic: "3 credits",
+    premium: "5 credits",
+    executive: "9 credits",
+  },
+  {
+    category: "Shrub Care",
+    feature: "Annual shrub care package",
+    basic: "1 visit/year",
+    premium: "2 visits/year + No Shrub Left Behind",
+    executive: "3 visits/year",
   },
 
   {

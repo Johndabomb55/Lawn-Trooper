@@ -56,14 +56,15 @@ function buildPlansFromConfig(): PlanDefinition[] {
       keyStats: [
         { label: "Mowing", value: "Bi-Weekly" },
         { label: "Off-Season", value: "Monthly Check" },
-        { label: "Upgrades", value: "3 Basic" },
+        { label: "Credits", value: "3 Total" },
         { label: "Dream Yard", value: "AI Recon" }
       ],
-      description: "Includes 3 Basic upgrades",
+      description: "Includes 3 Basic-only maintenance upgrade credits",
       features: [
         "Mowing: Bi-weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Monthly property check",
-        "<span class='font-bold text-primary'>Includes 3 Basic upgrades</span>",
+        "<span class='font-bold text-primary'>Includes 3 Basic-only maintenance upgrade credits</span>",
+        "<span class='font-bold text-primary'>Shrub Care Package:</span> 1 annual visit with trimming, cleanup, clipping removal, and AI shrub assessment",
         "Dream Yard Recon\u2122: AI-generated landscape plan emailed to you",
         "Flower bed weed control (included)",
         "Turf Applications: Not Included (Premium & Executive)",
@@ -73,50 +74,51 @@ function buildPlansFromConfig(): PlanDefinition[] {
     premium: {
       oldPrice: 349,
       keyStats: [
-        { label: "Mowing", value: "Weekly" },
+        { label: "Mowing", value: "Weekly (Growing Season)" },
         { label: "Off-Season", value: "Bi-Weekly" },
-        { label: "Upgrades", value: "2B + 2P" }
+        { label: "Credits", value: "5 Total" }
       ],
-      description: "Includes 2 Basic upgrades and 2 Premium upgrades",
+      description: "Includes 5 total maintenance upgrade credits",
       features: [
         "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Bi-weekly service",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-primary'>Includes 2 Basic upgrades and 2 Premium upgrades</span>",
+        "<span class='font-bold text-primary'>Includes 5 maintenance upgrade credits (Basic = 1, Premium = 2)</span>",
+        "<span class='font-bold text-primary'>Shrub Care Package Plus:</span> 2 annual shrub-care visits + No Shrub Left Behind initiative",
         "Service Photo Updates",
         "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
-        "<span class='text-xs text-muted-foreground'>Trade 2 Basic upgrades for 1 Premium upgrade anytime</span>"
+        "<span class='text-xs text-muted-foreground'>Trade anytime: 2 Basic credits = 1 Premium credit (and back)</span>"
       ]
     },
     executive: {
       oldPrice: 469,
       keyStats: [
-        { label: "Service", value: "Year-Round Weekly" },
+        { label: "Mowing", value: "Weekly (Growing Season)" },
+        { label: "Off-Season", value: "Bi-Weekly" },
         { label: "Turf Defense", value: "7 Apps/Year" },
-        { label: "Upgrades", value: "3B + 3P" }
+        { label: "Credits", value: "9 Total" }
       ],
-      description: "Includes 3 Basic upgrades and 3 Premium upgrades",
+      description: "Includes 9 total maintenance upgrade credits",
       features: [
-        "<span class='font-bold text-accent'>Year-Round Weekly Property Monitoring</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
+        "<span class='font-bold text-accent'>Weekly mowing (growing season) + bi-weekly off-season service</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
         "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-accent'>Includes 3 Basic upgrades and 3 Premium upgrades</span>",
+        "<span class='font-bold text-accent'>Includes 9 maintenance upgrade credits (Basic = 1, Premium = 2)</span>",
+        "<span class='font-bold text-accent'>Executive Shrub Command:</span> 3 annual shrub-care visits with proactive climate-stress monitoring",
         "Service Photo Updates",
         "<span class='font-bold text-accent'>Priority Storm Service</span>",
         "<span class='font-bold text-accent'>Dedicated Account Manager</span>",
-        "<span class='text-xs text-muted-foreground'>Trade 2 Basic upgrades for 1 Premium upgrade anytime</span>"
+        "<span class='text-xs text-muted-foreground'>Trade anytime: 2 Basic credits = 1 Premium credit (and back)</span>"
       ]
     }
   };
 
   return PLAN_CONFIGS.map((c) => {
     const override = uiOverrides[c.id];
-    const totalSlots = c.basicSlots + c.premiumSlots;
-    const allowanceLabel = c.premiumSlots === 0
-      ? `${totalSlots} upgrades`
-      : `${totalSlots} upgrades (${c.basicSlots} Basic + ${c.premiumSlots} Premium)`;
+    const totalCredits = c.basicSlots + (c.premiumSlots * 2);
+    const allowanceLabel = `${totalCredits} maintenance upgrade credits (Basic = 1, Premium = 2)`;
     return {
       id: c.id as PlanId,
       name: c.name,
@@ -129,7 +131,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
       allowance: { basic: c.basicSlots, premium: c.premiumSlots },
       allowsSwap: c.allowConversion,
       allowanceLabel,
-      swapLabel: c.allowConversion ? "Trade 2 Basic → 1 Premium" : undefined,
+      swapLabel: c.allowConversion ? "2 Basic credits ↔ 1 Premium credit" : undefined,
     };
   });
 }
@@ -165,17 +167,37 @@ export interface Addon {
   category: AddonCategory;
   price: number;
   description: string;
+  popularity?: "trending" | "favorite";
 }
+
+export const SHRUB_CARE_TIERS = {
+  basic: {
+    title: "Shrub Care Package",
+    visitsPerYear: 1,
+    summary: "1 annual shrub care mission with trim, cleanup, clipping removal, and AI shrub assessment.",
+  },
+  premium: {
+    title: "Shrub Care Package Plus",
+    visitsPerYear: 2,
+    summary: "2 annual shrub care missions plus No Shrub Left Behind initiative for stronger shrub survival.",
+  },
+  executive: {
+    title: "Executive Shrub Command",
+    visitsPerYear: 3,
+    summary: "3 annual shrub care missions with advanced climate-stress monitoring and proactive shrub recovery.",
+  },
+};
 
 export const ADDON_CATALOG: Addon[] = [
   // --- BASIC ADD-ONS ($20/mo overage) ---
   {
     id: "shrub_hedge_trimming",
-    name: "Shrub / Hedge Trimming",
+    name: "Shrub Care Package (Basic Tier)",
     tier: "basic",
     category: "landscaping",
     price: 20,
-    description: "One-time trimming service for up to 20 small to medium bushes or hedges. Includes shaping to maintain appearance and proper disposal of all clippings."
+    popularity: "trending",
+    description: "One annual shrub-care mission that includes shaping trim, cleanup, clipping removal, flower bed refresh, and an AI shrub health assessment to spot stress early."
   },
   {
     id: "basic_pressure_wash",
@@ -207,15 +229,34 @@ export const ADDON_CATALOG: Addon[] = [
     tier: "basic",
     category: "landscaping",
     price: 20,
+    popularity: "trending",
     description: "Mulch installation for defined garden or bed areas to refresh appearance and support plant health. Mulch included (brown, red, black hardwood or pine bark). Delivery and installation included."
   },
   {
+    id: "mid_size_tree_trimming_basic",
+    name: "Mid-Size Tree Trimming",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    popularity: "favorite",
+    description: "Targeted shaping and cleanup for small to mid-size trees to reduce overgrowth and improve long-term structure without heavy-equipment work."
+  },
+  {
+    id: "seasonal_color_flowers",
+    name: "Premium Seasonal Color Upgrade (2x/Year Abundant Flowers)",
+    tier: "premium",
+    category: "seasonal",
+    price: 40,
+    popularity: "favorite",
+    description: "Premium seasonal color upgrade with abundant flower installations twice per year, designed to keep your beds vibrant and give your whole yard a standout, polished vibe."
+  },
+  {
     id: "quarterly_trash_bin_cleaning",
-    name: "Quarterly Trash Can Cleaning",
+    name: "Every-Other-Month Trash Can Wash",
     tier: "basic",
     category: "trash",
     price: 20,
-    description: "Periodic cleaning of outdoor trash and recycling bins to reduce odors and buildup."
+    description: "Every-other-month wash service for outdoor trash and recycling bins to reduce odors, grime, and buildup year-round."
   },
   {
     id: "christmas_lights_basic",
@@ -227,11 +268,12 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "growing_season_boost",
-    name: "Wet-Month Weekly Mow Boost (Basic Plan)",
+    name: "Reserve Your Rapid-Response Weekly Cuts (Basic Plan)",
     tier: "basic",
     category: "landscaping",
     price: 20,
-    description: "Best for Basic Patrol homes during heavy-growth months: includes 6 extra weekly cuts per season. Must be booked at least 1 week in advance."
+    popularity: "favorite",
+    description: "Includes 6 weekly mowings you can deploy whenever needed. Reserve your rapid-response weekly cuts, pick the weeks that need tighter coverage, and count on us during wet-month growth spikes."
   },
   {
     id: "extra_weed_control",
@@ -239,6 +281,7 @@ export const ADDON_CATALOG: Addon[] = [
     tier: "basic",
     category: "landscaping",
     price: 20,
+    popularity: "favorite",
     description: "Get your yard weed-free, in shape, and green faster with 3 additional lawn applications—fertilizer, pre-emergent weed prevention, and targeted weed-killer—beyond what's included in your plan."
   },
   {
@@ -251,11 +294,11 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "pine_straw_basic",
-    name: "Basic Pine Straw Install (Up to 10 Bales)",
+    name: "Basic Pine Straw Install (Up to 10 Big Bales)",
     tier: "basic",
     category: "landscaping",
     price: 20,
-    description: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 bales of quality pine straw, delivery, and professional installation."
+    description: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 big bales of quality pine straw, delivery, and professional installation."
   },
   {
     id: "gutter_cleaning",
@@ -277,11 +320,12 @@ export const ADDON_CATALOG: Addon[] = [
   // --- PREMIUM ADD-ONS ($40/mo overage) ---
   {
     id: "weekly_growth_season_mowing",
-    name: "Weekly Growth Season Mowing",
+    name: "Weekly Bagging Service",
     tier: "premium",
     category: "landscaping",
     price: 40,
-    description: "Upgrades mowing frequency to weekly during peak growth months. Reverts to bi-weekly outside growth season. Weather delays apply."
+    popularity: "favorite",
+    description: "Premium weekly mowing with grass bagging and removal during peak growth periods. Ideal for rain-heavy weeks when your yard needs tighter cleanup and cleaner curb appeal."
   },
   {
     id: "premium_pressure_wash",
@@ -309,11 +353,11 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "monthly_trash_bin_cleaning",
-    name: "Monthly Trash Can Cleaning",
+    name: "Monthly Trash Can Wash (+ 2nd Can Free)",
     tier: "premium",
     category: "trash",
     price: 40,
-    description: "Monthly cleaning of outdoor trash and recycling bins to help maintain freshness and reduce odor over time."
+    description: "Monthly trash can wash service for ongoing freshness and odor control, with your second can cleaned at no extra charge."
   },
   {
     id: "christmas_lights_premium",
@@ -325,11 +369,11 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "pine_straw_premium",
-    name: "Premium Pine Straw Install (Up to 25 Bales)",
+    name: "Premium Pine Straw Install (Up to 25 Big Bales)",
     tier: "premium",
     category: "landscaping",
     price: 40,
-    description: "Expanded pine straw installation for larger properties. Includes up to 25 bales of premium pine straw, delivery, and professional installation with attention to detail."
+    description: "Expanded pine straw installation for larger properties. Includes up to 25 big bales of premium pine straw, delivery, and professional installation with attention to detail."
   },
   {
     id: "aeration_dethatching",
@@ -371,13 +415,15 @@ export const getAddonById = (id: string): Addon | undefined => {
 export const BASIC_ADDONS = ADDON_CATALOG.filter(a => a.tier === 'basic').map(a => ({
   id: a.id,
   label: a.name,
-  description: a.description
+  description: a.description,
+  popularity: a.popularity
 }));
 
 export const PREMIUM_ADDONS = ADDON_CATALOG.filter(a => a.tier === 'premium').map(a => ({
   id: a.id,
   label: a.name,
-  description: a.description
+  description: a.description,
+  popularity: a.popularity
 }));
 
 export const SEASONAL_ADDONS = ADDON_CATALOG.filter(a => a.category === 'seasonal').map(a => ({
@@ -387,7 +433,7 @@ export const SEASONAL_ADDONS = ADDON_CATALOG.filter(a => a.category === 'seasona
 }));
 
 export const EXECUTIVE_EXTRAS = [
-  "Year-Round Weekly Property Monitoring",
+  "Weekly growing-season mowing + bi-weekly off-season service",
   "Executive Turf Defense\u2122 (up to 7 applications annually)",
   "Weed-Free Turf Guarantee",
   "Priority Storm Service",
@@ -395,7 +441,7 @@ export const EXECUTIVE_EXTRAS = [
 ];
 
 export const EXECUTIVE_PERKS = [
-  "Year-round weekly property monitoring",
+  "Weekly growing-season mowing + bi-weekly off-season service",
   "Executive Turf Defense\u2122 — up to 7 turf applications annually",
   "Weed-Free Turf Guarantee (progressive improvement)",
   "Priority storm service",
@@ -406,6 +452,36 @@ export const EXECUTIVE_PERKS = [
 export const OVERAGE_PRICES = {
   basic: 20,  // $20/mo per extra basic add-on
   premium: 40 // $40/mo per extra premium add-on
+};
+
+export const PREMIUM_CREDIT_COST = 2;
+
+export const getPlanCredits = (
+  planId: string,
+  executivePlus: boolean = false,
+): number => {
+  const allowance = getPlanAllowance(planId, 0, false, new Date(), executivePlus);
+  return allowance.basic + (allowance.premium * PREMIUM_CREDIT_COST);
+};
+
+export const calculateUsedCredits = (
+  selectedBasic: number,
+  selectedPremium: number,
+): number => {
+  return selectedBasic + (selectedPremium * PREMIUM_CREDIT_COST);
+};
+
+export const calculateCreditOverage = (
+  usedCredits: number,
+  includedCredits: number,
+  overagePrices: { basic: number; premium: number } = OVERAGE_PRICES,
+): { extraCredits: number; totalOverage: number } => {
+  const extraCredits = Math.max(0, usedCredits - includedCredits);
+  const perCreditRate = Math.min(overagePrices.basic, Math.round(overagePrices.premium / PREMIUM_CREDIT_COST));
+  return {
+    extraCredits,
+    totalOverage: extraCredits * perCreditRate,
+  };
 };
 
 // Calculate overage cost

@@ -30,12 +30,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import PlanDetailsPanel from "@/components/PlanDetailsPanel";
 import WizardProgress from "@/components/WizardProgress";
 import YardScorecard from "@/components/YardScorecard";
 import TransformationPreview from "@/components/TransformationPreview";
 import UpgradeDetails from "@/components/UpgradeDetails";
 import PromoBanner from "@/components/PromoBanner";
+import TotalSavingsBox from "@/components/TotalSavingsBox";
+import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
+import imgShrub from "@assets/stock_images/man_trimming_hedges__4f4ec72f.jpg";
 import NeighborhoodOffer from "@/components/NeighborhoodOffer";
 import RobotWaitlist from "@/components/RobotWaitlist";
 import PlanBadge from "@/components/PlanBadge";
@@ -48,11 +50,11 @@ import {
   BASIC_ADDONS, 
   PREMIUM_ADDONS, 
   getYardMultiplier,
-  getPlanAllowance,
-  getPlanAllowanceLabel,
-  getSwapOptions,
+  getPlanCredits,
+  calculateUsedCredits,
+  calculateCreditOverage,
+  PREMIUM_CREDIT_COST,
   EXECUTIVE_PLUS,
-  calculateOverageCost,
   getAddonById,
   calculate2026Price
 } from "@/data/plans";
@@ -60,6 +62,8 @@ import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
 import { 
   COMMITMENT_TERMS, 
   HOA_PROMO_CODES,
+  COMMITMENT_COPY,
+  buildSavingsSummary,
   validatePromoCode,
   calculateActualMonthly,
   calculateTermFreeMonths,
@@ -122,11 +126,17 @@ const PREMIUM_UPGRADE_EXAMPLES = [
 ];
 
 const formatIncludedUpgradeCopy = (basic: number, premium: number): string => {
-  const basicLabel = `${basic} Basic upgrade${basic === 1 ? "" : "s"}`;
-  if (premium <= 0) return `Includes ${basicLabel}`;
-  const premiumLabel = `${premium} Premium upgrade${premium === 1 ? "" : "s"}`;
-  return `Includes ${basicLabel} and ${premiumLabel}`;
+  const totalCredits = basic + (premium * PREMIUM_CREDIT_COST);
+  return `Includes ${totalCredits} maintenance upgrade credits`;
 };
+
+const getPopularityBadgeClass = (popularity: "trending" | "favorite") =>
+  popularity === "favorite"
+    ? "bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200"
+    : "bg-green-100 text-green-700 border border-green-200";
+
+const getPopularityBadgeLabel = (popularity: "trending" | "favorite") =>
+  popularity === "favorite" ? "Spring Favorite" : "Trending";
 
 const MOBILE_PLAN_CARDS_SW = [
   {
@@ -134,33 +144,33 @@ const MOBILE_PLAN_CARDS_SW = [
     name: "Basic Patrol",
     badge: null,
     careLevel: "Essential Care",
-    mowing: "Bi-weekly mowing",
+    mowing: "Bi-weekly in growing season, monthly off-season check",
     treatments: "2 lawn treatments",
     totalUpgrades: 3,
-    breakdown: "Includes 3 Basic upgrades",
-    bonus: "25-Year Client Rewards",
+    breakdown: "Includes 3 maintenance upgrade credits",
+    bonus: COMMITMENT_COPY.twoYearBonus,
   },
   {
     id: "premium" as const,
     name: "Premium Patrol",
     badge: "Most Popular",
     careLevel: "Complete Care",
-    mowing: "Weekly mowing",
+    mowing: "Weekly in growing season, bi-weekly off-season",
     treatments: "4 lawn treatments",
-    totalUpgrades: 4,
-    breakdown: "Includes 2 Basic upgrades + 2 Premium upgrades",
-    bonus: "25-Year Client Rewards",
+    totalUpgrades: 5,
+    breakdown: "Includes 5 maintenance upgrade credits",
+    bonus: COMMITMENT_COPY.twoYearBonus,
   },
   {
     id: "executive" as const,
     name: "Executive Command",
     badge: "Best Value",
     careLevel: "Total Care",
-    mowing: "Weekly mowing",
+    mowing: "Weekly in growing season, bi-weekly off-season",
     treatments: "7 lawn treatments",
-    totalUpgrades: 6,
-    breakdown: "Includes 3 Basic upgrades + 3 Premium upgrades",
-    bonus: "25-Year Client Rewards",
+    totalUpgrades: 9,
+    breakdown: "Includes 9 maintenance upgrade credits",
+    bonus: COMMITMENT_COPY.twoYearBonus,
   },
 ];
 
@@ -250,7 +260,7 @@ function UpgradeFlexibilitySection() {
         </div>
       )}
       <div className="mt-3 text-center">
-        <p className="text-xs font-medium text-primary/80">2 Basic upgrades can be exchanged for 1 Premium upgrade.</p>
+        <p className="text-xs font-medium text-primary/80">Credit rule: Basic upgrades use 1 credit, Premium upgrades use 2 credits.</p>
       </div>
     </div>
   );
@@ -261,6 +271,9 @@ export type PropertyType = 'residential' | 'hoa';
 export default function StreamlinedWizard() {
   const [step, setStep] = useState(1);
   const pendingScrollYRef = useRef<number | null>(null);
+  const scrollRafOneRef = useRef<number | null>(null);
+  const scrollRafTwoRef = useRef<number | null>(null);
+  const scrollTimeoutRef = useRef<number | null>(null);
   const [propertyType, setPropertyType] = useState<PropertyType>('residential');
   const [hoaName, setHoaName] = useState("");
   const [hoaAcreage, setHoaAcreage] = useState("");
@@ -271,8 +284,8 @@ export default function StreamlinedWizard() {
   const [basicAddons, setBasicAddons] = useState<string[]>([]);
   const [premiumAddons, setPremiumAddons] = useState<string[]>([]);
   const [showAdvancedAddons, setShowAdvancedAddons] = useState(false);
-  const [swapCount, setSwapCount] = useState(0);
   const [executivePlus, setExecutivePlus] = useState(false);
+  const [showPayInFullTotal, setShowPayInFullTotal] = useState(false);
   const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
   const [payInFull, setPayInFull] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -306,21 +319,11 @@ export default function StreamlinedWizard() {
   const totalFreeMonths = freeMonthsBreakdown.total;
   
   const isExecutive = plan === 'executive';
-  const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
-  const planBaseAllowance = getPlanAllowance(plan, 0, false, new Date(), executivePlus);
-  const allowance = getPlanAllowance(plan, swapCount, false, new Date(), executivePlus);
-  const effectiveBasicAllowance = allowance.basic;
-  const effectivePremiumAllowance = allowance.premium;
+  const includedCredits = getPlanCredits(plan, executivePlus);
+  const usedCredits = calculateUsedCredits(basicAddons.length, premiumAddons.length);
   
   // Calculate overages
-  const { basicOverage, premiumOverage, totalOverage } = calculateOverageCost(
-    basicAddons.length,
-    premiumAddons.length,
-    effectiveBasicAllowance,
-    effectivePremiumAllowance
-  );
-  const extraBasicCount = basicOverage;
-  const extraPremiumCount = premiumOverage;
+  const { extraCredits, totalOverage } = calculateCreditOverage(usedCredits, includedCredits);
   const calculateBasePrice = () => {
     if (!selectedPlan || !selectedYard) return 0;
     let basePrice = selectedPlan.price;
@@ -346,11 +349,16 @@ export default function StreamlinedWizard() {
     freeMonthsBreakdown.commitmentMonths - freeMonthsBreakdown.commitmentBase
   );
   const payInFullExtraSavings = monthlySubscription * payInFullExtraMonths;
+  const savingsSummary = buildSavingsSummary(actualMonthly, 0, termMonths, totalFreeMonths);
 
-  const setStepWithStableScroll = (nextStep: number) => {
+  const captureScrollPosition = () => {
     if (typeof window !== "undefined") {
       pendingScrollYRef.current = window.scrollY;
     }
+  };
+
+  const setStepWithStableScroll = (nextStep: number) => {
+    captureScrollPosition();
     setStep(nextStep);
   };
 
@@ -375,16 +383,32 @@ export default function StreamlinedWizard() {
     if (scrollY == null || typeof window === "undefined") return;
 
     pendingScrollYRef.current = null;
-    window.requestAnimationFrame(() => {
+    if (scrollRafOneRef.current != null) window.cancelAnimationFrame(scrollRafOneRef.current);
+    if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
+    if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
+
+    scrollRafOneRef.current = window.requestAnimationFrame(() => {
       window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      window.requestAnimationFrame(() => {
+      scrollRafTwoRef.current = window.requestAnimationFrame(() => {
         window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
       });
-      window.setTimeout(() => {
+      scrollTimeoutRef.current = window.setTimeout(() => {
         window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
       }, 180);
     });
-  }, [step]);
+
+    return () => {
+      if (scrollRafOneRef.current != null) window.cancelAnimationFrame(scrollRafOneRef.current);
+      if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
+      if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
+    };
+  }, [step, plan, executivePlus]);
+
+  useLayoutEffect(() => {
+    if (plan === "basic" && premiumAddons.length > 0) {
+      setPremiumAddons([]);
+    }
+  }, [plan, premiumAddons.length]);
 
   const canProceed = () => {
     switch (step) {
@@ -397,7 +421,7 @@ export default function StreamlinedWizard() {
       case 3: return !!plan;
       case 4:
         if (isHOA) return true;
-        return basicAddons.length >= effectiveBasicAllowance && premiumAddons.length >= effectivePremiumAllowance;
+        return usedCredits >= includedCredits;
       case 5: return true;
       case 6: return true;
       case 7: return true;
@@ -406,10 +430,12 @@ export default function StreamlinedWizard() {
     }
   };
 
-  const getSlotRequirementMessage = () => {
-    if (plan === "basic") return `Choose your ${effectiveBasicAllowance} Basic upgrade${effectiveBasicAllowance === 1 ? "" : "s"}`;
-    if (plan === "premium") return `Choose your ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"}`;
-    return `Choose your ${effectiveBasicAllowance} Basic and ${effectivePremiumAllowance} Premium upgrade${effectivePremiumAllowance === 1 ? "" : "s"}`;
+  const getCreditRequirementMessage = () => {
+    const remaining = Math.max(0, includedCredits - usedCredits);
+    if (plan === "basic") {
+      return `Use ${remaining} more Basic credit${remaining === 1 ? "" : "s"} to finish this step. Premium upgrades are unavailable on Basic plan.`;
+    }
+    return `Use ${remaining} more credit${remaining === 1 ? "" : "s"} to finish this step. Basic uses 1 credit, Premium uses ${PREMIUM_CREDIT_COST}.`;
   };
 
   const handleSubmit = async () => {
@@ -762,9 +788,9 @@ export default function StreamlinedWizard() {
                       <button
                         data-testid={`plan-${p.id}`}
                         onClick={() => {
+                          captureScrollPosition();
                           const previousPlan = plan;
                           setPlan(p.id);
-                          setSwapCount(0);
                           if (p.id !== 'executive') {
                             setExecutivePlus(false);
                           }
@@ -809,7 +835,7 @@ export default function StreamlinedWizard() {
                             <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Anniversary Client Rewards</div>
                             <div className="text-[9px] text-amber-600 mb-0.5">Celebrating 25 years of Lawn Trooper</div>
                             <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
-                              +1 complimentary month
+                              {COMMITMENT_COPY.twoYearBonus}
                             </div>
                           </div>
                         </div>
@@ -820,24 +846,6 @@ export default function StreamlinedWizard() {
                         )}
                       </button>
 
-                      {isSelected && (
-                        <div className="mt-3">
-                          <PlanDetailsPanel
-                            plan={plan as any}
-                            executivePlus={executivePlus}
-                            setExecutivePlus={setExecutivePlus}
-                            swapCount={swapCount}
-                            setSwapCount={setSwapCount}
-                            basicAddons={basicAddons}
-                            setBasicAddons={setBasicAddons}
-                            premiumAddons={premiumAddons}
-                            setPremiumAddons={setPremiumAddons}
-                            effectiveBasicAllowance={effectiveBasicAllowance}
-                            effectivePremiumAllowance={effectivePremiumAllowance}
-                            showInfo={showInfo}
-                          />
-                        </div>
-                      )}
                     </div>
                   );
                 })}
@@ -845,6 +853,7 @@ export default function StreamlinedWizard() {
 
               {/* View Upgrade Examples */}
               <UpgradeFlexibilitySection />
+              <TotalSavingsBox summary={savingsSummary} />
             </motion.div>
           )}
 
@@ -860,93 +869,76 @@ export default function StreamlinedWizard() {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose Your Upgrades</h3>
                 <p className="text-muted-foreground text-sm">
-                  Pick the upgrades that fit your property best. Your plan includes {selectedPlan ? getPlanAllowanceLabel(selectedPlan.id, swapCount, false, new Date(), executivePlus) : "upgrades"} at no extra cost.
+                  Pick the upgrades that fit your property best. Your plan includes {includedCredits} total credits at no extra cost.
                 </p>
               </div>
 
               {!isHOA && !canProceed() && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 font-medium" data-testid="slot-requirement-message">
-                  {getSlotRequirementMessage()}
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 font-medium" data-testid="credit-requirement-message">
+                  {getCreditRequirementMessage()}
                 </div>
               )}
-
-              {/* Swap Toggle - Available for premium/executive plans with allowsSwap */}
-              {selectedPlan?.allowsSwap && swapOptions.length > 1 && (
-                <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <div className="font-medium text-sm">Upgrade Conversion</div>
-                      <div className="text-xs text-muted-foreground">2 Basic upgrades can be exchanged for 1 Premium upgrade.</div>
-                    </div>
-                    <div className="text-right text-xs">
-                      <div className="font-bold text-primary">{effectiveBasicAllowance}B</div>
-                      <div className="font-bold text-accent">{effectivePremiumAllowance}P</div>
+              {!isHOA && (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="overflow-hidden rounded-xl border border-border bg-card">
+                    <img src={imgShrub} alt="Healthy shrubs after professional care" className="h-28 w-full object-cover" />
+                    <div className="p-2.5">
+                      <p className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">Trending</p>
+                      <p className="mt-1 text-xs font-semibold text-primary">Shrub Care Package</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    {swapOptions.map((opt) => (
-                      <button
-                        key={opt.value}
-                        data-testid={`swap-btn-${opt.value}`}
-                        onClick={() => {
-                          setSwapCount(opt.value);
-                          const newAllowance = getPlanAllowance(plan, opt.value, false, new Date(), executivePlus);
-                          if (premiumAddons.length > newAllowance.premium) {
-                            setPremiumAddons(premiumAddons.slice(0, Math.max(0, newAllowance.premium)));
-                          }
-                        }}
-                        className={`flex-1 py-2 px-2 text-xs rounded-lg border-2 transition-all font-medium ${
-                          swapCount === opt.value
-                            ? 'border-primary bg-primary text-white'
-                            : 'border-primary/30 bg-background hover:border-primary/50'
-                        }`}
-                      >
-                        {opt.compactLabel}
-                      </button>
-                    ))}
+                  <div className="overflow-hidden rounded-xl border border-border bg-card">
+                    <img src={imgMulchInstall} alt="Fresh mulch installation in flower beds" className="h-28 w-full object-cover" />
+                    <div className="p-2.5">
+                      <p className="inline-block rounded-full bg-fuchsia-100 px-2 py-0.5 text-[10px] font-bold uppercase text-fuchsia-700 border border-fuchsia-200">Spring Favorite</p>
+                      <p className="mt-1 text-xs font-semibold text-primary">Seasonal Mulch Refresh</p>
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Selection Counter with Live Pricing */}
-              <div data-testid="addon-counter" className="bg-muted rounded-lg p-3 text-sm space-y-1">
+              <div data-testid="addon-counter" className="rounded-xl border-2 border-primary/40 bg-primary/5 p-4 text-sm space-y-1">
+                <div className="text-[11px] font-bold uppercase tracking-wide text-primary">Credit Counter</div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Selected:</span>
                   <span>
-                    <span className={`font-bold ${extraBasicCount > 0 ? 'text-amber-600' : 'text-primary'}`}>
+                    <span className="font-bold text-primary">
                       {basicAddons.length} Basic
                     </span>
                     <span>, </span>
-                    <span className={`font-bold ${extraPremiumCount > 0 ? 'text-amber-600' : 'text-accent'}`}>
+                    <span className="font-bold text-accent">
                       {premiumAddons.length} Premium
                     </span>
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Included:</span>
-                  <span>
-                    <span className="font-bold text-primary">{effectiveBasicAllowance} Basic</span>
-                    <span> + </span>
-                    <span className="font-bold text-accent">{effectivePremiumAllowance} Premium</span>
-                  </span>
+                  <span className="text-muted-foreground">Used / Included:</span>
+                  <span className="text-xl font-extrabold text-primary">{usedCredits} / {includedCredits}</span>
                 </div>
-                {(extraBasicCount > 0 || extraPremiumCount > 0) && (
+                <div className="flex justify-between items-center text-accent font-semibold">
+                  <span>Remaining:</span>
+                  <span>{Math.max(0, includedCredits - usedCredits)} credit{Math.max(0, includedCredits - usedCredits) === 1 ? "" : "s"}</span>
+                </div>
+                {extraCredits > 0 && (
                   <div className="flex justify-between items-center pt-1 border-t border-border/50 text-amber-600">
                     <span>Extra:</span>
-                    <span className="font-bold">
-                      {extraBasicCount > 0 && `+${extraBasicCount} Basic`}
-                      {extraBasicCount > 0 && extraPremiumCount > 0 && ', '}
-                      {extraPremiumCount > 0 && `+${extraPremiumCount} Premium`}
-                    </span>
+                    <span className="font-bold">+{extraCredits} credit{extraCredits === 1 ? "" : "s"}</span>
                   </div>
                 )}
               </div>
+              {!isHOA && canProceed() && (
+                <div className="rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-center text-sm font-semibold text-green-700">
+                  <Sparkles className="mr-1 inline h-4 w-4" />
+                  Mission bonus unlocked: your selections are dialed in.
+                </div>
+              )}
 
               <div className="space-y-3 max-h-[320px] overflow-y-auto scroll-smooth pr-1">
                 {/* BASIC ADD-ONS - Always visible for all plans */}
                 <div>
                   <div className="text-xs font-bold text-primary uppercase tracking-wider mb-2 sticky top-0 bg-background py-1">
-                    Basic Upgrades ({basicAddons.length}/{effectiveBasicAllowance} included free)
+                    Basic Upgrades ({basicAddons.length} selected, {basicAddons.length} credits)
                   </div>
                   
                   {/* Landscaping */}
@@ -977,6 +969,11 @@ export default function StreamlinedWizard() {
                               {isSelected && <Check className="w-3 h-3 text-white" />}
                             </div>
                             <span className="font-medium text-sm">{addon.name}</span>
+                            {addon.popularity && (
+                              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
+                                {getPopularityBadgeLabel(addon.popularity)}
+                              </span>
+                            )}
                           </button>
                           <button
                             type="button"
@@ -1020,6 +1017,11 @@ export default function StreamlinedWizard() {
                               {isSelected && <Check className="w-3 h-3 text-white" />}
                             </div>
                             <span className="font-medium text-sm">{addon.name}</span>
+                            {addon.popularity && (
+                              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
+                                {getPopularityBadgeLabel(addon.popularity)}
+                              </span>
+                            )}
                           </button>
                           <button
                             type="button"
@@ -1063,6 +1065,11 @@ export default function StreamlinedWizard() {
                               {isSelected && <Check className="w-3 h-3 text-white" />}
                             </div>
                             <span className="font-medium text-sm">{addon.name}</span>
+                            {addon.popularity && (
+                              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
+                                {getPopularityBadgeLabel(addon.popularity)}
+                              </span>
+                            )}
                           </button>
                           <button
                             type="button"
@@ -1126,7 +1133,7 @@ export default function StreamlinedWizard() {
                 {(plan === 'premium' || plan === 'executive') && (
                   <div className="pt-3 border-t border-accent/30">
                     <div className="text-xs font-bold text-accent uppercase tracking-wider mb-2 sticky top-0 bg-background py-1">
-                      Premium Upgrades ({premiumAddons.length}/{effectivePremiumAllowance} included free)
+                      Premium Upgrades ({premiumAddons.length} selected, {premiumAddons.length * PREMIUM_CREDIT_COST} credits)
                     </div>
                     
                     {/* Premium Landscaping */}
@@ -1158,6 +1165,11 @@ export default function StreamlinedWizard() {
                               </div>
                               <span className="font-medium text-sm">{addon.name}</span>
                               <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
+                            {addon.popularity && (
+                              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
+                                {getPopularityBadgeLabel(addon.popularity)}
+                              </span>
+                            )}
                             </button>
                             <button
                               type="button"
@@ -1202,6 +1214,11 @@ export default function StreamlinedWizard() {
                               </div>
                               <span className="font-medium text-sm">{addon.name}</span>
                               <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
+                            {addon.popularity && (
+                              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
+                                {getPopularityBadgeLabel(addon.popularity)}
+                              </span>
+                            )}
                             </button>
                             <button
                               type="button"
@@ -1246,6 +1263,11 @@ export default function StreamlinedWizard() {
                               </div>
                               <span className="font-medium text-sm">{addon.name}</span>
                               <Star className="w-3 h-3 text-accent ml-auto flex-shrink-0" />
+                            {addon.popularity && (
+                              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
+                                {getPopularityBadgeLabel(addon.popularity)}
+                              </span>
+                            )}
                             </button>
                             <button
                               type="button"
@@ -1395,6 +1417,9 @@ export default function StreamlinedWizard() {
                               <div className="flex justify-between"><span>2-Year:</span><span>+3 complimentary months</span></div>
                               <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>doubles complimentary months</span></div>
                             </div>
+                            <div className="mt-1 text-[10px] text-muted-foreground">
+                              Monthly pricing is primary for launch. Your account manager confirms payment options after quote submission.
+                            </div>
                           </div>
                           
                           <button
@@ -1413,8 +1438,8 @@ export default function StreamlinedWizard() {
                                 {payInFull && <Check className="w-3 h-3 text-white" />}
                               </div>
                               <div className="text-left">
-                                <div className="font-medium">Pay-in-Full Option</div>
-                                <div className="text-xs text-muted-foreground">Doubles your complimentary months.</div>
+                                <div className="font-medium">See Pay-in-Full Savings (Optional)</div>
+                                <div className="text-xs text-muted-foreground">Preview estimate only. No payment is collected here.</div>
                               </div>
                             </div>
                             <div className="text-right">
@@ -1428,7 +1453,7 @@ export default function StreamlinedWizard() {
                           </button>
                           
                           <p className="text-[10px] text-center text-muted-foreground">
-                            Pay monthly is always available. Pay in full to double your complimentary months.
+                            Pay monthly is always available. Account manager finalizes any pay-in-full option after your quote request.
                           </p>
                           {payInFull && payInFullExtraSavings > 0 && (
                             <p className="text-[11px] text-center text-green-700 font-semibold">
@@ -1488,20 +1513,32 @@ export default function StreamlinedWizard() {
                   </div>
                   
                   {payInFull && (
-                    <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-green-700">Pay in Full Total</div>
-                        <div className="text-2xl font-bold text-green-800">
-                          ${(monthlySubscription * billedMonths).toLocaleString()}
+                    <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowPayInFullTotal((prev) => !prev)}
+                        className="w-full text-left"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm font-bold text-green-700">See pay-in-full estimate</div>
+                          <ChevronDown className={`h-4 w-4 text-green-700 transition-transform ${showPayInFullTotal ? "rotate-180" : ""}`} />
                         </div>
-                        <div className="text-sm text-green-600">
-                          You'll receive {termMonths} months of service while paying for {billedMonths}
+                      </button>
+                      {showPayInFullTotal && (
+                        <div className="mt-2 border-t border-green-200 pt-2 text-center">
+                          <div className="text-2xl font-bold text-green-800">
+                            ${(monthlySubscription * billedMonths).toLocaleString()}
+                          </div>
+                          <div className="text-sm text-green-600">
+                            Estimated total if approved with your account manager. You still receive {termMonths} months while paying for {billedMonths}.
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   )}
                 </div>
               )}
+              <TotalSavingsBox summary={savingsSummary} />
 
             </motion.div>
           )}
@@ -1556,11 +1593,12 @@ export default function StreamlinedWizard() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Included:</span>
-                      <span>{effectiveBasicAllowance} Basic + {effectivePremiumAllowance} Premium</span>
+                      <span>{includedCredits} total credits</span>
                     </div>
                   </div>
                 </div>
               )}
+              {!isHOA && <TotalSavingsBox summary={savingsSummary} />}
 
               <div className="space-y-3">
                 <div>

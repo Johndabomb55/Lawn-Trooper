@@ -144,6 +144,23 @@ export const COMMITMENT_TERMS = [
   },
 ];
 
+export const COMMITMENT_COPY = {
+  oneYearBonus: "+1 complimentary month",
+  twoYearBonus: "+3 complimentary months",
+  payInFullBonus: "Pay in full doubles your complimentary months",
+};
+
+export interface SavingsSummary {
+  monthlyPrice: number;
+  monthlyDiscount: number;
+  termMonths: number;
+  complimentaryMonths: number;
+  billedMonths: number;
+  monthlyDiscountSavings: number;
+  commitmentSavings: number;
+  totalSavings: number;
+}
+
 /**
  * Calculate complimentary service months for term commitments
  *
@@ -346,6 +363,28 @@ export interface AppliedTotals {
   annualSavingsEstimate: number;
   monthlyDiscount: number;
   termMonths: number;
+}
+
+export function buildSavingsSummary(
+  monthlyPrice: number,
+  monthlyDiscount: number,
+  termMonths: number,
+  complimentaryMonths: number
+): SavingsSummary {
+  const billedMonths = Math.max(termMonths - complimentaryMonths, 0);
+  const monthlyDiscountSavings = monthlyDiscount * termMonths;
+  const commitmentSavings = monthlyPrice * complimentaryMonths;
+
+  return {
+    monthlyPrice,
+    monthlyDiscount,
+    termMonths,
+    complimentaryMonths,
+    billedMonths,
+    monthlyDiscountSavings: Math.round(monthlyDiscountSavings),
+    commitmentSavings: Math.round(commitmentSavings),
+    totalSavings: Math.round(monthlyDiscountSavings + commitmentSavings),
+  };
 }
 
 /**
@@ -664,11 +703,23 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    '4 upgrades (2 Basic + 2 Premium)',
+    '5 maintenance upgrade credits (Basic = 1, Premium = 2)',
+    'Shrub Care Package Plus: 2 visits/year + No Shrub Left Behind',
   ],
   executive: [
+    'Weekly mowing + bi-weekly off-season service',
     'Executive Turf Defense\u2122 — up to 7 applications/year',
     'Weed-Free Turf Guarantee (progressive improvement)',
-    '6 upgrades (3 Basic + 3 Premium)',
+    '9 maintenance upgrade credits (Basic = 1, Premium = 2)',
+    'Executive Shrub Command: 3 visits/year',
   ],
+};
+
+export const UPGRADE_SPOTLIGHT_TAGS: Record<string, "trending" | "favorite"> = {
+  mulch_install_4yards: "trending",
+  shrub_hedge_trimming: "trending",
+  seasonal_color_flowers: "trending",
+  mid_size_tree_trimming_basic: "favorite",
+  weekly_growth_season_mowing: "favorite",
+  growing_season_boost: "favorite",
 };

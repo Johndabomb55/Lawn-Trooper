@@ -62,7 +62,7 @@ export default function SavingsPanel({
         <div className="flex items-center justify-between">
           <h4 className="font-bold text-primary flex items-center gap-2">
             <Gift className="w-4 h-4" />
-            Savings & Promotions
+            Savings Snapshot
           </h4>
           {capApplied && (
             <TooltipProvider>
@@ -108,7 +108,7 @@ export default function SavingsPanel({
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">
-                {payUpfront ? "Pay-in-full extra savings" : "Pay in full to add"}
+                {payUpfront ? "Pay-in-full estimate" : "Optional pay-in-full estimate"}
               </span>
               <span className="font-semibold text-green-700">
                 +${payInFullExtraSavings.toLocaleString()}
