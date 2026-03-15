@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -200,20 +200,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   } | null>(null);
   
   const { toast } = useToast();
-  const pendingScrollYRef = useRef<number | null>(null);
-  const scrollRafOneRef = useRef<number | null>(null);
-  const scrollRafTwoRef = useRef<number | null>(null);
-  const scrollTimeoutRef = useRef<number | null>(null);
-
-  const withStableScroll = (updater: () => void) => {
-    if (typeof window !== "undefined") {
-      pendingScrollYRef.current = window.scrollY;
-    }
-    updater();
-  };
+  const wizardRootRef = useRef<HTMLDivElement | null>(null);
 
   const setStepWithStableScroll = (nextStep: number) => {
-    withStableScroll(() => setCurrentStep(nextStep));
+    setCurrentStep(nextStep);
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        wizardRootRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+      });
+    }
   };
 
   // Rotate local tips every 5 seconds
@@ -296,32 +291,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       setStepWithStableScroll(currentStep - 1);
     }
   };
-
-  useLayoutEffect(() => {
-    const scrollY = pendingScrollYRef.current;
-    if (scrollY == null || typeof window === "undefined") return;
-
-    pendingScrollYRef.current = null;
-    if (scrollRafOneRef.current != null) window.cancelAnimationFrame(scrollRafOneRef.current);
-    if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
-    if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
-
-    scrollRafOneRef.current = window.requestAnimationFrame(() => {
-      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      scrollRafTwoRef.current = window.requestAnimationFrame(() => {
-        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      });
-      scrollTimeoutRef.current = window.setTimeout(() => {
-        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      }, 180);
-    });
-
-    return () => {
-      if (scrollRafOneRef.current != null) window.cancelAnimationFrame(scrollRafOneRef.current);
-      if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
-      if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
-    };
-  }, [currentStep]);
 
   const setDefaultAddonsForPlan = (planId: string) => {
     const rec = RECOMMENDED_ADDONS[planId];
@@ -600,7 +569,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   );
 
   return (
-    <div className={`bg-card rounded-2xl shadow-2xl border-2 border-primary/30 relative ${isModal ? '' : ''}`}>
+    <div ref={wizardRootRef} className={`bg-card rounded-2xl shadow-2xl border-2 border-primary/30 relative ${isModal ? '' : ''}`}>
       {/* Trust Badge at Top */}
       <div className="bg-green-50 px-4 py-2 border-b border-green-200">
         <TrustBadge variant="compact" message={TRUST_MESSAGES.ctaTop} />

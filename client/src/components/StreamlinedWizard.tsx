@@ -276,10 +276,7 @@ export type PropertyType = 'residential' | 'hoa';
 
 export default function StreamlinedWizard() {
   const [step, setStep] = useState(1);
-  const pendingScrollYRef = useRef<number | null>(null);
-  const scrollRafOneRef = useRef<number | null>(null);
-  const scrollRafTwoRef = useRef<number | null>(null);
-  const scrollTimeoutRef = useRef<number | null>(null);
+  const wizardRootRef = useRef<HTMLDivElement | null>(null);
   const [propertyType, setPropertyType] = useState<PropertyType>('residential');
   const [hoaName, setHoaName] = useState("");
   const [hoaAcreage, setHoaAcreage] = useState("");
@@ -357,15 +354,13 @@ export default function StreamlinedWizard() {
   const payInFullExtraSavings = monthlySubscription * payInFullExtraMonths;
   const savingsSummary = buildSavingsSummary(actualMonthly, 0, termMonths, totalFreeMonths);
 
-  const captureScrollPosition = () => {
-    if (typeof window !== "undefined") {
-      pendingScrollYRef.current = window.scrollY;
-    }
-  };
-
   const setStepWithStableScroll = (nextStep: number) => {
-    captureScrollPosition();
     setStep(nextStep);
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        wizardRootRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+      });
+    }
   };
 
   const handleNext = () => {
@@ -383,32 +378,6 @@ export default function StreamlinedWizard() {
       setStepWithStableScroll(step - 1);
     }
   };
-
-  useLayoutEffect(() => {
-    const scrollY = pendingScrollYRef.current;
-    if (scrollY == null || typeof window === "undefined") return;
-
-    pendingScrollYRef.current = null;
-    if (scrollRafOneRef.current != null) window.cancelAnimationFrame(scrollRafOneRef.current);
-    if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
-    if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
-
-    scrollRafOneRef.current = window.requestAnimationFrame(() => {
-      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      scrollRafTwoRef.current = window.requestAnimationFrame(() => {
-        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      });
-      scrollTimeoutRef.current = window.setTimeout(() => {
-        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-      }, 180);
-    });
-
-    return () => {
-      if (scrollRafOneRef.current != null) window.cancelAnimationFrame(scrollRafOneRef.current);
-      if (scrollRafTwoRef.current != null) window.cancelAnimationFrame(scrollRafTwoRef.current);
-      if (scrollTimeoutRef.current != null) window.clearTimeout(scrollTimeoutRef.current);
-    };
-  }, [step]);
 
   useLayoutEffect(() => {
     if (plan === "basic" && premiumAddons.length > 0) {
@@ -498,7 +467,7 @@ export default function StreamlinedWizard() {
   const progressPercent = ((step - 1) / 8) * 100;
 
   return (
-    <div className="bg-card rounded-2xl shadow-2xl border-2 border-primary/20 overflow-hidden max-w-2xl mx-auto">
+    <div ref={wizardRootRef} className="bg-card rounded-2xl shadow-2xl border-2 border-primary/20 overflow-hidden max-w-2xl mx-auto">
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-primary to-green-700 p-4 text-white">
         <div className="flex items-center justify-between mb-3">
