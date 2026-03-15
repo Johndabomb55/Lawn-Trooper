@@ -70,7 +70,7 @@ export const PLAN_SUMMARIES = {
         "Weekly mowing (growing season)",
         "Bi-weekly off-season service",
         "Flower bed weed control (included)",
-        "Includes 3 Basic upgrades and 1 Premium upgrade",
+        "Includes 2 Basic upgrades and 2 Premium upgrades",
         "Priority Support",
         "Service Photo Updates"
       ]
@@ -83,7 +83,7 @@ export const PLAN_SUMMARIES = {
         "Year-round weekly property monitoring",
         "Executive Turf Defense\u2122 (up to 7 apps/year)",
         "Weed-Free Turf Guarantee",
-        "Includes 3 Basic upgrades and 2 Premium upgrades",
+        "Includes 3 Basic upgrades and 3 Premium upgrades",
         "Dedicated Account Manager",
         "Service Photo Updates"
       ]

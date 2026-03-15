@@ -75,14 +75,14 @@ function buildPlansFromConfig(): PlanDefinition[] {
       keyStats: [
         { label: "Mowing", value: "Weekly" },
         { label: "Off-Season", value: "Bi-Weekly" },
-        { label: "Upgrades", value: "3B + 1P" }
+        { label: "Upgrades", value: "2B + 2P" }
       ],
-      description: "Includes 3 Basic upgrades and 1 Premium upgrade",
+      description: "Includes 2 Basic upgrades and 2 Premium upgrades",
       features: [
         "Mowing: Weekly mowing (growing season)<br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "Off-Season: Bi-weekly service",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-primary'>Includes 3 Basic upgrades and 1 Premium upgrade</span>",
+        "<span class='font-bold text-primary'>Includes 2 Basic upgrades and 2 Premium upgrades</span>",
         "Service Photo Updates",
         "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
@@ -94,15 +94,15 @@ function buildPlansFromConfig(): PlanDefinition[] {
       keyStats: [
         { label: "Service", value: "Year-Round Weekly" },
         { label: "Turf Defense", value: "7 Apps/Year" },
-        { label: "Upgrades", value: "3B + 2P" }
+        { label: "Upgrades", value: "3B + 3P" }
       ],
-      description: "Includes 3 Basic upgrades and 2 Premium upgrades",
+      description: "Includes 3 Basic upgrades and 3 Premium upgrades",
       features: [
         "<span class='font-bold text-accent'>Year-Round Weekly Property Monitoring</span><br/><span class='text-xs text-muted-foreground'>Every visit: Precision edging / Detailed trimming / Blowing of all turf & hard surfaces</span>",
         "<span class='font-bold text-accent'>Executive Turf Defense\u2122</span>: Up to 7 turf applications annually",
         "<span class='font-bold text-accent'>Weed-Free Turf Guarantee</span><br/><span class='text-xs text-muted-foreground'>Turf restoration takes time. Results improve progressively based on starting conditions.</span>",
         "Flower bed weed control (included)",
-        "<span class='font-bold text-accent'>Includes 3 Basic upgrades and 2 Premium upgrades</span>",
+        "<span class='font-bold text-accent'>Includes 3 Basic upgrades and 3 Premium upgrades</span>",
         "Service Photo Updates",
         "<span class='font-bold text-accent'>Priority Storm Service</span>",
         "<span class='font-bold text-accent'>Dedicated Account Manager</span>",

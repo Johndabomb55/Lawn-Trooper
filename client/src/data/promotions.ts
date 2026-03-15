@@ -640,7 +640,7 @@ export const SEGMENT_OPTIONS = [
 ];
 
 // Recommended add-ons by plan and season (IDs must exist in ADDON_CATALOG)
-// Pre-selected defaults per plan (slot counts must match: Basic 3B/0P, Premium 3B+1P, Executive 3B+2P)
+// Pre-selected defaults per plan (slot counts must match: Basic 3B/0P, Premium 2B+2P, Executive 3B+3P)
 export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: string[] }> = {
   basic: {
     basic: ['extra_weed_control', 'gutter_cleaning', 'mulch_install_4yards'],
@@ -664,11 +664,11 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    '4 upgrades (3 Basic + 1 Premium)',
+    '4 upgrades (2 Basic + 2 Premium)',
   ],
   executive: [
     'Executive Turf Defense\u2122 — up to 7 applications/year',
     'Weed-Free Turf Guarantee (progressive improvement)',
-    '5 upgrades (3 Basic + 2 Premium)',
+    '6 upgrades (3 Basic + 3 Premium)',
   ],
 };

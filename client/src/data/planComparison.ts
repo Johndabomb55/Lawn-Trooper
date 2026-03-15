@@ -84,8 +84,8 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
     category: "Service",
     feature: "Total upgrades included",
     basic: "3 Basic upgrades",
-    premium: "3 Basic + 1 Premium upgrade",
-    executive: "3 Basic + 2 Premium upgrades",
+    premium: "2 Basic + 2 Premium upgrades",
+    executive: "3 Basic + 3 Premium upgrades",
   },
 
   {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -92,11 +92,11 @@ const PLAN_CARD_COPY: Record<string, { description: string; included: string }> 
   },
   premium: {
     description: "More complete property care.",
-    included: "Includes 3 Basic upgrades + 1 Premium upgrade",
+    included: "Includes 2 Basic upgrades + 2 Premium upgrades",
   },
   executive: {
     description: "Top-tier property care.",
-    included: "Includes 3 Basic upgrades + 2 Premium upgrades",
+    included: "Includes 3 Basic upgrades + 3 Premium upgrades",
   },
 };
 
@@ -218,6 +218,7 @@ interface MultiStepQuoteWizardProps {
 
 export default function MultiStepQuoteWizard({ onClose, isModal = false }: MultiStepQuoteWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const pendingScrollYRef = useRef<number | null>(null);
   const [yardSize, setYardSize] = useState("1/3");
   const [plan, setPlan] = useState("basic");
   const [basicAddons, setBasicAddons] = useState<string[]>([]);
@@ -324,17 +325,40 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     }));
   };
 
+  const changeStep = (nextStep: number) => {
+    if (typeof window !== "undefined") {
+      pendingScrollYRef.current = window.scrollY;
+    }
+    setCurrentStep(nextStep);
+  };
+
   const handleNext = () => {
     if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
+      changeStep(currentStep + 1);
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      changeStep(currentStep - 1);
     }
   };
+
+  useLayoutEffect(() => {
+    const scrollY = pendingScrollYRef.current;
+    if (scrollY == null || typeof window === "undefined") return;
+
+    pendingScrollYRef.current = null;
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      });
+      window.setTimeout(() => {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      }, 180);
+    });
+  }, [currentStep]);
 
   const setDefaultAddonsForPlan = (planId: string) => {
     const rec = RECOMMENDED_ADDONS[planId];
@@ -531,7 +555,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   // Reset function for after submission
   const resetForm = () => {
     form.reset();
-    setCurrentStep(1);
+    changeStep(1);
     setYardSize("1/3");
     setPlan("basic");
     setBasicAddons([]);
@@ -564,9 +588,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       return "Choose your 3 Basic upgrades.";
     }
     if (plan === "premium") {
-      return "Choose your 3 Basic upgrades and 1 Premium upgrade.";
+      return "Choose your 2 Basic upgrades and 2 Premium upgrades.";
     }
-    return "Choose your 3 Basic upgrades and 2 Premium upgrades.";
+    return "Choose your 3 Basic upgrades and 3 Premium upgrades.";
   };
 
   const MissionReadyIndicator = () => (
@@ -619,7 +643,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
             return (
               <React.Fragment key={step.id}>
                 <button
-                  onClick={() => step.id < currentStep && setCurrentStep(step.id)}
+                  onClick={() => step.id < currentStep && changeStep(step.id)}
                   disabled={step.id > currentStep}
                   className={`flex flex-col items-center gap-1 transition-all ${
                     isCompleted ? 'opacity-100 cursor-pointer' : 

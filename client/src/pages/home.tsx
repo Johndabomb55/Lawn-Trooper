@@ -444,7 +444,7 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Premium Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $299/mo</p>
-                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 3 Basic upgrades + 1 Premium upgrade</p>
+                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 2 Basic upgrades + 2 Premium upgrades</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
                   </div>
@@ -461,7 +461,7 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Executive Command</h3>
                   <p className="text-sm text-muted-foreground">Starting at $399/mo</p>
-                  <p className="text-xs font-semibold text-accent mt-1">Includes 3 Basic upgrades + 2 Premium upgrades</p>
+                  <p className="text-xs font-semibold text-accent mt-1">Includes 3 Basic upgrades + 3 Premium upgrades</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">25-Year Client Rewards</span>
                   </div>

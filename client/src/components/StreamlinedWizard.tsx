@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Check, 
@@ -148,7 +148,7 @@ const MOBILE_PLAN_CARDS_SW = [
     mowing: "Weekly mowing",
     treatments: "4 lawn treatments",
     totalUpgrades: 4,
-    breakdown: "Includes 3 Basic upgrades + 1 Premium upgrade",
+    breakdown: "Includes 2 Basic upgrades + 2 Premium upgrades",
     bonus: "25-Year Client Rewards",
   },
   {
@@ -158,8 +158,8 @@ const MOBILE_PLAN_CARDS_SW = [
     careLevel: "Total Care",
     mowing: "Weekly mowing",
     treatments: "7 lawn treatments",
-    totalUpgrades: 5,
-    breakdown: "Includes 3 Basic upgrades + 2 Premium upgrades",
+    totalUpgrades: 6,
+    breakdown: "Includes 3 Basic upgrades + 3 Premium upgrades",
     bonus: "25-Year Client Rewards",
   },
 ];
@@ -260,6 +260,7 @@ export type PropertyType = 'residential' | 'hoa';
 
 export default function StreamlinedWizard() {
   const [step, setStep] = useState(1);
+  const pendingScrollYRef = useRef<number | null>(null);
   const [propertyType, setPropertyType] = useState<PropertyType>('residential');
   const [hoaName, setHoaName] = useState("");
   const [hoaAcreage, setHoaAcreage] = useState("");
@@ -346,21 +347,44 @@ export default function StreamlinedWizard() {
   );
   const payInFullExtraSavings = monthlySubscription * payInFullExtraMonths;
 
+  const setStepWithStableScroll = (nextStep: number) => {
+    if (typeof window !== "undefined") {
+      pendingScrollYRef.current = window.scrollY;
+    }
+    setStep(nextStep);
+  };
+
   const handleNext = () => {
     if (isHOA && step === 1) {
-      setStep(8);
+      setStepWithStableScroll(8);
     } else if (step < 9) {
-      setStep(step + 1);
+      setStepWithStableScroll(step + 1);
     }
   };
 
   const handleBack = () => {
     if (isHOA && step === 8) {
-      setStep(1);
+      setStepWithStableScroll(1);
     } else if (step > 1) {
-      setStep(step - 1);
+      setStepWithStableScroll(step - 1);
     }
   };
+
+  useLayoutEffect(() => {
+    const scrollY = pendingScrollYRef.current;
+    if (scrollY == null || typeof window === "undefined") return;
+
+    pendingScrollYRef.current = null;
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      });
+      window.setTimeout(() => {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      }, 180);
+    });
+  }, [step]);
 
   const canProceed = () => {
     switch (step) {
@@ -418,7 +442,7 @@ export default function StreamlinedWizard() {
       
       if (response.ok) {
         setIsComplete(true);
-        setStep(9);
+        setStepWithStableScroll(9);
       } else {
         throw new Error('Failed to submit');
       }
@@ -1745,7 +1769,7 @@ export default function StreamlinedWizard() {
           {step === 9 && (
             <Button
               onClick={() => {
-                setStep(1);
+                setStepWithStableScroll(1);
                 setPropertyType('residential');
                 setHoaName("");
                 setHoaAcreage("");
