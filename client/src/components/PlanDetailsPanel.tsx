@@ -314,7 +314,7 @@ export default function PlanDetailsPanel({
                     Upgrade Conversion
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    Credit rule: Basic = 1 credit, Premium = 2 credits.
+                    Credit rule: Standard = 1 credit, Premium = 2 credits.
                   </div>
                 </div>
               </div>

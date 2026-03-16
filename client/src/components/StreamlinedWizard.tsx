@@ -63,6 +63,7 @@ import {
   COMMITMENT_TERMS, 
   HOA_PROMO_CODES,
   COMMITMENT_COPY,
+  UPGRADE_CREDIT_COPY,
   buildSavingsSummary,
   validatePromoCode,
   calculateActualMonthly,
@@ -242,7 +243,7 @@ function UpgradeFlexibilitySection() {
       {open && (
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-background/80 rounded-lg p-3 border border-border">
-            <h6 className="text-xs font-bold text-primary mb-2">Basic upgrades may include</h6>
+            <h6 className="text-xs font-bold text-primary mb-2">Standard upgrades may include</h6>
             <ul className="space-y-1">
               {BASIC_UPGRADE_EXAMPLES.map((ex) => (
                 <li key={ex} className="text-xs text-muted-foreground flex items-start gap-1.5">
@@ -266,7 +267,7 @@ function UpgradeFlexibilitySection() {
         </div>
       )}
       <div className="mt-3 text-center">
-        <p className="text-xs font-medium text-primary/80">Credit rule: Basic upgrades use 1 credit, Premium upgrades use 2 credits.</p>
+        <p className="text-xs font-medium text-primary/80">Credit rule: {UPGRADE_CREDIT_COPY.tierLegend}</p>
       </div>
     </div>
   );
@@ -324,6 +325,9 @@ export default function StreamlinedWizard() {
   const isExecutive = plan === 'executive';
   const includedCredits = getPlanCredits(plan, executivePlus);
   const usedCredits = calculateUsedCredits(basicAddons.length, premiumAddons.length);
+  const remainingCredits = Math.max(0, includedCredits - usedCredits);
+  const canAddStandardUpgrade = remainingCredits >= 1;
+  const canAddPremiumUpgrade = remainingCredits >= PREMIUM_CREDIT_COST;
   
   // Calculate overages
   const { extraCredits, totalOverage } = calculateCreditOverage(usedCredits, includedCredits);
@@ -346,6 +350,8 @@ export default function StreamlinedWizard() {
   const termMonths = selectedTerm?.months || 12;
   const billedMonths = termMonths - totalFreeMonths;
   const actualMonthly = monthlySubscription;
+  const effectiveMonthlyTermAverage =
+    termMonths > 0 ? Math.round((actualMonthly * billedMonths) / termMonths) : actualMonthly;
   const totalCommitmentSavings = monthlySubscription * totalFreeMonths;
   const payInFullExtraMonths = Math.max(
     0,
@@ -407,11 +413,10 @@ export default function StreamlinedWizard() {
   };
 
   const getCreditRequirementMessage = () => {
-    const remaining = Math.max(0, includedCredits - usedCredits);
     if (plan === "basic") {
-      return `Use ${remaining} more Basic credit${remaining === 1 ? "" : "s"} to finish this step. Premium upgrades are unavailable on Basic plan.`;
+      return `Use ${remainingCredits} more Standard credit${remainingCredits === 1 ? "" : "s"} to finish this step. Premium upgrades are unavailable on this plan.`;
     }
-    return `Use ${remaining} more credit${remaining === 1 ? "" : "s"} to finish this step. Basic uses 1 credit, Premium uses ${PREMIUM_CREDIT_COST}.`;
+    return `Use ${remainingCredits} more credit${remainingCredits === 1 ? "" : "s"} to finish this step. ${UPGRADE_CREDIT_COPY.tierLegendTight}`;
   };
 
   const handleSubmit = async () => {
@@ -485,7 +490,7 @@ export default function StreamlinedWizard() {
     const toneClass = isExecutivePlan
       ? "border-accent/30 bg-accent/10 text-accent"
       : "border-primary/20 bg-primary/5 text-primary";
-    const premiumUpgradeSummary = selectedPlan.id === "basic" ? "Basic upgrades only" : "Premium upgrades available";
+    const premiumUpgradeSummary = selectedPlan.id === "basic" ? "Standard upgrades only" : "Premium upgrades available";
 
     return (
       <div className={`rounded-xl border p-3 ${toneClass}`}>
@@ -509,6 +514,22 @@ export default function StreamlinedWizard() {
           <span data-testid="text-step-badge" className="text-sm bg-white/20 px-3 py-1 rounded-full">
             Step {step} of 9
           </span>
+        </div>
+        <div className="mb-2 text-center">
+          {!isHOA ? (
+            <>
+              {selectedYard ? (
+                <>
+                  <p className="text-xs font-semibold text-white">Effective monthly: ${effectiveMonthlyTermAverage}/mo</p>
+                  <p className="text-[11px] text-white/80">Averages complimentary months across your full term.</p>
+                </>
+              ) : (
+                <p className="text-[11px] text-white/80">Effective monthly updates after yard-size selection.</p>
+              )}
+            </>
+          ) : (
+            <p className="text-[11px] text-white/80">Effective monthly is finalized with your custom quote.</p>
+          )}
         </div>
         <div className="h-2 bg-white/20 rounded-full overflow-hidden">
           <motion.div 
@@ -879,10 +900,10 @@ export default function StreamlinedWizard() {
                   Pick the upgrades that fit your property best. Your plan includes {includedCredits} upgrade credits.
                 </p>
                 <p className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                  Selected: {usedCredits} credits ({basicAddons.length} Basic / {premiumAddons.length} Premium). Remaining: {Math.max(0, includedCredits - usedCredits)} credits.
+                  You have {includedCredits} upgrade credits. {UPGRADE_CREDIT_COPY.tierLegendTight}
                 </p>
                 <p className="mt-2 text-xs font-bold uppercase tracking-wide text-accent">
-                  2 Basic credits = 1 Premium upgrade.
+                  Credits remaining: {remainingCredits}
                 </p>
               </div>
               <CompactPlanBanner />
@@ -935,7 +956,7 @@ export default function StreamlinedWizard() {
                   <span>{Math.max(0, includedCredits - usedCredits)} credit{Math.max(0, includedCredits - usedCredits) === 1 ? "" : "s"}</span>
                 </div>
                 <div className="text-[11px] font-semibold text-primary/80">
-                  Rule: 2 Basic credits = 1 Premium upgrade.
+                  Rule: {UPGRADE_CREDIT_COPY.tierLegendTight}
                 </div>
                 {extraCredits > 0 && (
                   <div className="flex justify-between items-center pt-1 border-t border-border/50 text-amber-600">
@@ -955,29 +976,34 @@ export default function StreamlinedWizard() {
                 {/* BASIC ADD-ONS - Always visible for all plans */}
                 <div>
                   <div className="text-xs font-bold text-primary uppercase tracking-wider mb-2 sticky top-0 bg-background py-1">
-                    Basic Upgrades ({basicAddons.length} selected, {basicAddons.length} credits)
+                    Standard Upgrades ({basicAddons.length} selected, {basicAddons.length} credits)
                   </div>
                   
                   {/* Landscaping */}
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 mt-2">Landscaping</div>
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'landscaping').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
+                    const disableNewSelection = !isSelected && !canAddStandardUpgrade;
                     return (
                       <div key={addon.id} className="mb-1.5">
                         <div className="flex items-center gap-2">
                           <button
                             data-testid={`addon-${addon.id}`}
                             onClick={() => {
+                              if (disableNewSelection) return;
                               if (isSelected) {
                                 setBasicAddons(basicAddons.filter(id => id !== addon.id));
                               } else {
                                 setBasicAddons([...basicAddons, addon.id]);
                               }
                             }}
+                            disabled={disableNewSelection}
                             className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
                               isSelected
                                 ? 'border-primary bg-primary/10'
-                                : 'border-border hover:border-primary/50'
+                                : disableNewSelection
+                                  ? 'border-border opacity-60 cursor-not-allowed'
+                                  : 'border-border hover:border-primary/50'
                             }`}
                           >
                             <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1010,22 +1036,27 @@ export default function StreamlinedWizard() {
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 mt-3">Cleaning & Wash</div>
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'cleaning').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
+                    const disableNewSelection = !isSelected && !canAddStandardUpgrade;
                     return (
                       <div key={addon.id} className="mb-1.5">
                         <div className="flex items-center gap-2">
                           <button
                             data-testid={`addon-${addon.id}`}
                             onClick={() => {
+                              if (disableNewSelection) return;
                               if (isSelected) {
                                 setBasicAddons(basicAddons.filter(id => id !== addon.id));
                               } else {
                                 setBasicAddons([...basicAddons, addon.id]);
                               }
                             }}
+                            disabled={disableNewSelection}
                             className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
                               isSelected
                                 ? 'border-primary bg-primary/10'
-                                : 'border-border hover:border-primary/50'
+                                : disableNewSelection
+                                  ? 'border-border opacity-60 cursor-not-allowed'
+                                  : 'border-border hover:border-primary/50'
                             }`}
                           >
                             <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1058,22 +1089,27 @@ export default function StreamlinedWizard() {
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 mt-3">Trash Can Cleaning</div>
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'trash').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
+                    const disableNewSelection = !isSelected && !canAddStandardUpgrade;
                     return (
                       <div key={addon.id} className="mb-1.5">
                         <div className="flex items-center gap-2">
                           <button
                             data-testid={`addon-${addon.id}`}
                             onClick={() => {
+                              if (disableNewSelection) return;
                               if (isSelected) {
                                 setBasicAddons(basicAddons.filter(id => id !== addon.id));
                               } else {
                                 setBasicAddons([...basicAddons, addon.id]);
                               }
                             }}
+                            disabled={disableNewSelection}
                             className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
                               isSelected
                                 ? 'border-primary bg-primary/10'
-                                : 'border-border hover:border-primary/50'
+                                : disableNewSelection
+                                  ? 'border-border opacity-60 cursor-not-allowed'
+                                  : 'border-border hover:border-primary/50'
                             }`}
                           >
                             <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1106,22 +1142,27 @@ export default function StreamlinedWizard() {
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 mt-3">Seasonal / Christmas Lights</div>
                   {ADDON_CATALOG.filter(a => a.tier === 'basic' && a.category === 'seasonal').map((addon) => {
                     const isSelected = basicAddons.includes(addon.id);
+                    const disableNewSelection = !isSelected && !canAddStandardUpgrade;
                     return (
                       <div key={addon.id} className="mb-1.5">
                         <div className="flex items-center gap-2">
                           <button
                             data-testid={`addon-${addon.id}`}
                             onClick={() => {
+                              if (disableNewSelection) return;
                               if (isSelected) {
                                 setBasicAddons(basicAddons.filter(id => id !== addon.id));
                               } else {
                                 setBasicAddons([...basicAddons, addon.id]);
                               }
                             }}
+                            disabled={disableNewSelection}
                             className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
                               isSelected
                                 ? 'border-primary bg-primary/10'
-                                : 'border-border hover:border-primary/50'
+                                : disableNewSelection
+                                  ? 'border-border opacity-60 cursor-not-allowed'
+                                  : 'border-border hover:border-primary/50'
                             }`}
                           >
                             <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1157,22 +1198,27 @@ export default function StreamlinedWizard() {
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Landscaping</div>
                     {ADDON_CATALOG.filter(a => a.tier === 'premium' && a.category === 'landscaping').map((addon) => {
                       const isSelected = premiumAddons.includes(addon.id);
+                      const disableNewSelection = !isSelected && !canAddPremiumUpgrade;
                       return (
                         <div key={addon.id} className="mb-1.5">
                           <div className="flex items-center gap-2">
                             <button
                               data-testid={`addon-${addon.id}`}
                               onClick={() => {
+                                if (disableNewSelection) return;
                                 if (isSelected) {
                                   setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
                                 } else {
                                   setPremiumAddons([...premiumAddons, addon.id]);
                                 }
                               }}
+                              disabled={disableNewSelection}
                               className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
                                 isSelected
                                   ? 'border-accent bg-accent/10'
-                                  : 'border-border hover:border-accent/50'
+                                  : disableNewSelection
+                                    ? 'border-border opacity-60 cursor-not-allowed'
+                                    : 'border-border hover:border-accent/50'
                               }`}
                             >
                               <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1206,22 +1252,27 @@ export default function StreamlinedWizard() {
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 mt-3">Cleaning & Wash</div>
                     {ADDON_CATALOG.filter(a => a.tier === 'premium' && a.category === 'cleaning').map((addon) => {
                       const isSelected = premiumAddons.includes(addon.id);
+                      const disableNewSelection = !isSelected && !canAddPremiumUpgrade;
                       return (
                         <div key={addon.id} className="mb-1.5">
                           <div className="flex items-center gap-2">
                             <button
                               data-testid={`addon-${addon.id}`}
                               onClick={() => {
+                                if (disableNewSelection) return;
                                 if (isSelected) {
                                   setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
                                 } else {
                                   setPremiumAddons([...premiumAddons, addon.id]);
                                 }
                               }}
+                              disabled={disableNewSelection}
                               className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
                                 isSelected
                                   ? 'border-accent bg-accent/10'
-                                  : 'border-border hover:border-accent/50'
+                                  : disableNewSelection
+                                    ? 'border-border opacity-60 cursor-not-allowed'
+                                    : 'border-border hover:border-accent/50'
                               }`}
                             >
                               <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1255,22 +1306,27 @@ export default function StreamlinedWizard() {
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 mt-3">Seasonal / Christmas Lights</div>
                     {ADDON_CATALOG.filter(a => a.tier === 'premium' && a.category === 'seasonal').map((addon) => {
                       const isSelected = premiumAddons.includes(addon.id);
+                      const disableNewSelection = !isSelected && !canAddPremiumUpgrade;
                       return (
                         <div key={addon.id} className="mb-1.5">
                           <div className="flex items-center gap-2">
                             <button
                               data-testid={`addon-${addon.id}`}
                               onClick={() => {
+                                if (disableNewSelection) return;
                                 if (isSelected) {
                                   setPremiumAddons(premiumAddons.filter(id => id !== addon.id));
                                 } else {
                                   setPremiumAddons([...premiumAddons, addon.id]);
                                 }
                               }}
+                              disabled={disableNewSelection}
                               className={`flex-1 p-2 rounded-lg border transition-all text-left flex items-center gap-2 ${
                                 isSelected
                                   ? 'border-accent bg-accent/10'
-                                  : 'border-border hover:border-accent/50'
+                                  : disableNewSelection
+                                    ? 'border-border opacity-60 cursor-not-allowed'
+                                    : 'border-border hover:border-accent/50'
                               }`}
                             >
                               <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1431,9 +1487,9 @@ export default function StreamlinedWizard() {
                           <div className="p-2 bg-primary/5 border border-primary/20 rounded-lg">
                             <div className="text-xs font-bold text-primary mb-1">Commitment Savings</div>
                             <div className="text-[10px] text-muted-foreground space-y-0.5">
-                              <div className="flex justify-between"><span>1-Year:</span><span>{COMMITMENT_COPY.oneYearBonus}</span></div>
-                              <div className="flex justify-between"><span>2-Year:</span><span>{COMMITMENT_COPY.twoYearBonus}</span></div>
-                              <div className="flex justify-between text-green-600 font-medium"><span>Pay in full:</span><span>we'll double your complimentary months</span></div>
+                              <div className="flex justify-between"><span>{COMMITMENT_COPY.oneYearLine}</span></div>
+                              <div className="flex justify-between"><span>{COMMITMENT_COPY.twoYearLine}</span></div>
+                              <div className="flex justify-between text-green-600 font-medium"><span>{COMMITMENT_COPY.payInFullBonus}</span></div>
                             </div>
                             <div className="mt-1 text-[10px] text-muted-foreground">
                               Monthly pricing is primary for launch. Your account manager confirms payment options after quote submission.

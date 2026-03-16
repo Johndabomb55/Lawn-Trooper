@@ -147,12 +147,19 @@ export const COMMITMENT_TERMS = [
 export const COMMITMENT_COPY = {
   oneYearBonus: "+1 complimentary month",
   twoYearBonus: "+3 complimentary months",
-  payInFullBonus: "Pay in full and we'll double your complimentary months.",
+  payInFullBonus: "Pay in full: double your complimentary months",
   promoIntro: "Choose a longer commitment and receive complimentary service months.",
-  oneYearLine: "1-Year: 1 complimentary month",
-  twoYearLine: "2-Year: 3 complimentary months",
+  oneYearLine: "1-year: 1 complimentary month",
+  twoYearLine: "2-year: 3 complimentary months",
   maxLine: "Get up to 6 complimentary months with a 2-year paid-in-full plan.",
-  loyaltyLine: "Existing clients may qualify for loyalty pricing with a client code.",
+  loyaltyLine: "Existing clients may qualify for loyalty pricing (client code).",
+};
+
+export const UPGRADE_CREDIT_COPY = {
+  title: "Upgrade Credits",
+  tierLegend: "Standard upgrades (1 credit) • Premium upgrades (2 credits)",
+  tierLegendTight: "Standard = 1 credit, Premium = 2 credits.",
+  conversionLine: "2 Standard credits = 1 Premium upgrade.",
 };
 
 export interface SavingsSummary {
@@ -708,14 +715,14 @@ export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: stri
 export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
-    '5 upgrade credits (Basic = 1, Premium = 2)',
+    '5 upgrade credits (Standard = 1, Premium = 2)',
     'Shrub Care Package Plus: 2 visits/year + No Shrub Left Behind',
   ],
   executive: [
     'Weekly mowing + bi-weekly off-season service',
     'Executive Turf Defense\u2122 — up to 7 applications/year',
     'Weed-Free Turf Guarantee (progressive improvement)',
-    '9 upgrade credits (Basic = 1, Premium = 2)',
+    '9 upgrade credits (Standard = 1, Premium = 2)',
     'Executive Shrub Command: 3 visits/year',
   ],
 };

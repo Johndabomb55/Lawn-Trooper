@@ -246,8 +246,8 @@ export default function LandingPage() {
           </DialogHeader>
           <div className="rounded-lg border border-amber-300 bg-white/80 p-4">
             <ul className="space-y-2 text-sm text-amber-900 font-semibold">
-              <li>- 1-Year plan: {COMMITMENT_COPY.oneYearBonus}</li>
-              <li>- 2-Year plan: {COMMITMENT_COPY.twoYearBonus}</li>
+              <li>- {COMMITMENT_COPY.oneYearLine}</li>
+              <li>- {COMMITMENT_COPY.twoYearLine}</li>
               <li>- {COMMITMENT_COPY.payInFullBonus}</li>
             </ul>
           </div>
@@ -548,7 +548,7 @@ export default function LandingPage() {
             <div className="mt-5 mx-auto max-w-2xl rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
               <p className="text-sm font-bold text-primary">Flexible Upgrade System</p>
               <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
-              <p className="text-xs font-medium text-primary/90 mt-1">Credit rule: 2 Basic credits = 1 Premium upgrade.</p>
+              <p className="text-xs font-medium text-primary/90 mt-1">Credit rule: Standard upgrades (1 credit) • Premium upgrades (2 credits).</p>
             </div>
             <div className="mt-6 grid gap-3 md:grid-cols-3">
               {savingsSnapshots.map((snap) => (
@@ -747,7 +747,7 @@ export default function LandingPage() {
               {[
                 {
                   q: "What does the Basic Patrol plan include?",
-                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Basic-only upgrade credits, and a Dream Yard Recon\u2122 landscape plan."
+                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Standard-only upgrade credits, and a Dream Yard Recon\u2122 landscape plan."
                 },
                 {
                   q: "What's the difference between Basic, Premium, and Executive?",
@@ -762,8 +762,8 @@ export default function LandingPage() {
                   a: "Dream Yard Recon\u2122 is an AI-generated landscape plan personalized to your property and goals. Every plan includes it, along with a personalized review from your Dedicated Account Manager."
                 },
                 {
-                  q: "Can I convert Basic upgrades to premium upgrades?",
-                  a: "Yes. 2 Basic credits = 1 Premium upgrade, and you can mix services however you like based on your total upgrade credits."
+                  q: "Can I convert Standard upgrades to Premium upgrades?",
+                  a: "Yes. 2 Standard credits = 1 Premium upgrade, and you can mix services however you like based on your total upgrade credits."
                 },
                 {
                   q: "Do I have to sign a contract?",
@@ -775,11 +775,11 @@ export default function LandingPage() {
                 },
                 {
                   q: "How do complimentary months work?",
-                  a: "Choose a longer commitment and receive complimentary service months. 1-Year: 1 complimentary month. 2-Year: 3 complimentary months. Pay in full and we'll double your complimentary months. Get up to 6 complimentary months with a 2-year paid-in-full plan."
+                  a: "Choose a longer commitment and receive complimentary service months. 1-year: 1 complimentary month. 2-year: 3 complimentary months. Pay in full: double your complimentary months. Get up to 6 complimentary months with a 2-year paid-in-full plan."
                 },
                 {
                   q: "Can existing clients use a client code?",
-                  a: "Existing clients may qualify for loyalty pricing with a client code. Final eligibility and adjustments are confirmed by your account manager."
+                  a: "Existing clients may qualify for loyalty pricing (client code). Final eligibility and adjustments are confirmed by your account manager."
                 },
                 {
                   q: "When does an account manager contact me?",
