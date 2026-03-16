@@ -66,7 +66,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import { appendAttributionNotes, getAttributionContext } from "@/lib/attribution";
 import { 
@@ -181,6 +180,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
   const [promoCode, setPromoCode] = useState('');
   const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
+  const [mobileComparisonPlan, setMobileComparisonPlan] = useState<"basic" | "premium" | "executive">("basic");
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -681,34 +681,53 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
                   {/* Feature comparison matrix */}
                   <div className="rounded-xl border border-border bg-muted/30 p-3 md:hidden">
-                    <p className="mb-2 text-xs font-semibold text-muted-foreground">
-                      Tap each feature to compare Basic, Premium, and Executive.
-                    </p>
-                    <Accordion type="multiple" className="w-full">
-                      {PLAN_COMPARISON_ROWS.map((row, i) => (
-                        <AccordionItem key={`${row.feature}-${i}`} value={`comparison-${i}`} className="border-border/60">
-                          <AccordionTrigger className="py-2 text-left text-sm font-semibold text-primary">
-                            {row.feature}
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="rounded-lg border border-border/70 bg-background p-2 text-xs">
-                              <div className="grid grid-cols-2 gap-1 border-b border-border/60 pb-1">
-                                <span className="font-semibold text-muted-foreground">Basic</span>
-                                <span className="text-right font-medium text-primary">{row.basic}</span>
-                              </div>
-                              <div className="mt-1 grid grid-cols-2 gap-1 border-b border-border/60 pb-1">
-                                <span className="font-semibold text-muted-foreground">Premium</span>
-                                <span className="text-right font-medium text-primary">{row.premium}</span>
-                              </div>
-                              <div className="mt-1 grid grid-cols-2 gap-1">
-                                <span className="font-semibold text-muted-foreground">Executive</span>
-                                <span className="text-right font-bold text-accent">{row.executive}</span>
-                              </div>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
+                    <p className="mb-2 text-xs font-semibold text-muted-foreground">Choose a plan tab to compare feature details.</p>
+                    <div className="mb-3 grid grid-cols-3 gap-1 rounded-lg border border-border/70 bg-background p-1">
+                      {[
+                        { id: "basic", label: "Basic" },
+                        { id: "premium", label: "Premium" },
+                        { id: "executive", label: "Executive" },
+                      ].map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => setMobileComparisonPlan(option.id as "basic" | "premium" | "executive")}
+                          className={`rounded-md px-2 py-1.5 text-xs font-bold transition-colors ${
+                            mobileComparisonPlan === option.id
+                              ? option.id === "executive"
+                                ? "bg-accent text-white"
+                                : "bg-primary text-white"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
                       ))}
-                    </Accordion>
+                    </div>
+                    <div className="space-y-2">
+                      {PLAN_COMPARISON_ROWS.map((row, i) => {
+                        const selectedValue =
+                          mobileComparisonPlan === "basic"
+                            ? row.basic
+                            : mobileComparisonPlan === "premium"
+                              ? row.premium
+                              : row.executive;
+                        return (
+                          <div key={`${row.feature}-${i}`} className="rounded-lg border border-border/60 bg-background p-2">
+                            <p className="text-xs font-semibold text-primary">{row.feature}</p>
+                            <p className={`mt-1 text-xs font-medium ${
+                              selectedValue === "✓"
+                                ? "text-green-600"
+                                : mobileComparisonPlan === "executive"
+                                  ? "text-accent"
+                                  : "text-foreground"
+                            }`}>
+                              {selectedValue}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                   <div className="hidden md:block bg-muted/30 rounded-xl border border-border overflow-x-auto">
                     <table className="w-full text-sm min-w-[480px]">
