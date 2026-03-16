@@ -66,6 +66,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { appendAttributionNotes, getAttributionContext } from "@/lib/attribution";
 import { 
@@ -95,15 +102,15 @@ const STEPS = [
 const PLAN_CARD_COPY: Record<string, { valueLine: string; creditsLine: string }> = {
   basic: {
     valueLine: "Reliable essential care for clean curb appeal year-round.",
-    creditsLine: "Includes 3 upgrade credits (3 Basic credits).",
+    creditsLine: "Includes 3 upgrade credits (Basic-only upgrades).",
   },
   premium: {
     valueLine: "Our most popular balance of weekly polish and flexibility.",
-    creditsLine: "Includes 5 upgrade credits (3 Basic credits + 1 Premium upgrade).",
+    creditsLine: "Includes 5 upgrade credits (Basic = 1, Premium = 2).",
   },
   executive: {
     valueLine: "Top-tier property care with priority service coverage.",
-    creditsLine: "Includes 9 upgrade credits (5 Basic credits + 2 Premium upgrades).",
+    creditsLine: "Includes 9 upgrade credits (Basic = 1, Premium = 2).",
   },
 };
 
@@ -181,6 +188,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [promoCode, setPromoCode] = useState('');
   const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
   const [mobileComparisonPlan, setMobileComparisonPlan] = useState<"basic" | "premium" | "executive">("basic");
+  const [swapTarget, setSwapTarget] = useState<{ tier: "basic" | "premium"; addonId: string } | null>(null);
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -202,8 +210,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const { toast } = useToast();
   const wizardRootRef = useRef<HTMLDivElement | null>(null);
 
-  const setStepWithStableScroll = (nextStep: number) => {
-    setCurrentStep(nextStep);
+  const setStepWithStableScroll = (nextStep: number | ((prevStep: number) => number)) => {
+    setCurrentStep((prevStep) => {
+      const resolvedStep = typeof nextStep === "function" ? nextStep(prevStep) : nextStep;
+      return Math.max(1, Math.min(4, resolvedStep));
+    });
     if (typeof window !== "undefined") {
       window.requestAnimationFrame(() => {
         wizardRootRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
@@ -281,15 +292,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   };
 
   const handleNext = () => {
-    if (currentStep < 4) {
-      setStepWithStableScroll(currentStep + 1);
-    }
+    setStepWithStableScroll((prevStep) => (prevStep < 4 ? prevStep + 1 : prevStep));
   };
 
   const handleBack = () => {
-    if (currentStep > 1) {
-      setStepWithStableScroll(currentStep - 1);
-    }
+    setStepWithStableScroll((prevStep) => (prevStep > 1 ? prevStep - 1 : prevStep));
   };
 
   const setDefaultAddonsForPlan = (planId: string) => {
@@ -324,6 +331,44 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       setPremiumAddons([]);
     }
   }, [plan, premiumAddons.length]);
+
+  useEffect(() => {
+    if (currentStep === 2 && (plan === "basic" || plan === "premium" || plan === "executive")) {
+      setMobileComparisonPlan(plan);
+    }
+  }, [currentStep, plan]);
+
+  const recommendedPlanKey = plan === "executive" && executivePlus ? "executive+" : plan;
+  const recommendedSet = RECOMMENDED_ADDONS[recommendedPlanKey] ?? { basic: [], premium: [] };
+  const recommendedSelectedBasic = basicAddons.filter((id) => recommendedSet.basic.includes(id));
+  const recommendedSelectedPremium = premiumAddons.filter((id) => recommendedSet.premium.includes(id));
+  const recommendedSelectedCount = recommendedSelectedBasic.length + recommendedSelectedPremium.length;
+
+  const getAddonLabelById = (addonId: string): string => {
+    const basic = BASIC_ADDONS.find((addon) => addon.id === addonId);
+    if (basic) return basic.label;
+    const premium = PREMIUM_ADDONS.find((addon) => addon.id === addonId);
+    if (premium) return premium.label;
+    const generic = ADDON_CATALOG.find((addon) => addon.id === addonId);
+    return generic?.name ?? addonId;
+  };
+
+  const swapCandidates =
+    swapTarget?.tier === "basic"
+      ? BASIC_ADDONS.filter((addon) => !basicAddons.includes(addon.id))
+      : swapTarget?.tier === "premium"
+        ? PREMIUM_ADDONS.filter((addon) => !premiumAddons.includes(addon.id))
+        : [];
+
+  const applySwap = (replacementId: string) => {
+    if (!swapTarget) return;
+    if (swapTarget.tier === "basic") {
+      setBasicAddons((prev) => prev.map((id) => (id === swapTarget.addonId ? replacementId : id)));
+    } else {
+      setPremiumAddons((prev) => prev.map((id) => (id === swapTarget.addonId ? replacementId : id)));
+    }
+    setSwapTarget(null);
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -503,6 +548,29 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     </div>
   );
 
+  const CompactPlanBanner = () => {
+    if (!planData) return null;
+    const yardLabel = YARD_SIZES.find((y) => y.id === yardSize)?.label ?? "Selected";
+    const isExecutivePlan = plan === "executive";
+    const toneClass = isExecutivePlan
+      ? "border-accent/30 bg-accent/10 text-accent"
+      : "border-primary/20 bg-primary/5 text-primary";
+    const premiumUpgradeSummary =
+      plan === "basic" ? "Basic upgrades only" : "Premium upgrades available";
+
+    return (
+      <div className={`rounded-xl border p-3 ${toneClass}`}>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+          <div className="font-bold uppercase tracking-wide">{planData.name}</div>
+          <div className="text-xs font-semibold">
+            {includedCredits} upgrade credits • {premiumUpgradeSummary}
+          </div>
+        </div>
+        <div className="mt-1 text-xs text-muted-foreground">Yard size: {yardLabel}</div>
+      </div>
+    );
+  };
+
   // Reset function for after submission
   const resetForm = () => {
     form.reset();
@@ -678,6 +746,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Total Maintenance Plan</h4>
                     <p className="text-muted-foreground">Simple plan tiers with clear upgrade credits and commitment rewards.</p>
                   </div>
+                  <CompactPlanBanner />
 
                   {/* Feature comparison matrix */}
                   <div className="rounded-xl border border-border bg-muted/30 p-3 md:hidden">
@@ -777,6 +846,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           data-testid={`wizard-plan-${p.id}`}
                           onClick={() => {
                             setPlan(p.id);
+                            setMobileComparisonPlan(p.id as "basic" | "premium" | "executive");
                             if (p.id !== 'executive') setExecutivePlus(false);
                             setDefaultAddonsForPlan(p.id);
                           }}
@@ -918,6 +988,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {getAddOnInstructionText()}
                     </p>
                   </div>
+                  <CompactPlanBanner />
                   <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-4">
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-bold uppercase tracking-wide text-primary">Credit Counter</p>
@@ -937,6 +1008,53 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         Overage: +{extraCredits} credit{extraCredits === 1 ? "" : "s"}
                       </p>
                     )}
+                  </div>
+                  <div className="rounded-xl border border-primary/20 bg-card p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-bold text-primary">Recommended Loadout</p>
+                      <span className="text-xs text-muted-foreground">
+                        {recommendedSelectedCount}/{recommendedSet.basic.length + (plan === "basic" ? 0 : recommendedSet.premium.length)} selected
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">All recommended upgrades are swappable.</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {recommendedSelectedBasic.map((addonId) => (
+                        <div
+                          key={`recommended-basic-${addonId}`}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-2 py-1"
+                        >
+                          <span className="text-[10px] font-bold uppercase text-primary">Recommended</span>
+                          <span className="text-xs font-semibold text-primary">{getAddonLabelById(addonId)}</span>
+                          <button
+                            type="button"
+                            onClick={() => setSwapTarget({ tier: "basic", addonId })}
+                            className="rounded-full border border-primary/30 px-1.5 py-0.5 text-[10px] font-bold text-primary hover:bg-primary/10"
+                          >
+                            Swap
+                          </button>
+                        </div>
+                      ))}
+                      {plan !== "basic" &&
+                        recommendedSelectedPremium.map((addonId) => (
+                          <div
+                            key={`recommended-premium-${addonId}`}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2 py-1"
+                          >
+                            <span className="text-[10px] font-bold uppercase text-accent">Recommended</span>
+                            <span className="text-xs font-semibold text-accent">{getAddonLabelById(addonId)}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSwapTarget({ tier: "premium", addonId })}
+                              className="rounded-full border border-accent/40 px-1.5 py-0.5 text-[10px] font-bold text-accent hover:bg-accent/20"
+                            >
+                              Swap
+                            </button>
+                          </div>
+                        ))}
+                      {recommendedSelectedCount === 0 && (
+                        <p className="text-xs text-muted-foreground">You customized away from the default loadout. Great job dialing it in.</p>
+                      )}
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -1102,6 +1220,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
                     <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your property walk-through.</p>
                   </div>
+                  <CompactPlanBanner />
 
                   {/* Trust Badge */}
                   <TrustBadge variant="full" message={TRUST_MESSAGES.contactStep} />
@@ -1394,6 +1513,35 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           </div>
         </form>
       </Form>
+      <Dialog open={swapTarget !== null} onOpenChange={(open) => !open && setSwapTarget(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Swap Recommended Upgrade</DialogTitle>
+            <DialogDescription>
+              Replace <span className="font-semibold text-foreground">{swapTarget ? getAddonLabelById(swapTarget.addonId) : ""}</span> with another{" "}
+              {swapTarget?.tier === "premium" ? "Premium" : "Basic"} upgrade.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[300px] space-y-2 overflow-y-auto pr-1">
+            {swapCandidates.map((candidate) => (
+              <button
+                key={candidate.id}
+                type="button"
+                onClick={() => applySwap(candidate.id)}
+                className="w-full rounded-lg border border-border p-3 text-left transition-colors hover:border-primary/50 hover:bg-primary/5"
+              >
+                <p className="text-sm font-semibold text-primary">{candidate.label}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{getQuickAddonDescription(candidate.description)}</p>
+              </button>
+            ))}
+            {swapCandidates.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No additional swap options are available in this tier right now.
+              </p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

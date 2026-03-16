@@ -354,8 +354,11 @@ export default function StreamlinedWizard() {
   const payInFullExtraSavings = monthlySubscription * payInFullExtraMonths;
   const savingsSummary = buildSavingsSummary(actualMonthly, 0, termMonths, totalFreeMonths);
 
-  const setStepWithStableScroll = (nextStep: number) => {
-    setStep(nextStep);
+  const setStepWithStableScroll = (nextStep: number | ((prevStep: number) => number)) => {
+    setStep((prevStep) => {
+      const resolvedStep = typeof nextStep === "function" ? nextStep(prevStep) : nextStep;
+      return Math.max(1, Math.min(9, resolvedStep));
+    });
     if (typeof window !== "undefined") {
       window.requestAnimationFrame(() => {
         wizardRootRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
@@ -364,19 +367,17 @@ export default function StreamlinedWizard() {
   };
 
   const handleNext = () => {
-    if (isHOA && step === 1) {
-      setStepWithStableScroll(8);
-    } else if (step < 9) {
-      setStepWithStableScroll(step + 1);
-    }
+    setStepWithStableScroll((prevStep) => {
+      if (isHOA && prevStep === 1) return 8;
+      return prevStep < 9 ? prevStep + 1 : prevStep;
+    });
   };
 
   const handleBack = () => {
-    if (isHOA && step === 8) {
-      setStepWithStableScroll(1);
-    } else if (step > 1) {
-      setStepWithStableScroll(step - 1);
-    }
+    setStepWithStableScroll((prevStep) => {
+      if (isHOA && prevStep === 8) return 1;
+      return prevStep > 1 ? prevStep - 1 : prevStep;
+    });
   };
 
   useLayoutEffect(() => {
@@ -465,6 +466,39 @@ export default function StreamlinedWizard() {
   };
 
   const progressPercent = ((step - 1) / 8) * 100;
+
+  const CompactPlanBanner = () => {
+    if (isHOA) {
+      return (
+        <div className="rounded-xl border border-accent/30 bg-accent/10 p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div className="font-bold uppercase tracking-wide text-accent">HOA Custom Quote</div>
+            <div className="text-xs font-semibold text-accent">Dedicated consultation flow</div>
+          </div>
+          <div className="mt-1 text-xs text-muted-foreground">Property type: HOA / Community</div>
+        </div>
+      );
+    }
+
+    if (!selectedPlan) return null;
+    const isExecutivePlan = selectedPlan.id === "executive";
+    const toneClass = isExecutivePlan
+      ? "border-accent/30 bg-accent/10 text-accent"
+      : "border-primary/20 bg-primary/5 text-primary";
+    const premiumUpgradeSummary = selectedPlan.id === "basic" ? "Basic upgrades only" : "Premium upgrades available";
+
+    return (
+      <div className={`rounded-xl border p-3 ${toneClass}`}>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+          <div className="font-bold uppercase tracking-wide">{selectedPlan.name}</div>
+          <div className="text-xs font-semibold">
+            {includedCredits} upgrade credits • {premiumUpgradeSummary}
+          </div>
+        </div>
+        {selectedYard && <div className="mt-1 text-xs text-muted-foreground">Yard size: {selectedYard.label}</div>}
+      </div>
+    );
+  };
 
   return (
     <div ref={wizardRootRef} className="bg-card rounded-2xl shadow-2xl border-2 border-primary/20 overflow-hidden max-w-2xl mx-auto">
@@ -716,6 +750,7 @@ export default function StreamlinedWizard() {
                 <p className="text-muted-foreground text-sm">Simple plan tiers with clear upgrade credits and commitment rewards.</p>
                 <p className="text-xs text-muted-foreground/70 mt-1">Licensed • Insured • Satisfaction Guaranteed</p>
               </div>
+              <CompactPlanBanner />
 
               {/* Mobile comparison cards */}
               <MobileComparisonCards />
@@ -850,6 +885,7 @@ export default function StreamlinedWizard() {
                   2 Basic credits = 1 Premium upgrade.
                 </p>
               </div>
+              <CompactPlanBanner />
 
               {!isHOA && !canProceed() && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 font-medium" data-testid="credit-requirement-message">
@@ -1335,6 +1371,7 @@ export default function StreamlinedWizard() {
                 <h3 className="text-2xl font-bold text-primary mb-2">Choose your commitment</h3>
                 <p className="text-muted-foreground text-sm">{COMMITMENT_COPY.promoIntro}</p>
               </div>
+              <CompactPlanBanner />
 
               <div className="space-y-3">
                 {COMMITMENT_TERMS.map((t) => {
@@ -1539,6 +1576,7 @@ export default function StreamlinedWizard() {
                 <h3 className="text-2xl font-bold text-primary mb-2">Almost there!</h3>
                 <p className="text-muted-foreground text-sm">Enter your info to receive your free quote</p>
               </div>
+              <CompactPlanBanner />
 
               {/* Summary Card - Different for HOA vs Residential */}
               {isHOA ? (
