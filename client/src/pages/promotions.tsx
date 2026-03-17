@@ -177,7 +177,7 @@ export default function PromotionsPage() {
           <h2 className="font-bold text-lg mb-4">Shrub Care Tier Value</h2>
           <div className="grid gap-3 md:grid-cols-3 text-sm">
             <div className="rounded-lg border border-border bg-muted/30 p-3">
-              <p className="font-semibold text-primary">Basic Patrol</p>
+              <p className="font-semibold text-primary">Standard Patrol</p>
               <p className="text-muted-foreground mt-1">1 shrub care package visit per year with trim, cleanup, clipping removal, and AI shrub assessment.</p>
             </div>
             <div className="rounded-lg border border-border bg-muted/30 p-3">
@@ -223,7 +223,7 @@ export default function PromotionsPage() {
         <div className="text-center">
           <Link href="/">
             <Button size="lg" className="bg-accent hover:bg-accent/90 text-white">
-              Get Your Free Quote
+              Reserve My Plan
             </Button>
           </Link>
         </div>

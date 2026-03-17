@@ -128,7 +128,7 @@ export default function SimpleHome() {
                     }`}
                     aria-label={`Build my ${summary.name} plan`}
                   >
-                    Get Your Free Quote
+                    Reserve My Plan
                   </button>
                 </article>
               );
@@ -210,9 +210,9 @@ export default function SimpleHome() {
             data-testid="button-get-started-bottom"
             onClick={scrollToWizard}
             className="bg-accent text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-accent/90 transition-colors"
-            aria-label="Get started with your free quote"
+            aria-label="Reserve my plan"
           >
-            Get Your Free Quote
+            Reserve My Plan
           </button>
         </div>
       </section>

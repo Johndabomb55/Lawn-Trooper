@@ -37,13 +37,11 @@ import {
 } from "@/components/ui/dialog";
 import { 
   GLOBAL_CONSTANTS,
-  calculate2026Price,
-  PLANS
 } from "@/data/plans";
-import { buildSavingsSummary, COMMITMENT_COPY } from "@/data/promotions";
+import { COMMITMENT_COPY, ANNIVERSARY_DEADLINE_LINE } from "@/data/promotions";
 import { WHY_DIFFERENT } from "@/data/content";
 import PromoBanner from "@/components/PromoBanner";
-import TotalSavingsBox from "@/components/TotalSavingsBox";
+import HomepageUpgradesGallery from "@/components/HomepageUpgradesGallery";
 import { Link } from "wouter";
 
 // Assets
@@ -57,14 +55,13 @@ import mascotHolidayLights from "@assets/Holiday_lights_on_a_festive_home_177179
 import heroLuxury from "@assets/generated_images/southern_home_with_wrap-around_porch_and_fall_flowers.png";
 import imgEstateMadison from "@assets/generated_images/madison_al_home_dark_red_brick.png";
 
-import imgLeaf from "@assets/stock_images/leaf_removal_lawn_ca_457548d2.jpg";
+import imgProblemYard from "@assets/alabama-problem-yard-overgrown.jpg";
 import imgXmas from "@assets/stock_images/professional_christm_4b6754bb.jpg";
 import imgWash from "@assets/stock_images/pressure_washing_con_d670d4c2.jpg";
 import imgXmasPremium from "@assets/stock_images/christmas_lights_dec_50e6447b.jpg";
-import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
+import imgMulchInstall from "@assets/mulch-brown-refresh-alabama.jpg";
+import imgYardAfter from "@assets/generated_images/manicured_lawn_with_summer_flowers.png";
 import imgSeasonalFlowers from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
-import imgTrashBinWash from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
-import imgPineStrawInstall from "@assets/stock_images/man_trimming_hedges__4f4ec72f.jpg";
 import imgAlabamaYardBasic from "@assets/generated_images/athens_al_middle_class_home_landscaping.png";
 import imgAlabamaYardPremium from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
 import imgAlabamaYardExecutive from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
@@ -118,12 +115,6 @@ export default function LandingPage() {
   const [showLaunchConfetti, setShowLaunchConfetti] = useState(false);
   const [showHeroCelebration, setShowHeroCelebration] = useState(true);
   const shouldReduceMotion = useReducedMotion();
-  const savingsSnapshots = PLANS.map((p) => ({
-    id: p.id,
-    name: p.name,
-    summary: buildSavingsSummary(calculate2026Price(p.id, "1/3"), 0, 24, 3),
-  }));
-
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -204,7 +195,7 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
             <Button onClick={() => handleQuoteCtaClick("desktop_nav")} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
-              See My Instant Price
+              Reserve My Plan
             </Button>
           </div>
 
@@ -227,7 +218,7 @@ export default function LandingPage() {
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">See My Instant Price</Button>
+                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Reserve My Plan</Button>
               </div>
             </motion.div>
           )}
@@ -241,7 +232,7 @@ export default function LandingPage() {
               25-Year Anniversary Celebration
             </DialogTitle>
             <DialogDescription className="text-amber-800 text-sm">
-              We are celebrating 25 years of Lawn Trooper with our biggest anniversary rewards.
+              {ANNIVERSARY_DEADLINE_LINE}
             </DialogDescription>
           </DialogHeader>
           <div className="rounded-lg border border-amber-300 bg-white/80 p-4">
@@ -266,7 +257,7 @@ export default function LandingPage() {
               }}
               className="bg-amber-500 hover:bg-amber-600 text-white font-bold"
             >
-              See Anniversary Pricing
+              Reserve My Plan
             </Button>
           </div>
         </DialogContent>
@@ -357,7 +348,7 @@ export default function LandingPage() {
                 Reliable Local Lawn Care
               </h2>
               <p className="text-lg md:text-2xl font-bold text-white/95 mt-2 mb-3">
-                Get exact monthly pricing in about 60 seconds.
+                Build and reserve your plan in about 60 seconds.
               </p>
               <p className="text-sm md:text-base text-white/80 max-w-2xl mx-auto">
                 Licensed and insured. Serving the Tennessee Valley for 25+ years with transparent plan pricing.
@@ -369,10 +360,13 @@ export default function LandingPage() {
                 onClick={() => handleQuoteCtaClick("hero_primary")}
                 className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider px-8 py-6 text-base md:text-lg"
               >
-                See My Instant Price
+                Reserve My Plan
               </Button>
               <p className="text-xs md:text-sm text-white/80">
-                No payment required. Local account manager follow-up within 1 business day.
+                Questions are welcome. Your account manager walkthrough is a no-pressure opportunity to meet our team, review your property, and confirm what will work best for your yard.
+              </p>
+              <p className="text-[11px] md:text-xs text-white/75 -mt-2">
+                {ANNIVERSARY_DEADLINE_LINE}
               </p>
             </div>
           </motion.div>
@@ -453,7 +447,7 @@ export default function LandingPage() {
             </div>
             <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
               <p className="font-semibold text-primary">Fast follow-up</p>
-              <p className="text-muted-foreground text-xs mt-1">No payment required. Account manager outreach within 1 business day.</p>
+              <p className="text-muted-foreground text-xs mt-1">No payment today. Account manager outreach within 1 business day.</p>
             </div>
           </div>
           <MultiStepQuoteWizard />
@@ -467,6 +461,7 @@ export default function LandingPage() {
       
       <section id="plans" className="py-24 bg-primary/5 relative">
         <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
+        <div className="absolute inset-0 z-0 opacity-[0.14]" style={{ backgroundImage: `url(${bgLandscape})`, backgroundSize: "cover", backgroundPosition: "center" }} />
         
         <div className="container mx-auto px-4 relative z-10">
           {/* Trust Line */}
@@ -477,10 +472,10 @@ export default function LandingPage() {
 
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#0f2f1a] mb-4">
-              Choose Your <span className="text-amber-500">Lawn Care</span> Plan
+              Choose Your <span className="text-amber-500">Total Maintenance</span> Plan
             </h2>
             <p className="text-[#1a3d24] text-lg font-bold max-w-2xl mx-auto tracking-wide">
-              Transparent pricing. Simple annual plans. No hidden fees.
+              Transparent pricing. Simple annual maintenance plans. No hidden fees.
             </p>
           </div>
 
@@ -496,18 +491,15 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-3 gap-4">
               <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-white/20">
                 <div className="aspect-[16/10] overflow-hidden">
-                  <img src={imgAlabamaYardBasic} alt="Athens, AL - Basic Patrol - Middle class Alabama home with nice landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={imgAlabamaYardBasic} alt="Athens, AL - Standard Patrol - Middle class Alabama home with nice landscaping" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="bg-white p-4 text-center">
-                  <h3 className="font-heading font-bold text-lg text-primary">Basic Patrol</h3>
+                  <h3 className="font-heading font-bold text-lg text-primary">Standard Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $169/mo</p>
                   <p className="text-xs font-semibold text-primary/80 mt-1">Includes 3 upgrade credits</p>
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
                   </div>
-                  <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
-                    See My Instant Price →
-                  </button>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-amber-400/40">
@@ -522,9 +514,6 @@ export default function LandingPage() {
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
                   </div>
-                  <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
-                    See My Instant Price →
-                  </button>
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-xl shadow-lg border-2 border-accent/30">
@@ -539,9 +528,6 @@ export default function LandingPage() {
                   <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
                     <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
                   </div>
-                  <button onClick={() => scrollToSection('quote')} className="mt-3 w-full text-xs font-bold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">
-                    See My Instant Price →
-                  </button>
                 </div>
               </div>
             </div>
@@ -550,59 +536,18 @@ export default function LandingPage() {
               <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
               <p className="text-xs font-medium text-primary/90 mt-1">Credit rule: Standard upgrades (1 credit) • Premium upgrades (2 credits).</p>
             </div>
-            <div className="mt-6 grid gap-3 md:grid-cols-3">
-              {savingsSnapshots.map((snap) => (
-                <TotalSavingsBox
-                  key={snap.id}
-                  summary={snap.summary}
-                  title={`${snap.name} 2-Year Savings`}
-                />
-              ))}
-            </div>
             <div className="text-center mt-6">
-              <Button onClick={() => scrollToSection('plans')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
-                Compare Plans
+              <Button onClick={() => scrollToSection('quote')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
+                Continue to Plan Builder
               </Button>
-              <p className="text-xs text-muted-foreground mt-2">Review options first, then continue to your instant price builder.</p>
+              <p className="text-xs text-muted-foreground mt-2">Review options first, then reserve the plan that fits your yard.</p>
               <Button onClick={() => scrollToSection('quote')} className="mt-3 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
-                Continue to Instant Price
+                Reserve My Plan
               </Button>
             </div>
           </div>
 
-          <div className="mt-12 rounded-2xl border border-primary/20 bg-white/70 p-6">
-            <h3 className="text-center text-2xl font-heading font-bold text-primary">Trending Upgrades & Shrub Care Tiers</h3>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-              Popular with Lawn Trooper members: shrub care package, seasonal mulch refresh, premium seasonal color upgrades,
-              mid-size tree trimming, and hotter-month mowing cadence upgrades.
-            </p>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border border-border bg-card overflow-hidden">
-                <img src={imgMulchInstall} alt="Fresh mulch installation in flower beds" className="h-40 w-full object-cover" />
-                <div className="p-3">
-                  <p className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">Trending</p>
-                  <p className="mt-2 font-semibold text-primary">Seasonal Mulch Refresh</p>
-                  <p className="text-xs text-muted-foreground">High curb-appeal impact and moisture retention for Alabama heat.</p>
-                </div>
-              </div>
-              <div className="rounded-xl border border-border bg-card overflow-hidden">
-                <img src={imgPineStrawInstall} alt="Healthy shrubs after trimming and cleanup" className="h-40 w-full object-cover" />
-                <div className="p-3">
-                  <p className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">Most Popular</p>
-                  <p className="mt-2 font-semibold text-primary">Shrub Care Package</p>
-                  <p className="text-xs text-muted-foreground">Basic: 1x/yr. Premium: 2x/yr + No Shrub Left Behind. Executive: 3x/yr command care.</p>
-                </div>
-              </div>
-              <div className="rounded-xl border border-border bg-card overflow-hidden">
-                <img src={imgSeasonalFlowers} alt="Seasonal flowers and healthy landscape bed" className="h-40 w-full object-cover" />
-                <div className="p-3">
-                  <p className="inline-block rounded-full bg-fuchsia-100 px-2 py-0.5 text-[10px] font-bold uppercase text-fuchsia-700 border border-fuchsia-200">Premium Favorite</p>
-                  <p className="mt-2 font-semibold text-primary">Premium Seasonal Color Upgrade</p>
-                  <p className="text-xs text-muted-foreground">Abundant flower installations twice a year that make your entire yard feel like a whole vibe.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <HomepageUpgradesGallery />
 
           {/* Limited Spots Message */}
           <div className="mt-8 text-center" data-testid="limited-spots-message">
@@ -631,9 +576,92 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Problem Yard + Local Results */}
+      <section className="py-16 md:py-20 bg-background border-t border-border">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 md:mb-10">
+            <p className="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-800">
+              Local Results Across North Alabama
+            </p>
+            <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-primary">What Lawn Trooper Delivers</h2>
+            <p className="mt-2 text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
+              We fix the common warning signs fast and maintain a clean, premium finish all season.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <article className="overflow-hidden rounded-2xl border border-rose-200/70 bg-card shadow-sm">
+              <div className="relative">
+                <img
+                  src={imgProblemYard}
+                  alt="North Alabama yard showing overgrowth, weak flower beds, and uneven landscaping"
+                  className="h-56 w-full object-cover md:h-72"
+                  loading="lazy"
+                 />
+                <div className="absolute inset-0 bg-black/20" />
+                <span className="absolute left-3 top-3 rounded-full bg-rose-800/90 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                  Problem Yard Signs
+                </span>
+                <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
+                  <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-100 border border-rose-300/30">
+                    Overgrowth
+                  </span>
+                  <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-100 border border-rose-300/30">
+                    Weed Pressure
+                  </span>
+                  <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-100 border border-rose-300/30">
+                    Faded Beds
+                  </span>
+                </div>
+              </div>
+              <div className="p-4">
+                <p className="text-sm font-semibold text-primary">Common issues we correct</p>
+                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                  <li>- Overgrown shrubs and weak bed definition</li>
+                  <li>- Weed pressure around flower beds and edges</li>
+                  <li>- Faded mulch and uneven curb appeal</li>
+                </ul>
+              </div>
+            </article>
+
+            <article className="overflow-hidden rounded-2xl border border-emerald-300/60 bg-card shadow-sm">
+              <div className="border-b border-border px-4 py-3">
+                <p className="text-sm font-semibold text-primary">Local Results Gallery</p>
+                <p className="text-xs text-muted-foreground mt-1">Dark green turf, fresh mulch, and healthier flower beds with routine precision care.</p>
+              </div>
+              <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-3 overflow-hidden">
+                <img
+                  src={imgYardAfter}
+                  alt="Alabama lawn with dark green stripes after maintenance"
+                  className="h-28 w-full rounded-lg object-cover sm:h-40 hover:scale-110 transition-transform duration-300 cursor-zoom-in"
+                  loading="lazy"
+                />
+                <img
+                  src={imgMulchInstall}
+                  alt="Fresh brown mulch in clean flower beds"
+                  className="h-28 w-full rounded-lg object-cover sm:h-40 hover:scale-110 transition-transform duration-300 cursor-zoom-in"
+                  loading="lazy"
+                />
+                <img
+                  src={imgSeasonalFlowers}
+                  alt="Seasonal flowers in a tidy residential landscape bed"
+                  className="h-28 w-full rounded-lg object-cover sm:h-40 hover:scale-110 transition-transform duration-300 cursor-zoom-in"
+                  loading="lazy"
+                />
+              </div>
+            </article>
+          </div>
+
+          <p className="mt-5 text-center text-sm font-medium text-primary/90">
+            Trusted by North Alabama homeowners for 25+ years of disciplined, consistent landscape care.
+          </p>
+        </div>
+      </section>
+
       {/* Testimonials - Field Reports */}
       <section className="py-20 bg-background relative border-t border-border">
-        <div className="container mx-auto px-4">
+        <div className="absolute inset-0 opacity-[0.1]" style={{ backgroundImage: `url(${heroLuxury})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+        <div className="container mx-auto px-4 relative z-10">
            <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Customer Reviews</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">What homeowners across the Tennessee Valley say about their results.</p>
@@ -724,7 +752,7 @@ export default function LandingPage() {
                  <p className="text-muted-foreground italic mb-4 flex-1">"I love the Anniversary pricing. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">The Davidson Family</div>
-                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Basic Patrol Members</div>
+                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Standard Patrol Members</div>
                  </div>
               </div>
             </motion.div>
@@ -746,16 +774,16 @@ export default function LandingPage() {
             <Accordion type="single" collapsible className="w-full" aria-label="Frequently asked questions">
               {[
                 {
-                  q: "What does the Basic Patrol plan include?",
-                  a: "Basic Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Standard-only upgrade credits, and a Dream Yard Recon\u2122 landscape plan."
+                  q: "What does the Standard Patrol plan include?",
+                  a: "Standard Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Standard-only upgrade credits, and a Dream Yard Recon\u2122 landscape plan."
                 },
                 {
-                  q: "What's the difference between Basic, Premium, and Executive?",
-                  a: "Basic Patrol includes bi-weekly mowing with monthly off-season checks and 3 upgrade credits. Premium Patrol includes weekly mowing during growing season, bi-weekly off-season service, 5 upgrade credits, and No Shrub Left Behind support. Executive Command includes weekly mowing during growing season, bi-weekly off-season service, up to 7 turf applications, 9 upgrade credits, and dedicated account-manager support."
+                  q: "What's the difference between Standard, Premium, and Executive?",
+                  a: "Standard Patrol includes bi-weekly mowing with monthly off-season checks and 3 upgrade credits. Premium Patrol includes weekly mowing during growing season, bi-weekly off-season service, 5 upgrade credits, and No Shrub Left Behind support. Executive Command includes weekly mowing during growing season, bi-weekly off-season service, up to 7 turf applications, 9 upgrade credits, and dedicated account-manager support."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
-                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Basic and +1 Premium upgrade, plus quarterly strategy sessions, rapid response priority, advanced turf defense support, and executive-level property care enhancements."
+                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Standard and +1 Premium upgrade, plus quarterly strategy sessions, rapid response priority, advanced turf defense support, and executive-level property care enhancements."
                 },
                 {
                   q: "What is Dream Yard Recon\u2122?",
@@ -775,11 +803,11 @@ export default function LandingPage() {
                 },
                 {
                   q: "How do complimentary months work?",
-                  a: "Choose a longer commitment and receive complimentary service months. 1-year: 1 complimentary month. 2-year: 3 complimentary months. Pay in full: double your complimentary months. Get up to 6 complimentary months with a 2-year paid-in-full plan."
+                  a: "Choose a longer commitment and receive complimentary service months. 1-Year: 1 complimentary month. 2-Year: 3 complimentary months. Pay in full and we'll double your complimentary months. Get up to 6 complimentary months with a 2-year paid-in-full plan."
                 },
                 {
                   q: "Can existing clients use a client code?",
-                  a: "Existing clients may qualify for loyalty pricing (client code). Final eligibility and adjustments are confirmed by your account manager."
+                  a: "Existing clients may qualify for loyalty pricing with a client code. Final eligibility and adjustments are confirmed by your account manager."
                 },
                 {
                   q: "When does an account manager contact me?",
@@ -937,7 +965,7 @@ export default function LandingPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <Star className="w-5 h-5 text-amber-400 shrink-0" />
-                  <span className="text-white/90">Basic & Premium seasonal lighting packages</span>
+                  <span className="text-white/90">Standard & Premium seasonal lighting packages</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Star className="w-5 h-5 text-amber-400 shrink-0" />
@@ -1084,14 +1112,14 @@ export default function LandingPage() {
               </div>
             </div>
             <h2 className="text-2xl md:text-3xl font-heading font-bold text-[#0f2f1a] mb-4">
-              Quietly Powerful. Environmentally Responsible.
+              Quietly Powerful. More Environmentally Responsible.
             </h2>
             <p className="text-[#1a3d24] text-lg leading-relaxed max-w-3xl mx-auto mb-6">
-              Lawn Trooper utilizes <span className="text-amber-500 font-bold">electric service vehicles</span>, <span className="text-amber-500 font-bold">battery-powered mowers</span>, and <span className="text-amber-500 font-bold">electric handheld equipment</span> across many of our crews. This means reduced emissions, quieter operation, and a smaller environmental footprint for your neighborhood.
+              Lawn Trooper is expanding low-emission operations with electric service options across parts of our fleet, including battery-powered mowers and handheld equipment on select crews and routes. That means quieter service and lower emissions where electric equipment is deployed, while we continue transitioning more of our operation over time.
             </p>
             <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/40 rounded-full px-6 py-3">
               <Zap className="w-5 h-5 text-amber-500" />
-              <span className="text-[#0f2f1a] font-bold">So quiet, you might not even notice we just mowed your lawn.</span>
+              <span className="text-[#0f2f1a] font-bold">Ask your account manager about all-electric service preference availability in your area.</span>
             </div>
           </div>
         </div>

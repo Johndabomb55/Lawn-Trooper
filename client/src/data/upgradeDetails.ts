@@ -13,7 +13,7 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Keeps your property looking neat and well-maintained, improves curb appeal, and promotes healthier plant growth."
   },
   basic_pressure_wash: {
-    title: "Basic Pressure-Wash Package",
+    title: "Standard Pressure-Wash Package",
     what: "Light exterior pressure washing of your porch, sidewalk, and mailbox area to refresh high-visibility surfaces.",
     when: "Typically performed in spring or early summer to clear winter buildup, or as needed before events or gatherings.",
     why: "Maintains a clean, welcoming entrance and prevents long-term staining from mold, mildew, and dirt buildup."
@@ -43,13 +43,13 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Reduces foul odors, discourages pests, and keeps your curbside bins sanitary and presentable."
   },
   christmas_lights_basic: {
-    title: "Basic Seasonal Lighting",
+    title: "Standard Seasonal Lighting",
     what: "Ground-level seasonal lighting focused on shrubs, small trees, and select landscape areas using simple yard pop-up lighting.",
     when: "Installed in late November before the holiday season and removed in early January. Layout discussed with homeowner.",
     why: "Adds festive curb appeal during the holidays without the hassle and safety risk of DIY installation."
   },
   growing_season_boost: {
-    title: "Reserve Your Rapid-Response Weekly Cuts (Basic Plan)",
+    title: "Reserve Your Rapid-Response Weekly Cuts (Standard Plan)",
     what: "Includes 6 weekly mowings you can deploy whenever needed, so you choose exactly which weeks get weekly coverage.",
     when: "Use during wet months, heavy growth windows, or before events when you want tighter weekly cadence coverage.",
     why: "Gives you rapid-response coverage during rainy growth spikes and flexible control over exactly when extra weekly service happens."
@@ -61,7 +61,7 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     why: "Accelerates your lawn's path to a weed-free, green, healthy state with more frequent professional treatments."
   },
   pine_straw_basic: {
-    title: "Basic Pine Straw Install (Up to 10 Big Bales)",
+    title: "Standard Pine Straw Install (Up to 10 Big Bales)",
     what: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 big bales of quality pine straw with delivery and professional installation.",
     when: "Typically installed in early spring or late fall to refresh beds and provide seasonal ground cover.",
     why: "Pine straw is a natural, attractive ground cover that retains moisture, insulates roots, and gives beds a clean, uniform look."

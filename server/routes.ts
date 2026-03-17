@@ -5,10 +5,34 @@ import { sendQuoteEmails, sendLeadEmails, type QuoteRequestData, type LeadEmailD
 import { z } from "zod";
 import { insertLeadSchema, insertWaitlistSchema } from "@shared/schema";
 
+function describeError(error: unknown): { message: string; details?: string } {
+  if (error instanceof z.ZodError) {
+    const details = error.issues
+      .map((issue) => `${issue.path.join(".") || "field"}: ${issue.message}`)
+      .join("; ");
+    return {
+      message: "Invalid request payload",
+      details,
+    };
+  }
+  if (error instanceof Error) {
+    return { message: error.message };
+  }
+  return { message: "Unknown error" };
+}
+
+function logRouteError(context: string, error: unknown) {
+  const formatted = describeError(error);
+  console.error(`[${context}] ${formatted.message}${formatted.details ? ` | ${formatted.details}` : ""}`);
+  if (error instanceof Error && error.stack) {
+    console.error(error.stack);
+  }
+}
+
 async function sendToGHL(leadData: Record<string, any>) {
-  const webhookUrl = process.env.GHL_WEBHOOK_URL;
+  const webhookUrl = process.env.GHL_WEBHOOK_URL || process.env.GOHIGHLEVEL_WEBHOOK_URL;
   if (!webhookUrl) {
-    console.warn("GHL_WEBHOOK_URL not set, skipping webhook");
+    console.warn("GHL webhook URL not set (GHL_WEBHOOK_URL/GOHIGHLEVEL_WEBHOOK_URL), skipping webhook");
     return;
   }
 
@@ -126,6 +150,50 @@ const quoteRequestSchema = z.object({
   }
 });
 
+const leadRequestSchema = z.object({
+  name: z.string().trim().min(2, "Name is required"),
+  email: z.string().email("Valid email required").or(z.literal("")).optional().nullable(),
+  phone: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  yardSize: z.string().trim().min(1, "Yard size is required"),
+  plan: z.string().trim().min(1, "Plan is required"),
+  basicAddons: z.array(z.string()).optional().default([]),
+  premiumAddons: z.array(z.string()).optional().default([]),
+  notes: z.string().optional().nullable(),
+  totalPrice: z.string().optional().nullable(),
+  freeMonths: z.string().optional().nullable(),
+  term: z.string().optional().nullable(),
+  payUpfront: z.string().optional().nullable(),
+  promoCode: z.string().optional().nullable(),
+  paymentMethod: z.string().optional().nullable(),
+  propertyType: z.string().optional().nullable(),
+  hoaName: z.string().optional().nullable(),
+  hoaAcreage: z.string().optional().nullable(),
+  hoaUnits: z.string().optional().nullable(),
+  hoaNotes: z.string().optional().nullable(),
+  segments: z.array(z.string()).optional().default([]),
+  appliedPromos: z.array(z.string()).optional().default([]),
+  source: z.string().optional().nullable(),
+  sourceDetail: z.string().optional().nullable(),
+  landingPath: z.string().optional().nullable(),
+  referrer: z.string().optional().nullable(),
+  utmSource: z.string().optional().nullable(),
+  utmMedium: z.string().optional().nullable(),
+  utmCampaign: z.string().optional().nullable(),
+  utmContent: z.string().optional().nullable(),
+  utmTerm: z.string().optional().nullable(),
+}).superRefine((data, ctx) => {
+  const hasPhone = Boolean((data.phone || "").trim());
+  const hasEmail = Boolean((data.email || "").trim());
+  if (!hasPhone && !hasEmail) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Either phone or email is required",
+      path: ["phone"],
+    });
+  }
+});
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -151,17 +219,25 @@ export async function registerRoutes(
         });
       }
     } catch (error) {
-      console.error("Error processing quote request:", error);
+      logRouteError("quote", error);
+      const formatted = describeError(error);
       res.status(400).json({ 
         success: false, 
-        message: error instanceof Error ? error.message : "Invalid request" 
+        message: formatted.details ? `${formatted.message}: ${formatted.details}` : formatted.message,
       });
     }
   });
 
   app.post("/api/leads", async (req, res) => {
     try {
-      const data = insertLeadSchema.parse(req.body);
+      const requestData = leadRequestSchema.parse(req.body);
+      const data = insertLeadSchema.parse({
+        ...requestData,
+        basicAddons: requestData.basicAddons ?? [],
+        premiumAddons: requestData.premiumAddons ?? [],
+        segments: requestData.segments ?? [],
+        appliedPromos: requestData.appliedPromos ?? [],
+      });
       const storage = getStorage();
       
       const lead = await storage.createLead(data);
@@ -197,10 +273,12 @@ export async function registerRoutes(
         leadId: lead?.id
       });
     } catch (error) {
-      console.error("Error capturing lead:", error);
-      res.status(500).json({ 
+      logRouteError("leads", error);
+      const formatted = describeError(error);
+      const isValidation = error instanceof z.ZodError;
+      res.status(isValidation ? 400 : 500).json({ 
         success: false, 
-        message: error instanceof Error ? error.message : "Failed to capture lead",
+        message: formatted.details ? `${formatted.message}: ${formatted.details}` : formatted.message,
         error: true
       });
     }

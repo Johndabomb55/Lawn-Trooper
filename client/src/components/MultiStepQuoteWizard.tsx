@@ -31,19 +31,18 @@ import {
 import {
   getApplicablePromotions,
   applyPromotions,
-  buildSavingsSummary,
   calculateTermFreeMonths,
   validatePromoCode,
   TRUST_MESSAGES,
   PLAN_VALUE_HIGHLIGHTS,
   RECOMMENDED_ADDONS,
   UPGRADE_CREDIT_COPY,
+  ANNIVERSARY_DEADLINE_LINE,
   type UserSelections,
 } from "@/data/promotions";
 import MissionAccomplished from "./MissionAccomplished";
 import TrustBadge from "./TrustBadge";
 import SavingsPanel from "./SavingsPanel";
-import TotalSavingsBox from "./TotalSavingsBox";
 import TermSelector from "./TermSelector";
 import SegmentCheckboxes from "./SegmentCheckboxes";
 import { Button } from "@/components/ui/button";
@@ -90,8 +89,8 @@ import {
   YARD_SIZES,
 } from "@/data/plans";
 import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
-import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
-import imgShrub from "@assets/stock_images/man_trimming_hedges__4f4ec72f.jpg";
+import imgMulchInstall from "@assets/mulch-brown-refresh-alabama.jpg";
+import imgShrub from "@assets/alabama-shrub-care-commercial-tools.jpg";
 
 const STEPS = [
   { id: 1, title: "Yard Size", icon: MapPin, rank: "Recruit", rankIcon: Shield },
@@ -190,6 +189,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
   const [mobileComparisonPlan, setMobileComparisonPlan] = useState<"basic" | "premium" | "executive">("basic");
   const [swapTarget, setSwapTarget] = useState<{ tier: "basic" | "premium"; addonId: string } | null>(null);
+  const basicAddonsRef = useRef<string[]>([]);
+  const premiumAddonsRef = useRef<string[]>([]);
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -218,7 +219,13 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     });
     if (typeof window !== "undefined") {
       window.requestAnimationFrame(() => {
-        wizardRootRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+        window.requestAnimationFrame(() => {
+          const root = wizardRootRef.current;
+          if (!root) return;
+          const offset = isModal ? 12 : 84;
+          const top = Math.max(0, window.scrollY + root.getBoundingClientRect().top - offset);
+          window.scrollTo({ top, behavior: "auto" });
+        });
       });
     }
   };
@@ -293,6 +300,16 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   };
 
   const handleNext = () => {
+    if (currentStep === 3) {
+      const requireAddons = getFeatureFlag('requireAddons', true);
+      const liveUsedCredits = calculateUsedCredits(
+        basicAddonsRef.current.length,
+        premiumAddonsRef.current.length
+      );
+      if (requireAddons && liveUsedCredits < includedCredits) {
+        return;
+      }
+    }
     setStepWithStableScroll((prevStep) => (prevStep < 4 ? prevStep + 1 : prevStep));
   };
 
@@ -312,20 +329,32 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   };
 
   const handleBasicAddonToggle = (addonId: string) => {
-    setBasicAddons(prev => 
-      prev.includes(addonId) 
+    setBasicAddons(prev => {
+      const next = prev.includes(addonId)
         ? prev.filter(id => id !== addonId)
-        : [...prev, addonId]
-    );
+        : [...prev, addonId];
+      basicAddonsRef.current = next;
+      return next;
+    });
   };
 
   const handlePremiumAddonToggle = (addonId: string) => {
-    setPremiumAddons(prev => 
-      prev.includes(addonId) 
+    setPremiumAddons(prev => {
+      const next = prev.includes(addonId)
         ? prev.filter(id => id !== addonId)
-        : [...prev, addonId]
-    );
+        : [...prev, addonId];
+      premiumAddonsRef.current = next;
+      return next;
+    });
   };
+
+  useEffect(() => {
+    basicAddonsRef.current = basicAddons;
+  }, [basicAddons]);
+
+  useEffect(() => {
+    premiumAddonsRef.current = premiumAddons;
+  }, [premiumAddons]);
 
   useEffect(() => {
     if (plan === "basic" && premiumAddons.length > 0) {
@@ -493,13 +522,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const promotionResult = getApplicablePromotions(userSelections);
   const appliedTotals = applyPromotions({ monthlyTotal: baseMonthlyTotal, term }, promotionResult);
   const totalPrice = appliedTotals.displayedMonthly;
-  const effectiveMonthlyTermAverage = appliedTotals.displayedEffectiveMonthly;
-  const savingsSummary = buildSavingsSummary(
-    appliedTotals.displayedMonthly,
-    appliedTotals.monthlyDiscount,
-    appliedTotals.termMonths,
-    appliedTotals.freeMonthsAtEnd
-  );
 
 
   // Check if add-on requirements are met
@@ -651,15 +673,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       <div className="bg-primary text-primary-foreground p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Get Your Instant Quote</h3>
+            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Reserve Your Plan</h3>
             <p className="text-xs text-primary-foreground/70 mt-1">
               Rank: <span className="font-bold text-accent">{STEPS[currentStep - 1]?.rank}</span>
-            </p>
-            <p className="mt-2 text-xs font-semibold text-primary-foreground">
-              Effective monthly: ${effectiveMonthlyTermAverage}/mo
-            </p>
-            <p className="text-[11px] text-primary-foreground/80">
-              Averages complimentary months across your full term.
             </p>
           </div>
           {isModal && onClose && (
@@ -755,6 +771,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-6">
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Total Maintenance Plan</h4>
                     <p className="text-muted-foreground">Simple plan tiers with clear upgrade credits and commitment rewards.</p>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Not sure which plan fits best? Your account manager will walk the property with you and confirm the right service level before final onboarding.
+                    </p>
                   </div>
                   <CompactPlanBanner />
 
@@ -763,7 +782,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     <p className="mb-2 text-xs font-semibold text-muted-foreground">Choose a plan tab to compare feature details.</p>
                     <div className="mb-3 grid grid-cols-3 gap-1 rounded-lg border border-border/70 bg-background p-1">
                       {[
-                        { id: "basic", label: "Basic" },
+                        { id: "basic", label: "Standard" },
                         { id: "premium", label: "Premium" },
                         { id: "executive", label: "Executive" },
                       ].map((option) => (
@@ -813,7 +832,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       <thead>
                         <tr className="border-b border-border">
                           <th className="text-left py-3 px-3 text-muted-foreground font-medium">Feature</th>
-                          <th className="text-center py-3 px-3 font-bold text-primary">Basic</th>
+                          <th className="text-center py-3 px-3 font-bold text-primary">Standard</th>
                           <th className="text-center py-3 px-3 font-bold text-primary">Premium</th>
                           <th className="text-center py-3 px-3 font-bold text-accent">Executive</th>
                         </tr>
@@ -926,7 +945,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             {EXECUTIVE_PLUS.label}
                           </div>
                           <div className="text-xs text-muted-foreground mt-0.5">
-                            {EXECUTIVE_PLUS.description} — +1 Basic, +1 Premium upgrade
+                            {EXECUTIVE_PLUS.description} — +1 Standard, +1 Premium upgrade
                           </div>
                           <div className="text-xs text-accent/80 mt-1">
                             {EXECUTIVE_PLUS.perks.join(' • ')}
@@ -945,7 +964,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   {planData && plan === 'basic' && (
                     <div className="bg-muted/30 rounded-xl p-4 border border-border mt-4">
                       <div className="text-center">
-                        <p className="text-xs text-muted-foreground">
+                        <p className="hidden sm:block text-xs text-muted-foreground">
                           Upgrade to <span className="font-bold text-primary">Premium</span> for about
                           <span className="font-bold text-accent"> +${calculate2026Price('premium', yardSize) - calculate2026Price('basic', yardSize)}/mo</span> more
                         </p>
@@ -970,7 +989,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     payUpfront={payUpfront}
                     showUnlockedAnimation={false}
                   />
-                  <TotalSavingsBox summary={savingsSummary} />
                 </motion.div>
               )}
 
@@ -986,13 +1004,16 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h4>
                     <p className="text-muted-foreground">
-                      Bundling saves you money. {planData?.name} includes {includedCredits} upgrade credits.
+                      You have {includedCredits} upgrade credits available.
                     </p>
-                    <p className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                      You have {includedCredits} upgrade credits. {UPGRADE_CREDIT_COPY.tierLegendTight}
+                    <p className="text-sm text-primary/90">
+                      {UPGRADE_CREDIT_COPY.tierLegend}
                     </p>
-                    <p className="mt-2 text-xs font-bold uppercase tracking-wide text-accent">
-                      Credits remaining: {remainingCredits}
+                    <p className="text-xs text-muted-foreground">
+                      {UPGRADE_CREDIT_COPY.mixLine}
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Have questions about upgrades? Your walkthrough is where we match services to your property and clarify what delivers the best result.
                     </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
@@ -1008,10 +1029,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       {usedCredits} / {includedCredits}
                     </div>
                     <p className="mt-1 text-sm font-semibold text-accent">
-                      {remainingCredits} credit{remainingCredits === 1 ? "" : "s"} remaining
+                      Credits remaining: {remainingCredits}
                     </p>
                     <p className="mt-1 text-[11px] font-semibold text-primary/80">
-                      Rule: {UPGRADE_CREDIT_COPY.tierLegendTight}
+                      Rule: {UPGRADE_CREDIT_COPY.conversionLine}
                     </p>
                     {extraCredits > 0 && (
                       <p className="mt-1 text-xs font-bold text-amber-700">
@@ -1038,7 +1059,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           <button
                             type="button"
                             onClick={() => setSwapTarget({ tier: "basic", addonId })}
-                            className="rounded-full border border-primary/30 px-1.5 py-0.5 text-[10px] font-bold text-primary hover:bg-primary/10"
+                            className="rounded-full border border-primary/30 px-2.5 py-1 text-xs font-bold text-primary hover:bg-primary/10"
                           >
                             Swap
                           </button>
@@ -1055,7 +1076,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             <button
                               type="button"
                               onClick={() => setSwapTarget({ tier: "premium", addonId })}
-                              className="rounded-full border border-accent/40 px-1.5 py-0.5 text-[10px] font-bold text-accent hover:bg-accent/20"
+                              className="rounded-full border border-accent/40 px-2.5 py-1 text-xs font-bold text-accent hover:bg-accent/20"
                             >
                               Swap
                             </button>
@@ -1066,16 +1087,16 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       )}
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2">
                     <div className="overflow-hidden rounded-xl border border-border bg-card">
-                      <img src={imgShrub} alt="Healthy shrubs after trimming and cleanup" className="h-28 w-full object-cover" />
+                      <img src={imgShrub} alt="Healthy shrubs after trimming and cleanup" className="h-24 sm:h-28 w-full object-cover" />
                       <div className="p-2.5">
                         <p className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">Trending</p>
                         <p className="mt-1 text-xs font-semibold text-primary">Shrub Care Package</p>
                       </div>
                     </div>
                     <div className="overflow-hidden rounded-xl border border-border bg-card">
-                      <img src={imgMulchInstall} alt="Fresh mulch installation in flower beds" className="h-28 w-full object-cover" />
+                      <img src={imgMulchInstall} alt="Fresh mulch installation in flower beds" className="h-24 sm:h-28 w-full object-cover" />
                       <div className="p-2.5">
                         <p className="inline-block rounded-full bg-fuchsia-100 px-2 py-0.5 text-[10px] font-bold uppercase text-fuchsia-700 border border-fuchsia-200">Spring Favorite</p>
                         <p className="mt-1 text-xs font-semibold text-primary">Seasonal Mulch Refresh</p>
@@ -1091,14 +1112,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         {basicAddons.length} selected ({basicAddons.length} credits)
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[300px] md:max-h-none overflow-y-auto md:overflow-visible">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[320px] md:max-h-none overflow-y-auto md:overflow-visible">
                       {BASIC_ADDONS.map((addon) => {
                         const isSelected = basicAddons.includes(addon.id);
                         const disableNewSelection = !isSelected && !canAddStandardUpgrade;
                         return (
                           <Label
                             key={addon.id}
-                            className={`p-3 rounded-lg border text-left transition-all flex items-center gap-2 ${
+                            className={`p-3.5 rounded-lg border text-left transition-all flex items-center gap-2 ${
                               isSelected 
                                 ? 'border-primary bg-primary/10' 
                                 : disableNewSelection
@@ -1142,14 +1163,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                         {premiumAddons.length} selected ({premiumAddons.length * PREMIUM_CREDIT_COST} credits)
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[300px] md:max-h-none overflow-y-auto md:overflow-visible">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[320px] md:max-h-none overflow-y-auto md:overflow-visible">
                       {PREMIUM_ADDONS.map((addon) => {
                         const isSelected = premiumAddons.includes(addon.id);
                         const disableNewSelection = !isSelected && !canAddPremiumUpgrade;
                         return (
                           <Label
                             key={addon.id}
-                            className={`p-3 rounded-lg border text-left transition-all flex items-center gap-2 ${
+                            className={`p-3.5 rounded-lg border text-left transition-all flex items-center gap-2 ${
                               isSelected 
                                 ? 'border-accent bg-accent/10' 
                                 : disableNewSelection
@@ -1183,18 +1204,14 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   </div>
                   )}
 
-                  {/* Price Summary */}
-                  <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 text-center">
-                    <div className="text-sm text-muted-foreground">Your Monthly Total</div>
-                    <div className="text-4xl font-extrabold text-primary">${totalPrice}/mo</div>
-                    <div className="text-xs text-muted-foreground">Includes AI savings discount</div>
-                    {extraCredits > 0 && (
-                      <div className="text-xs font-semibold text-amber-700 mt-1">
-                        Includes {extraCredits} overage credit{extraCredits === 1 ? "" : "s"}.
-                      </div>
-                    )}
-                  </div>
-                  <TotalSavingsBox summary={savingsSummary} />
+                  <SavingsPanel
+                    baseMonthly={baseMonthlyTotal}
+                    promotionResult={promotionResult}
+                    appliedTotals={appliedTotals}
+                    term={term}
+                    payUpfront={payUpfront}
+                    showUnlockedAnimation={false}
+                  />
 
                   {/* Mission Ready Indicator */}
                   <div className="flex justify-center">
@@ -1202,7 +1219,9 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   </div>
 
                   {/* Selection Summary Card */}
-                  <SelectionSummaryCard showAddonsDetail={true} />
+                  <div className="hidden md:block">
+                    <SelectionSummaryCard showAddonsDetail={true} />
+                  </div>
 
                   {/* Local Tips Banner */}
                   {getFeatureFlag('showLocalTipsBanner', true) && (
@@ -1211,7 +1230,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200"
+                      className="hidden md:block bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200"
                     >
                       <div className="flex items-start gap-3">
                         <div className="bg-green-100 rounded-full p-2 shrink-0">
@@ -1242,7 +1261,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 >
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
-                    <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your property walk-through.</p>
+                    <p className="text-muted-foreground">After you reserve, your account manager will reach out within 1 business day to schedule your walkthrough, answer questions, and align on next steps.</p>
                   </div>
                   <CompactPlanBanner />
 
@@ -1338,7 +1357,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     {(basicAddons.length > 0 || premiumAddons.length > 0) && (
                       <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
                         <div className="font-semibold text-primary mb-2">Selected Upgrades:</div>
-                        <div className="flex flex-wrap gap-1.5 justify-center">
+                        <div className="hidden md:flex flex-wrap gap-1.5 justify-center">
                           {basicAddons.map(id => {
                             const addon = BASIC_ADDONS.find(a => a.id === id);
                             return addon ? (
@@ -1359,7 +1378,15 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       </div>
                     )}
                   </div>
-                  <TotalSavingsBox summary={savingsSummary} className="mb-6" />
+                  <SavingsPanel
+                    baseMonthly={baseMonthlyTotal}
+                    promotionResult={promotionResult}
+                    appliedTotals={appliedTotals}
+                    term={term}
+                    payUpfront={payUpfront}
+                    showUnlockedAnimation={false}
+                    className="mb-6"
+                  />
 
                   <div className="space-y-4">
                     <FormField
@@ -1496,19 +1523,25 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
             </AnimatePresence>
           </div>
 
+          {currentStep === 4 && (
+            <div className="px-4 pb-2 text-center">
+              <p className="text-xs font-semibold text-amber-700">{ANNIVERSARY_DEADLINE_LINE}</p>
+            </div>
+          )}
+
           {/* Navigation Footer */}
-          <div className="border-t border-border p-4 md:p-6 flex items-center justify-between gap-4">
+          <div className="border-t border-border p-4 md:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             {currentStep > 1 ? (
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleBack}
-                className="flex items-center gap-2"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 min-h-12"
               >
                 <ChevronLeft className="w-4 h-4" /> Back
               </Button>
             ) : (
-              <div />
+              <div className="hidden sm:block" />
             )}
 
             {currentStep < 4 ? (
@@ -1516,7 +1549,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 type="button"
                 onClick={handleNext}
                 disabled={currentStep === 3 && !canProceedFromStep3}
-                className={`flex items-center gap-2 ${
+                className={`flex w-full sm:w-auto items-center justify-center gap-2 min-h-12 text-base ${
                   currentStep === 3 && !canProceedFromStep3 
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                     : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -1528,10 +1561,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 px-8 py-6 min-h-12 text-base md:text-lg font-bold uppercase tracking-wider"
                 style={{ backgroundColor: '#1a3d24', color: 'white' }}
               >
-                {isSubmitting ? "Transmitting..." : "Get Your AI Yard Quote"}
+                {isSubmitting ? "Transmitting..." : "Deploy the Troops"}
               </Button>
             )}
           </div>
@@ -1543,7 +1576,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
             <DialogTitle>Swap Recommended Upgrade</DialogTitle>
             <DialogDescription>
               Replace <span className="font-semibold text-foreground">{swapTarget ? getAddonLabelById(swapTarget.addonId) : ""}</span> with another{" "}
-              {swapTarget?.tier === "premium" ? "Premium" : "Basic"} upgrade.
+              {swapTarget?.tier === "premium" ? "Premium" : "Standard"} upgrade.
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[300px] space-y-2 overflow-y-auto pr-1">

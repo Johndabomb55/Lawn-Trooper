@@ -4,11 +4,12 @@ import {
   EXECUTIVE_PLUS_CONFIG,
   type PlanConfigId,
 } from "./planConfig";
+import { ANNIVERSARY_CUTOFF_ISO, BIRTHDAY_BONUS } from "./promotions";
 
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
-  cutoffDate: "2026-03-25T23:59:59", // Sale ends March 25th at 11:59 PM (end of day)
-  saleLabel: "25-Year Anniversary Client Rewards"
+  cutoffDate: ANNIVERSARY_CUTOFF_ISO, // Sale ends March 25th at 11:59 PM (end of day)
+  saleLabel: BIRTHDAY_BONUS.marketingName
 };
 
 export const ANNIVERSARY_ADDON_BONUS = {
@@ -192,7 +193,7 @@ export const ADDON_CATALOG: Addon[] = [
   // --- BASIC ADD-ONS ($20/mo overage) ---
   {
     id: "shrub_hedge_trimming",
-    name: "Shrub Care Package (Basic Tier)",
+    name: "Shrub Care Package (Standard Tier)",
     tier: "basic",
     category: "landscaping",
     price: 20,
@@ -201,7 +202,7 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "basic_pressure_wash",
-    name: "Basic Pressure-Wash Package",
+    name: "Standard Pressure-Wash Package",
     tier: "basic",
     category: "cleaning",
     price: 20,
@@ -260,7 +261,7 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "christmas_lights_basic",
-    name: "Basic Seasonal Lighting",
+    name: "Standard Seasonal Lighting",
     tier: "basic",
     category: "seasonal",
     price: 20,
@@ -268,7 +269,7 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "growing_season_boost",
-    name: "Reserve Your Rapid-Response Weekly Cuts (Basic Plan)",
+    name: "Reserve Your Rapid-Response Weekly Cuts (Standard Plan)",
     tier: "basic",
     category: "landscaping",
     price: 20,
@@ -294,7 +295,7 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "pine_straw_basic",
-    name: "Basic Pine Straw Install (Up to 10 Big Bales)",
+    name: "Standard Pine Straw Install (Up to 10 Big Bales)",
     tier: "basic",
     category: "landscaping",
     price: 20,
@@ -409,6 +410,23 @@ export const getAddonsByTier = (tier: AddonTier): Addon[] => {
 // Helper to get add-on by ID
 export const getAddonById = (id: string): Addon | undefined => {
   return ADDON_CATALOG.find(addon => addon.id === id);
+};
+
+export const HOMEPAGE_FEATURED_UPGRADE_IDS = [
+  "shrub_hedge_trimming",
+  "mulch_install_4yards",
+  "extra_weed_control",
+  "seasonal_color_flowers",
+  "mid_size_tree_trimming_basic",
+  "growing_season_boost",
+  "quarterly_trash_bin_cleaning",
+  "pine_straw_basic",
+] as const;
+
+export const getHomepageFeaturedAddons = (): Addon[] => {
+  return HOMEPAGE_FEATURED_UPGRADE_IDS
+    .map((id) => getAddonById(id))
+    .filter((addon): addon is Addon => Boolean(addon));
 };
 
 // Legacy arrays for backward compatibility
@@ -542,9 +560,9 @@ export const getPlanAllowanceLabel = (
 ): string => {
   const allowance = getPlanAllowance(planId, swapCount, payFull, asOf, executivePlus);
   if (allowance.premium === 0) {
-    return `${allowance.basic} Basic Upgrade${allowance.basic === 1 ? "" : "s"}`;
+    return `${allowance.basic} Standard Upgrade${allowance.basic === 1 ? "" : "s"}`;
   }
-  return `${allowance.basic} Basic Upgrade${allowance.basic === 1 ? "" : "s"} + ${allowance.premium} Premium Upgrade${allowance.premium === 1 ? "" : "s"}`;
+  return `${allowance.basic} Standard Upgrade${allowance.basic === 1 ? "" : "s"} + ${allowance.premium} Premium Upgrade${allowance.premium === 1 ? "" : "s"}`;
 };
 
 // Get swap options for plans that support conversion (2 Basic → 1 Premium).
@@ -555,7 +573,7 @@ export const getSwapOptions = (planId: string, asOf: Date = new Date(), executiv
     return [
       {
         value: 0,
-        label: `No swap (${baseAllowance.basic} Basic + ${baseAllowance.premium} Premium)`,
+        label: `No swap (${baseAllowance.basic} Standard + ${baseAllowance.premium} Premium)`,
         compactLabel: `${baseAllowance.basic}B + ${baseAllowance.premium}P`,
       },
     ];
@@ -568,13 +586,13 @@ export const getSwapOptions = (planId: string, asOf: Date = new Date(), executiv
     if (swapCount === 0) {
       options.push({
         value: 0,
-        label: `No swap (${swappedAllowance.basic} Basic + ${swappedAllowance.premium} Premium)`,
+        label: `No swap (${swappedAllowance.basic} Standard + ${swappedAllowance.premium} Premium)`,
         compactLabel: `${swappedAllowance.basic}B + ${swappedAllowance.premium}P`,
       });
     } else {
       options.push({
         value: swapCount,
-        label: `Convert ${swapCount * 2} Basic → ${swapCount} Premium (${swappedAllowance.basic}B + ${swappedAllowance.premium}P)`,
+        label: `Convert ${swapCount * 2} Standard → ${swapCount} Premium (${swappedAllowance.basic}S + ${swappedAllowance.premium}P)`,
         compactLabel: `${swappedAllowance.basic}B + ${swappedAllowance.premium}P`,
       });
     }
@@ -588,7 +606,7 @@ export const getExecutiveSwapOptions = (asOf: Date = new Date()) => getSwapOptio
 
 export const SWAP_OPTIONS = [
   { value: 0, label: "No swap" },
-  { value: 1, label: "Trade 2 Basic → 1 Premium" }
+  { value: 1, label: "Trade 2 Standard → 1 Premium" }
 ];
 
 // Acre multipliers for pricing: 20% increase per yard size tier

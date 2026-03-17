@@ -3,10 +3,18 @@ import { Resend } from 'resend';
 let connectionSettings: any;
 
 async function getCredentials() {
+  const envApiKey = process.env.RESEND_API_KEY;
+  if (envApiKey) {
+    return {
+      apiKey: envApiKey,
+      fromEmail: process.env.RESEND_FROM_EMAIL || "Lawn Trooper <onboarding@resend.dev>",
+    };
+  }
+
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   
   if (!hostname) {
-    throw new Error('REPLIT_CONNECTORS_HOSTNAME not found - Resend connector may not be configured');
+    throw new Error('Email provider credentials not found (set RESEND_API_KEY or configure Replit Resend connector)');
   }
   
   const xReplitToken = process.env.REPL_IDENTITY 

@@ -226,7 +226,7 @@ export default function PlanDetailsPanel({
                   {EXECUTIVE_PLUS.label}
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5">
-                  {EXECUTIVE_PLUS.description} — +1 Basic, +1 Premium upgrade
+                  {EXECUTIVE_PLUS.description} — +1 Standard, +1 Premium upgrade
                 </div>
                 <div className="text-xs text-accent/80 mt-1">
                   {EXECUTIVE_PLUS.perks.join(" • ")}
@@ -276,7 +276,7 @@ export default function PlanDetailsPanel({
                 {effectiveBasicAllowance}
               </div>
               <div className="text-[11px] text-muted-foreground">
-                Basic Slots
+                Standard Slots
               </div>
               <div className="text-[10px] text-primary/70 mt-0.5">
                 {basicRemaining > 0
@@ -329,7 +329,7 @@ export default function PlanDetailsPanel({
                       : "border-primary/30 bg-background hover:border-primary/50 text-foreground"
                   }`}
                 >
-                  +2 Basic ← 1 Premium
+                  +2 Standard ← 1 Premium
                 </button>
                 <div className="flex items-center px-2 text-xs font-bold text-primary">
                   {swapCount > 0 ? `${swapCount}×` : "0"}
@@ -344,7 +344,7 @@ export default function PlanDetailsPanel({
                       : "border-primary bg-primary/10 hover:bg-primary/20 text-primary"
                   }`}
                 >
-                  2 Basic → +1 Premium
+                  2 Standard → +1 Premium
                 </button>
               </div>
             </div>
@@ -360,7 +360,7 @@ export default function PlanDetailsPanel({
                   : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
-              Basic Upgrades ({basicAddons.length}/{effectiveBasicAllowance})
+              Standard Upgrades ({basicAddons.length}/{effectiveBasicAllowance})
             </button>
             {(plan === "premium" || plan === "executive") && (
               <button

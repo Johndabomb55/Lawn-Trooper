@@ -2,8 +2,6 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Gift, 
-  TrendingDown, 
-  Calendar, 
   CheckCircle2,
   Sparkles,
   Info
@@ -38,8 +36,10 @@ export default function SavingsPanel({
 }: SavingsPanelProps) {
   const {
     displayedMonthly,
+    displayedEffectiveMonthly,
     freeMonthsAtEnd,
     monthlyDiscount,
+    termMonths,
   } = appliedTotals;
 
   const { applied, pending, savingsBreakdown, capApplied } = promotionResult;
@@ -48,6 +48,7 @@ export default function SavingsPanel({
   const extraPayInFullMonths = Math.max(0, payInFullFreeMonths - baseTermFreeMonths);
   const commitmentSavings = displayedMonthly * freeMonthsAtEnd;
   const payInFullExtraSavings = displayedMonthly * extraPayInFullMonths;
+  const totalSavings = (monthlyDiscount * termMonths) + commitmentSavings;
 
   const hasDiscounts = applied.length > 0 || pending.length > 0;
   const termLabels: Record<string, string> = {
@@ -58,10 +59,10 @@ export default function SavingsPanel({
 
   return (
     <div className={`bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border border-primary/20 overflow-hidden ${className}`}>
-      <div className="bg-primary/10 px-4 py-3 border-b border-primary/10">
+      <div className="bg-primary/10 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-primary/10">
         <div className="flex items-center justify-between">
-          <h4 className="font-bold text-primary flex items-center gap-2">
-            <Gift className="w-4 h-4" />
+          <h4 className="font-bold text-primary text-sm sm:text-base flex items-center gap-2">
+            <Gift className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Savings Snapshot
           </h4>
           {capApplied && (
@@ -82,28 +83,35 @@ export default function SavingsPanel({
         </div>
       </div>
 
-      <div className="p-4 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="text-center p-3 bg-white/50 rounded-lg">
-            <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Monthly Total</div>
-            <div className="text-3xl font-extrabold text-primary">${displayedMonthly}</div>
+      <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="text-center p-2.5 sm:p-3 bg-white/50 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Today's Monthly</div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-primary">${displayedMonthly}</div>
             {monthlyDiscount > 0 && (
-              <div className="text-xs text-green-600">
-                <TrendingDown className="w-3 h-3 inline mr-1" />
-                Save ${monthlyDiscount}/mo
+              <div className="text-[11px] text-green-700 font-semibold">
+                Includes ${monthlyDiscount}/mo in applied discounts
               </div>
             )}
           </div>
-          <div className="text-center p-3 bg-white/50 rounded-lg">
-            <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Complimentary Months</div>
-            <div className="text-2xl font-bold text-accent">{freeMonthsAtEnd}</div>
+          <div className="text-center p-2.5 sm:p-3 bg-white/50 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Effective Monthly</div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-accent">${displayedEffectiveMonthly}</div>
+            <div className="text-[11px] text-muted-foreground">Averages complimentary months across your full term.</div>
+          </div>
+          <div className="text-center p-2.5 sm:p-3 bg-white/50 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase font-bold mb-1">Total Savings</div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-green-700">${totalSavings.toLocaleString()}</div>
+            <div className="text-[11px] text-muted-foreground">
+              {freeMonthsAtEnd} complimentary month{freeMonthsAtEnd === 1 ? "" : "s"} included
+            </div>
           </div>
         </div>
 
         {freeMonthsAtEnd > 0 && (
-          <div className="bg-white/50 rounded-lg p-3 border border-primary/10 space-y-1.5">
+          <div className="bg-white/40 rounded-lg p-3 border border-primary/10 space-y-1.5">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Commitment savings</span>
+              <span className="text-muted-foreground">Savings from complimentary months</span>
               <span className="font-bold text-green-700">${commitmentSavings.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-xs">
@@ -118,8 +126,8 @@ export default function SavingsPanel({
         )}
 
         {hasDiscounts && (
-          <div className="border-t border-primary/10 pt-3">
-            <div className="text-xs text-muted-foreground uppercase font-bold mb-2">
+          <div className="border-t border-primary/10 pt-3 opacity-85">
+            <div className="text-[11px] text-muted-foreground uppercase font-bold mb-2">
               Why You Got This
             </div>
             <div className="space-y-1.5">

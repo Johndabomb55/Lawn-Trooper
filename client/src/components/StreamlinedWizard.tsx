@@ -37,8 +37,8 @@ import TransformationPreview from "@/components/TransformationPreview";
 import UpgradeDetails from "@/components/UpgradeDetails";
 import PromoBanner from "@/components/PromoBanner";
 import TotalSavingsBox from "@/components/TotalSavingsBox";
-import imgMulchInstall from "@assets/stock_images/landscaper_installin_4e11602e.jpg";
-import imgShrub from "@assets/stock_images/man_trimming_hedges__4f4ec72f.jpg";
+import imgMulchInstall from "@assets/mulch-brown-refresh-alabama.jpg";
+import imgShrub from "@assets/alabama-shrub-care-commercial-tools.jpg";
 import NeighborhoodOffer from "@/components/NeighborhoodOffer";
 import RobotWaitlist from "@/components/RobotWaitlist";
 import PlanBadge from "@/components/PlanBadge";
@@ -63,6 +63,7 @@ import {
   COMMITMENT_TERMS, 
   HOA_PROMO_CODES,
   COMMITMENT_COPY,
+  ANNIVERSARY_DEADLINE_LINE,
   UPGRADE_CREDIT_COPY,
   buildSavingsSummary,
   validatePromoCode,
@@ -142,7 +143,7 @@ const getPopularityBadgeLabel = (popularity: "trending" | "favorite") =>
 const MOBILE_PLAN_CARDS_SW = [
   {
     id: "basic" as const,
-    name: "Basic Patrol",
+    name: "Standard Patrol",
     badge: null,
     careLevel: "Essential Care",
     mowing: "Bi-weekly in growing season, monthly off-season check",
@@ -350,8 +351,6 @@ export default function StreamlinedWizard() {
   const termMonths = selectedTerm?.months || 12;
   const billedMonths = termMonths - totalFreeMonths;
   const actualMonthly = monthlySubscription;
-  const effectiveMonthlyTermAverage =
-    termMonths > 0 ? Math.round((actualMonthly * billedMonths) / termMonths) : actualMonthly;
   const totalCommitmentSavings = monthlySubscription * totalFreeMonths;
   const payInFullExtraMonths = Math.max(
     0,
@@ -510,26 +509,13 @@ export default function StreamlinedWizard() {
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-primary to-green-700 p-4 text-white">
         <div className="flex items-center justify-between mb-3">
-          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">See Your Instant Price</h2>
+          <h2 data-testid="text-wizard-title" className="text-xl font-bold font-heading uppercase tracking-wide">Reserve Your Plan</h2>
           <span data-testid="text-step-badge" className="text-sm bg-white/20 px-3 py-1 rounded-full">
             Step {step} of 9
           </span>
         </div>
-        <div className="mb-2 text-center">
-          {!isHOA ? (
-            <>
-              {selectedYard ? (
-                <>
-                  <p className="text-xs font-semibold text-white">Effective monthly: ${effectiveMonthlyTermAverage}/mo</p>
-                  <p className="text-[11px] text-white/80">Averages complimentary months across your full term.</p>
-                </>
-              ) : (
-                <p className="text-[11px] text-white/80">Effective monthly updates after yard-size selection.</p>
-              )}
-            </>
-          ) : (
-            <p className="text-[11px] text-white/80">Effective monthly is finalized with your custom quote.</p>
-          )}
+        <div className="mb-2 text-center text-[11px] text-white/80">
+          Savings totals update as you build and reserve your plan.
         </div>
         <div className="h-2 bg-white/20 rounded-full overflow-hidden">
           <motion.div 
@@ -782,7 +768,7 @@ export default function StreamlinedWizard() {
                   <thead>
                     <tr className="border-b border-border">
                       <th className="text-left py-3 px-3 text-muted-foreground font-medium">Feature</th>
-                      <th className="text-center py-3 px-3 font-bold text-primary">Basic</th>
+                      <th className="text-center py-3 px-3 font-bold text-primary">Standard</th>
                       <th className="text-center py-3 px-3 font-bold text-primary">Premium</th>
                       <th className="text-center py-3 px-3 font-bold text-accent">Executive</th>
                     </tr>
@@ -900,8 +886,9 @@ export default function StreamlinedWizard() {
                   Pick the upgrades that fit your property best. Your plan includes {includedCredits} upgrade credits.
                 </p>
                 <p className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                  You have {includedCredits} upgrade credits. {UPGRADE_CREDIT_COPY.tierLegendTight}
+                  You have {includedCredits} upgrade credits. {UPGRADE_CREDIT_COPY.tierLegend}
                 </p>
+                <p className="mt-2 text-xs text-muted-foreground">{UPGRADE_CREDIT_COPY.mixLine}</p>
                 <p className="mt-2 text-xs font-bold uppercase tracking-wide text-accent">
                   Credits remaining: {remainingCredits}
                 </p>
@@ -939,7 +926,7 @@ export default function StreamlinedWizard() {
                   <span className="text-muted-foreground">Selected:</span>
                   <span>
                     <span className="font-bold text-primary">
-                      {basicAddons.length} Basic
+                      {basicAddons.length} Standard
                     </span>
                     <span>, </span>
                     <span className="font-bold text-accent">
@@ -1630,7 +1617,7 @@ export default function StreamlinedWizard() {
             >
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-2">Almost there!</h3>
-                <p className="text-muted-foreground text-sm">Enter your info to receive your free quote</p>
+                <p className="text-muted-foreground text-sm">Enter your info to reserve your plan</p>
               </div>
               <CompactPlanBanner />
 
@@ -1666,7 +1653,7 @@ export default function StreamlinedWizard() {
                   <div className="text-xs border-t border-border/50 pt-2 mt-2 space-y-1">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Upgrades:</span>
-                      <span>{basicAddons.length} Basic, {premiumAddons.length} Premium</span>
+                      <span>{basicAddons.length} Standard, {premiumAddons.length} Premium</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Included:</span>
@@ -1714,8 +1701,9 @@ export default function StreamlinedWizard() {
               {/* Privacy Reassurance */}
               <div data-testid="text-privacy" className="text-center bg-green-50 border border-green-200 rounded-lg p-3">
                 <p className="text-sm text-green-800 font-medium">
-                  No payment required. We never sell your info.
+                  No payment today. We never sell your info.
                 </p>
+                <p className="text-xs text-green-700 mt-1">{ANNIVERSARY_DEADLINE_LINE}</p>
               </div>
             </motion.div>
           )}
@@ -1735,7 +1723,7 @@ export default function StreamlinedWizard() {
               <div>
                 <h3 data-testid="text-complete-title" className="text-2xl font-bold text-primary mb-2">Mission Accomplished!</h3>
                 <p data-testid="text-complete-subtitle" className="text-muted-foreground">
-                  {isHOA ? "Your custom quote request has been submitted." : "Your quote has been submitted, General."}
+                  {isHOA ? "Your custom quote request is reserved." : "Your plan is reserved, General."}
                 </p>
               </div>
 
@@ -1786,7 +1774,7 @@ export default function StreamlinedWizard() {
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <span className="text-xs text-muted-foreground block">Upgrades</span>
                       <span data-testid="text-confirm-addons" className="font-bold">
-                        {basicAddons.length} Basic, {premiumAddons.length} Premium
+                        {basicAddons.length} Standard, {premiumAddons.length} Premium
                       </span>
                     </div>
                   </div>
@@ -1794,8 +1782,11 @@ export default function StreamlinedWizard() {
               )}
 
               <div className="bg-accent/10 rounded-xl p-4 border border-accent/30">
-                <p className="font-bold text-primary">No payment required. No obligation.</p>
-                <p className="text-sm text-accent">{isHOA ? "Free Property Consultation" : "Free Quote"}</p>
+                <p className="font-bold text-primary">No payment collected today. No obligation.</p>
+                <p className="text-sm text-accent">{isHOA ? "Free Property Consultation" : "Reserved Plan Confirmation"}</p>
+                {!isHOA && (
+                  <p className="text-xs text-primary mt-1">Full refund if you decide not to enlist during consultation.</p>
+                )}
               </div>
 
               <div className="bg-green-50 rounded-xl p-3 border border-green-200">
@@ -1865,7 +1856,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-primary hover:bg-primary/90"
               data-testid="button-next"
             >
-              {step === 1 ? "See My Instant Price" : "Continue"}
+              {step === 1 ? "Reserve My Plan" : "Continue"}
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           )}
@@ -1877,7 +1868,7 @@ export default function StreamlinedWizard() {
               className="flex-1 bg-accent hover:bg-accent/90 text-white"
               data-testid="button-submit"
             >
-              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "See My Instant Price")}
+              {isSubmitting ? "Submitting..." : (isHOA ? "Request Custom Quote" : "Reserve My Plan")}
             </Button>
           )}
 

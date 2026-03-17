@@ -48,12 +48,12 @@ export const WHY_LAWN_TROOPER = {
 };
 
 export const PLAN_SUMMARIES = {
-  sectionTitle: "Choose Your Lawn Care Plan",
+  sectionTitle: "Choose Your Total Maintenance Plan",
   sectionSubtitle: "All plans include mowing, edging, trimming, and blowing.",
   plans: [
     {
       id: "basic",
-      name: "Basic Patrol",
+      name: "Standard Patrol",
       perfectFor: "Homeowners who want reliable maintenance with minimal fuss.",
       highlights: [
         "Bi-weekly mowing (growing season)",
@@ -160,8 +160,8 @@ export const FOOTER_CONTENT = {
 export const SEASONAL_DISCLAIMER = "Some upgrade services are seasonal in nature and may be scheduled during appropriate times of the year or during off-season periods when Lawn Trooper's service schedule allows. Timing and availability may vary based on weather, workload, and operational considerations.";
 
 export const CTA_BUTTONS = {
-  buildMyPlan: "Get Your Free Quote",
-  getStarted: "Get Your Free Quote",
+  buildMyPlan: "Reserve My Plan",
+  getStarted: "Reserve My Plan",
   viewPlans: "View Plans",
 };
 

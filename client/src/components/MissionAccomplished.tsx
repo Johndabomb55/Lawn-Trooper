@@ -85,7 +85,7 @@ Service Plan: ${planData?.name}
 
 SELECTED UPGRADES
 ----------------
-Basic Upgrades (${quoteData.basicAddons.length}):
+Standard Upgrades (${quoteData.basicAddons.length}):
 ${quoteData.basicAddons.map(id => {
   const addon = BASIC_ADDONS.find(a => a.id === id);
   return addon ? `  • ${addon.label}` : '';
@@ -171,7 +171,7 @@ Contact: John@lawn-trooper.com | (256) 795-2949
         <h2 className="text-3xl md:text-4xl font-heading font-bold uppercase tracking-wider mb-2">
           Mission Accomplished!
         </h2>
-        <p className="text-lg opacity-90">Your quote has been successfully submitted, General.</p>
+        <p className="text-lg opacity-90">Your plan has been successfully reserved, General.</p>
       </div>
 
       <div className="p-6 md:p-8 space-y-6">
@@ -179,7 +179,7 @@ Contact: John@lawn-trooper.com | (256) 795-2949
         <div className="bg-primary/5 rounded-xl p-5 border border-primary/20">
           <h3 className="font-bold text-primary text-lg mb-4 flex items-center gap-2">
             <Check className="w-5 h-5 text-green-600" />
-            Your Quote Summary
+            Your Reserved Plan Summary
           </h3>
           
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -280,8 +280,9 @@ Contact: John@lawn-trooper.com | (256) 795-2949
 
         {/* No Obligation Message */}
         <div className="bg-accent/10 rounded-xl p-4 border border-accent/30 text-center">
-          <p className="text-lg font-bold text-primary mb-1">No payment required. No obligation.</p>
+          <p className="text-lg font-bold text-primary mb-1">No payment collected today. No obligation.</p>
           <p className="text-sm text-accent font-medium">Free Dream Yard Recon.</p>
+          <p className="text-xs text-primary mt-1">Full refund if you decide not to enlist during consultation.</p>
         </div>
 
         {/* Trust & Privacy Message */}

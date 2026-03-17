@@ -46,11 +46,13 @@ export const PROMO_CAPS = {
   maxFreeMonths: 6,  // Max: 2-Year PIF = 6 complimentary months
 };
 
+export const ANNIVERSARY_CUTOFF_ISO = "2026-03-25T23:59:59";
+
 // Enrollment bonus metadata - single deadline March 25
 export const BIRTHDAY_BONUS = {
-  endDate: new Date('2026-03-25T23:59:59'),  // Enroll by March 25: +1 month
-  tier1EndDate: new Date('2026-03-25T23:59:59'),  // Legacy alias
-  tier2EndDate: new Date('2026-03-25T23:59:59'),  // Legacy alias (same as tier1)
+  endDate: new Date(ANNIVERSARY_CUTOFF_ISO),  // Enroll by March 25: +1 month
+  tier1EndDate: new Date(ANNIVERSARY_CUTOFF_ISO),  // Legacy alias
+  tier2EndDate: new Date(ANNIVERSARY_CUTOFF_ISO),  // Legacy alias (same as tier1)
   bonusMonths: 0,  // Bonus months are not used in current offer structure
   tier1Months: 0,  // Legacy alias
   tier2Months: 0,  // No second tier
@@ -147,19 +149,23 @@ export const COMMITMENT_TERMS = [
 export const COMMITMENT_COPY = {
   oneYearBonus: "+1 complimentary month",
   twoYearBonus: "+3 complimentary months",
-  payInFullBonus: "Pay in full: double your complimentary months",
+  payInFullBonus: "Pay in full and we'll double your complimentary months.",
   promoIntro: "Choose a longer commitment and receive complimentary service months.",
-  oneYearLine: "1-year: 1 complimentary month",
-  twoYearLine: "2-year: 3 complimentary months",
+  oneYearLine: "1-Year: 1 complimentary month",
+  twoYearLine: "2-Year: 3 complimentary months",
   maxLine: "Get up to 6 complimentary months with a 2-year paid-in-full plan.",
-  loyaltyLine: "Existing clients may qualify for loyalty pricing (client code).",
+  deadlineLine: "Lock in 25-Year Anniversary Client Rewards before March 25.",
+  loyaltyLine: "Existing clients may qualify for loyalty pricing with a client code.",
 };
+
+export const ANNIVERSARY_DEADLINE_LINE = COMMITMENT_COPY.deadlineLine;
 
 export const UPGRADE_CREDIT_COPY = {
   title: "Upgrade Credits",
-  tierLegend: "Standard upgrades (1 credit) • Premium upgrades (2 credits)",
-  tierLegendTight: "Standard = 1 credit, Premium = 2 credits.",
+  tierLegend: "Standard upgrades cost 1 credit. Premium upgrades cost 2 credits.",
+  tierLegendTight: "Standard upgrades cost 1 credit. Premium upgrades cost 2 credits.",
   conversionLine: "2 Standard credits = 1 Premium upgrade.",
+  mixLine: "You can spend your credits on any mix of upgrades.",
 };
 
 export interface SavingsSummary {
@@ -674,9 +680,10 @@ export function applyPromotions(
 
 // Trust messaging constants
 export const TRUST_MESSAGES = {
-  ctaTop: "No payment required. This is your Dream Yard Recon request.",
-  contactStep: "No payment required. We never sell your data. An account manager will reach out to schedule a good time for your property walk-through.",
-  confirmation: "Your information is secure. We never sell your data. An account manager will reach out to schedule your property walk-through.",
+  ctaTop: "No payment today. Reserve your plan in minutes.",
+  contactStep: "No payment today. We never sell your data. An account manager will reach out to schedule a good time for your property walk-through.",
+  confirmation: "Plan reserved. No payment was collected today. Your information is secure, and an account manager will reach out to schedule your property walk-through.",
+  refund: "If you decide not to enlist during consultation, we will provide a full refund.",
   commitment: "Choose a longer commitment and receive complimentary service months.",
   miguelNote: "An account manager will contact you via your preferred method (call, email, or text) to coordinate a good time for your property walk-through and Dream Yard Recon.",
   referralNudge: "Refer a neighbor — get in touch to learn more.",

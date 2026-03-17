@@ -25,7 +25,7 @@ export interface PlanConfig {
 export const PLAN_CONFIGS: PlanConfig[] = [
   {
     id: "basic",
-    name: "Basic Patrol",
+    name: "Standard Patrol",
     basePrice: 169,
     basicSlots: 3,
     premiumSlots: 0,
