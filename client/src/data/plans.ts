@@ -85,7 +85,7 @@ function buildPlansFromConfig(): PlanDefinition[] {
         "Off-Season: Bi-weekly service",
         "Flower bed weed control (included)",
         "<span class='font-bold text-primary'>Includes 5 upgrade credits (Standard = 1, Premium = 2)</span>",
-        "<span class='font-bold text-primary'>Shrub Care Package Plus:</span> 2 annual shrub-care visits + No Shrub Left Behind initiative",
+        "<span class='font-bold text-primary'>Shrub Care Package:</span> 2 annual shrub-care visits with trimming, cleanup, clipping removal, AI shrub-health assessment, and treatment applications as needed. Includes No Shrub Left Behind replacement coverage for maintained plants that cannot be saved.",
         "Service Photo Updates",
         "Priority Support",
         "Dream Yard Recon\u2122 + Personalized Review",
@@ -178,9 +178,9 @@ export const SHRUB_CARE_TIERS = {
     summary: "1 annual shrub care mission with trim, cleanup, clipping removal, and AI shrub assessment.",
   },
   premium: {
-    title: "Shrub Care Package Plus",
+    title: "Shrub Care Package",
     visitsPerYear: 2,
-    summary: "2 annual shrub care missions plus No Shrub Left Behind initiative for stronger shrub survival.",
+    summary: "2 annual shrub-care visits that include trimming, cleanup, clipping removal, AI shrub-health assessment, and treatment applications as needed. Includes No Shrub Left Behind replacement coverage for maintained plants that cannot be saved.",
   },
   executive: {
     title: "Executive Shrub Command",
@@ -362,11 +362,11 @@ export const ADDON_CATALOG: Addon[] = [
   },
   {
     id: "christmas_lights_premium",
-    name: "Premium Seasonal Lighting",
+    name: "Premium Holiday Season House & Yard Lighting",
     tier: "premium",
     category: "seasonal",
     price: 40,
-    description: "Expanded seasonal lighting designed for holidays, including roofline lighting, enhanced landscape features, and decorative yard elements as appropriate."
+    description: "Expanded holiday season house and yard lighting, including roofline lighting, enhanced landscape features, and decorative yard elements as appropriate."
   },
   {
     id: "pine_straw_premium",

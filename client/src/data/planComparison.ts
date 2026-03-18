@@ -91,7 +91,7 @@ export const PLAN_COMPARISON_ROWS: PlanComparisonRow[] = [
     category: "Shrub Care",
     feature: "Annual shrub care package",
     basic: "1 visit/year",
-    premium: "2 visits/year + No Shrub Left Behind",
+    premium: "2 visits/year + No Shrub Left Behind replacement coverage",
     executive: "3 visits/year",
   },
 

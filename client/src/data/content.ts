@@ -72,7 +72,7 @@ export const PLAN_SUMMARIES = {
         "Bi-weekly off-season service",
         "Flower bed weed control (included)",
         "Includes 5 upgrade credits (Standard = 1, Premium = 2)",
-        "Shrub Care Package Plus: 2 annual visits + No Shrub Left Behind initiative",
+        "Shrub Care Package: 2 annual visits + No Shrub Left Behind replacement coverage",
         "Priority Support",
         "Service Photo Updates"
       ]

@@ -28,17 +28,10 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { 
   GLOBAL_CONSTANTS,
 } from "@/data/plans";
-import { COMMITMENT_COPY, ANNIVERSARY_DEADLINE_LINE } from "@/data/promotions";
+import { ANNIVERSARY_DEADLINE_LINE } from "@/data/promotions";
 import { WHY_DIFFERENT } from "@/data/content";
 import PromoBanner from "@/components/PromoBanner";
 import HomepageUpgradesGallery from "@/components/HomepageUpgradesGallery";
@@ -46,7 +39,7 @@ import { Link } from "wouter";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
+import companyLogo from "@assets/lawn-trooper-logo-badge-2026-transparent.png";
 import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
 import heroFlag from "@assets/generated_images/wavy_american_flag.png";
 import mascotHolidayLights from "@assets/Holiday_lights_on_a_festive_home_1771794249376.png";
@@ -78,41 +71,8 @@ import {
 import { trackEvent } from "../lib/analytics";
 import { getExperimentVariant, trackExperimentExposure } from "../lib/experiments";
 
-const ANNIVERSARY_SEEN_KEY = "lt_anniversary_seen";
-
-function LaunchConfetti({ active }: { active: boolean }) {
-  if (!active) return null;
-
-  const colors = ["#f59e0b", "#22c55e", "#3b82f6", "#ef4444", "#a855f7", "#eab308"];
-  const pieces = Array.from({ length: 42 }, (_, idx) => ({
-    id: idx,
-    left: (idx * 7.3) % 100,
-    duration: 1.8 + (idx % 6) * 0.25,
-    delay: (idx % 8) * 0.05,
-    rotate: 120 + idx * 9,
-    color: colors[idx % colors.length],
-  }));
-
-  return (
-    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-hidden>
-      {pieces.map((piece) => (
-        <motion.span
-          key={piece.id}
-          className="absolute top-0 h-3 w-2 rounded-sm"
-          style={{ left: `${piece.left}%`, backgroundColor: piece.color }}
-          initial={{ y: -24, opacity: 1, rotate: 0 }}
-          animate={{ y: 920, opacity: 0, rotate: piece.rotate }}
-          transition={{ duration: piece.duration, delay: piece.delay, ease: "easeOut" }}
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showCelebrationModal, setShowCelebrationModal] = useState(false);
-  const [showLaunchConfetti, setShowLaunchConfetti] = useState(false);
   const [showHeroCelebration, setShowHeroCelebration] = useState(true);
   const shouldReduceMotion = useReducedMotion();
   const scrollToSection = (id: string) => {
@@ -152,21 +112,6 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.sessionStorage.getItem(ANNIVERSARY_SEEN_KEY) === "1") return;
-
-    window.sessionStorage.setItem(ANNIVERSARY_SEEN_KEY, "1");
-    setShowCelebrationModal(true);
-
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!prefersReducedMotion) {
-      setShowLaunchConfetti(true);
-      const timer = window.setTimeout(() => setShowLaunchConfetti(false), 2800);
-      return () => window.clearTimeout(timer);
-    }
-  }, []);
-
-  useEffect(() => {
     if (shouldReduceMotion) {
       setShowHeroCelebration(false);
       return;
@@ -178,7 +123,6 @@ export default function LandingPage() {
   return (
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
-      <LaunchConfetti active={showLaunchConfetti} />
       {/* Navigation */}
       <nav
         className="sticky md:fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border"
@@ -193,6 +137,15 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8">
             <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
             <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
+            <Link href="/services" className="text-sm font-medium hover:text-primary transition-colors">Services</Link>
+            <Link
+              href="/dream-yard-recon"
+              className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-sm font-extrabold uppercase tracking-wide text-amber-900 transition-colors hover:bg-amber-100"
+            >
+              Dream Yard Recon
+            </Link>
+            <Link href="/service-area" className="text-sm font-medium hover:text-primary transition-colors">Service Area</Link>
+            <Link href="/hoa-partnerships" className="text-sm font-medium hover:text-primary transition-colors">HOA</Link>
             <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
             <Button onClick={() => handleQuoteCtaClick("desktop_nav")} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
               Reserve My Plan
@@ -217,6 +170,12 @@ export default function LandingPage() {
               <div className="flex flex-col p-4 gap-4">
                 <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
                 <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
+                <Link href="/services" className="text-left font-medium py-2" onClick={() => setIsMenuOpen(false)}>Services</Link>
+                <Link href="/dream-yard-recon" className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-left text-sm font-extrabold uppercase tracking-wide text-amber-900" onClick={() => setIsMenuOpen(false)}>
+                  Dream Yard Recon
+                </Link>
+                <Link href="/service-area" className="text-left font-medium py-2" onClick={() => setIsMenuOpen(false)}>Service Area</Link>
+                <Link href="/hoa-partnerships" className="text-left font-medium py-2" onClick={() => setIsMenuOpen(false)}>HOA</Link>
                 <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
                 <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Reserve My Plan</Button>
               </div>
@@ -224,45 +183,6 @@ export default function LandingPage() {
           )}
         </AnimatePresence>
       </nav>
-      <PromoBanner variant="sticky" storageKey="lt_anniversary_sticky_dismissed" ctaHref="#quote" />
-      <Dialog open={showCelebrationModal} onOpenChange={setShowCelebrationModal}>
-        <DialogContent className="max-w-xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-extrabold text-amber-900">
-              25-Year Anniversary Celebration
-            </DialogTitle>
-            <DialogDescription className="text-amber-800 text-sm">
-              {ANNIVERSARY_DEADLINE_LINE}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="rounded-lg border border-amber-300 bg-white/80 p-4">
-            <ul className="space-y-2 text-sm text-amber-900 font-semibold">
-              <li>- {COMMITMENT_COPY.oneYearLine}</li>
-              <li>- {COMMITMENT_COPY.twoYearLine}</li>
-              <li>- {COMMITMENT_COPY.payInFullBonus}</li>
-            </ul>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button
-              variant="outline"
-              onClick={() => setShowCelebrationModal(false)}
-              className="border-amber-400 text-amber-900"
-            >
-              Continue Browsing
-            </Button>
-            <Button
-              onClick={() => {
-                setShowCelebrationModal(false);
-                scrollToSection("quote");
-              }}
-              className="bg-amber-500 hover:bg-amber-600 text-white font-bold"
-            >
-              Reserve My Plan
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col pt-32 pb-20 overflow-hidden bg-primary/5">
 
@@ -274,13 +194,16 @@ export default function LandingPage() {
            <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         </div>
         <div className="container mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center items-center text-center mt-12">
+          <div className="w-full max-w-4xl mb-2 md:mb-3 relative z-20">
+            <PromoBanner variant="inline" compact storageKey="lt_anniversary_top_compact_dismissed" ctaHref="#quote" />
+          </div>
           
           {/* Logo Centerpiece */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.8, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, type: "spring" }}
-            className="mb-8 relative w-full max-w-4xl"
+            className="mb-6 relative w-full max-w-4xl"
           >
             {showHeroCelebration && (() => {
               const speechTagline = "Celebrating 25 years serving the Tennessee Valley.";
@@ -433,8 +356,8 @@ export default function LandingPage() {
       {/* Quote Wizard Section - Primary CTA */}
       <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
-          <div className="mb-6">
-            <PromoBanner />
+          <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-center">
+            <p className="text-xs font-semibold text-amber-900">{ANNIVERSARY_DEADLINE_LINE}</p>
           </div>
           <div className="mb-6 grid gap-3 md:grid-cols-3 text-sm">
             <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
@@ -779,7 +702,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "What's the difference between Standard, Premium, and Executive?",
-                  a: "Standard Patrol includes bi-weekly mowing with monthly off-season checks and 3 upgrade credits. Premium Patrol includes weekly mowing during growing season, bi-weekly off-season service, 5 upgrade credits, and No Shrub Left Behind support. Executive Command includes weekly mowing during growing season, bi-weekly off-season service, up to 7 turf applications, 9 upgrade credits, and dedicated account-manager support."
+                  a: "Standard Patrol includes bi-weekly mowing with monthly off-season checks and 3 upgrade credits. Premium Patrol includes weekly mowing during growing season, bi-weekly off-season service, 5 upgrade credits, two annual Shrub Care Package visits, and No Shrub Left Behind replacement coverage for maintained plants that cannot be saved. Executive Command includes weekly mowing during growing season, bi-weekly off-season service, up to 7 turf applications, 9 upgrade credits, and dedicated account-manager support."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
@@ -880,67 +803,26 @@ export default function LandingPage() {
 
       {/* HOA Partnership Section */}
       <section id="hoa-partnership" className="py-16 bg-muted/30 border-t border-border">
-        <div className="container mx-auto px-4 max-w-2xl">
+        <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2">HOA Partnership Program</h2>
             <p className="text-muted-foreground">
-              If your HOA partners with Lawn Trooper, residents receive additional benefits.
+              Reliable service plans for communities, shared spaces, and neighborhood entrances across North Alabama.
             </p>
           </div>
 
-          <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); }}>
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">HOA Name</label>
-                <input
-                  type="text"
-                  data-testid="input-hoa-name"
-                  placeholder="e.g., Oakwood Estates HOA"
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">Contact Name</label>
-                  <input
-                    type="text"
-                    data-testid="input-hoa-contact-name"
-                    placeholder="Your name"
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">Phone</label>
-                  <input
-                    type="tel"
-                    data-testid="input-hoa-phone"
-                    placeholder="(256) 795-2949"
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">Email</label>
-                <input
-                  type="email"
-                  data-testid="input-hoa-email"
-                  placeholder="contact@hoa.com"
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">Notes / Directions</label>
-                <textarea
-                  data-testid="input-hoa-notes"
-                  placeholder="Any additional information about your HOA..."
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-                />
-              </div>
-              <Button type="submit" data-testid="button-submit-hoa" className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
-                Submit HOA Inquiry
-              </Button>
-            </form>
+          <div className="bg-card rounded-xl p-6 shadow-lg border border-border text-center">
+            <p className="text-sm md:text-base text-muted-foreground">
+              If your community needs a dependable maintenance partner, submit a dedicated HOA consultation request and
+              our team will follow up with scheduling details.
+            </p>
+            <div className="mt-5">
+              <Link href="/hoa-partnerships">
+                <Button className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+                  Request HOA Consultation
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -1198,7 +1080,11 @@ export default function LandingPage() {
             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
               <p>&copy; {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
             </div>
-            <div className="flex gap-8">
+            <div className="flex flex-wrap items-center justify-center gap-5 md:gap-8">
+              <Link href="/services" className="hover:text-white transition-colors">Services</Link>
+              <Link href="/dream-yard-recon" className="hover:text-white transition-colors">Dream Yard Recon</Link>
+              <Link href="/service-area" className="hover:text-white transition-colors">Service Area</Link>
+              <Link href="/hoa-partnerships" className="hover:text-white transition-colors">HOA Partnerships</Link>
               <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>

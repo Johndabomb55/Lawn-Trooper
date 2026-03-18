@@ -701,20 +701,20 @@ export const SEGMENT_OPTIONS = [
 // Pre-selected defaults per plan (slot counts must match: Basic 3B/0P, Premium 2B+2P, Executive 3B+3P)
 export const RECOMMENDED_ADDONS: Record<string, { basic: string[]; premium: string[] }> = {
   basic: {
-    basic: ['extra_weed_control', 'gutter_cleaning', 'mulch_install_4yards'],
+    basic: ['mulch_install_4yards', 'extra_weed_control', 'growing_season_boost'],
     premium: [],
   },
   premium: {
-    basic: ['mulch_install_4yards', 'gutter_cleaning', 'extra_weed_control'],
-    premium: ['aeration_dethatching'],
+    basic: ['pine_straw_basic', 'extra_weed_control', 'growing_season_boost'],
+    premium: ['seasonal_color_flowers'],
   },
   executive: {
-    basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning'],
-    premium: ['premium_pressure_wash', 'aeration_dethatching'],
+    basic: ['mulch_install_4yards', 'pine_straw_basic', 'extra_weed_control'],
+    premium: ['seasonal_color_flowers', 'weekly_growth_season_mowing', 'premium_pressure_wash'],
   },
   "executive+": {
-    basic: ['mulch_install_4yards', 'christmas_lights_basic', 'gutter_cleaning', 'extra_weed_control'],
-    premium: ['premium_pressure_wash', 'christmas_lights_premium', 'aeration_dethatching', 'weekly_growth_season_mowing'],
+    basic: ['mulch_install_4yards', 'pine_straw_basic', 'extra_weed_control', 'growing_season_boost'],
+    premium: ['seasonal_color_flowers', 'weekly_growth_season_mowing', 'premium_pressure_wash', 'pine_straw_premium'],
   },
 };
 
@@ -723,7 +723,7 @@ export const PLAN_VALUE_HIGHLIGHTS: Record<string, string[]> = {
   premium: [
     'Weekly mowing + bi-weekly off-season service',
     '5 upgrade credits (Standard = 1, Premium = 2)',
-    'Shrub Care Package Plus: 2 visits/year + No Shrub Left Behind',
+    'Shrub Care Package: 2 visits/year + No Shrub Left Behind replacement coverage',
   ],
   executive: [
     'Weekly mowing + bi-weekly off-season service',

@@ -13,6 +13,7 @@ import {
 } from "@/data/promotions";
 import { Switch } from "@/components/ui/switch";
 import TotalSavingsBox from "@/components/TotalSavingsBox";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function PromotionsPage() {
   const [selectedPlan, setSelectedPlan] = useState("premium");
@@ -39,6 +40,7 @@ export default function PromotionsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      <SiteHeader />
       <div className="container max-w-4xl mx-auto py-8 px-4">
         <Link href="/">
           <Button variant="ghost" className="mb-6">
@@ -182,7 +184,7 @@ export default function PromotionsPage() {
             </div>
             <div className="rounded-lg border border-border bg-muted/30 p-3">
               <p className="font-semibold text-primary">Premium Patrol</p>
-              <p className="text-muted-foreground mt-1">2 shrub care package visits per year plus No Shrub Left Behind initiative.</p>
+              <p className="text-muted-foreground mt-1">2 shrub care package visits per year with trimming, cleanup, AI shrub-health assessment, and treatment as needed, plus No Shrub Left Behind replacement coverage for maintained plants that cannot be saved.</p>
             </div>
             <div className="rounded-lg border border-border bg-muted/30 p-3">
               <p className="font-semibold text-primary">Executive Command</p>
@@ -221,7 +223,7 @@ export default function PromotionsPage() {
         </div>
 
         <div className="text-center">
-          <Link href="/">
+          <Link href="/quote-wizard">
             <Button size="lg" className="bg-accent hover:bg-accent/90 text-white">
               Reserve My Plan
             </Button>

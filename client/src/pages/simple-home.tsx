@@ -5,8 +5,8 @@ import { HERO_CONTENT, TRUST_BAR_COMPACT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TEST
 import { PLANS } from "@/data/plans";
 import PlanBadge from "@/components/PlanBadge";
 import ValueMeter from "@/components/ValueMeter";
+import SiteHeader from "@/components/SiteHeader";
 import heroMascot from "@assets/Lawn_Trooper_in_front_of_luxury_home_1771794280044.png";
-import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
 
 const iconMap: Record<string, React.ElementType> = {
   Leaf,
@@ -25,23 +25,7 @@ export default function SimpleHome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background">
-      {/* Minimal Header */}
-      <header className="bg-primary text-white py-3 px-4">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={companyLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain rounded-full bg-white/10" />
-            <span data-testid="text-brand" className="font-heading font-bold text-xl tracking-tight">LAWN TROOPER</span>
-          </div>
-          <div className="hidden md:flex items-center gap-4 text-sm">
-            {FOOTER_CONTENT.phone && (
-              <a data-testid="link-phone-header" href={`tel:${FOOTER_CONTENT.phone}`} className="flex items-center gap-1 hover:text-accent transition-colors">
-                <Phone className="w-4 h-4" />
-                {FOOTER_CONTENT.phone}
-              </a>
-            )}
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero Section with Wizard */}
       <main className="container mx-auto px-4 py-4 md:py-6">

@@ -11,6 +11,10 @@ import EmbedWizard from "@/pages/embed-wizard";
 import QuoteWizardPage from "@/pages/quote-wizard";
 import PrivacyPolicyPage from "@/pages/privacy-policy";
 import TermsOfServicePage from "@/pages/terms-of-service";
+import ServicesPage from "@/pages/services";
+import DreamYardReconPage from "@/pages/dream-yard-recon";
+import ServiceAreaPage from "@/pages/service-area";
+import HoaPartnershipsPage from "@/pages/hoa-partnerships";
 import GhlChatWidget from "@/components/GhlChatWidget";
 
 function Router() {
@@ -23,6 +27,10 @@ function Router() {
       <Route path="/embed" component={EmbedWizard} />
       <Route path="/quote-wizard" component={QuoteWizardPage} />
       <Route path="/quotewizard" component={QuoteWizardPage} />
+      <Route path="/services" component={ServicesPage} />
+      <Route path="/dream-yard-recon" component={DreamYardReconPage} />
+      <Route path="/service-area" component={ServiceAreaPage} />
+      <Route path="/hoa-partnerships" component={HoaPartnershipsPage} />
       <Route path="/privacy-policy" component={PrivacyPolicyPage} />
       <Route path="/terms-of-service" component={TermsOfServicePage} />
       <Route component={NotFound} />

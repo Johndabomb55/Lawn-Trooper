@@ -1,6 +1,11 @@
 import MultiStepQuoteWizard from "@/components/MultiStepQuoteWizard";
-import companyLogo from "@assets/LT_TRANSPARENT_LOGO_1772295732190.png";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function QuoteWizardPage() {
-  return <MultiStepQuoteWizard />;
+  return (
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <MultiStepQuoteWizard />
+    </div>
+  );
 }

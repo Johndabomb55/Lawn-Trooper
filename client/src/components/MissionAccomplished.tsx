@@ -5,7 +5,6 @@ import {
   Download, 
   Share2, 
   Mail,
-  Star,
   Trophy,
   Users,
   Facebook,
@@ -60,6 +59,12 @@ export default function MissionAccomplished({ quoteData, onClose, onReset }: Mis
 
   const planData = PLANS.find(p => p.id === quoteData.plan);
   const yardData = YARD_SIZES.find(y => y.id === quoteData.yardSize);
+  const selectedStandardAddons = quoteData.basicAddons
+    .map((id) => BASIC_ADDONS.find((a) => a.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
+  const selectedPremiumAddons = quoteData.premiumAddons
+    .map((id) => PREMIUM_ADDONS.find((a) => a.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
 
 
   const handleDownloadPDF = () => {
@@ -194,29 +199,45 @@ Contact: John@lawn-trooper.com | (256) 795-2949
           </div>
 
           {/* Selected Upgrades */}
-          {(quoteData.basicAddons.length > 0 || quoteData.premiumAddons.length > 0) && (
-            <div className="border-t border-primary/10 pt-4 mb-4">
-              <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Selected Upgrades</span>
-              <div className="flex flex-wrap gap-1.5">
-                {quoteData.basicAddons.map(id => {
-                  const addon = BASIC_ADDONS.find(a => a.id === id);
-                  return addon ? (
-                    <span key={id} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
-                      {addon.label}
-                    </span>
-                  ) : null;
-                })}
-                {quoteData.premiumAddons.map(id => {
-                  const addon = PREMIUM_ADDONS.find(a => a.id === id);
-                  return addon ? (
-                    <span key={id} className="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-accent" />{addon.label}
-                    </span>
-                  ) : null;
-                })}
+          <div className="border-t border-primary/10 pt-4 mb-4">
+            <span className="text-xs text-muted-foreground uppercase font-bold block mb-2">Selected Upgrades</span>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-lg border border-primary/15 bg-white p-3">
+                <p className="text-xs font-bold uppercase tracking-wide text-primary">
+                  Standard Upgrades ({selectedStandardAddons.length})
+                </p>
+                {selectedStandardAddons.length > 0 ? (
+                  <ul className="mt-2 space-y-1.5 text-sm">
+                    {selectedStandardAddons.map((label) => (
+                      <li key={`mission-standard-${label}`} className="flex items-start gap-2 text-foreground/90">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" aria-hidden />
+                        <span>{label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">No Standard upgrades selected.</p>
+                )}
+              </div>
+              <div className="rounded-lg border border-accent/20 bg-white p-3">
+                <p className="text-xs font-bold uppercase tracking-wide text-accent">
+                  Premium Upgrades ({selectedPremiumAddons.length})
+                </p>
+                {selectedPremiumAddons.length > 0 ? (
+                  <ul className="mt-2 space-y-1.5 text-sm">
+                    {selectedPremiumAddons.map((label) => (
+                      <li key={`mission-premium-${label}`} className="flex items-start gap-2 text-foreground/90">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/80" aria-hidden />
+                        <span>{label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">No Premium upgrades selected.</p>
+                )}
               </div>
             </div>
-          )}
+          </div>
 
           {/* Applied Promotions */}
           {quoteData.appliedPromos && quoteData.appliedPromos.length > 0 && (
