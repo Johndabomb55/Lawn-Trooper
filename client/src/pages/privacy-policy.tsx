@@ -75,8 +75,8 @@ export default function PrivacyPolicyPage() {
               </li>
               <li>
                 <strong>Website</strong>: refers to Lawn Trooper, accessible from{" "}
-                <a href="https://www.thelawntrooper.com" className="text-primary underline" target="_blank" rel="noreferrer">
-                  www.thelawntrooper.com
+                <a href="https://lawn-trooper.com" className="text-primary underline" target="_blank" rel="noreferrer">
+                  lawn-trooper.com
                 </a>
                 .
               </li>
@@ -358,17 +358,17 @@ export default function PrivacyPolicyPage() {
             <p className="mt-2 text-sm leading-7">For any questions regarding this Privacy Policy, please contact us:</p>
             <div className="mt-3 space-y-1 text-sm leading-7">
               <p>LAWN TROOPER LLC</p>
-              <p>Phone: (256) 874-2059</p>
+              <p>Phone: (256) 795-2949</p>
               <p>
                 Email:{" "}
-                <a href="mailto:john@thelawntrooper.com" className="text-primary underline">
-                  john@thelawntrooper.com
+                <a href="mailto:John@lawn-trooper.com" className="text-primary underline">
+                  John@lawn-trooper.com
                 </a>
               </p>
               <p>
                 Website:{" "}
-                <a href="https://thelawntrooper.com" className="text-primary underline" target="_blank" rel="noreferrer">
-                  thelawntrooper.com
+                <a href="https://lawn-trooper.com" className="text-primary underline" target="_blank" rel="noreferrer">
+                  lawn-trooper.com
                 </a>
               </p>
             </div>

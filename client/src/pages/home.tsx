@@ -1056,7 +1056,7 @@ export default function LandingPage() {
                 Deploying elite lawn care services across North Alabama. Professional, reliable, and always mission-ready.
               </p>
               <div className="flex gap-4">
-                <a href="#social" data-testid="link-facebook" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="https://www.facebook.com/profile.php?id=61588087766755" target="_blank" rel="noopener noreferrer" data-testid="link-facebook" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
                   <Facebook size={20} />
                 </a>
                 <a href="https://www.instagram.com/lawntrooper" target="_blank" rel="noopener noreferrer" data-testid="link-instagram" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">

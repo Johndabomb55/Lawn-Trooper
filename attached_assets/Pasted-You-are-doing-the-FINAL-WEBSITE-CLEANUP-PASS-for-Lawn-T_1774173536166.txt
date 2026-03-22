@@ -1,0 +1,146 @@
+You are doing the FINAL WEBSITE CLEANUP PASS for Lawn Trooper.
+
+This is the near-final polish pass before launch/traffic.
+
+Do NOT work on GHL.
+Do NOT work on AI phone implementation.
+Do NOT create new strategy docs unless absolutely necessary.
+Do NOT redesign the site.
+Do NOT change the core pricing structure.
+Do NOT remove the plan builder.
+Do NOT break working flows.
+
+We are only cleaning up and tightening the WEBSITE.
+
+GOAL:
+Make the Lawn Trooper website feel fully consistent, trustworthy, polished, and conversion-ready.
+
+CONTEXT:
+- The call-first landing page is already built and refined.
+- Calls are primary.
+- The builder remains a secondary visual/self-serve option.
+- The three core recurring plans remain intact.
+- Curb Appeal Plan and 30-Day Yard Reset are already added as offer lanes.
+- The business model is not being reworked in this prompt.
+- This is a cleanup + consistency + UX pass.
+
+YOUR JOB:
+Audit the current website and implement only the highest-value final improvements.
+
+PRIORITIES:
+
+1. CONTACT CONSISTENCY
+Audit the entire codebase and fix all inconsistencies in:
+- phone number
+- email address
+- email domain
+- footer contact info
+- metadata/schema contact info
+- booking page contact info
+- privacy policy contact info
+- any embedded scheduler or static text
+
+Use one canonical phone number and one canonical email/domain everywhere.
+Do not leave old contact details anywhere.
+
+2. BOOKING PAGE CLEANUP
+Audit the booking / builder page for:
+- missing or bad page title
+- missing or weak meta description
+- “Untitled” output
+- scheduler junk text
+- timezone/debug artifacts
+- typo or broken helper text
+- anything that looks unprofessional to crawlers or users
+
+Fix it without breaking the builder.
+
+3. PAGE ROLE CLARITY
+Make sure each page has a clear role:
+- homepage = trust, overview, brand, services
+- call-first page = conversion-first, call-first
+- builder page = visual/self-serve pricing and photos
+
+Reduce conflicting messaging between these pages.
+Do not make them feel like three different companies.
+
+4. CTA CONSISTENCY
+Audit CTA labels and hierarchy across the site.
+
+Desired hierarchy:
+- primary: call / talk to Lawn Trooper AI
+- secondary: see pricing and photos / plan builder
+- lower priority: text, callback, special requests, HOA inquiry
+
+Make labels consistent, human, and strong.
+Remove weak or conflicting CTA language.
+
+5. BUILDER POSITIONING
+Keep the builder intact, but make sure it is consistently positioned as:
+- visual path
+- instant pricing + photos
+- self-serve option for people who don’t want to call first
+
+Tighten any builder-related copy that is soft, vague, or inconsistent.
+
+6. OFFER-LANE CLARITY
+Audit and tighten the wording and placement for:
+- Curb Appeal Plan
+- 30-Day Yard Reset
+
+They should be:
+- fast to understand
+- distinct from the core recurring plans
+- premium-feeling
+- not cheap or confusing
+
+Do not rewrite the whole offers.
+Just make sure the final site wording is clear and strong.
+
+7. TRUST + BRAND CONSISTENCY
+Audit trust language across the site.
+
+Make sure the site consistently reinforces:
+- real local company
+- real people manage the property
+- AI is a customer-service advantage, not a gimmick
+- professionalism
+- responsiveness
+- speed
+- clear next steps
+
+Preserve the strongest existing trust lines.
+Tighten weak ones.
+
+8. MOBILE UX CLEANUP
+Review the site for mobile-first clarity:
+- hero readability
+- CTA stacking
+- giant phone number legibility
+- sticky CTA usability
+- section spacing
+- button crowding
+- scanability
+- whether too many competing actions appear too early
+
+Make only practical high-value fixes.
+
+9. REMOVE DISTRACTIONS
+On the call-first experience, remove or demote anything distracting or off-strategy.
+The page should stay focused on calling first, builder second.
+
+10. IMPLEMENT ONLY HIGH-VALUE CHANGES
+Do not churn the codebase.
+Do not make cosmetic changes just to make changes.
+Only implement improvements that materially improve:
+- trust
+- clarity
+- consistency
+- conversion
+
+OUTPUT FORMAT:
+1. Files reviewed
+2. Issues found
+3. Changes implemented
+4. Anything intentionally left alone
+5. Final notes before QA

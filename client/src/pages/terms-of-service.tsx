@@ -60,7 +60,7 @@ export default function TermsOfServicePage() {
                 <h3 className="font-semibold">1. Program Description</h3>
                 <p>
                   This messaging program sends appointment confirmation and reminder messages to customers who have
-                  booked an appointment with LAWN TROOPER LLC through our website at thelawntrooper.com, or via our
+                  booked an appointment with LAWN TROOPER LLC through our website at lawn-trooper.com, or via our
                   scheduling forms, and have explicitly opted in to receive SMS notifications. Opt-in is collected via
                   web forms with a dedicated checkbox for SMS consent. Messages include scheduling confirmations,
                   appointment reminders, rescheduling updates, and customer support communications.
@@ -80,10 +80,10 @@ export default function TermsOfServicePage() {
                 <p>
                   If you experience issues with the messaging program, reply with the keyword &quot;HELP&quot; for more
                   assistance, or reach out directly to{" "}
-                  <a href="mailto:john@thelawntrooper.com" className="text-primary underline">
-                    john@thelawntrooper.com
+                  <a href="mailto:John@lawn-trooper.com" className="text-primary underline">
+                    John@lawn-trooper.com
                   </a>{" "}
-                  or call (256) 874-2059 during business hours.
+                  or call (256) 795-2949 during business hours.
                 </p>
               </div>
               <div>
@@ -113,8 +113,8 @@ export default function TermsOfServicePage() {
                 <h3 className="font-semibold">8. Privacy Policy</h3>
                 <p>
                   For privacy-related inquiries, please refer to our Privacy Policy at{" "}
-                  <a href="https://thelawntrooper.com/privacy-policy" className="text-primary underline" target="_blank" rel="noreferrer">
-                    https://thelawntrooper.com/privacy-policy
+                  <a href="https://lawn-trooper.com/privacy-policy" className="text-primary underline" target="_blank" rel="noreferrer">
+                    https://lawn-trooper.com/privacy-policy
                   </a>
                   .
                 </p>
@@ -220,8 +220,8 @@ export default function TermsOfServicePage() {
             </p>
             <p className="mt-2 text-sm leading-7">
               If you suspect unauthorized use of your account, notify us immediately at{" "}
-              <a href="mailto:john@thelawntrooper.com" className="text-primary underline">
-                john@thelawntrooper.com
+              <a href="mailto:John@lawn-trooper.com" className="text-primary underline">
+                John@lawn-trooper.com
               </a>
               . We are not liable for any loss or damage arising from your failure to comply with this obligation.
             </p>
@@ -258,17 +258,17 @@ export default function TermsOfServicePage() {
             <p className="mt-2 text-sm leading-7">For any questions regarding these Terms of Service, please contact us:</p>
             <div className="mt-3 space-y-1 text-sm leading-7">
               <p>LAWN TROOPER LLC</p>
-              <p>Phone: (256) 874-2059</p>
+              <p>Phone: (256) 795-2949</p>
               <p>
                 Email:{" "}
-                <a href="mailto:john@thelawntrooper.com" className="text-primary underline">
-                  john@thelawntrooper.com
+                <a href="mailto:John@lawn-trooper.com" className="text-primary underline">
+                  John@lawn-trooper.com
                 </a>
               </p>
               <p>
                 Website:{" "}
-                <a href="https://thelawntrooper.com" className="text-primary underline" target="_blank" rel="noreferrer">
-                  thelawntrooper.com
+                <a href="https://lawn-trooper.com" className="text-primary underline" target="_blank" rel="noreferrer">
+                  lawn-trooper.com
                 </a>
               </p>
             </div>
