@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import SiteHeader from "@/components/SiteHeader";
 import { Link } from "wouter";
@@ -121,6 +122,7 @@ function RepeatedCtaSection() {
 }
 
 export default function CallFirstPage() {
+  useEffect(() => { document.title = "Get Started — Call Lawn Trooper | Lawn Trooper"; }, []);
   const hero = getCallFirstHeroCopy();
   const { whenYouCall, howItWorks, corePlans, trust, faq, objections, hoa, specialRequests } =
     CALL_FIRST_LANDING_COPY;

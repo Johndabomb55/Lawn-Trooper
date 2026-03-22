@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
@@ -9,6 +9,7 @@ import techImage from "@assets/generated_images/lawn_trooper_diverse_crew_with_s
 import positioningImage from "@assets/generated_images/huntsville_al_home_landscaping.png";
 
 export default function DreamYardReconPage() {
+  useEffect(() => { document.title = "Dream Yard Recon™ | Lawn Trooper"; }, []);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />

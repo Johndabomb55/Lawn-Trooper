@@ -84,6 +84,7 @@ import { trackEvent } from "../lib/analytics";
 import { getExperimentVariant, trackExperimentExposure } from "../lib/experiments";
 
 export default function LandingPage() {
+  useEffect(() => { document.title = "Lawn Trooper | Mission-Ready Yard Care"; }, []);
   const [showHeroCelebration, setShowHeroCelebration] = useState(true);
   const shouldReduceMotion = useReducedMotion();
   const scrollToSection = (id: string) => {
@@ -1071,7 +1072,7 @@ export default function LandingPage() {
               <div className="space-y-4 text-primary-foreground/80">
                 <div className="flex items-center gap-3">
                   <Phone className="w-5 h-5 shrink-0 text-accent" />
-                  <a href="tel:256-795-2949" className="hover:text-white transition-colors">256-795-2949</a>
+                  <a href={getTelHref()} className="hover:text-white transition-colors">{LT_PHONE_DISPLAY}</a>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />

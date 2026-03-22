@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
@@ -51,6 +51,7 @@ const serviceCards = [
 ];
 
 export default function ServicesPage() {
+  useEffect(() => { document.title = "Lawn Care Services | Lawn Trooper"; }, []);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />

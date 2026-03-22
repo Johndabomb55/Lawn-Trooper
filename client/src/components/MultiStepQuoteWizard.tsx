@@ -676,7 +676,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           : "You are on the best monthly commitment rate.";
 
     return (
-      <div className="sticky bottom-2 z-30 rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100 p-3 shadow-md">
+      <div className="sticky bottom-2 z-30 rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-[11px] font-bold uppercase tracking-wide text-amber-900">Price & Complimentary Months</p>
           <p className="text-xs font-semibold text-amber-900">

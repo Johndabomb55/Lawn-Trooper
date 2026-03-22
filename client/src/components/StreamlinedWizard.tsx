@@ -1820,7 +1820,7 @@ export default function StreamlinedWizard() {
       </div>
 
       {/* Sticky Footer Navigation */}
-      <div className="sticky bottom-0 z-20 border-t-2 border-primary/20 bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
+      <div className="sticky bottom-0 z-20 border-t-2 border-primary/20 bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)] pb-[env(safe-area-inset-bottom)]">
         {step >= 3 && step < 9 && !isHOA && selectedPlan && (
           <div className="px-4 py-2 bg-primary/5 border-b border-primary/10">
             <div className="flex items-center justify-between gap-3 text-sm">

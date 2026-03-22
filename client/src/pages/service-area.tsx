@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
@@ -9,6 +9,7 @@ import madisonImage from "@assets/generated_images/estate_home_lawn_madison.png"
 const areas = ["Athens", "Madison", "Huntsville", "Hampton Cove"];
 
 export default function ServiceAreaPage() {
+  useEffect(() => { document.title = "Service Area — North Alabama | Lawn Trooper"; }, []);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />

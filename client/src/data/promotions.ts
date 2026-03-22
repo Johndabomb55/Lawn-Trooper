@@ -343,7 +343,7 @@ export interface UserSelections {
 
 // HOA Promo Codes
 export const HOA_PROMO_CODES: Record<string, { discount: number; hoaName: string }> = {
-  'HOA2026': { discount: 10, hoaName: 'Partner HOA' },
+  'HOA2026': { discount: 10, hoaName: 'HOA Partner Program' },
 };
 
 // Validate and get HOA promo code details

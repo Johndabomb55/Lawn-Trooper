@@ -79,6 +79,15 @@ The project is organized into `client/` for the React application, `server/` for
 -   `tailwindcss`: CSS framework.
 -   `shadcn/ui`: UI component library.
 
+### QA & Consistency Standards
+-   **Phone display format**: `256-795-2949` (dash format) everywhere except form placeholders which use `(256) 795-2949`.
+-   **Tel links**: All `tel:` links use `getTelHref()` from `callFirst.ts` producing E.164 format (`tel:+12567952949`).
+-   **Email**: `John@lawn-trooper.com` everywhere.
+-   **Domain**: `lawn-trooper.com` (NOT `thelawntrooper.com`).
+-   **Per-page titles**: Every page sets `document.title` via `useEffect` for SEO.
+-   **Safe-area padding**: All sticky bottom bars include `env(safe-area-inset-bottom)` for iPhone home indicator.
+-   **Twitter meta**: `@lawntrooper` (not `@replit`).
+
 ### Environment Variables
 -   `DATABASE_URL`: Connection string for PostgreSQL.
 -   Resend credentials are managed via Replit Connectors.

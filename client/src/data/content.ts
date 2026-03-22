@@ -14,7 +14,7 @@ export const HERO_CONTENT = {
 export const TRUST_BAR_COMPACT = [
   "25+ Years in North Alabama",
   "100+ Beautification Awards",
-  "Quiet Electric Equipment",
+  "Electric Equipment Options",
   "Honest Pricing"
 ];
 

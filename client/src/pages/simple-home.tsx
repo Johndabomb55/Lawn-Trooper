@@ -2,6 +2,7 @@ import React from "react";
 import StreamlinedWizard from "@/components/StreamlinedWizard";
 import { Shield, Mail, Phone, Leaf, Award, Cpu, Star, ChevronRight } from "lucide-react";
 import { HERO_CONTENT, TRUST_BAR_COMPACT, WHY_LAWN_TROOPER, PLAN_SUMMARIES, TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
+import { getTelHref } from "@/data/callFirst";
 import { PLANS } from "@/data/plans";
 import PlanBadge from "@/components/PlanBadge";
 import ValueMeter from "@/components/ValueMeter";
@@ -16,6 +17,7 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export default function SimpleHome() {
+  React.useEffect(() => { document.title = "Lawn Trooper | Mission-Ready Yard Care"; }, []);
   const scrollToWizard = () => {
     const wizardEl = document.getElementById("quote-wizard");
     if (wizardEl) {
@@ -210,7 +212,7 @@ export default function SimpleHome() {
               {FOOTER_CONTENT.email}
             </a>
             {FOOTER_CONTENT.phone && (
-              <a data-testid="link-phone-footer" href={`tel:${FOOTER_CONTENT.phone}`} className="flex items-center gap-1 hover:text-accent transition-colors">
+              <a data-testid="link-phone-footer" href={getTelHref()} className="flex items-center gap-1 hover:text-accent transition-colors">
                 <Phone className="w-4 h-4" />
                 {FOOTER_CONTENT.phone}
               </a>

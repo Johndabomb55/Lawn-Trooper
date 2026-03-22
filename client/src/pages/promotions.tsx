@@ -14,8 +14,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import TotalSavingsBox from "@/components/TotalSavingsBox";
 import SiteHeader from "@/components/SiteHeader";
+import { useEffect } from "react";
 
 export default function PromotionsPage() {
+  useEffect(() => { document.title = "Promotions & Savings | Lawn Trooper"; }, []);
   const [selectedPlan, setSelectedPlan] = useState("premium");
   const [selectedYardSize, setSelectedYardSize] = useState("1/3");
   const [selectedTerm, setSelectedTerm] = useState<'1-year' | '2-year'>('2-year');

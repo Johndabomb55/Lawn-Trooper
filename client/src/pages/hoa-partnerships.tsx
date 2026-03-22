@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Building2 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
@@ -15,6 +15,7 @@ const handledItems = [
 ];
 
 export default function HoaPartnershipsPage() {
+  useEffect(() => { document.title = "HOA & Community Partnerships | Lawn Trooper"; }, []);
   const [hoaName, setHoaName] = useState("");
   const [contactName, setContactName] = useState("");
   const [phone, setPhone] = useState("");

@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { Link } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 
 export default function TermsOfServicePage() {
+  useEffect(() => { document.title = "Terms of Service | Lawn Trooper"; }, []);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
@@ -83,7 +85,7 @@ export default function TermsOfServicePage() {
                   <a href="mailto:John@lawn-trooper.com" className="text-primary underline">
                     John@lawn-trooper.com
                   </a>{" "}
-                  or call (256) 795-2949 during business hours.
+                  or call 256-795-2949 during business hours.
                 </p>
               </div>
               <div>
@@ -258,7 +260,7 @@ export default function TermsOfServicePage() {
             <p className="mt-2 text-sm leading-7">For any questions regarding these Terms of Service, please contact us:</p>
             <div className="mt-3 space-y-1 text-sm leading-7">
               <p>LAWN TROOPER LLC</p>
-              <p>Phone: (256) 795-2949</p>
+              <p>Phone: 256-795-2949</p>
               <p>
                 Email:{" "}
                 <a href="mailto:John@lawn-trooper.com" className="text-primary underline">
