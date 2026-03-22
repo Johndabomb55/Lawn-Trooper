@@ -6,8 +6,9 @@
  */
 
 export const HERO_CONTENT = {
-  title: "Your Dream Lawn Starts Here",
-  subtitle: "Build your plan in 60 seconds — no payment required.",
+  title: "North Alabama yard care, handled like a membership",
+  subtitle:
+    "Annual membership, billed monthly. Call Lawn Trooper AI first — or explore instant pricing in the plan builder.",
 };
 
 export const TRUST_BAR_COMPACT = [
@@ -35,8 +36,9 @@ export const WHY_LAWN_TROOPER = {
     {
       id: "ai",
       icon: "Cpu",
-      title: "AI-Powered Efficiency",
-      description: "Smart routing and scheduling means honest pricing with no hidden fees."
+      title: "Lawn Trooper AI",
+      description:
+        "24/7 answers on membership and next steps; our team follows up during business hours for scheduling and contracts.",
     },
     {
       id: "licensed",
@@ -49,7 +51,8 @@ export const WHY_LAWN_TROOPER = {
 
 export const PLAN_SUMMARIES = {
   sectionTitle: "Choose Your Total Maintenance Plan",
-  sectionSubtitle: "All plans include mowing, edging, trimming, and blowing.",
+  sectionSubtitle:
+    "Annual membership, billed monthly. All plans include mowing, edging, trimming, and blowing.",
   plans: [
     {
       id: "basic",

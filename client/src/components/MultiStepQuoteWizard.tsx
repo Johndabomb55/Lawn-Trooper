@@ -477,16 +477,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
         photos
       };
       
-      const response = await fetch('/api/quote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submitData),
-      });
-
-      const data = await response.json();
-
-      // Also capture lead data (fire and forget - don't block on this)
-      fetch('/api/leads', {
+      const leadResponse = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -507,36 +498,54 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           appliedPromos: promotionResult.applied.map(p => p.title),
           promoCode: promoCodeStatus?.valid ? promoCode : null,
         }),
-      }).catch(err => console.error('Lead capture error:', err));
+      });
 
-      if (data.success) {
-        // Store the quote data for the confirmation page
-        setSubmittedQuoteData({
-          name: values.name,
-          email: values.email || "",
-          phone: values.phone || "",
-          address: values.address,
-          yardSize,
-          plan,
-          basicAddons,
-          premiumAddons,
-          totalPrice,
-          term,
-          payUpfront,
-          segments,
-          appliedPromos: promotionResult.applied.map(p => p.title),
-          promoCode: promoCodeStatus?.valid ? promoCode : undefined,
-        });
-        
-        // Show the Mission Accomplished page
-        setShowMissionAccomplished(true);
-      } else {
-        throw new Error(data.message || "Submission failed");
+      const leadData = await leadResponse.json().catch(() => null);
+      if (!leadResponse.ok || !leadData?.success) {
+        const reason = leadData?.message || "Lead capture failed. Please verify contact details and try again.";
+        throw new Error(reason);
       }
+
+      const quoteResponse = await fetch('/api/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submitData),
+      });
+      const quoteData = await quoteResponse.json().catch(() => null);
+      if (!quoteResponse.ok || !quoteData?.success) {
+        const followUpReason = quoteData?.message || "Lead saved, but quote email delivery had a problem.";
+        toast({
+          title: "Lead captured successfully",
+          description: `${followUpReason} Our team will still follow up from your saved request.`,
+          variant: "default",
+        });
+      }
+
+      // Store the quote data for the confirmation page
+      setSubmittedQuoteData({
+        name: values.name,
+        email: values.email || "",
+        phone: values.phone || "",
+        address: values.address,
+        yardSize,
+        plan,
+        basicAddons,
+        premiumAddons,
+        totalPrice,
+        term,
+        payUpfront,
+        segments,
+        appliedPromos: promotionResult.applied.map(p => p.title),
+        promoCode: promoCodeStatus?.valid ? promoCode : undefined,
+      });
+      
+      // Show the Mission Accomplished page
+      setShowMissionAccomplished(true);
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to submit request. Please try again.";
       toast({
         title: "Transmission Error",
-        description: "Failed to submit request. Please try again.",
+        description: message,
         variant: "destructive",
       });
     } finally {

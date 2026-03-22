@@ -1,7 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { getStorage } from "./storage";
-import { sendQuoteEmails, sendLeadEmails, type QuoteRequestData, type LeadEmailData } from "./email";
+import {
+  sendQuoteEmails,
+  sendLeadEmails,
+  getLeadNotificationRecipients,
+  type QuoteRequestData,
+  type LeadEmailData,
+} from "./email";
 import { z } from "zod";
 import { insertLeadSchema, insertWaitlistSchema } from "@shared/schema";
 
@@ -29,11 +35,33 @@ function logRouteError(context: string, error: unknown) {
   }
 }
 
-async function sendToGHL(leadData: Record<string, any>) {
+type DeliverySnapshot = {
+  route: "quote" | "leads";
+  timestamp: string;
+  leadSaved: boolean;
+  ghlAttempted: boolean;
+  ghlDelivered: boolean;
+  emailAttempted: boolean;
+  emailDelivered: boolean;
+  recipients: string[];
+  failures: string[];
+};
+
+const deliveryAuditLog: DeliverySnapshot[] = [];
+
+function pushDeliverySnapshot(snapshot: DeliverySnapshot) {
+  deliveryAuditLog.unshift(snapshot);
+  if (deliveryAuditLog.length > 100) {
+    deliveryAuditLog.length = 100;
+  }
+}
+
+async function sendToGHL(leadData: Record<string, any>): Promise<{ attempted: boolean; delivered: boolean; failure?: string }> {
   const webhookUrl = process.env.GHL_WEBHOOK_URL || process.env.GOHIGHLEVEL_WEBHOOK_URL;
   if (!webhookUrl) {
-    console.warn("GHL webhook URL not set (GHL_WEBHOOK_URL/GOHIGHLEVEL_WEBHOOK_URL), skipping webhook");
-    return;
+    const failure = "GHL webhook URL not set (GHL_WEBHOOK_URL/GOHIGHLEVEL_WEBHOOK_URL)";
+    console.warn(`${failure}; skipping webhook`);
+    return { attempted: false, delivered: false, failure };
   }
 
   try {
@@ -90,12 +118,17 @@ async function sendToGHL(leadData: Record<string, any>) {
     });
 
     if (!response.ok) {
-      console.error("GHL webhook failed:", response.status, await response.text());
+      const failure = `GHL webhook failed: ${response.status} ${await response.text()}`;
+      console.error(failure);
+      return { attempted: true, delivered: false, failure };
     } else {
       console.log("GHL webhook sent successfully");
+      return { attempted: true, delivered: true };
     }
   } catch (error) {
+    const failure = error instanceof Error ? error.message : "Unknown GHL webhook error";
     console.error("GHL webhook error:", error);
+    return { attempted: true, delivered: false, failure };
   }
 }
 
@@ -201,23 +234,48 @@ export async function registerRoutes(
   app.post("/api/quote", async (req, res) => {
     try {
       const data = quoteRequestSchema.parse(req.body);
-      
-      // Send to GoHighLevel webhook (fire and forget)
-      sendToGHL(data).catch(err => console.error("GHL webhook background error:", err));
-      
-      const result = await sendQuoteEmails(data as QuoteRequestData);
 
-      if (result.businessEmailSent || (result as any).degraded) {
-        res.json({ 
-          success: true, 
-          message: "Quote request sent successfully" 
-        });
-      } else {
-        res.status(500).json({ 
-          success: false, 
-          message: "Failed to send quote request email" 
-        });
+      const recipients = getLeadNotificationRecipients();
+      const failures: string[] = [];
+      const ghlResult = await sendToGHL(data);
+      if (ghlResult.failure) failures.push(ghlResult.failure);
+
+      let emailAttempted = false;
+      let emailDelivered = false;
+
+      try {
+        emailAttempted = true;
+        const result = await sendQuoteEmails(data as QuoteRequestData);
+        emailDelivered = Boolean(result.businessEmailSent);
+        if (!emailDelivered) {
+          failures.push("Primary business notification email was not delivered");
+        }
+      } catch (emailError) {
+        const failure = emailError instanceof Error ? emailError.message : "Unknown quote email error";
+        failures.push(`Quote email exception: ${failure}`);
       }
+
+      const snapshot: DeliverySnapshot = {
+        route: "quote",
+        timestamp: new Date().toISOString(),
+        leadSaved: false,
+        ghlAttempted: ghlResult.attempted,
+        ghlDelivered: ghlResult.delivered,
+        emailAttempted,
+        emailDelivered,
+        recipients,
+        failures,
+      };
+      pushDeliverySnapshot(snapshot);
+
+      const success = emailDelivered || ghlResult.delivered;
+      res.status(success ? 200 : 502).json({
+        success,
+        message: success
+          ? "Quote request processed"
+          : "Quote request failed delivery to both GHL and email notifications",
+        delivery: snapshot,
+      });
     } catch (error) {
       logRouteError("quote", error);
       const formatted = describeError(error);
@@ -239,12 +297,18 @@ export async function registerRoutes(
         appliedPromos: requestData.appliedPromos ?? [],
       });
       const storage = getStorage();
-      
       const lead = await storage.createLead(data);
-      
-      sendToGHL(data).catch(err => console.error("GHL webhook background error:", err));
-      
+
+      const recipients = getLeadNotificationRecipients();
+      const failures: string[] = [];
+
+      const ghlResult = await sendToGHL(data);
+      if (ghlResult.failure) failures.push(ghlResult.failure);
+
+      let emailAttempted = false;
+      let emailDelivered = false;
       try {
+        emailAttempted = true;
         const emailData: LeadEmailData = {
           name: data.name,
           email: data.email,
@@ -260,17 +324,40 @@ export async function registerRoutes(
           totalPrice: data.totalPrice,
           notes: data.notes,
         };
-        
+
         const emailResult = await sendLeadEmails(emailData);
         console.log("Lead emails sent:", emailResult);
+        emailDelivered = Boolean(emailResult.businessEmailSent);
+        if (!emailDelivered) {
+          failures.push("Primary lead notification email was not delivered");
+        }
       } catch (emailError) {
+        const failure = emailError instanceof Error ? emailError.message : "Unknown lead email error";
         console.error("Failed to send lead emails:", emailError);
+        failures.push(`Lead email exception: ${failure}`);
       }
-      
-      res.json({ 
-        success: true, 
-        message: "Lead captured successfully",
-        leadId: lead?.id
+
+      const snapshot: DeliverySnapshot = {
+        route: "leads",
+        timestamp: new Date().toISOString(),
+        leadSaved: true,
+        ghlAttempted: ghlResult.attempted,
+        ghlDelivered: ghlResult.delivered,
+        emailAttempted,
+        emailDelivered,
+        recipients,
+        failures,
+      };
+      pushDeliverySnapshot(snapshot);
+
+      res.status(200).json({
+        success: true,
+        message:
+          failures.length > 0
+            ? "Lead captured, but one or more downstream deliveries failed"
+            : "Lead captured successfully",
+        leadId: lead?.id,
+        delivery: snapshot,
       });
     } catch (error) {
       logRouteError("leads", error);
@@ -312,6 +399,20 @@ export async function registerRoutes(
         message: error instanceof Error ? error.message : "Invalid request" 
       });
     }
+  });
+
+  app.get("/api/delivery-audit", (_req, res) => {
+    const webhookConfigured = Boolean(process.env.GHL_WEBHOOK_URL || process.env.GOHIGHLEVEL_WEBHOOK_URL);
+    const resendConfigured = Boolean(process.env.RESEND_API_KEY || process.env.REPLIT_CONNECTORS_HOSTNAME);
+    res.json({
+      success: true,
+      checks: {
+        webhookConfigured,
+        resendConfigured,
+        recipientCount: getLeadNotificationRecipients().length,
+      },
+      recent: deliveryAuditLog.slice(0, 25),
+    });
   });
 
   return httpServer;

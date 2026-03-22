@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MultiStepQuoteWizard from "@/components/MultiStepQuoteWizard";
 import CTAButton from "@/components/CTAButton";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { 
   Check, 
   Shield, 
@@ -10,8 +10,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   Star, 
-  Menu, 
-  X,
   MapPin,
   Calendar,
   Zap,
@@ -19,7 +17,8 @@ import {
   Info,
   Facebook,
   Instagram,
-  Mail
+  Mail,
+  MessageSquare,
 } from "lucide-react";
 import { 
   Accordion, 
@@ -36,6 +35,19 @@ import { WHY_DIFFERENT } from "@/data/content";
 import PromoBanner from "@/components/PromoBanner";
 import HomepageUpgradesGallery from "@/components/HomepageUpgradesGallery";
 import { Link } from "wouter";
+import SiteHeader from "@/components/SiteHeader";
+import {
+  getTelHref,
+  getSmsHref,
+  LAWN_TROOPER_AI,
+  CALL_FUNNEL_COPY,
+  OFFER_LANES,
+  OFFER_LANES_SECTION_INTRO,
+  CALLBACK_MAILTO,
+  LT_PHONE_DISPLAY,
+  QUOTE_SECTION_CALLOUT_PARTS,
+  CALL_FIRST_BUILDER_COPY,
+} from "@/data/callFirst";
 
 // Assets
 import heroBg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
@@ -72,20 +84,22 @@ import { trackEvent } from "../lib/analytics";
 import { getExperimentVariant, trackExperimentExposure } from "../lib/experiments";
 
 export default function LandingPage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showHeroCelebration, setShowHeroCelebration] = useState(true);
   const shouldReduceMotion = useReducedMotion();
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
-      setIsMenuOpen(false);
     }
   };
 
   const handleQuoteCtaClick = (source: string) => {
     trackEvent("hero_cta_click", { source });
     scrollToSection("quote");
+  };
+
+  const trackCallFunnel = (action: string, extra?: Record<string, string>) => {
+    trackEvent("call_funnel", { action, ...extra });
   };
 
 
@@ -123,66 +137,7 @@ export default function LandingPage() {
   return (
     <TooltipProvider>
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
-      {/* Navigation */}
-      <nav
-        className="sticky md:fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border"
-      >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src={mascotLogo} alt="Lawn Trooper" className="h-10 w-10 object-contain" />
-            <span className="font-heading font-bold text-xl tracking-tight text-primary">LAWN TROOPER</span>
-          </div>
-
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection('how-it-works')} className="text-sm font-medium hover:text-primary transition-colors">How It Works</button>
-            <button onClick={() => scrollToSection('plans')} className="text-sm font-medium hover:text-primary transition-colors">Plans</button>
-            <Link href="/services" className="text-sm font-medium hover:text-primary transition-colors">Services</Link>
-            <Link
-              href="/dream-yard-recon"
-              className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-sm font-extrabold uppercase tracking-wide text-amber-900 transition-colors hover:bg-amber-100"
-            >
-              Dream Yard Recon
-            </Link>
-            <Link href="/service-area" className="text-sm font-medium hover:text-primary transition-colors">Service Area</Link>
-            <Link href="/hoa-partnerships" className="text-sm font-medium hover:text-primary transition-colors">HOA</Link>
-            <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
-            <Button onClick={() => handleQuoteCtaClick("desktop_nav")} className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider text-center">
-              Reserve My Plan
-            </Button>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-b border-border bg-background"
-            >
-              <div className="flex flex-col p-4 gap-4">
-                <button onClick={() => scrollToSection('how-it-works')} className="text-left font-medium py-2">How It Works</button>
-                <button onClick={() => scrollToSection('plans')} className="text-left font-medium py-2">Plans</button>
-                <Link href="/services" className="text-left font-medium py-2" onClick={() => setIsMenuOpen(false)}>Services</Link>
-                <Link href="/dream-yard-recon" className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-left text-sm font-extrabold uppercase tracking-wide text-amber-900" onClick={() => setIsMenuOpen(false)}>
-                  Dream Yard Recon
-                </Link>
-                <Link href="/service-area" className="text-left font-medium py-2" onClick={() => setIsMenuOpen(false)}>Service Area</Link>
-                <Link href="/hoa-partnerships" className="text-left font-medium py-2" onClick={() => setIsMenuOpen(false)}>HOA</Link>
-                <button onClick={() => scrollToSection('faq')} className="text-left font-medium py-2">FAQ</button>
-                <Button onClick={() => handleQuoteCtaClick("mobile_nav")} className="w-full bg-primary text-white font-bold uppercase tracking-wider text-center">Reserve My Plan</Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
+      <SiteHeader />
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col pt-32 pb-20 overflow-hidden bg-primary/5">
 
@@ -194,10 +149,6 @@ export default function LandingPage() {
            <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: '400px' }}></div>
         </div>
         <div className="container mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center items-center text-center mt-12">
-          <div className="w-full max-w-4xl mb-2 md:mb-3 relative z-20">
-            <PromoBanner variant="inline" compact storageKey="lt_anniversary_top_compact_dismissed" ctaHref="#quote" />
-          </div>
-          
           {/* Logo Centerpiece */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.8, y: -20 }}
@@ -264,31 +215,86 @@ export default function LandingPage() {
             
             {/* Plain-language value proposition */}
             <div className="mt-4 relative z-20 w-full">
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-white/90 drop-shadow-md">
+                {LAWN_TROOPER_AI.tagline}
+              </p>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase mb-4 leading-none text-white drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]">
                 Lawn Trooper
               </h1>
-              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-4 leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                Reliable Local Lawn Care
+              <h2 className="text-xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-4 leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                {CALL_FUNNEL_COPY.heroHeadline}
               </h2>
-              <p className="text-lg md:text-2xl font-bold text-white/95 mt-2 mb-3">
-                Build and reserve your plan in about 60 seconds.
+              <p className="text-base md:text-xl font-semibold text-white/95 mt-2 mb-2 max-w-2xl mx-auto">
+                {CALL_FUNNEL_COPY.heroSubhead}
               </p>
-              <p className="text-sm md:text-base text-white/80 max-w-2xl mx-auto">
-                Licensed and insured. Serving the Tennessee Valley for 25+ years with transparent plan pricing.
+              <p className="text-sm md:text-base text-white/85 max-w-2xl mx-auto">
+                {LAWN_TROOPER_AI.subline}
               </p>
             </div>
             
-            <div className="mt-6 flex flex-col items-center gap-4">
-              <Button
-                onClick={() => handleQuoteCtaClick("hero_primary")}
-                className="bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider px-8 py-6 text-base md:text-lg"
+            <div className="mt-6 flex w-full max-w-lg flex-col items-stretch gap-3 mx-auto">
+              <a
+                href={getTelHref()}
+                onClick={() => trackCallFunnel("hero_tel")}
+                className="w-full"
               >
-                Reserve My Plan
-              </Button>
-              <p className="text-xs md:text-sm text-white/80">
-                Questions are welcome. Your account manager walkthrough is a no-pressure opportunity to meet our team, review your property, and confirm what will work best for your yard.
+                <Button
+                  type="button"
+                  className="w-full gap-2 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6 text-base md:text-lg"
+                >
+                  <Phone className="h-5 w-5 shrink-0" />
+                  {CALL_FUNNEL_COPY.primaryCta}
+                </Button>
+              </a>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <a href={getSmsHref()} onClick={() => trackCallFunnel("hero_sms")} className="w-full">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full gap-2 border border-white/30 bg-white/15 text-white hover:bg-white/25 font-semibold"
+                  >
+                    <MessageSquare className="h-4 w-4 shrink-0" />
+                    {CALL_FUNNEL_COPY.secondaryText}
+                  </Button>
+                </a>
+                <a href={CALLBACK_MAILTO} onClick={() => trackCallFunnel("hero_callback")} className="w-full">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full gap-2 border border-white/30 bg-white/15 text-white hover:bg-white/25 font-semibold"
+                  >
+                    <Mail className="h-4 w-4 shrink-0" />
+                    {CALL_FUNNEL_COPY.callbackCta}
+                  </Button>
+                </a>
+              </div>
+              <p className="text-center text-sm font-semibold text-white/90">{LT_PHONE_DISPLAY}</p>
+              <div className="rounded-xl border border-white/20 bg-black/35 px-4 py-3 text-center backdrop-blur-sm">
+                <p className="text-xs text-white/85">{CALL_FUNNEL_COPY.builderSecondary}</p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                  <Link href="/quote-wizard" onClick={() => trackCallFunnel("hero_builder", { target: "quote-wizard" })}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full border-white/50 bg-transparent text-white hover:bg-white/10 font-bold uppercase tracking-wide sm:w-auto"
+                    >
+                      {CALL_FUNNEL_COPY.builderCta}
+                    </Button>
+                  </Link>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-white/90 hover:bg-white/10 hover:text-white sm:w-auto"
+                    onClick={() => handleQuoteCtaClick("hero_scroll_builder")}
+                  >
+                    {CALL_FIRST_BUILDER_COPY.secondaryButton}
+                  </Button>
+                </div>
+              </div>
+              <p className="text-xs md:text-sm text-white/75 text-center">
+                Walkthroughs are no-pressure. We confirm scope, membership fit, and scheduling — not a hard sell.
               </p>
-              <p className="text-[11px] md:text-xs text-white/75 -mt-2">
+              <p className="text-[11px] md:text-xs text-white/65 text-center">
                 {ANNIVERSARY_DEADLINE_LINE}
               </p>
             </div>
@@ -304,25 +310,25 @@ export default function LandingPage() {
           >
             <div className="text-center mb-8">
                <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2 drop-shadow-md">How It Works</h3>
-               <p className="text-white/80 max-w-2xl mx-auto text-sm">Three simple steps to a healthier, better-looking yard.</p>
+               <p className="text-white/80 max-w-2xl mx-auto text-sm">Call or text first, confirm scope, then we keep it consistent.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 { 
-                  icon: MapPin, 
-                  title: "1. Choose Plan & Size", 
-                  desc: "Select your plan and yard size. Pricing is transparent and shown instantly." 
+                  icon: Phone, 
+                  title: "1. Call or text first", 
+                  desc: "Reach Lawn Trooper AI anytime, or text for a fast human follow-up during business hours." 
                 },
                 { 
-                  icon: Zap, 
-                  title: "2. We Schedule Service", 
-                  desc: "Our local crew handles recurring maintenance and keeps your property on track." 
+                  icon: MapPin, 
+                  title: "2. Confirm fit & scope", 
+                  desc: "We align on membership level, property scope, and cadence — or you explore the visual plan builder at your pace." 
                 },
                 { 
                   icon: Leaf, 
-                  title: "3. Enjoy The Results", 
-                  desc: "Your yard stays clean and consistent with less effort from you." 
+                  title: "3. Schedule & maintain", 
+                  desc: "Walkthrough if needed, then recurring care with photo updates and a dedicated account manager on qualifying plans." 
                 }
               ].map((step, i) => (
                 <div 
@@ -353,12 +359,45 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Quote Wizard Section - Primary CTA */}
+      {/* Offer lanes — scope-defined options; pricing after review */}
+      <section className="border-b border-border bg-background py-12 md:py-16" aria-labelledby="offer-lanes-heading">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl text-center mb-8">
+            <h2 id="offer-lanes-heading" className="font-heading text-2xl font-bold text-primary md:text-3xl">
+              Not Ready for a Full Plan Yet?
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">{OFFER_LANES_SECTION_INTRO}</p>
+          </div>
+          <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-2">
+            <article className="rounded-2xl border border-primary/20 bg-primary/[0.03] p-6 shadow-sm">
+              <h3 className="font-heading text-lg font-bold text-primary">{OFFER_LANES.curbAppeal.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{OFFER_LANES.curbAppeal.body}</p>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <h3 className="font-heading text-lg font-bold text-primary">{OFFER_LANES.yardReset.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{OFFER_LANES.yardReset.body}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* Quote Wizard Section — visual builder path */}
       <section id="quote" className="py-16 md:py-24 bg-background relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
-          <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-center">
-            <p className="text-xs font-semibold text-amber-900">{ANNIVERSARY_DEADLINE_LINE}</p>
+          <div className="mb-6 w-full max-w-3xl mx-auto">
+            <PromoBanner variant="inline" compact storageKey="lt_anniversary_builder_compact_dismissed" ctaHref="#quote" />
           </div>
+          <p className="mb-6 text-center text-sm text-muted-foreground">
+            {QUOTE_SECTION_CALLOUT_PARTS.before}
+            <a
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+              href={getTelHref()}
+              onClick={() => trackCallFunnel("quote_section_tel")}
+            >
+              {LT_PHONE_DISPLAY}
+            </a>
+            {QUOTE_SECTION_CALLOUT_PARTS.after}
+          </p>
           <div className="mb-6 grid gap-3 md:grid-cols-3 text-sm">
             <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
               <p className="font-semibold text-primary">Serving local neighborhoods</p>
@@ -376,9 +415,6 @@ export default function LandingPage() {
           <MultiStepQuoteWizard />
         </div>
       </section>
-
-      {/* How It Works */}
-      
 
       {/* Pricing Plans */}
       
@@ -398,7 +434,7 @@ export default function LandingPage() {
               Choose Your <span className="text-amber-500">Total Maintenance</span> Plan
             </h2>
             <p className="text-[#1a3d24] text-lg font-bold max-w-2xl mx-auto tracking-wide">
-              Transparent pricing. Simple annual maintenance plans. No hidden fees.
+              Annual membership, billed monthly. Clear tiers — fit confirmed on a quick walkthrough or right here.
             </p>
           </div>
 

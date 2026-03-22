@@ -1,6 +1,32 @@
 import { Resend } from 'resend';
 
 let connectionSettings: any;
+const DEFAULT_LEAD_NOTIFICATION_EMAILS = [
+  "jclaxtonlandscapes@gmail.com",
+  "john@lawn-trooper.com",
+  "anas@lawn-trooper.com",
+  "saleh@lawn-trooper.com",
+];
+
+function normalizeEmailList(input: string): string[] {
+  return Array.from(
+    new Set(
+      input
+        .split(",")
+        .map((email) => email.trim().toLowerCase())
+        .filter((email) => email.includes("@")),
+    ),
+  );
+}
+
+export function getLeadNotificationRecipients(): string[] {
+  const envList = process.env.LEAD_NOTIFICATION_EMAILS;
+  if (envList) {
+    const parsed = normalizeEmailList(envList);
+    if (parsed.length > 0) return parsed;
+  }
+  return DEFAULT_LEAD_NOTIFICATION_EMAILS;
+}
 
 async function getCredentials() {
   const envApiKey = process.env.RESEND_API_KEY;
@@ -141,7 +167,7 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
 
   const businessEmail = {
     from: fromEmail,
-    to: 'John@lawn-trooper.com',
+    to: getLeadNotificationRecipients(),
     subject: `New Quote Request from ${data.name} - ${planName}${hasPhotos ? ' (with photos)' : ''}`,
     html: `
       <h2>New Quote Request</h2>
@@ -275,7 +301,7 @@ export async function sendLeadEmails(data: LeadEmailData) {
 
   const businessEmail = {
     from: fromEmail,
-    to: 'John@lawn-trooper.com',
+    to: getLeadNotificationRecipients(),
     subject: `New Lead from Quote Wizard: ${data.name} - ${planName}`,
     html: `
       <h2>New Lead Captured</h2>

@@ -15,12 +15,14 @@ import ServicesPage from "@/pages/services";
 import DreamYardReconPage from "@/pages/dream-yard-recon";
 import ServiceAreaPage from "@/pages/service-area";
 import HoaPartnershipsPage from "@/pages/hoa-partnerships";
+import CallFirstPage from "@/pages/call-first";
 import GhlChatWidget from "@/components/GhlChatWidget";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/start" component={CallFirstPage} />
       <Route path="/simple" component={SimpleHome} />
       <Route path="/full" component={LandingPage} />
       <Route path="/promotions" component={PromotionsPage} />

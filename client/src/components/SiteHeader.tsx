@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 import companyLogo from "@assets/lawn-trooper-logo-badge-2026-transparent.png";
+import { getTelHref, LT_PHONE_DISPLAY, CALL_NAV_PRIMARY_SHORT } from "@/data/callFirst";
+import { trackEvent } from "@/lib/analytics";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -39,8 +41,19 @@ export default function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          <a href="/quote-wizard">
-            <Button className="bg-primary text-white hover:bg-primary/90">Reserve My Plan</Button>
+          <a
+            href={getTelHref()}
+            title="Talk to Lawn Trooper AI"
+            onClick={() => trackEvent("header_call_ai", { href: "tel" })}
+            className="hidden items-center gap-1.5 rounded-md border border-primary bg-primary px-3 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90 lg:inline-flex"
+          >
+            <Phone className="h-4 w-4" />
+            <span className="max-w-[9rem] truncate">{CALL_NAV_PRIMARY_SHORT}</span>
+          </a>
+          <a href="/quote-wizard" onClick={() => trackEvent("header_plan_builder", {})}>
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary/10">
+              Plan builder
+            </Button>
           </a>
         </nav>
 
@@ -66,8 +79,21 @@ export default function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            <a
+              href={getTelHref()}
+              onClick={() => {
+                trackEvent("header_call_ai", { href: "tel", mobile: true });
+                closeMenu();
+              }}
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-md bg-primary py-3 text-sm font-bold text-primary-foreground"
+            >
+              <Phone className="h-4 w-4" />
+              Call {LT_PHONE_DISPLAY}
+            </a>
             <a href="/quote-wizard" onClick={closeMenu}>
-              <Button className="mt-1 w-full bg-primary text-white hover:bg-primary/90">Reserve My Plan</Button>
+              <Button variant="outline" className="w-full border-primary text-primary">
+                Plan builder
+              </Button>
             </a>
           </nav>
         </div>

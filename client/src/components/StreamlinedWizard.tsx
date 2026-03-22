@@ -447,17 +447,19 @@ export default function StreamlinedWizard() {
           hoaNotes: isHOA ? hoaNotes : undefined,
         }),
       });
-      
-      if (response.ok) {
+
+      const responseData = await response.json().catch(() => null);
+      if (response.ok && responseData?.success) {
         setIsComplete(true);
         setStepWithStableScroll(9);
       } else {
-        throw new Error('Failed to submit');
+        throw new Error(responseData?.message || 'Lead submission failed');
       }
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to submit. Please try again.";
       toast({
-        title: "Error",
-        description: "Failed to submit. Please try again.",
+        title: "Submission Error",
+        description: message,
         variant: "destructive",
       });
     } finally {
