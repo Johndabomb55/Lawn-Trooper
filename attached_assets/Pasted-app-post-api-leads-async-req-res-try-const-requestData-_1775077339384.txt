@@ -1,0 +1,84 @@
+app.post("/api/leads", async (req, res) => {
+    try {
+      const requestData = leadRequestSchema.parse(req.body);
+      const data = insertLeadSchema.parse({
+        ...requestData,
+        basicAddons: requestData.basicAddons ?? [],
+        premiumAddons: requestData.premiumAddons ?? [],
+        segments: requestData.segments ?? [],
+        appliedPromos: requestData.appliedPromos ?? [],
+      });
+      const storage = getStorage();
+      const lead = await storage.createLead(data);
+
+      const recipients = getLeadNotificationRecipients();
+      const failures: string[] = [];
+
+      const ghlResult = await sendToGHL(data);
+      if (ghlResult.failure) failures.push(ghlResult.failure);
+
+      let emailAttempted = false;
+      let emailDelivered = false;
+      try {
+        emailAttempted = true;
+        const emailData: LeadEmailData = {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          yardSize: data.yardSize,
+          plan: data.plan,
+          basicAddons: data.basicAddons || [],
+          premiumAddons: data.premiumAddons || [],
+          term: data.term,
+          payUpfront: data.payUpfront,
+          freeMonths: data.freeMonths ? (parseInt(data.freeMonths, 10) || 0) : null,
+          totalPrice: data.totalPrice,
+          notes: data.notes,
+        };
+
+        const emailResult = await sendLeadEmails(emailData);
+        console.log("Lead emails sent:", emailResult);
+        emailDelivered = Boolean(emailResult.businessEmailSent);
+        if (!emailDelivered) {
+          failures.push("Primary lead notification email was not delivered");
+        }
+      } catch (emailError) {
+        const failure = emailError instanceof Error ? emailError.message : "Unknown lead email error";
+        console.error("Failed to send lead emails:", emailError);
+        failures.push(`Lead email exception: ${failure}`);
+      }
+
+      const snapshot: DeliverySnapshot = {
+        route: "leads",
+        timestamp: new Date().toISOString(),
+        leadSaved: true,
+        ghlAttempted: ghlResult.attempted,
+        ghlDelivered: ghlResult.delivered,
+        emailAttempted,
+        emailDelivered,
+        recipients,
+        failures,
+      };
+      pushDeliverySnapshot(snapshot);
+
+      res.status(200).json({
+        success: true,
+        message:
+          failures.length > 0
+            ? "Lead captured, but one or more downstream deliveries failed"
+            : "Lead captured successfully",
+        leadId: lead?.id,
+        delivery: snapshot,
+      });
+    } catch (error) {
+      logRouteError("leads", error);
+      const formatted = describeError(error);
+      const isValidation = error instanceof z.ZodError;
+      res.status(isValidation ? 400 : 500).json({ 
+        success: false, 
+        message: formatted.details ? `${formatted.message}: ${formatted.details}` : formatted.message,
+        error: true
+      });
+    }
+  });
