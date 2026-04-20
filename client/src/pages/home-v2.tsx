@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Phone,
@@ -15,6 +15,7 @@ import {
   Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Accordion,
   AccordionContent,
@@ -154,7 +155,122 @@ function scrollToBuilder() {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function BeforeAfterSlider({ before, after, caption }: { before: string; after: string; caption: string }) {
+  const [pos, setPos] = useState(50);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+
+  const updatePos = useCallback((clientX: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const pct = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
+    setPos(pct);
+  }, []);
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    dragging.current = true;
+    updatePos(e.clientX);
+  }, [updatePos]);
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!dragging.current) return;
+    updatePos(e.clientX);
+  }, [updatePos]);
+
+  const onMouseUp = useCallback(() => { dragging.current = false; }, []);
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    dragging.current = true;
+    updatePos(e.touches[0].clientX);
+  }, [updatePos]);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!dragging.current) return;
+    updatePos(e.touches[0].clientX);
+  }, [updatePos]);
+
+  const onTouchEnd = useCallback(() => { dragging.current = false; }, []);
+  const onTouchCancel = useCallback(() => { dragging.current = false; }, []);
+
+  const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      setPos((p) => Math.max(0, p - 5));
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      setPos((p) => Math.min(100, p + 5));
+    }
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full select-none overflow-hidden rounded-lg cursor-col-resize"
+      style={{ aspectRatio: "4/3", touchAction: "none" }}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseUp}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchCancel}
+      data-testid="slider-before-after"
+    >
+      <img
+        src={after}
+        alt={`After: ${caption}`}
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable={false}
+      />
+      <div
+        className="absolute inset-0 overflow-hidden"
+        style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
+      >
+        <img
+          src={before}
+          alt={`Before: ${caption}`}
+          className="absolute inset-0 h-full w-full object-cover"
+          draggable={false}
+        />
+        <span className="absolute top-3 left-3 z-10 rounded-md bg-black/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
+          Before
+        </span>
+      </div>
+      <span className="absolute top-3 right-3 z-10 rounded-md bg-primary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground">
+        After
+      </span>
+      <div
+        className="absolute top-0 bottom-0 z-20 flex items-center justify-center"
+        style={{ left: `calc(${pos}% - 1px)` }}
+      >
+        <div className="w-0.5 h-full bg-white/80 shadow" />
+        <div
+          role="slider"
+          aria-label="Before/after comparison slider"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(pos)}
+          tabIndex={0}
+          onKeyDown={onKeyDown}
+          className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-lg border border-white/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.5 9H12.5M5.5 9L7.5 7M5.5 9L7.5 11M12.5 9L10.5 7M12.5 9L10.5 11" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 rounded-full bg-black/50 px-3 py-1 text-[10px] text-white tracking-wide pointer-events-none">
+        Drag to compare
+      </div>
+    </div>
+  );
+}
+
 export default function HomeV2() {
+  const [selectedMission, setSelectedMission] = useState<number | null>(null);
+
   useEffect(() => {
     document.title = PAGE_TITLE;
   }, []);
@@ -366,10 +482,15 @@ export default function HomeV2() {
           {MISSION_REPORTS.map((pair, i) => (
             <div
               key={i}
-              className="rounded-2xl border border-border bg-card overflow-hidden"
+              role="button"
+              tabIndex={0}
+              className="rounded-2xl border border-border bg-card overflow-hidden text-left w-full cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              onClick={() => setSelectedMission(i)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedMission(i); } }}
               data-testid={`card-mission-${i}`}
+              aria-label={`Expand mission report: ${pair.caption}`}
             >
-              <div className="grid grid-cols-2 gap-1 bg-border">
+              <div className="relative grid grid-cols-2 gap-1 bg-border">
                 {/* Before */}
                 <div className="relative h-[300px] md:h-[400px] overflow-hidden" data-testid={`img-mission-${i}-before`}>
                   <span className="absolute top-3 left-3 z-10 rounded-md bg-black/75 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
@@ -380,7 +501,7 @@ export default function HomeV2() {
                     alt={`Before: ${pair.caption}`}
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).style.display = "none";
                     }}
@@ -396,11 +517,16 @@ export default function HomeV2() {
                     alt={`After: ${pair.caption}`}
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).style.display = "none";
                     }}
                   />
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                  <span className="rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white tracking-wide">
+                    Tap to compare
+                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-3 px-5 py-4">
@@ -426,6 +552,41 @@ export default function HomeV2() {
             </div>
           ))}
         </div>
+
+        <Dialog open={selectedMission !== null} onOpenChange={(open) => { if (!open) setSelectedMission(null); }}>
+          <DialogContent
+            className="max-w-2xl w-full p-0 overflow-hidden gap-0"
+            data-testid="dialog-mission-lightbox"
+          >
+            {selectedMission !== null && (() => {
+              const pair = MISSION_REPORTS[selectedMission];
+              return (
+                <div className="flex flex-col">
+                  <DialogTitle className="sr-only">Mission Report: {pair.caption}</DialogTitle>
+                  <BeforeAfterSlider
+                    before={pair.before}
+                    after={pair.after}
+                    caption={pair.caption}
+                  />
+                  <div className="flex items-start justify-between gap-2 px-4 py-3">
+                    <p className="text-sm text-muted-foreground" data-testid="text-lightbox-caption">
+                      {pair.caption}
+                    </p>
+                    {pair.real ? (
+                      <span className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                        Real Job
+                      </span>
+                    ) : (
+                      <span className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        Sample
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+          </DialogContent>
+        </Dialog>
       </section>
 
       {/* ── Testimonials ── */}
