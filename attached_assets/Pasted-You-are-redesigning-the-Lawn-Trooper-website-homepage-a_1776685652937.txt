@@ -1,0 +1,102 @@
+You are redesigning the Lawn Trooper website homepage and plan builder for higher conversions, lower confusion, and a cleaner mobile experience.
+
+Business context:
+- Lawn Trooper is a North Alabama lawn care company
+- Brand vibe is military-inspired, but fun, approachable, and neighborhood-safe
+- Do NOT imply veteran ownership
+- Tone should feel like a disciplined neighborhood hero
+- Primary CTA: Talk to Lawn Trooper AI
+- Secondary CTA: Build My Plan in 60 Seconds
+- Every major CTA should route to phone, GHL booking, or plan selection
+
+Current direction:
+- Homepage should become a single-scroll, mobile-first marketing page
+- Main vibe is military-inspired but fun, approachable, and neighborhood-safe
+- Primary CTA is Talk to Lawn Trooper AI
+- Secondary CTA is Build My Plan in 60 Seconds
+- Plan builder should be 3 steps:
+  1. Yard Size
+  2. Patrol Level
+  3. Quick Custom Touches
+- Plans should feel simpler and easier to understand
+- Reduce visible complexity and do not lead with credits
+- Pricing should show the real recurring monthly amount clearly
+- Offer should be framed as seasonal lawn care with monthly billing
+- Best framing is a 90-day Yard Reset / one full season
+- Avoid year-long contract language
+- Mission Reports = before/after gallery with short stories
+- Keep short sections: Why Choose the Trooper, Testimonials, Promotions, Referral Program
+- CTA paths should send traffic to GHL booking/payment or phone
+- Key offers remain HOA + Yard Reset + neighborhood route density strategy
+
+Main problems to fix:
+1. The current plan builder is too complicated and feels like math homework
+2. Credit language should not lead the customer-facing experience
+3. The builder should collect helpful customer data without overwhelming them
+4. The site should show 3 clear plans early instead of making users work to understand pricing
+5. The mobile popup is annoying and must either:
+   - be removed, or
+   - have a clear working X close button and never trap the user
+6. The builder should feel like a light guided plan selector, not an internal operations form
+
+What to build:
+1. Redesign the homepage as a single-scroll mobile-first marketing page
+2. Redesign the plan builder into 3 simple steps:
+   - Step 1: Yard Size
+   - Step 2: Patrol Level
+   - Step 3: Quick Custom Touches
+3. Show 3 simple plan cards:
+   - Standard Patrol
+   - Premium Patrol
+   - Executive Command
+4. Make pricing easy to understand with real recurring monthly pricing shown clearly
+5. Frame the offer as seasonal lawn care with monthly billing and a 90-day Yard Reset
+6. Remove or minimize all visible credit logic in the customer-facing flow
+7. Preserve any internal logic needed behind the scenes, but do not make customers manage credits
+8. Add a simple intake flow that asks only helpful questions, such as:
+   - address or neighborhood
+   - yard size
+   - front yard only or full property
+   - lawn goals or problem areas
+   - preferred contact method
+9. End the flow by showing the best-fit plan card and a strong CTA to reserve, call, or book through GHL
+
+Design requirements:
+- Mobile-first
+- Clean and fast-loading
+- No walls of text
+- Strong visual hierarchy
+- Military-inspired UI accents are okay, but keep it polished and approachable
+- Dog-tag or badge-style buttons can be used selectively, not excessively
+- CTA buttons should feel obvious and high-converting
+- Avoid hover-dependent UX on mobile
+- Keep forms short
+- Keep explanations short and confidence-building
+
+Important pricing/offer direction:
+- Emphasize monthly billing
+- Position service as seasonal, built around a 90-day Yard Reset
+- Avoid hard contract language on the sales page
+- “No year-long contract” can be mentioned, but subtly
+- Focus on outcomes, not internal pricing math
+
+Deliverables:
+1. Audit the current homepage and plan builder structure
+2. Recommend what to keep, remove, combine, or simplify
+3. Build or rewrite the homepage layout
+4. Build or rewrite the 3-step builder UX
+5. Write cleaner customer-facing copy for each section
+6. Suggest the best placement and behavior for promo messaging
+7. Fix the popup behavior
+8. Keep internal builder data collection useful for sales and operations
+
+Output format:
+- First give me a short audit summary
+- Then give me the proposed sitemap/section order
+- Then give me the exact 3-step builder structure
+- Then give me homepage copy and CTA copy
+- Then generate the updated code/components
+- Then list any questions or missing assets at the end
+
+Do not overcomplicate this.
+The goal is more conversions, less confusion, simpler pricing, and better mobile UX.
