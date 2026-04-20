@@ -25,7 +25,7 @@ import { Link } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
 import SimpleBuilder from "@/components/SimpleBuilder";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
-import { TESTIMONIALS } from "@/data/content";
+import { TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
 
 // Brand assets
 import companyLogo from "@assets/lawn-trooper-logo-badge-2026-transparent.png";
@@ -371,40 +371,36 @@ export default function HomeV2() {
             >
               <div className="grid grid-cols-2 gap-1 bg-border">
                 {/* Before */}
-                <div className="relative overflow-hidden" data-testid={`img-mission-${i}-before`}>
-                  <div className="aspect-[4/3] sm:aspect-[16/9]">
-                    <span className="absolute top-3 left-3 z-10 rounded-md bg-black/75 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
-                      Before
-                    </span>
-                    <img
-                      src={pair.before}
-                      alt={`Before: ${pair.caption}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
-                    />
-                  </div>
+                <div className="relative h-[300px] md:h-[400px] overflow-hidden" data-testid={`img-mission-${i}-before`}>
+                  <span className="absolute top-3 left-3 z-10 rounded-md bg-black/75 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
+                    Before
+                  </span>
+                  <img
+                    src={pair.before}
+                    alt={`Before: ${pair.caption}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                  />
                 </div>
                 {/* After */}
-                <div className="relative overflow-hidden" data-testid={`img-mission-${i}-after`}>
-                  <div className="aspect-[4/3] sm:aspect-[16/9]">
-                    <span className="absolute top-3 left-3 z-10 rounded-md bg-primary px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-primary-foreground shadow">
-                      After
-                    </span>
-                    <img
-                      src={pair.after}
-                      alt={`After: ${pair.caption}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
-                    />
-                  </div>
+                <div className="relative h-[300px] md:h-[400px] overflow-hidden" data-testid={`img-mission-${i}-after`}>
+                  <span className="absolute top-3 left-3 z-10 rounded-md bg-primary px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-primary-foreground shadow">
+                    After
+                  </span>
+                  <img
+                    src={pair.after}
+                    alt={`After: ${pair.caption}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                  />
                 </div>
               </div>
               <div className="flex items-center justify-between gap-3 px-5 py-4">
@@ -571,13 +567,13 @@ export default function HomeV2() {
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 shrink-0 text-accent" />
                   <a href={getTelHref()} className="hover:text-white transition-colors" data-testid="link-footer-call">
-                    {LT_PHONE_DISPLAY}
+                    {FOOTER_CONTENT.phone}
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 shrink-0 text-accent" />
-                  <a href="mailto:John@lawn-trooper.com" className="hover:text-white transition-colors" data-testid="link-footer-email">
-                    John@lawn-trooper.com
+                  <a href={`mailto:${FOOTER_CONTENT.email}`} className="hover:text-white transition-colors" data-testid="link-footer-email">
+                    {FOOTER_CONTENT.email}
                   </a>
                 </div>
               </div>
@@ -592,7 +588,7 @@ export default function HomeV2() {
                 ))}
               </ul>
               <p className="mt-3 text-xs text-primary-foreground/60">
-                Plus surrounding Tennessee Valley communities.
+                {FOOTER_CONTENT.serviceArea}
               </p>
             </div>
           </div>
