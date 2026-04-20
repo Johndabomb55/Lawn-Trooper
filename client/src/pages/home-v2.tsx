@@ -10,7 +10,9 @@ import {
   Star,
   Award,
   ArrowRight,
-  ChevronDown,
+  Facebook,
+  Instagram,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,11 +21,23 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Link } from "wouter";
+import SiteHeader from "@/components/SiteHeader";
 import SimpleBuilder from "@/components/SimpleBuilder";
-import { PLANS } from "@/data/plans";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
-import { TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
+import { TESTIMONIALS } from "@/data/content";
 
+// Brand assets
+import companyLogo from "@assets/lawn-trooper-logo-badge-2026-transparent.png";
+import bgLandscape from "@assets/generated_images/beautiful_landscaped_yard_background.png";
+import camoPattern from "@assets/generated_images/subtle_camo_texture_background.png";
+
+// Plan lifestyle photos
+import imgBasic from "@assets/generated_images/athens_al_middle_class_home_landscaping.png";
+import imgPremium from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
+import imgExecutive from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
+
+// Mission report before/after photos
 import missionBefore1 from "@assets/alabama-problem-yard-overgrown.jpg";
 import missionAfter1 from "@assets/mulch-brown-refresh-alabama.jpg";
 import missionBefore2 from "@assets/generated_images/madison_al_home_with_fewer_flowers.png";
@@ -32,6 +46,58 @@ import missionBefore3 from "@assets/generated_images/basic_neat_lawn_without_flo
 import missionAfter3 from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import missionBefore4 from "@assets/generated_images/huntsville_al_home_landscaping.png";
 import missionAfter4 from "@assets/generated_images/manicured_garden_huntsville.png";
+
+const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
+
+const PLAN_CARDS = [
+  {
+    id: "basic" as const,
+    name: "Standard Patrol",
+    price: 169,
+    img: imgBasic,
+    bullets: [
+      "Bi-weekly mowing in growing season",
+      "Edging, trim & blow every visit",
+      "Free yard plan after first month",
+    ],
+  },
+  {
+    id: "premium" as const,
+    name: "Premium Patrol",
+    price: 299,
+    popular: true,
+    img: imgPremium,
+    bullets: [
+      "Weekly mowing in growing season",
+      "Bush care + flower bed weeding",
+      "Service photo updates",
+    ],
+  },
+  {
+    id: "executive" as const,
+    name: "Executive Command",
+    price: 399,
+    img: imgExecutive,
+    bullets: [
+      "Weekly mowing + bi-weekly off-season",
+      "Up to 7 turf treatments / year",
+      "Weed-free turf guarantee",
+    ],
+  },
+];
+
+const VALUE_PROPS = [
+  { icon: Award, title: "25+ years local", body: "Built in North Alabama. 100+ beautification awards." },
+  { icon: Leaf, title: "Electric crew options", body: "Battery mowers, lower emissions, neighbor-friendly." },
+  { icon: ShieldCheck, title: "Loyalty price drop", body: "Your rate goes down the longer you stay." },
+  { icon: Zap, title: "Real human account manager", body: "No call center. A real person owns your yard." },
+];
+
+const RESET_STEPS = [
+  { n: 1, title: "Day 1 — Recon", body: "Quick property walk + AI yard plan emailed to you." },
+  { n: 2, title: "Days 2–30 — Reset", body: "Heavy lift: catch-up trim, mow, edge, beds reset." },
+  { n: 3, title: "Days 31–90 — Lock-in", body: "Weekly rhythm dialed. Yard locked into mission-ready." },
+];
 
 const MISSION_REPORTS = [
   {
@@ -58,55 +124,6 @@ const MISSION_REPORTS = [
     caption: "Huntsville curb appeal — bed lines reshaped, hedges tightened, fresh edging installed.",
     real: false,
   },
-];
-
-const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
-
-const PLAN_CARDS = [
-  {
-    id: "basic" as const,
-    name: "Standard Patrol",
-    price: 169,
-    bullets: [
-      "Bi-weekly mowing in growing season",
-      "Edging, trim & blow every visit",
-      "Free yard plan after first month",
-    ],
-  },
-  {
-    id: "premium" as const,
-    name: "Premium Patrol",
-    price: 299,
-    popular: true,
-    bullets: [
-      "Weekly mowing in growing season",
-      "Bush care + flower bed weeding",
-      "Service photo updates",
-    ],
-  },
-  {
-    id: "executive" as const,
-    name: "Executive Command",
-    price: 399,
-    bullets: [
-      "Weekly mowing + bi-weekly off-season",
-      "Up to 7 turf treatments / year",
-      "Weed-free turf guarantee",
-    ],
-  },
-];
-
-const VALUE_PROPS = [
-  { icon: Award, title: "25+ years local", body: "Built in North Alabama. 100+ beautification awards." },
-  { icon: Leaf, title: "Quiet electric crew", body: "Battery mowers, zero emissions, neighbor-friendly." },
-  { icon: ShieldCheck, title: "Loyalty price drop", body: "Your rate goes down the longer you stay." },
-  { icon: Zap, title: "Real human account manager", body: "No call center. A real person owns your yard." },
-];
-
-const RESET_STEPS = [
-  { n: 1, title: "Day 1 — Recon", body: "Quick property walk + AI yard plan emailed to you." },
-  { n: 2, title: "Days 2–30 — Reset", body: "Heavy lift: catch-up trim, mow, edge, beds reset." },
-  { n: 3, title: "Days 31–90 — Lock-in", body: "Weekly rhythm dialed. Yard locked into mission-ready." },
 ];
 
 const FAQ = [
@@ -143,145 +160,190 @@ export default function HomeV2() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Top phone bar */}
-      <header className="sticky top-0 z-30 bg-background/90 backdrop-blur border-b border-border">
-        <div className="mx-auto max-w-6xl px-4 py-2.5 flex items-center justify-between gap-3">
-          <a href="#top" className="font-bold tracking-tight text-lg" data-testid="link-brand">
-            Lawn <span className="text-primary">Trooper</span>
-          </a>
-          <a
-            href={getTelHref()}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-primary"
-            data-testid="link-header-call"
-          >
-            <Phone className="h-4 w-4" /> {LT_PHONE_DISPLAY}
-          </a>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background font-sans text-foreground overflow-x-hidden">
+      <SiteHeader />
 
-      {/* Hero */}
-      <section id="top" className="relative overflow-hidden">
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-12 sm:pt-16 sm:pb-20 text-center">
+      {/* ── Hero ── */}
+      <section id="top" className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden">
+        {/* Background image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={bgLandscape}
+            alt="Beautifully landscaped North Alabama yard"
+            className="w-full h-full object-cover brightness-[0.75]"
+          />
+          <div className="absolute inset-0 bg-black/40" />
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{ backgroundImage: `url(${camoPattern})`, backgroundSize: "400px" }}
+          />
+        </div>
+
+        <div className="relative z-10 w-full max-w-4xl mx-auto px-4 pt-8 pb-16 text-center">
+          {/* Animated logo */}
+          <motion.img
+            src={companyLogo}
+            alt="Lawn Trooper Premium Exterior Care logo"
+            className="mx-auto w-56 sm:w-72 md:w-96 object-contain drop-shadow-2xl mb-4"
+            initial={{ opacity: 0, scale: 0.75, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.0, ease: "easeOut" }}
+            data-testid="img-hero-logo"
+          />
+
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold tracking-wide uppercase mb-4" data-testid="badge-hero">
+            <span
+              className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/30 text-white px-3 py-1 text-xs font-semibold tracking-wide uppercase mb-4"
+              data-testid="badge-hero"
+            >
               <Sparkles className="h-3.5 w-3.5" /> The 90-Day Yard Reset
             </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight max-w-3xl mx-auto" data-testid="text-hero-headline">
-              Your yard, locked into mission-ready in 90 days.
+
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white drop-shadow-lg leading-none"
+              data-testid="text-hero-headline"
+            >
+              Your yard, locked into<br className="hidden sm:block" /> mission-ready in 90 days.
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto" data-testid="text-hero-sub">
+            <p
+              className="mt-4 text-base sm:text-lg text-white/90 max-w-xl mx-auto"
+              data-testid="text-hero-sub"
+            >
               Real monthly pricing. Real local crew. Build your plan in 60 seconds — or talk to Lawn Trooper AI right now.
             </p>
-            <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-              <a href={getTelHref()} className="sm:w-auto" data-testid="link-hero-call">
-                <Button size="lg" className="w-full sm:w-auto">
-                  <Phone className="h-4 w-4 mr-2" /> Talk to Lawn Trooper AI
+
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+              <a href={getTelHref()} className="w-full sm:w-auto" data-testid="link-hero-call">
+                <Button
+                  size="lg"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wide py-6"
+                >
+                  <Phone className="h-5 w-5 mr-2" /> Talk to Lawn Trooper AI
                 </Button>
               </a>
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto border-white/60 bg-white/10 text-white hover:bg-white/20 font-semibold py-6"
                 onClick={scrollToBuilder}
                 data-testid="button-hero-build"
               >
                 Build My Plan in 60 Seconds <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Licensed & insured · 25+ years in the Tennessee Valley
+
+            <p className="mt-5 text-xs text-white/70">
+              Licensed &amp; insured · 25+ years in the Tennessee Valley
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Plan cards */}
+      {/* ── Plan cards ── */}
       <section className="bg-muted/30 border-y border-border">
-        <div className="mx-auto max-w-6xl px-4 py-12">
+        <div className="mx-auto max-w-6xl px-4 py-14">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2" data-testid="text-plans-title">
             Three patrol levels. Real monthly prices.
           </h2>
-          <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto text-sm">
-            No haggling. No mystery quotes. Pick a level — fine-tune the touches in the builder.
+          <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm">
+            No haggling. No mystery quotes. Pick a level — fine-tune the touches in the builder below.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {PLAN_CARDS.map((p) => (
               <div
                 key={p.id}
                 data-testid={`card-plan-${p.id}`}
-                className={`relative rounded-2xl border bg-card p-5 ${
-                  p.popular ? "border-primary shadow-lg" : "border-border"
+                className={`relative rounded-2xl border bg-card overflow-hidden flex flex-col ${
+                  p.popular ? "border-primary shadow-xl ring-2 ring-primary/20" : "border-border"
                 }`}
               >
                 {p.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary text-primary-foreground px-3 py-1 text-[11px] font-semibold tracking-wide uppercase">
+                  <span className="absolute top-3 left-1/2 -translate-x-1/2 z-10 rounded-full bg-primary text-primary-foreground px-3 py-1 text-[11px] font-semibold tracking-wide uppercase shadow">
                     Most Popular
                   </span>
                 )}
-                <div className="text-sm uppercase tracking-wide text-muted-foreground">{p.name}</div>
-                <div className="mt-1 text-3xl font-bold text-primary">
-                  ${p.price}
-                  <span className="text-sm font-medium text-muted-foreground">/mo</span>
+                {/* Lifestyle photo */}
+                <div className="relative h-44 sm:h-48 overflow-hidden">
+                  <img
+                    src={p.img}
+                    alt={p.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                    data-testid={`img-plan-${p.id}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </div>
-                <ul className="mt-4 space-y-2">
-                  {p.bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  className="mt-5 w-full"
-                  variant={p.popular ? "default" : "outline"}
-                  onClick={scrollToBuilder}
-                  data-testid={`button-see-plan-${p.id}`}
-                >
-                  See My Plan
-                </Button>
+                {/* Card body */}
+                <div className="flex flex-col flex-1 p-5">
+                  <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">{p.name}</div>
+                  <div className="mt-1 text-3xl font-bold text-primary">
+                    ${p.price}
+                    <span className="text-sm font-medium text-muted-foreground">/mo</span>
+                  </div>
+                  <ul className="mt-4 space-y-2 flex-1">
+                    {p.bullets.map((b) => (
+                      <li key={b} className="flex items-start gap-2 text-sm">
+                        <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    className="mt-5 w-full"
+                    variant={p.popular ? "default" : "outline"}
+                    onClick={scrollToBuilder}
+                    data-testid={`button-see-plan-${p.id}`}
+                  >
+                    See My Plan
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why choose */}
-      <section className="mx-auto max-w-6xl px-4 py-12">
+      {/* ── Why Choose ── */}
+      <section className="mx-auto max-w-6xl px-4 py-14">
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8" data-testid="text-why-title">
           Why choose the Trooper
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {VALUE_PROPS.map((v) => (
-            <div key={v.title} className="rounded-xl border border-border bg-card p-4" data-testid={`card-value-${v.title.toLowerCase().replace(/\s+/g, "-")}`}>
-              <v.icon className="h-6 w-6 text-primary" />
-              <div className="mt-2 font-semibold">{v.title}</div>
+            <div
+              key={v.title}
+              className="rounded-xl border border-border bg-card p-5"
+              data-testid={`card-value-${v.title.toLowerCase().replace(/\s+/g, "-")}`}
+            >
+              <v.icon className="h-7 w-7 text-primary" />
+              <div className="mt-3 font-semibold">{v.title}</div>
               <div className="text-sm text-muted-foreground mt-1">{v.body}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 90-Day Yard Reset */}
+      {/* ── 90-Day Yard Reset ── */}
       <section className="bg-muted/30 border-y border-border">
-        <div className="mx-auto max-w-6xl px-4 py-12">
-          <div className="text-center mb-8">
+        <div className="mx-auto max-w-6xl px-4 py-14">
+          <div className="text-center mb-10">
             <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-              The 90-Day Yard Reset
+              <Sparkles className="h-3.5 w-3.5" /> The 90-Day Yard Reset
             </span>
             <h2 className="mt-3 text-2xl sm:text-3xl font-bold" data-testid="text-reset-title">
               What actually happens
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {RESET_STEPS.map((s) => (
-              <div key={s.n} className="rounded-xl border border-border bg-card p-5" data-testid={`card-reset-${s.n}`}>
-                <div className="text-primary text-3xl font-extrabold">0{s.n}</div>
-                <div className="mt-1 font-semibold">{s.title}</div>
+              <div key={s.n} className="rounded-xl border border-border bg-card p-6" data-testid={`card-reset-${s.n}`}>
+                <div className="text-primary text-4xl font-extrabold">0{s.n}</div>
+                <div className="mt-2 font-semibold text-base">{s.title}</div>
                 <div className="text-sm text-muted-foreground mt-1">{s.body}</div>
               </div>
             ))}
@@ -289,69 +351,76 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Mission Reports (before/after pairs) */}
-      <section className="mx-auto max-w-6xl px-4 py-12">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2" data-testid="text-mission-title">Mission Reports</h2>
-        <p className="text-center text-muted-foreground mb-8 text-sm">
-          Sample before & after transformations from the 90-Day Yard Reset playbook.
-          <br className="hidden sm:block" />
-          <span className="text-xs">Pairs marked <span className="font-semibold text-primary">Real Job</span> are actual North Alabama customers; others are representative renders while we collect more field photos.</span>
+      {/* ── Mission Reports ── */}
+      <section className="mx-auto max-w-6xl px-4 py-14">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2" data-testid="text-mission-title">
+          Mission Reports
+        </h2>
+        <p className="text-center text-muted-foreground mb-10 text-sm max-w-2xl mx-auto">
+          Before &amp; after transformations from the 90-Day Yard Reset playbook.{" "}
+          <span className="text-xs">
+            Pairs marked <span className="font-semibold text-primary">Real Job</span> are actual North Alabama customers; others are representative renders.
+          </span>
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-8">
           {MISSION_REPORTS.map((pair, i) => (
             <div
               key={i}
-              className="rounded-xl border border-border bg-card overflow-hidden"
+              className="rounded-2xl border border-border bg-card overflow-hidden"
               data-testid={`card-mission-${i}`}
             >
-              <div className="grid grid-cols-2 gap-px bg-border">
-                <div className="relative aspect-[4/3] bg-muted overflow-hidden" data-testid={`img-mission-${i}-before`}>
-                  <span className="absolute top-2 left-2 z-10 rounded-md bg-black/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
-                    Before
-                  </span>
-                  <img
-                    src={pair.before}
-                    alt={`Before: ${pair.caption}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
-                      (e.currentTarget.parentElement as HTMLElement).classList.add("bg-gradient-to-br", "from-muted-foreground/20", "to-muted");
-                    }}
-                  />
+              <div className="grid grid-cols-2 gap-1 bg-border">
+                {/* Before */}
+                <div className="relative overflow-hidden" data-testid={`img-mission-${i}-before`}>
+                  <div className="aspect-[4/3] sm:aspect-[16/9]">
+                    <span className="absolute top-3 left-3 z-10 rounded-md bg-black/75 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
+                      Before
+                    </span>
+                    <img
+                      src={pair.before}
+                      alt={`Before: ${pair.caption}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="relative aspect-[4/3] bg-muted overflow-hidden" data-testid={`img-mission-${i}-after`}>
-                  <span className="absolute top-2 left-2 z-10 rounded-md bg-primary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground">
-                    After
-                  </span>
-                  <img
-                    src={pair.after}
-                    alt={`After: ${pair.caption}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
-                      (e.currentTarget.parentElement as HTMLElement).classList.add("bg-gradient-to-br", "from-primary/20", "to-primary/5");
-                    }}
-                  />
+                {/* After */}
+                <div className="relative overflow-hidden" data-testid={`img-mission-${i}-after`}>
+                  <div className="aspect-[4/3] sm:aspect-[16/9]">
+                    <span className="absolute top-3 left-3 z-10 rounded-md bg-primary px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-primary-foreground shadow">
+                      After
+                    </span>
+                    <img
+                      src={pair.after}
+                      alt={`After: ${pair.caption}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="flex items-start justify-between gap-2 px-4 py-3">
-                <p className="text-xs sm:text-sm text-muted-foreground" data-testid={`text-mission-caption-${i}`}>
+              <div className="flex items-center justify-between gap-3 px-5 py-4">
+                <p className="text-sm text-muted-foreground" data-testid={`text-mission-caption-${i}`}>
                   {pair.caption}
                 </p>
                 {pair.real ? (
                   <span
-                    className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary"
+                    className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary"
                     data-testid={`badge-mission-real-${i}`}
                   >
                     Real Job
                   </span>
                 ) : (
                   <span
-                    className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
+                    className="shrink-0 rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
                     data-testid={`badge-mission-sample-${i}`}
                   >
                     Sample
@@ -363,16 +432,20 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* ── Testimonials ── */}
       <section className="bg-muted/30 border-y border-border">
-        <div className="mx-auto max-w-6xl px-4 py-12">
+        <div className="mx-auto max-w-6xl px-4 py-14">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8" data-testid="text-testimonials-title">
             {TESTIMONIALS.sectionTitle}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {TESTIMONIALS.reviews.slice(0, 3).map((t) => (
-              <div key={t.id} className="rounded-xl border border-border bg-card p-5" data-testid={`card-testimonial-${t.id}`}>
-                <div className="flex gap-0.5 text-yellow-500 mb-2">
+              <div
+                key={t.id}
+                className="rounded-xl border border-border bg-card p-5"
+                data-testid={`card-testimonial-${t.id}`}
+              >
+                <div className="flex gap-0.5 text-yellow-500 mb-3">
                   {Array.from({ length: t.stars }).map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-current" />
                   ))}
@@ -385,9 +458,9 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Promotions strip */}
-      <section className="mx-auto max-w-6xl px-4 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* ── Promotions ── */}
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="rounded-xl border border-border bg-card p-5" data-testid="card-promo-birthday">
             <div className="text-xs uppercase tracking-wide text-primary font-semibold">Birthday Bonus</div>
             <div className="mt-1 font-semibold">A free service month on us</div>
@@ -405,7 +478,7 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Referral */}
+      {/* ── Referral ── */}
       <section className="bg-primary/5 border-y border-primary/20">
         <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
@@ -420,9 +493,11 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="mx-auto max-w-3xl px-4 py-12">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6" data-testid="text-faq-title">Quick answers</h2>
+      {/* ── FAQ ── */}
+      <section className="mx-auto max-w-3xl px-4 py-14">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6" data-testid="text-faq-title">
+          Quick answers
+        </h2>
         <Accordion type="single" collapsible className="w-full">
           {FAQ.map((f, i) => (
             <AccordionItem key={i} value={`q-${i}`} data-testid={`faq-${i}`}>
@@ -433,9 +508,9 @@ export default function HomeV2() {
         </Accordion>
       </section>
 
-      {/* Builder */}
+      {/* ── Builder ── */}
       <section id="builder" className="bg-muted/30 border-t border-border">
-        <div className="mx-auto max-w-3xl px-4 py-12">
+        <div className="mx-auto max-w-3xl px-4 py-14">
           <div className="text-center mb-6">
             <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold tracking-wide uppercase">
               <Sparkles className="h-3.5 w-3.5" /> 60-second builder
@@ -443,42 +518,96 @@ export default function HomeV2() {
             <h2 className="mt-3 text-2xl sm:text-3xl font-bold" data-testid="text-builder-title">
               Build your patrol plan
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Three quick steps. We'll handle the rest.
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">Three quick steps. We'll handle the rest.</p>
           </div>
           <SimpleBuilder />
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-background border-t border-border">
-        <div className="mx-auto max-w-6xl px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
-          <div>
-            <div className="font-bold text-lg">
-              Lawn <span className="text-primary">Trooper</span>
+      {/* ── Footer ── */}
+      <footer className="bg-primary text-primary-foreground pt-14 pb-8 border-t border-white/10">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-10 mb-10">
+            {/* Brand column */}
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <img
+                  src={companyLogo}
+                  alt="Lawn Trooper"
+                  className="h-12 w-12 object-contain rounded-full bg-white/10"
+                />
+                <span className="font-bold text-2xl tracking-tight">LAWN TROOPER</span>
+              </div>
+              <p className="text-primary-foreground/80 max-w-sm mb-5 text-sm">
+                Deploying elite lawn care services across North Alabama. Professional, reliable, and always mission-ready.
+              </p>
+              <div className="flex gap-3">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61588087766755"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="link-facebook"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                >
+                  <Facebook size={18} />
+                </a>
+                <a
+                  href="https://www.instagram.com/lawntrooper"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="link-instagram"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                >
+                  <Instagram size={18} />
+                </a>
+              </div>
             </div>
-            <p className="text-muted-foreground mt-2">{FOOTER_CONTENT.serviceArea}</p>
+
+            {/* Contact column */}
+            <div>
+              <h4 className="font-bold text-base mb-4 text-accent">Headquarters</h4>
+              <p className="text-primary-foreground/80 mb-3 text-sm">Athens, AL</p>
+              <div className="space-y-3 text-sm text-primary-foreground/80">
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 shrink-0 text-accent" />
+                  <a href={getTelHref()} className="hover:text-white transition-colors" data-testid="link-footer-call">
+                    {LT_PHONE_DISPLAY}
+                  </a>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 shrink-0 text-accent" />
+                  <a href="mailto:John@lawn-trooper.com" className="hover:text-white transition-colors" data-testid="link-footer-email">
+                    John@lawn-trooper.com
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Service area column */}
+            <div>
+              <h4 className="font-bold text-base mb-4 text-accent">Service Area</h4>
+              <ul className="space-y-1.5 text-sm text-primary-foreground/80">
+                {["Huntsville", "Madison", "Athens", "Harvest", "Hampton Cove", "Meridianville"].map((city) => (
+                  <li key={city}>{city}</li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-primary-foreground/60">
+                Plus surrounding Tennessee Valley communities.
+              </p>
+            </div>
           </div>
-          <div>
-            <div className="font-semibold mb-2">Contact</div>
-            <a href={getTelHref()} className="block hover:text-primary" data-testid="link-footer-call">
-              <Phone className="inline h-3.5 w-3.5 mr-1.5" />
-              {LT_PHONE_DISPLAY}
-            </a>
-            <a href={`mailto:${FOOTER_CONTENT.email}`} className="block hover:text-primary mt-1" data-testid="link-footer-email">
-              {FOOTER_CONTENT.email}
-            </a>
+
+          <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-primary-foreground/60">
+            <p>© {new Date().getFullYear()} Lawn Trooper. All rights reserved.</p>
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+              <Link href="/services" className="hover:text-white transition-colors">Services</Link>
+              <Link href="/service-area" className="hover:text-white transition-colors">Service Area</Link>
+              <Link href="/hoa-partnerships" className="hover:text-white transition-colors">HOA</Link>
+              <Link href="/privacy-policy" className="hover:text-white transition-colors" data-testid="link-footer-privacy">Privacy Policy</Link>
+              <Link href="/terms-of-service" className="hover:text-white transition-colors" data-testid="link-footer-terms">Terms of Service</Link>
+              <Link href="/legacy" className="hover:text-white/60 transition-colors text-xs text-primary-foreground/40">Classic site</Link>
+            </div>
           </div>
-          <div>
-            <div className="font-semibold mb-2">Legal</div>
-            <a href="/privacy-policy" className="block hover:text-primary" data-testid="link-footer-privacy">Privacy Policy</a>
-            <a href="/terms-of-service" className="block hover:text-primary mt-1" data-testid="link-footer-terms">Terms of Service</a>
-            <a href="/legacy" className="block hover:text-muted-foreground mt-1 text-xs text-muted-foreground" data-testid="link-footer-legacy">Classic site</a>
-          </div>
-        </div>
-        <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Lawn Trooper. All rights reserved.
         </div>
       </footer>
     </div>
