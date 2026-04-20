@@ -24,6 +24,42 @@ import { PLANS } from "@/data/plans";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
 import { TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
 
+import missionBefore1 from "@assets/alabama-problem-yard-overgrown.jpg";
+import missionAfter1 from "@assets/mulch-brown-refresh-alabama.jpg";
+import missionBefore2 from "@assets/generated_images/madison_al_home_with_fewer_flowers.png";
+import missionAfter2 from "@assets/generated_images/madison_al_home_with_trimmed_shrubs.png";
+import missionBefore3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
+import missionAfter3 from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
+import missionBefore4 from "@assets/generated_images/huntsville_al_home_landscaping.png";
+import missionAfter4 from "@assets/generated_images/manicured_garden_huntsville.png";
+
+const MISSION_REPORTS = [
+  {
+    before: missionBefore1,
+    after: missionAfter1,
+    caption: "90-Day Yard Reset — overgrown beds cleared, edged, and refreshed with brown mulch.",
+    real: true,
+  },
+  {
+    before: missionBefore2,
+    after: missionAfter2,
+    caption: "Madison brick two-story — shrubs shaped, beds re-mulched, seasonal color added.",
+    real: false,
+  },
+  {
+    before: missionBefore3,
+    after: missionAfter3,
+    caption: "Mowing plan upgrade — fresh stripes, crisp edges, and a thicker, deeper green.",
+    real: false,
+  },
+  {
+    before: missionBefore4,
+    after: missionAfter4,
+    caption: "Huntsville curb appeal — bed lines reshaped, hedges tightened, fresh edging installed.",
+    real: false,
+  },
+];
+
 const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
 
 const PLAN_CARDS = [
@@ -253,29 +289,75 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Mission Reports (before/after placeholders) */}
+      {/* Mission Reports (before/after pairs) */}
       <section className="mx-auto max-w-6xl px-4 py-12">
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2" data-testid="text-mission-title">Mission Reports</h2>
-        <p className="text-center text-muted-foreground mb-8 text-sm">Before & after from real North Alabama yards.</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {[
-            "/attached_assets/alabama-problem-yard-overgrown.jpg",
-            "/attached_assets/alabama-shrub-care-commercial-tools.jpg",
-            "/attached_assets/image_1773038395368.jpg",
-            "/attached_assets/image_1773038646682.jpg",
-            "/attached_assets/image_1771515240048.png",
-            "/attached_assets/image_1771515499043.png",
-          ].map((src, i) => (
-            <div key={i} className="aspect-[4/3] rounded-xl bg-muted overflow-hidden border border-border" data-testid={`img-mission-${i}`}>
-              <img
-                src={src}
-                alt="Mission report"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                  (e.currentTarget.parentElement as HTMLElement).classList.add("bg-gradient-to-br", "from-primary/20", "to-primary/5");
-                }}
-              />
+        <p className="text-center text-muted-foreground mb-8 text-sm">
+          Sample before & after transformations from the 90-Day Yard Reset playbook.
+          <br className="hidden sm:block" />
+          <span className="text-xs">Pairs marked <span className="font-semibold text-primary">Real Job</span> are actual North Alabama customers; others are representative renders while we collect more field photos.</span>
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {MISSION_REPORTS.map((pair, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-border bg-card overflow-hidden"
+              data-testid={`card-mission-${i}`}
+            >
+              <div className="grid grid-cols-2 gap-px bg-border">
+                <div className="relative aspect-[4/3] bg-muted overflow-hidden" data-testid={`img-mission-${i}-before`}>
+                  <span className="absolute top-2 left-2 z-10 rounded-md bg-black/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
+                    Before
+                  </span>
+                  <img
+                    src={pair.before}
+                    alt={`Before: ${pair.caption}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                      (e.currentTarget.parentElement as HTMLElement).classList.add("bg-gradient-to-br", "from-muted-foreground/20", "to-muted");
+                    }}
+                  />
+                </div>
+                <div className="relative aspect-[4/3] bg-muted overflow-hidden" data-testid={`img-mission-${i}-after`}>
+                  <span className="absolute top-2 left-2 z-10 rounded-md bg-primary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground">
+                    After
+                  </span>
+                  <img
+                    src={pair.after}
+                    alt={`After: ${pair.caption}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                      (e.currentTarget.parentElement as HTMLElement).classList.add("bg-gradient-to-br", "from-primary/20", "to-primary/5");
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex items-start justify-between gap-2 px-4 py-3">
+                <p className="text-xs sm:text-sm text-muted-foreground" data-testid={`text-mission-caption-${i}`}>
+                  {pair.caption}
+                </p>
+                {pair.real ? (
+                  <span
+                    className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary"
+                    data-testid={`badge-mission-real-${i}`}
+                  >
+                    Real Job
+                  </span>
+                ) : (
+                  <span
+                    className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
+                    data-testid={`badge-mission-sample-${i}`}
+                  >
+                    Sample
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>
