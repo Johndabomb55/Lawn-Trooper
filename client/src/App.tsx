@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import SimpleHome from "@/pages/simple-home";
 import LandingPage from "@/pages/home";
+import HomeV2 from "@/pages/home-v2";
 import PromotionsPage from "@/pages/promotions";
 import EmbedWizard from "@/pages/embed-wizard";
 import QuoteWizardPage from "@/pages/quote-wizard";
@@ -21,7 +22,8 @@ import GhlChatWidget from "@/components/GhlChatWidget";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={LandingPage} />
+      <Route path="/" component={HomeV2} />
+      <Route path="/legacy" component={LandingPage} />
       <Route path="/start" component={CallFirstPage} />
       <Route path="/simple" component={SimpleHome} />
       <Route path="/full" component={LandingPage} />

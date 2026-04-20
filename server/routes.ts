@@ -188,6 +188,7 @@ const leadRequestSchema = z.object({
   email: z.string().email("Valid email required").or(z.literal("")).optional().nullable(),
   phone: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
+  contactMethod: z.string().optional().nullable(),
   yardSize: z.string().trim().min(1, "Yard size is required"),
   plan: z.string().trim().min(1, "Plan is required"),
   basicAddons: z.array(z.string()).optional().default([]),
