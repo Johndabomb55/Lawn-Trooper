@@ -47,7 +47,7 @@ import missionBefore2 from "@assets/mission-real-2-before.jpg";
 import missionAfter2 from "@assets/generated_images/madison_al_home_with_trimmed_shrubs.png";
 import missionBefore3 from "@assets/mission-real-3-before.jpg";
 import missionAfter3 from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import missionBefore4 from "@assets/mission-real-4-before.jpg";
+import missionBefore4 from "@assets/mission-1-stone-house-before.jpg";
 import missionAfter4 from "@assets/generated_images/manicured_garden_huntsville.png";
 
 const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
