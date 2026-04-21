@@ -294,7 +294,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           totalPrice: String(currentPrice),
           basePrice: String(basePrice),
           frontYardDiscount: String(frontYardDiscount),
-          yardScope: state.scope === "front" ? "Front yard only" : "Full property",
+          yardScope: state.scope,
           upgradeOverage: "0",
           term: "monthly",
           segments: ["simple_builder", "home_v2"],

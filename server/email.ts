@@ -160,9 +160,10 @@ function renderPricingBlock(opts: {
   yardScope?: string | null;
   frontYardDiscount?: string | null;
   upgradeOverage?: string | null;
+  freeMonths?: number | null;
 }): string {
-  const { basePrice, totalPrice, yardScope, frontYardDiscount, upgradeOverage } = opts;
-  if (!basePrice && !totalPrice) return "";
+  const { basePrice, totalPrice, yardScope, frontYardDiscount, upgradeOverage, freeMonths } = opts;
+  if (!basePrice && !totalPrice && !freeMonths) return "";
 
   const fmt = (v?: string | null) => {
     if (v === null || v === undefined || v === "") return null;
@@ -171,8 +172,14 @@ function renderPricingBlock(opts: {
     return `$${Math.round(n)}`;
   };
 
+  const scopeLabel = yardScope === "front"
+    ? "Front yard only"
+    : yardScope === "full"
+      ? "Full property"
+      : yardScope || null;
+
   const rows: string[] = [];
-  if (yardScope) rows.push(`<li><strong>Yard Scope:</strong> ${yardScope}</li>`);
+  if (scopeLabel) rows.push(`<li><strong>Yard Scope:</strong> ${scopeLabel}</li>`);
   const baseDisplay = fmt(basePrice);
   if (baseDisplay) rows.push(`<li><strong>Base Plan Price:</strong> ${baseDisplay}/mo</li>`);
   const overageDisplay = fmt(upgradeOverage);
@@ -182,6 +189,9 @@ function renderPricingBlock(opts: {
   const discountDisplay = fmt(frontYardDiscount);
   if (discountDisplay && discountDisplay !== "$0") {
     rows.push(`<li><strong>Front Yard Discount (30%):</strong> −${discountDisplay}/mo</li>`);
+  }
+  if (freeMonths && freeMonths > 0) {
+    rows.push(`<li><strong>Commitment Savings:</strong> ${freeMonths} complimentary month${freeMonths === 1 ? "" : "s"}</li>`);
   }
   const totalDisplay = fmt(totalPrice);
   if (totalDisplay) {
