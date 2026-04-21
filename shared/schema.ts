@@ -31,6 +31,8 @@ export const leads = pgTable("leads", {
   premiumAddons: jsonb("premium_addons").$type<string[]>().default([]),
   notes: text("notes"),
   totalPrice: text("total_price"),
+  monthlyPrice: text("monthly_price"),
+  executivePlus: text("executive_plus"),
   freeMonths: text("free_months"),
   term: text("term"),
   payUpfront: text("pay_upfront"),

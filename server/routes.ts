@@ -91,6 +91,8 @@ async function sendToGHL(leadData: Record<string, any>): Promise<{ attempted: bo
       payment_method: leadData.paymentMethod || "",
       free_months: leadData.freeMonths || "0",
       total_price: leadData.totalPrice || "",
+      monthly_price: leadData.monthlyPrice || leadData.totalPrice || "",
+      executive_plus: leadData.executivePlus || "false",
       promo_code: leadData.promoCode || "",
       property_type: leadData.propertyType || "residential",
       segments: Array.isArray(leadData.segments) ? leadData.segments.join(", ") : "",
@@ -195,6 +197,8 @@ const leadRequestSchema = z.object({
   premiumAddons: z.array(z.string()).optional().default([]),
   notes: z.string().optional().nullable(),
   totalPrice: z.string().optional().nullable(),
+  monthlyPrice: z.string().optional().nullable(),
+  executivePlus: z.string().optional().nullable(),
   freeMonths: z.string().optional().nullable(),
   term: z.string().optional().nullable(),
   payUpfront: z.string().optional().nullable(),
@@ -299,14 +303,20 @@ export async function registerRoutes(
         basePrice,
         frontYardDiscount,
         upgradeOverage,
+        monthlyPrice: bodyMonthlyPrice,
+        executivePlus: bodyExecutivePlus,
         ...persistable
       } = requestData;
+      const resolvedMonthlyPrice = bodyMonthlyPrice ?? persistable.totalPrice ?? null;
+      const resolvedExecutivePlus = bodyExecutivePlus ?? null;
       const data = insertLeadSchema.parse({
         ...persistable,
         basicAddons: persistable.basicAddons ?? [],
         premiumAddons: persistable.premiumAddons ?? [],
         segments: persistable.segments ?? [],
         appliedPromos: persistable.appliedPromos ?? [],
+        monthlyPrice: resolvedMonthlyPrice,
+        executivePlus: resolvedExecutivePlus,
       });
       const storage = getStorage();
       const lead = await storage.createLead(data);
@@ -339,6 +349,8 @@ export async function registerRoutes(
           basePrice: basePrice ?? null,
           frontYardDiscount: frontYardDiscount ?? null,
           upgradeOverage: upgradeOverage ?? null,
+          monthlyPrice: resolvedMonthlyPrice,
+          executivePlus: resolvedExecutivePlus,
         };
 
         const emailResult = await sendLeadEmails(emailData);

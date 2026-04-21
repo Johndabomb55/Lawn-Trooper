@@ -370,6 +370,8 @@ export interface LeadEmailData {
   basePrice?: string | null;
   frontYardDiscount?: string | null;
   upgradeOverage?: string | null;
+  monthlyPrice?: string | null;
+  executivePlus?: string | null;
 }
 
 export async function sendLeadEmails(data: LeadEmailData) {
@@ -431,7 +433,8 @@ export async function sendLeadEmails(data: LeadEmailData) {
         <li><strong>Term:</strong> ${termDisplay}</li>
         <li><strong>Pay in Full:</strong> ${payInFull ? "Yes" : "No"}</li>
         <li><strong>Complimentary Months:</strong> ${data.freeMonths || 0}</li>
-        <li><strong>Monthly Price:</strong> ${data.totalPrice || "Custom quote needed"}</li>
+        <li><strong>Monthly Price:</strong> ${data.monthlyPrice || data.totalPrice || "Custom quote needed"}</li>
+        ${data.executivePlus === "true" ? "<li><strong>Executive+ Add-on:</strong> Yes</li>" : ""}
       </ul>
       ${renderPricingBlock(data)}
       ${data.notes ? `<h3 style="color: #666;">Notes</h3><p>${data.notes}</p>` : ""}

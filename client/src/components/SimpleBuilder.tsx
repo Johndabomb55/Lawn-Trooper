@@ -334,6 +334,8 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           premiumAddons,
           notes: noteParts.join(" | "),
           totalPrice: String(currentPrice),
+          monthlyPrice: String(currentPrice),
+          executivePlus: state.executivePlus ? "true" : "false",
           basePrice: String(basePrice),
           frontYardDiscount: String(frontYardDiscount),
           yardScope: state.scope,
