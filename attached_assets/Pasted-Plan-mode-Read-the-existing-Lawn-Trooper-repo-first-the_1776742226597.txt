@@ -1,0 +1,133 @@
+Plan mode.
+
+Read the existing Lawn Trooper repo first, then create a concrete implementation plan before changing code.
+
+Project direction / source of truth:
+- Homepage should become a single-scroll, mobile-first marketing page
+- Main vibe is military-inspired but fun, approachable, and neighborhood-safe
+- Primary CTA is Talk to Lawn Trooper AI
+- Secondary CTA is Build My Plan in 60 Seconds
+- Plan builder should be 3 steps:
+  1. Yard Size
+  2. Patrol Level
+  3. Quick Custom Touches
+- Plans should feel simpler and easier to understand
+- Reduce visible complexity and do not lead with credits
+- Pricing should show the real recurring monthly amount clearly
+- Offer should be framed as seasonal lawn care with monthly billing
+- Best framing is a 90-day Yard Reset / one full season
+- Avoid year-long contract language
+- Mission Reports = before/after gallery with short stories
+- Keep short sections: Why Choose the Trooper, Testimonials, Promotions, Referral Program
+- CTA paths should send traffic to GHL booking/payment or phone
+- Key offers remain HOA + Yard Reset + neighborhood route density strategy
+
+Implement these exact changes:
+
+1. Yard size step
+- Restore Small to: "Up to 1/3 acre"
+- Add helper copy under Small: "Most homes · Not sure? Start here"
+- Add a small note below yard-size buttons: "Not sure? Choose Small and we’ll confirm after photos or your walkthrough."
+- Do not add a separate "I don’t know my yard size" button
+
+2. Homepage section order
+Reorder the homepage to:
+- Hero
+- Trust strip
+- HOA / Yard Reset commercial video section
+- 3 plan cards
+- 60-second builder
+- Mission Reports
+- Meet Miguel
+- Testimonials / Promotions / Final CTA
+
+3. Trust strip
+Add a simple trust strip below the hero with:
+- 25+ Years Serving North Alabama
+- Licensed & Insured
+- Seasonal Lawn Care, Billed Monthly
+- No Year-Long Contract
+
+4. Video section
+Create a section directly below the trust strip titled:
+"See the Yard Reset in Action"
+
+Subtitle:
+"Watch how Lawn Trooper helps homeowners and HOAs get back in shape fast."
+
+Add embedded video support with:
+- poster image
+- play button
+- mobile-friendly aspect ratio
+- two CTA buttons under the video:
+  - Pick My Plan
+  - Talk to Lawn Trooper AI
+
+Use placeholders if the final hosted video URL or poster image is not yet wired in.
+
+5. Miguel section
+Add a small homepage section below Mission Reports titled:
+"Meet Miguel"
+
+Copy direction:
+- trusted team member
+- 25 years in the field
+- funny, reliable, real
+- trusted with customers' lawns
+
+Use placeholder copy and layout that can later accept real photo/video content.
+
+6. Plan language
+Do not lead with credits.
+Replace upgrade language on the homepage with "Seasonal Touches."
+
+Use these exact customer-facing plan summaries:
+- Standard Patrol — $169/mo — Bi-weekly mowing + 1 Seasonal Touch per season
+- Premium Patrol — $299/mo — Weekly mowing + 2 Seasonal Touches per season
+- Executive Command — $399/mo — Priority service + 3 Seasonal Touches per season
+
+Add one shared line under the plans:
+"All new plans start with a Yard Reset boost in Month 1."
+
+7. Seasonal framing
+Use wording like:
+- "Built around a full 90-day season"
+- "Billed monthly"
+- "Included touches are scheduled across your active season"
+
+Avoid year-long contract language and avoid "cancel anytime"
+
+8. Builder
+Keep it 3 steps only:
+- Yard Size
+- Patrol Level
+- Quick Custom Touches
+
+Make Quick Custom Touches optional.
+Do not force users to use all upgrade logic before moving forward.
+
+9. Tone and UX
+Keep the overall tone:
+- friendly military / neighborhood hero
+- simple
+- clear
+- mobile-first
+- high-converting
+- no walls of text
+
+10. Important implementation notes
+- Keep the primary CTA as Talk to Lawn Trooper AI
+- Keep the secondary CTA as Build My Plan in 60 Seconds
+- Make sure the plan-card CTA actually preselects that plan in the builder
+- Keep yard size anchored to the historical Standard pricing of $169 for up to 1/3 acre
+- If old credit logic still exists internally, hide it from the customer-facing homepage and builder unless absolutely necessary
+- Mission Reports should support true before/after content, not fake before/after placeholders
+- Video section should be easy to update later with the real HOA reset commercial
+- Miguel section should be easy to update later with real assets and a quote
+
+Before writing code, give me:
+1. the files you expect to change
+2. the updated homepage section order
+3. the exact plan copy you will use
+4. any placeholders that still need real assets
+5. any risks or unresolved issues you see
