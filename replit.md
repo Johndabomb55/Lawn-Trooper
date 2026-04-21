@@ -29,6 +29,21 @@ Drizzle ORM is used with PostgreSQL for data persistence. Shared schema definiti
 -   **Unified Terminology & UI**: Consistent CTAs, plan card badges ("Most Popular," "Best Value"), and a "Value Meter" (Property Care Level) across the site.
 -   **Sticky Summary Footer**: A sticky footer in both quote wizards displays selected plan details and pricing, enhancing mobile usability.
 
+### Homepage Builder Conventions (Apr 2026)
+-   **Single-anchor CTA convention**: Every primary CTA across SiteHeader (desktop + mobile), `services.tsx`, `dream-yard-recon.tsx`, `service-area.tsx`, `hoa-partnerships.tsx`, `promotions.tsx`, legacy `home.tsx`, and `call-first.tsx` links to `/#builder`. The `home-v2.tsx` page exposes `id="builder"` on the `SimpleBuilder` section and a `hashchange`-aware effect smooth-scrolls there on mount and on in-page nav. Legacy `/quote-wizard` route stays available for back-compat but is not linked from any primary CTA.
+-   **Plan summary copy (customer-facing)**: Standard Patrol — *Bi-weekly mowing + 1 Seasonal Touch per season*. Premium Patrol — *Weekly mowing + 2 Seasonal Touches per season*. Executive Command — *Priority service + 3 Seasonal Touches per season*. Shared line under the plan grid: *"All new plans start with a Yard Reset boost in Month 1."*
+-   **Anniversary wording**: All public mentions of the legacy "Birthday Bonus" use the marketing name `"25-Year Anniversary Client Rewards"` (sourced from `BIRTHDAY_BONUS.marketingName` in `client/src/data/promotions.ts`). The internal constant name `BIRTHDAY_BONUS` is kept for back-compat; `ANNIVERSARY_BONUS` is exported as an alias. PromoBanner, plan cards, and mobile comparison cards all read from this single source.
+-   **Restricted public copy**: Customer-visible surfaces (home-v2, SimpleBuilder, plan cards, comparison cards, services / HOA / recon / area pages, trust strip) avoid the phrases "year-long contract", "cancel anytime", and "credits". Internal data structures and the legacy `/quote-wizard` page may still use credits — they are not customer-facing primary surfaces.
+-   **Seasonal Touches step**: Step 3 of `SimpleBuilder` shows a 9-option visual icon grid (Mulch refresh, Weed control, Flower bed flowers, Trash can cleaning, Shrub trimming, Leaf cleanup, Aeration, Flower bed weeding, Seasonal flower pop). Each touch maps to an existing `ADDON_CATALOG` id via `mapTouchesToAddons`, so the GHL webhook + Resend payloads keep the existing `basicAddons` / `premiumAddons` shape — no schema change.
+-   **What actually happens (90-Day Yard Reset) copy**: Day 1 — Dream Yard Recon (*"Quick property walk + AI / AR plan sent to you"*) → Days 2–30 — The Reset (*"Catch-up trim, mow, edge, beds, cleanup, turf work"*) → Days 31–90 — Dial it in (*"Add seasonal touches, settle into service rhythm, improve curb appeal"*).
+
+### Mission Reports — Asset Placeholder List
+The `MISSION_REPORTS` array in `client/src/pages/home-v2.tsx` uses the `MissionReport` type with optional `videoSrc` and `story` fields, ready for richer story content as real assets arrive. Pairs flagged `real: false` render a "Sample transformation" badge with the tooltip *"Sample transformation — your results will vary"*. The following slots still need real photo/video pairs from John (replace the corresponding `before` / `after` import in `home-v2.tsx`):
+-   **Slot 1 — Overgrown beds → mulch refresh** (`missionBefore1` / `missionAfter1`): real-job (kept). Optional `videoSrc` + `story` for upgrade.
+-   **Slot 2 — Patchy lawn → green turf** (`missionBefore2` / `missionAfter2`): currently flagged `Sample transformation`. Needs matched real before/after.
+-   **Slot 3 — HOA entry refresh** (`missionBefore3` / `missionAfter3`): currently flagged `Sample transformation`. Needs matched real before/after.
+-   **Slot 4 — Manicured garden showcase** (`missionBefore4` / `missionAfter4`): currently flagged `Sample transformation`. Needs matched real before/after, ideally with a short walkthrough `videoSrc`.
+
 ## External Dependencies
 
 ### Third-Party Services

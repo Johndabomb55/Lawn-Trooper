@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronLeft, ChevronRight, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles, Scissors, Leaf, Flower2, Flower, Trash2, Wind, Shovel, Droplets, Bug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,88 +20,101 @@ const YARD_SIZES: Array<{ key: YardSizeKey; title: string; sub: string; helper?:
 const FRONT_YARD_DISCOUNT_RATE = 0.3;
 
 type TouchKey =
-  | "bush_trimming"
   | "mulch_refresh"
+  | "weed_control"
+  | "flower_bed_flowers"
+  | "trash_can_cleaning"
+  | "shrub_trimming"
   | "leaf_cleanup"
-  | "edging_detail"
+  | "aeration"
   | "flower_bed_weeding"
-  | "flower_pop"
-  | "trash_can_wash"
-  | "aeration";
+  | "seasonal_flower_pop";
+
+type TouchIcon = typeof Leaf;
 
 const TOUCHES: Array<{
   key: TouchKey;
   label: string;
   desc: string;
+  icon: TouchIcon;
   basicAddonId?: string;
   premiumAddonId?: string;
 }> = [
   {
-    key: "bush_trimming",
-    label: "Bush trimming",
-    desc: "Shape, cleanup, and clippings hauled.",
-    basicAddonId: "shrub_hedge_trimming",
-  },
-  {
     key: "mulch_refresh",
     label: "Mulch refresh",
     desc: "Fresh hardwood or pine bark for the beds.",
+    icon: Leaf,
     basicAddonId: "mulch_install_4yards",
+  },
+  {
+    key: "weed_control",
+    label: "Weed control",
+    desc: "Sharper lines, fewer weeds across the lawn.",
+    icon: Bug,
+    basicAddonId: "extra_weed_control",
+  },
+  {
+    key: "flower_bed_flowers",
+    label: "Flower bed flowers",
+    desc: "Seasonal color installs in your beds.",
+    icon: Flower2,
+    premiumAddonId: "seasonal_color_flowers",
+  },
+  {
+    key: "trash_can_cleaning",
+    label: "Trash can cleaning",
+    desc: "Fresh-smelling bins, no scrubbing on your end.",
+    icon: Trash2,
+    basicAddonId: "quarterly_trash_bin_cleaning",
+  },
+  {
+    key: "shrub_trimming",
+    label: "Shrub trimming",
+    desc: "Shape, cleanup, and clippings hauled.",
+    icon: Scissors,
+    basicAddonId: "shrub_hedge_trimming",
   },
   {
     key: "leaf_cleanup",
     label: "Leaf cleanup",
     desc: "Single-visit blow, rake & haul.",
+    icon: Wind,
     basicAddonId: "one_time_leaf_removal",
-  },
-  {
-    key: "edging_detail",
-    label: "Edging & weed control",
-    desc: "Sharper lines, fewer weeds.",
-    basicAddonId: "extra_weed_control",
-  },
-  {
-    key: "flower_bed_weeding",
-    label: "Flower bed weeding",
-    desc: "Beds kept clean visit-to-visit.",
-    basicAddonId: "extra_weed_control",
-  },
-  {
-    key: "flower_pop",
-    label: "Flower bed flowers",
-    desc: "Twice-a-year fresh color installs.",
-    premiumAddonId: "seasonal_color_flowers",
-  },
-  {
-    key: "trash_can_wash",
-    label: "Trash can cleaning",
-    desc: "Fresh-smelling bins, no scrubbing on your end.",
-    basicAddonId: "quarterly_trash_bin_cleaning",
   },
   {
     key: "aeration",
     label: "Aeration",
     desc: "Stronger roots, better water absorption.",
+    icon: Shovel,
     premiumAddonId: "aeration_dethatching",
+  },
+  {
+    key: "flower_bed_weeding",
+    label: "Flower bed weeding",
+    desc: "Beds kept clean visit-to-visit.",
+    icon: Droplets,
+    basicAddonId: "extra_weed_control",
+  },
+  {
+    key: "seasonal_flower_pop",
+    label: "Seasonal flower pop",
+    desc: "Twice-a-year highlight color refresh.",
+    icon: Flower,
+    premiumAddonId: "seasonal_color_flowers",
   },
 ];
 
 const PLAN_ORDER: PlanId[] = ["basic", "premium", "executive"];
 const PLAN_BULLETS: Record<PlanId, string[]> = {
   basic: [
-    "Bi-weekly mowing in growing season",
-    "Edging, trim & blow every visit",
-    "Free yard plan after first month",
+    "Bi-weekly mowing + 1 Seasonal Touch per season",
   ],
   premium: [
-    "Weekly mowing in growing season",
-    "Bush care + flower bed weeding included",
-    "Service photo updates each visit",
+    "Weekly mowing + 2 Seasonal Touches per season",
   ],
   executive: [
-    "Weekly mowing + bi-weekly off-season",
-    "Up to 7 turf treatments / year",
-    "Weed-free turf guarantee",
+    "Priority service + 3 Seasonal Touches per season",
   ],
 };
 
@@ -564,29 +577,39 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                 <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-title">
                   Seasonal Touches <span className="text-sm font-normal text-muted-foreground">(optional)</span>
                 </h3>
-                <p className="text-sm text-muted-foreground">Pick any extras you'd like — or skip and we'll suggest them after your first walkthrough.</p>
+                <p className="text-sm text-muted-foreground">
+                  Select all that apply in your yard. We can bundle these across the season to match your goals.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {TOUCHES.map((t) => {
                   const active = state.touches.includes(t.key);
+                  const Icon = t.icon;
                   return (
                     <button
                       key={t.key}
                       type="button"
                       data-testid={`button-touch-${t.key}`}
                       onClick={() => toggleTouch(t.key)}
-                      className={`text-left rounded-xl border p-3 transition ${
+                      className={`relative text-left rounded-xl border p-3 transition flex flex-col items-start gap-2 ${
                         active
                           ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                          : "border-border hover:border-primary/40"
+                          : "border-border hover:border-primary/40 bg-card"
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold">{t.label}</span>
-                        {active && <Check className="h-4 w-4 text-primary" />}
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>
+                        <Icon className="h-5 w-5" />
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">{t.desc}</div>
+                      {active && (
+                        <span className="absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                          <Check className="h-3 w-3" />
+                        </span>
+                      )}
+                      <div>
+                        <div className="font-semibold text-sm leading-tight">{t.label}</div>
+                        <div className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{t.desc}</div>
+                      </div>
                     </button>
                   );
                 })}

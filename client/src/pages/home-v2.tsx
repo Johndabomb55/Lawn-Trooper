@@ -59,9 +59,7 @@ const PLAN_CARDS = [
     price: 169,
     img: imgBasic,
     bullets: [
-      "Bi-weekly mowing in growing season",
-      "Edging, trim & blow every visit",
-      "Free yard plan after first month",
+      "Bi-weekly mowing + 1 Seasonal Touch per season",
     ],
   },
   {
@@ -71,9 +69,7 @@ const PLAN_CARDS = [
     popular: true,
     img: imgPremium,
     bullets: [
-      "Weekly mowing in growing season",
-      "Bush care + flower bed weeding",
-      "Service photo updates",
+      "Weekly mowing + 2 Seasonal Touches per season",
     ],
   },
   {
@@ -82,12 +78,12 @@ const PLAN_CARDS = [
     price: 399,
     img: imgExecutive,
     bullets: [
-      "Weekly mowing + bi-weekly off-season",
-      "Up to 7 turf treatments / year",
-      "Weed-free turf guarantee",
+      "Priority service + 3 Seasonal Touches per season",
     ],
   },
 ];
+
+const PLAN_GRID_SHARED_LINE = "All new plans start with a Yard Reset boost in Month 1.";
 
 const VALUE_PROPS = [
   { icon: Award, title: "25+ years local", body: "Built in North Alabama. 100+ beautification awards." },
@@ -97,12 +93,22 @@ const VALUE_PROPS = [
 ];
 
 const RESET_STEPS = [
-  { n: 1, title: "Day 1 — Recon", body: "Quick property walk and an AI yard plan emailed to you." },
-  { n: 2, title: "Days 2–30 — Reset", body: "Heavy lift: catch-up trim, mow, edge, beds reset, mulch refresh." },
-  { n: 3, title: "Days 31–90 — Dial it in", body: "Weekly rhythm locked. Your yard stays mission-ready week after week." },
+  { n: 1, title: "Day 1 — Dream Yard Recon", body: "Quick property walk + AI / AR plan sent to you." },
+  { n: 2, title: "Days 2–30 — The Reset", body: "Catch-up trim, mow, edge, beds, cleanup, turf work." },
+  { n: 3, title: "Days 31–90 — Dial it in", body: "Add seasonal touches, settle into service rhythm, improve curb appeal." },
 ];
 
-const MISSION_REPORTS = [
+interface MissionReport {
+  before: string;
+  after: string;
+  caption: string;
+  real: boolean;
+  // Future-proofing fields for richer story content as real assets arrive.
+  videoSrc?: string;
+  story?: string;
+}
+
+const MISSION_REPORTS: MissionReport[] = [
   {
     before: missionBefore1,
     after: missionAfter1,
@@ -565,6 +571,12 @@ export default function HomeV2() {
               </div>
             ))}
           </div>
+          <p
+            className="mt-6 text-center text-sm font-medium text-muted-foreground"
+            data-testid="text-plan-grid-shared"
+          >
+            {PLAN_GRID_SHARED_LINE}
+          </p>
         </div>
       </section>
 
@@ -619,7 +631,7 @@ export default function HomeV2() {
         <p className="text-center text-muted-foreground mb-10 text-sm max-w-2xl mx-auto">
           Before &amp; after transformations from the 90-Day Yard Reset playbook.{" "}
           <span className="text-xs">
-            Pairs marked <span className="font-semibold text-primary">Real Job</span> are actual North Alabama customers; others are representative renders.
+            Pairs marked <span className="font-semibold text-primary">Real Job</span> are actual North Alabama customers. Pairs marked <span className="font-semibold">Sample transformation</span> are representative renders — your results will vary.
           </span>
         </p>
         <div className="grid grid-cols-1 gap-8">
@@ -688,8 +700,9 @@ export default function HomeV2() {
                   <span
                     className="shrink-0 rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
                     data-testid={`badge-mission-sample-${i}`}
+                    title="Sample transformation — your results will vary"
                   >
-                    Sample
+                    Sample transformation
                   </span>
                 )}
               </div>
@@ -766,8 +779,11 @@ export default function HomeV2() {
                         Real Job
                       </span>
                     ) : (
-                      <span className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                        Sample
+                      <span
+                        className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
+                        title="Sample transformation — your results will vary"
+                      >
+                        Sample transformation
                       </span>
                     )}
                   </div>
@@ -829,7 +845,7 @@ export default function HomeV2() {
         <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <div className="font-semibold" data-testid="text-referral-title">Refer a neighbor — both yards win.</div>
-            <div className="text-sm text-muted-foreground">Get a service credit when they enlist. They get a Yard Reset bonus.</div>
+            <div className="text-sm text-muted-foreground">Get a thank-you bonus on your next visit when they enlist. They get a Yard Reset bonus.</div>
           </div>
           <a href={getTelHref()} data-testid="link-referral-call">
             <Button variant="outline">

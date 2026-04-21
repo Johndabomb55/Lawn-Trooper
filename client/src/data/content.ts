@@ -165,7 +165,7 @@ export const TRUST_STRIP = [
   "25+ Years Serving North Alabama",
   "Licensed & Insured",
   "Seasonal Lawn Care, Billed Monthly",
-  "No Year-Long Contract",
+  "Pause or adjust between seasons",
 ];
 
 export const YARD_RESET_VIDEO = {
