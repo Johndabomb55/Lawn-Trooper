@@ -266,9 +266,11 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
     try {
       const { basicAddons, premiumAddons } = mapTouchesToAddons(state.touches);
       const planDef = PLANS.find((p) => p.id === state.plan)!;
+      const scopeLabel = state.scope === "front" ? "Front yard only" : "Full property";
       const noteParts = [
         `[SimpleBuilder] 90-Day Yard Reset request`,
-        `Yard scope: ${state.scope === "front" ? "Front yard only" : "Full property"}`,
+        `Yard scope: ${scopeLabel}`,
+        `Pricing: base $${basePrice}/mo${state.scope === "front" ? `, front-yard discount −$${frontYardDiscount}/mo` : ""}, total $${currentPrice}/mo`,
         state.goal ? `Lawn goal: ${state.goal}` : null,
         `Contact pref: ${state.contactMethod}`,
         state.touches.length
@@ -439,6 +441,34 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
               <p className="text-xs text-muted-foreground" data-testid="text-yard-note">
                 Not sure? Choose Small and we'll confirm after photos or your walkthrough.
               </p>
+              <div
+                className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                data-testid="custom-quote-handoff"
+              >
+                <div>
+                  <div className="text-sm font-semibold">Yard over 1 acre?</div>
+                  <div className="text-xs text-muted-foreground">
+                    Acreage, HOA, or commercial — we'll send a custom quote.
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    data-testid="button-custom-quote-call"
+                    onClick={() => { window.location.href = getTelHref(); }}
+                  >
+                    <Phone className="h-3.5 w-3.5 mr-1" /> {LT_PHONE_DISPLAY}
+                  </Button>
+                  <Button
+                    size="sm"
+                    data-testid="button-custom-quote-chat"
+                    onClick={openChatWithTelFallback}
+                  >
+                    <MessageCircle className="h-3.5 w-3.5 mr-1" /> Custom quote
+                  </Button>
+                </div>
+              </div>
               <div>
                 <Label htmlFor="builder-address" className="text-sm">Neighborhood or address (optional)</Label>
                 <Input
