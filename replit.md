@@ -64,3 +64,7 @@ The `MISSION_REPORTS` array in `client/src/pages/home-v2.tsx` uses the `MissionR
 ### Environment Variables
 -   `DATABASE_URL`: PostgreSQL connection string.
 -   Resend credentials handled via Replit Connectors.
+
+### Testing
+-   Static guard for builder CTAs: `tests/cta-routing.test.ts` (vitest, `npx vitest run`).
+-   Runtime browser check that primary CTAs scroll the homepage builder into view: `tests/e2e/cta-scroll.spec.ts` (Playwright, `npx playwright test` or `npm run e2e`). Requires the dev server running on port 5000 (`Start application` workflow). Bundled Chromium is auto-installed via `scripts/post-merge.sh`.
