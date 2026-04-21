@@ -225,7 +225,7 @@ export default function PromotionsPage() {
         </div>
 
         <div className="text-center">
-          <Link href="/quote-wizard">
+          <Link href="/#builder">
             <Button size="lg" className="bg-accent hover:bg-accent/90 text-white">
               Reserve My Plan
             </Button>

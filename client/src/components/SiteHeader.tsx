@@ -50,7 +50,7 @@ export default function SiteHeader() {
             <Phone className="h-4 w-4" />
             <span className="max-w-[9rem] truncate">{CALL_NAV_PRIMARY_SHORT}</span>
           </a>
-          <a href="/quote-wizard" onClick={() => trackEvent("header_plan_builder", {})}>
+          <a href="/#builder" onClick={() => trackEvent("header_plan_builder", {})}>
             <Button variant="outline" className="border-primary text-primary hover:bg-primary/10">
               Plan builder
             </Button>
@@ -90,7 +90,7 @@ export default function SiteHeader() {
               <Phone className="h-4 w-4" />
               Call {LT_PHONE_DISPLAY}
             </a>
-            <a href="/quote-wizard" onClick={closeMenu}>
+            <a href="/#builder" onClick={closeMenu}>
               <Button variant="outline" className="w-full border-primary text-primary">
                 Plan builder
               </Button>

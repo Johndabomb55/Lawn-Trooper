@@ -113,7 +113,7 @@ export default function HoaPartnershipsPage() {
                 <a href="#hoa-form">
                   <Button className="bg-primary text-white hover:bg-primary/90">Request HOA Consultation</Button>
                 </a>
-                <a href="/quote-wizard">
+                <a href="/#builder">
                   <Button variant="outline">Start Residential Plan Builder</Button>
                 </a>
               </div>

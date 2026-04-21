@@ -70,7 +70,7 @@ export default function ServicesPage() {
                 We handle everything your property needs-so you don't have to.
               </p>
               <div className="mt-8">
-                <a href="/quote-wizard">
+                <a href="/#builder">
                   <Button className="bg-primary text-white hover:bg-primary/90">Get Your Instant Quote</Button>
                 </a>
               </div>
@@ -106,7 +106,7 @@ export default function ServicesPage() {
             reviewed during your in-person walkthrough to ensure the best possible results.
           </p>
           <div className="mt-5 flex justify-center">
-            <a href="/quote-wizard">
+            <a href="/#builder">
               <Button className="bg-primary text-white hover:bg-primary/90">Schedule Your Walkthrough</Button>
             </a>
           </div>

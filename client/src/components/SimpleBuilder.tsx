@@ -25,7 +25,9 @@ type TouchKey =
   | "leaf_cleanup"
   | "edging_detail"
   | "flower_bed_weeding"
-  | "flower_pop";
+  | "flower_pop"
+  | "trash_can_wash"
+  | "aeration";
 
 const TOUCHES: Array<{
   key: TouchKey;
@@ -66,9 +68,21 @@ const TOUCHES: Array<{
   },
   {
     key: "flower_pop",
-    label: "Seasonal flower pop",
-    desc: "Twice-a-year color installs.",
+    label: "Flower bed flowers",
+    desc: "Twice-a-year fresh color installs.",
     premiumAddonId: "seasonal_color_flowers",
+  },
+  {
+    key: "trash_can_wash",
+    label: "Trash can cleaning",
+    desc: "Fresh-smelling bins, no scrubbing on your end.",
+    basicAddonId: "quarterly_trash_bin_cleaning",
+  },
+  {
+    key: "aeration",
+    label: "Aeration",
+    desc: "Stronger roots, better water absorption.",
+    premiumAddonId: "aeration_dethatching",
   },
 ];
 
@@ -548,9 +562,9 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             <div className="space-y-5">
               <div>
                 <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-title">
-                  Quick custom touches <span className="text-sm font-normal text-muted-foreground">(optional)</span>
+                  Seasonal Touches <span className="text-sm font-normal text-muted-foreground">(optional)</span>
                 </h3>
-                <p className="text-sm text-muted-foreground">Pick any seasonal touches — or skip and we'll suggest them later.</p>
+                <p className="text-sm text-muted-foreground">Pick any extras you'd like — or skip and we'll suggest them after your first walkthrough.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

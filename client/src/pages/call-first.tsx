@@ -75,7 +75,7 @@ function BuilderCard() {
       <p className="mt-2 text-sm font-medium text-foreground">{b.body}</p>
       <p className="mt-2 text-xs text-muted-foreground">{b.secondaryLine}</p>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
-        <Link href="/quote-wizard">
+        <Link href="/#builder">
           <Button
             variant="secondary"
             className="w-full font-semibold sm:w-auto"
@@ -369,7 +369,7 @@ export default function CallFirstPage() {
               <MessageSquare className="h-5 w-5" />
             </Button>
           </a>
-          <Link href="/quote-wizard" className="w-[52px] shrink-0">
+          <Link href="/#builder" className="w-[52px] shrink-0">
             <Button
               size="lg"
               variant="secondary"

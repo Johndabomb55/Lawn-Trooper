@@ -97,9 +97,9 @@ const VALUE_PROPS = [
 ];
 
 const RESET_STEPS = [
-  { n: 1, title: "Day 1 — Recon", body: "Quick property walk + AI yard plan emailed to you." },
-  { n: 2, title: "Days 2–30 — Reset", body: "Heavy lift: catch-up trim, mow, edge, beds reset." },
-  { n: 3, title: "Days 31–90 — Lock-in", body: "Weekly rhythm dialed. Yard locked into mission-ready." },
+  { n: 1, title: "Day 1 — Recon", body: "Quick property walk and an AI yard plan emailed to you." },
+  { n: 2, title: "Days 2–30 — Reset", body: "Heavy lift: catch-up trim, mow, edge, beds reset, mulch refresh." },
+  { n: 3, title: "Days 31–90 — Dial it in", body: "Weekly rhythm locked. Your yard stays mission-ready week after week." },
 ];
 
 const MISSION_REPORTS = [
@@ -400,6 +400,23 @@ export default function HomeV2() {
 
   useEffect(() => {
     document.title = PAGE_TITLE;
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const scrollIfBuilderHash = () => {
+      if (window.location.hash !== "#builder") return;
+      const el = document.getElementById("builder");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    // Initial mount: wait for layout to settle.
+    const t = window.setTimeout(scrollIfBuilderHash, 80);
+    // Subsequent in-page hash navigations.
+    window.addEventListener("hashchange", scrollIfBuilderHash);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("hashchange", scrollIfBuilderHash);
+    };
   }, []);
 
   return (
@@ -790,11 +807,11 @@ export default function HomeV2() {
       {/* ── Promotions ── */}
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div className="rounded-xl border border-border bg-card p-5" data-testid="card-promo-birthday">
-            <div className="text-xs uppercase tracking-wide text-primary font-semibold">Birthday Bonus</div>
-            <div className="mt-1 font-semibold">A free service month on us</div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Sign up during your birthday month and we'll add a bonus visit to your patrol.
+          <div className="rounded-xl border border-amber-300 bg-amber-50 p-5" data-testid="card-promo-anniversary">
+            <div className="text-xs uppercase tracking-wide text-amber-700 font-bold">25-Year Anniversary Bonus</div>
+            <div className="mt-1 font-semibold text-amber-900">Lock in our biggest year yet</div>
+            <div className="text-sm text-amber-900/80 mt-1">
+              Celebrating 25 years of Lawn Trooper in North Alabama — enroll before March 25 for our anniversary client rewards.
             </div>
           </div>
           <div className="rounded-xl border border-border bg-card p-5" data-testid="card-promo-commitment">

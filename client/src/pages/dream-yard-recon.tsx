@@ -26,7 +26,7 @@ export default function DreamYardReconPage() {
                 See what your property could become with Lawn Trooper's Dream Yard Recon.
               </p>
               <div className="mt-8">
-                <a href="/quote-wizard">
+                <a href="/#builder">
                   <Button className="bg-primary text-white hover:bg-primary/90">Unlock Your Dream Yard</Button>
                 </a>
               </div>
@@ -85,7 +85,7 @@ export default function DreamYardReconPage() {
         </div>
 
         <div className="mt-10">
-          <a href="/quote-wizard">
+          <a href="/#builder">
             <Button variant="outline">Reserve My Plan</Button>
           </a>
         </div>

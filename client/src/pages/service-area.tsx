@@ -26,7 +26,7 @@ export default function ServiceAreaPage() {
                 Focused service areas allow us to deliver consistent, high-quality results.
               </p>
               <div className="mt-8">
-                <a href="/quote-wizard">
+                <a href="/#builder">
                   <Button className="bg-primary text-white hover:bg-primary/90">Check Availability</Button>
                 </a>
               </div>
