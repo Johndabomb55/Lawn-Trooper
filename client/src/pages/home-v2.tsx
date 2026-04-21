@@ -41,13 +41,13 @@ import imgPremium from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
 import imgExecutive from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
 
 // Mission report before/after photos
-import missionBefore1 from "@assets/alabama-problem-yard-overgrown.jpg";
+import missionBefore1 from "@assets/mission-before-1-overgrown.jpg";
 import missionAfter1 from "@assets/mulch-brown-refresh-alabama.jpg";
-import missionBefore2 from "@assets/generated_images/madison_al_home_with_fewer_flowers.png";
+import missionBefore2 from "@assets/mission-before-2-overgrown.jpg";
 import missionAfter2 from "@assets/generated_images/madison_al_home_with_trimmed_shrubs.png";
-import missionBefore3 from "@assets/generated_images/basic_neat_lawn_without_flowers.png";
+import missionBefore3 from "@assets/mission-before-3-overgrown.jpg";
 import missionAfter3 from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import missionBefore4 from "@assets/generated_images/huntsville_al_home_landscaping.png";
+import missionBefore4 from "@assets/mission-before-4-overgrown.jpg";
 import missionAfter4 from "@assets/generated_images/manicured_garden_huntsville.png";
 
 const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
