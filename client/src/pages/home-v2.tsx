@@ -157,7 +157,29 @@ function scrollToBuilder() {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-let _sliderHintShown = false;
+const SLIDER_HINT_STORAGE_KEY = "lt_slider_hint_shown";
+let _sliderHintShownMemory = false;
+
+function hasSeenSliderHint(): boolean {
+  if (_sliderHintShownMemory) return true;
+  try {
+    return typeof window !== "undefined" && window.localStorage.getItem(SLIDER_HINT_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markSliderHintSeen() {
+  _sliderHintShownMemory = true;
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(SLIDER_HINT_STORAGE_KEY, "1");
+    }
+  } catch {
+    // localStorage unavailable (e.g. private browsing) — fall back to the
+    // in-memory flag so the hint still only plays once per session.
+  }
+}
 
 function BeforeAfterSlider({ before, after, caption }: { before: string; after: string; caption: string }) {
   const [pos, setPos] = useState(50);
@@ -167,8 +189,8 @@ function BeforeAfterSlider({ before, after, caption }: { before: string; after: 
   const dragging = useRef(false);
 
   useEffect(() => {
-    if (!_sliderHintShown) {
-      _sliderHintShown = true;
+    if (!hasSeenSliderHint()) {
+      markSliderHintSeen();
       setShowHint(true);
       const timer = setTimeout(() => setShowHint(false), 2200);
       return () => clearTimeout(timer);
