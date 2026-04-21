@@ -41,14 +41,14 @@ import imgPremium from "@assets/stock_images/flower_bed_landscapi_f38aa87f.jpg";
 import imgExecutive from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg";
 
 // Mission report before/after photos
-import missionBefore1 from "@assets/mission-before-1-overgrown.jpg";
-import missionAfter1 from "@assets/mulch-brown-refresh-alabama.jpg";
-import missionBefore2 from "@assets/mission-1-stone-house-before.jpg";
-import missionAfter2 from "@assets/mission-1-stone-house-after.jpg";
-import missionBefore3 from "@assets/mission-before-3-overgrown.jpg";
-import missionAfter3 from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
-import missionBefore4 from "@assets/mission-before-4-overgrown.jpg";
-import missionAfter4 from "@assets/generated_images/manicured_garden_huntsville.png";
+import missionBefore1 from "@assets/mission-real-1-before.jpg";
+import missionAfter1 from "@assets/mission-real-1-after.jpg";
+import missionBefore2 from "@assets/mission-real-2-before.jpg";
+import missionAfter2 from "@assets/mission-real-2-after.jpg";
+import missionBefore3 from "@assets/mission-real-3-before.jpg";
+import missionAfter3 from "@assets/mission-real-3-after.jpg";
+import missionBefore4 from "@assets/mission-real-4-before.jpg";
+import missionAfter4 from "@assets/mission-real-4-after.jpg";
 
 const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
 
@@ -112,26 +112,26 @@ const MISSION_REPORTS: MissionReport[] = [
   {
     before: missionBefore1,
     after: missionAfter1,
-    caption: "90-Day Yard Reset — overgrown beds cleared, edged, and refreshed with brown mulch.",
+    caption: "Brick front porch — overgrown foundation shrubs cleared back, beds reshaped, turf cleaned up.",
     real: true,
   },
   {
     before: missionBefore2,
     after: missionAfter2,
-    caption: "Stone-front two-story — overgrown shrubs shaped, beds re-edged, and turf brought back to a clean, manicured front yard.",
+    caption: "Brick two-story — knee-high weeds and leaf cover cleared, hedges trimmed, lawn pulled back to clean.",
     real: true,
   },
   {
     before: missionBefore3,
     after: missionAfter3,
-    caption: "Mowing plan upgrade — fresh stripes, crisp edges, and a thicker, deeper green.",
-    real: false,
+    caption: "Brick ranch — fall leaf blanket and overgrown front beds cleared, lawn cut and edged.",
+    real: true,
   },
   {
     before: missionBefore4,
     after: missionAfter4,
-    caption: "Huntsville curb appeal — bed lines reshaped, hedges tightened, fresh edging installed.",
-    real: false,
+    caption: "Stone-front two-story — leaf cleanup, shrub shaping, and bed refresh restore the curb appeal.",
+    real: true,
   },
 ];
 
