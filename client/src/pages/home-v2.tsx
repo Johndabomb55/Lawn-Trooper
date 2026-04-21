@@ -157,10 +157,23 @@ function scrollToBuilder() {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+let _sliderHintShown = false;
+
 function BeforeAfterSlider({ before, after, caption }: { before: string; after: string; caption: string }) {
   const [pos, setPos] = useState(50);
+  const [showHint, setShowHint] = useState(false);
+  const [interacted, setInteracted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
+
+  useEffect(() => {
+    if (!_sliderHintShown) {
+      _sliderHintShown = true;
+      setShowHint(true);
+      const timer = setTimeout(() => setShowHint(false), 2200);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const updatePos = useCallback((clientX: number) => {
     const el = containerRef.current;
@@ -170,10 +183,16 @@ function BeforeAfterSlider({ before, after, caption }: { before: string; after: 
     setPos(pct);
   }, []);
 
+  const dismissHint = useCallback(() => {
+    setShowHint(false);
+    setInteracted(true);
+  }, []);
+
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     dragging.current = true;
+    dismissHint();
     updatePos(e.clientX);
-  }, [updatePos]);
+  }, [updatePos, dismissHint]);
 
   const onMouseMove = useCallback((e: React.MouseEvent) => {
     if (!dragging.current) return;
@@ -184,8 +203,9 @@ function BeforeAfterSlider({ before, after, caption }: { before: string; after: 
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     dragging.current = true;
+    dismissHint();
     updatePos(e.touches[0].clientX);
-  }, [updatePos]);
+  }, [updatePos, dismissHint]);
 
   const onTouchMove = useCallback((e: React.TouchEvent) => {
     if (!dragging.current) return;
@@ -256,14 +276,18 @@ function BeforeAfterSlider({ before, after, caption }: { before: string; after: 
           aria-valuenow={Math.round(pos)}
           tabIndex={0}
           onKeyDown={onKeyDown}
-          className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-lg border border-white/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={`absolute flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-lg border border-white/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring${showHint ? " animate-slider-nudge animate-pulse-ring" : ""}`}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5.5 9H12.5M5.5 9L7.5 7M5.5 9L7.5 11M12.5 9L10.5 7M12.5 9L10.5 11" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </div>
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 rounded-full bg-black/50 px-3 py-1 text-[10px] text-white tracking-wide pointer-events-none">
+      <div
+        className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 rounded-full bg-black/50 px-3 py-1 text-[10px] text-white tracking-wide pointer-events-none transition-opacity duration-500"
+        style={{ opacity: interacted ? 0 : 1 }}
+        aria-hidden={interacted}
+      >
         Drag to compare
       </div>
     </div>

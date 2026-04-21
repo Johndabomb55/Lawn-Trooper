@@ -142,3 +142,25 @@ body.lt-chat-hidden div[class*="lc-chat"],
 body.lt-chat-hidden div[id*="chat-widget"] {
   display: none !important;
 }
+
+@keyframes slider-nudge {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-18px); }
+  50%  { transform: translateX(18px); }
+  80%  { transform: translateX(-10px); }
+  100% { transform: translateX(0); }
+}
+
+.animate-slider-nudge {
+  animation: slider-nudge 1.4s ease-in-out 0.4s 1 forwards;
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+  70%  { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.2s ease-out 0.4s 2;
+}
