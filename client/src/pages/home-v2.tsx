@@ -13,6 +13,8 @@ import {
   Facebook,
   Instagram,
   Mail,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -270,6 +272,24 @@ function BeforeAfterSlider({ before, after, caption }: { before: string; after: 
 
 export default function HomeV2() {
   const [selectedMission, setSelectedMission] = useState<number | null>(null);
+
+  const navigateMission = useCallback((dir: 1 | -1) => {
+    setSelectedMission((prev) => {
+      if (prev === null) return prev;
+      return (prev + dir + MISSION_REPORTS.length) % MISSION_REPORTS.length;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (selectedMission === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (document.activeElement?.getAttribute("role") === "slider") return;
+      if (e.key === "ArrowLeft") { e.preventDefault(); navigateMission(-1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); navigateMission(1); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedMission, navigateMission]);
 
   useEffect(() => {
     document.title = PAGE_TITLE;
@@ -563,11 +583,38 @@ export default function HomeV2() {
               return (
                 <div className="flex flex-col">
                   <DialogTitle className="sr-only">Mission Report: {pair.caption}</DialogTitle>
-                  <BeforeAfterSlider
-                    before={pair.before}
-                    after={pair.after}
-                    caption={pair.caption}
-                  />
+                  <div className="relative">
+                    <BeforeAfterSlider
+                      key={selectedMission}
+                      before={pair.before}
+                      after={pair.after}
+                      caption={pair.caption}
+                    />
+                    <button
+                      aria-label="Previous photo"
+                      data-testid="button-lightbox-prev"
+                      onClick={() => navigateMission(-1)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white shadow-lg hover:bg-black/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      aria-label="Next photo"
+                      data-testid="button-lightbox-next"
+                      onClick={() => navigateMission(1)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white shadow-lg hover:bg-black/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-1.5 pointer-events-none">
+                      {MISSION_REPORTS.map((_, i) => (
+                        <span
+                          key={i}
+                          className={`block h-1.5 rounded-full transition-all ${i === selectedMission ? "w-4 bg-white" : "w-1.5 bg-white/50"}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
                   <div className="flex items-start justify-between gap-2 px-4 py-3">
                     <p className="text-sm text-muted-foreground" data-testid="text-lightbox-caption">
                       {pair.caption}
