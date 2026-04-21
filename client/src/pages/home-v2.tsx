@@ -326,6 +326,20 @@ export default function HomeV2() {
     });
   }, []);
 
+  const SWIPE_HINT_STORAGE_KEY = "lt_swipe_hint_seen";
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
+  const hintDismissedRef = useRef(false);
+
+  const markSwipeHintSeen = useCallback(() => {
+    hintDismissedRef.current = true;
+    setShowSwipeHint(false);
+    try {
+      window.localStorage.setItem(SWIPE_HINT_STORAGE_KEY, "1");
+    } catch {
+      // ignore storage errors (private mode, etc.)
+    }
+  }, []);
+
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const onSwipeTouchStart = useCallback((e: React.TouchEvent) => {
     const t = e.touches[0];
@@ -339,9 +353,39 @@ export default function HomeV2() {
     const dx = t.clientX - start.x;
     const dy = t.clientY - start.y;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      markSwipeHintSeen();
       navigateMission(dx < 0 ? 1 : -1);
     }
-  }, [navigateMission]);
+  }, [navigateMission, markSwipeHintSeen]);
+
+  const lightboxOpen = selectedMission !== null;
+  useEffect(() => {
+    if (!lightboxOpen) {
+      setShowSwipeHint(false);
+      return;
+    }
+    if (hintDismissedRef.current) return;
+    let alreadySeen = false;
+    try {
+      alreadySeen = window.localStorage.getItem(SWIPE_HINT_STORAGE_KEY) === "1";
+    } catch {
+      // ignore
+    }
+    if (alreadySeen) {
+      hintDismissedRef.current = true;
+      return;
+    }
+    const isTouch =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(pointer: coarse)").matches;
+    if (!isTouch) return;
+    setShowSwipeHint(true);
+    const t = window.setTimeout(() => {
+      markSwipeHintSeen();
+    }, 1500);
+    return () => window.clearTimeout(t);
+  }, [lightboxOpen, markSwipeHintSeen]);
 
   useEffect(() => {
     if (selectedMission === null) return;
@@ -674,6 +718,19 @@ export default function HomeV2() {
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
+                    {showSwipeHint && (
+                      <div
+                        className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none animate-in fade-in duration-300"
+                        aria-hidden
+                        data-testid="hint-swipe-lightbox"
+                      >
+                        <div className="flex items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 text-white shadow-lg">
+                          <ChevronLeft className="h-4 w-4 animate-slider-nudge" />
+                          <span className="text-[11px] uppercase tracking-wide font-semibold">Swipe</span>
+                          <ChevronRight className="h-4 w-4 animate-slider-nudge" />
+                        </div>
+                      </div>
+                    )}
                     <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-1.5 pointer-events-none">
                       {MISSION_REPORTS.map((_, i) => (
                         <span
