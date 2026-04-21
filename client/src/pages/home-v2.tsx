@@ -304,6 +304,23 @@ export default function HomeV2() {
     });
   }, []);
 
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const onSwipeTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipeStart.current = { x: t.clientX, y: t.clientY };
+  }, []);
+  const onSwipeTouchEnd = useCallback((e: React.TouchEvent) => {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      navigateMission(dx < 0 ? 1 : -1);
+    }
+  }, [navigateMission]);
+
   useEffect(() => {
     if (selectedMission === null) return;
     const onKey = (e: KeyboardEvent) => {
@@ -605,7 +622,12 @@ export default function HomeV2() {
             {selectedMission !== null && (() => {
               const pair = MISSION_REPORTS[selectedMission];
               return (
-                <div className="flex flex-col">
+                <div
+                  className="flex flex-col"
+                  onTouchStart={onSwipeTouchStart}
+                  onTouchEnd={onSwipeTouchEnd}
+                  data-testid="swipe-lightbox"
+                >
                   <DialogTitle className="sr-only">Mission Report: {pair.caption}</DialogTitle>
                   <div className="relative">
                     <BeforeAfterSlider
