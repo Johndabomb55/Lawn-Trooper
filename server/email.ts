@@ -147,6 +147,53 @@ export interface QuoteRequestData {
   basicAddons: string[];
   premiumAddons: string[];
   photos?: PhotoData[];
+  totalPrice?: string | null;
+  basePrice?: string | null;
+  yardScope?: string | null;
+  frontYardDiscount?: string | null;
+  upgradeOverage?: string | null;
+}
+
+function renderPricingBlock(opts: {
+  basePrice?: string | null;
+  totalPrice?: string | null;
+  yardScope?: string | null;
+  frontYardDiscount?: string | null;
+  upgradeOverage?: string | null;
+}): string {
+  const { basePrice, totalPrice, yardScope, frontYardDiscount, upgradeOverage } = opts;
+  if (!basePrice && !totalPrice) return "";
+
+  const fmt = (v?: string | null) => {
+    if (v === null || v === undefined || v === "") return null;
+    const n = Number(v);
+    if (Number.isNaN(n)) return v;
+    return `$${Math.round(n)}`;
+  };
+
+  const rows: string[] = [];
+  if (yardScope) rows.push(`<li><strong>Yard Scope:</strong> ${yardScope}</li>`);
+  const baseDisplay = fmt(basePrice);
+  if (baseDisplay) rows.push(`<li><strong>Base Plan Price:</strong> ${baseDisplay}/mo</li>`);
+  const overageDisplay = fmt(upgradeOverage);
+  if (overageDisplay && overageDisplay !== "$0") {
+    rows.push(`<li><strong>Upgrade Overage:</strong> ${overageDisplay}/mo</li>`);
+  }
+  const discountDisplay = fmt(frontYardDiscount);
+  if (discountDisplay && discountDisplay !== "$0") {
+    rows.push(`<li><strong>Front Yard Discount (30%):</strong> −${discountDisplay}/mo</li>`);
+  }
+  const totalDisplay = fmt(totalPrice);
+  if (totalDisplay) {
+    rows.push(`<li style="margin-top:6px;font-size:1.05em;"><strong>Estimated Monthly:</strong> <span style="color:#2E7D32;font-weight:bold;">${totalDisplay}/mo</span></li>`);
+  }
+  if (!rows.length) return "";
+
+  return `
+    <h3 style="color: #1565C0; border-bottom: 2px solid #1565C0; padding-bottom: 8px;">Your Pricing</h3>
+    <ul>${rows.join("")}</ul>
+    <p style="font-size:12px;color:#666;margin-top:-6px;">Final pricing confirmed during your free consultation.</p>
+  `;
 }
 
 function formatAddons(addons: string[]): string {
@@ -213,6 +260,7 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
         <li><strong>Premium Add-ons:</strong> ${premiumAddonsFormatted}</li>
       </ul>
       ${hasPhotos ? `<p style="background: #E8F5E9; padding: 10px; border-radius: 4px;"><strong>📸 ${data.photos!.length} yard photo${data.photos!.length > 1 ? "s" : ""} attached</strong></p>` : ""}
+      ${renderPricingBlock(data)}
       ${data.notes ? `<h3 style="color: #666;">Special Instructions / Notes</h3><p>${data.notes}</p>` : ""}
       <p style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
         <strong>Next Steps:</strong> Contact this customer to schedule a consultation and finalize their plan.
@@ -242,6 +290,7 @@ export async function sendQuoteEmails(data: QuoteRequestData) {
         <li><strong>Premium Add-ons:</strong> ${premiumAddonsFormatted}</li>
       </ul>
       ${hasPhotos ? `<p style="background: #E8F5E9; padding: 10px; border-radius: 4px;">📸 You attached ${data.photos!.length} yard photo${data.photos!.length > 1 ? "s" : ""} to your request.</p>` : ""}
+      ${renderPricingBlock(data)}
       <p style="margin-top: 20px; padding: 15px; background: #E8F5E9; border-radius: 8px; border-left: 4px solid #2E7D32;">
         <strong>What's Next?</strong><br/>
         During your consultation, we'll confirm your yard size, discuss any special needs, and finalize your plan. Current promotional offers will be applied at signup!
@@ -307,6 +356,10 @@ export interface LeadEmailData {
   freeMonths?: number | null;
   totalPrice?: string | null;
   notes?: string | null;
+  yardScope?: string | null;
+  basePrice?: string | null;
+  frontYardDiscount?: string | null;
+  upgradeOverage?: string | null;
 }
 
 export async function sendLeadEmails(data: LeadEmailData) {
@@ -370,6 +423,7 @@ export async function sendLeadEmails(data: LeadEmailData) {
         <li><strong>Complimentary Months:</strong> ${data.freeMonths || 0}</li>
         <li><strong>Monthly Price:</strong> ${data.totalPrice || "Custom quote needed"}</li>
       </ul>
+      ${renderPricingBlock(data)}
       ${data.notes ? `<h3 style="color: #666;">Notes</h3><p>${data.notes}</p>` : ""}
       <p style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
         <strong>Next Steps:</strong> Contact this lead to schedule a free yard consultation.
@@ -403,6 +457,7 @@ export async function sendLeadEmails(data: LeadEmailData) {
         ${payInFull ? "<li><strong>Pay in Full:</strong> Yes (Double complimentary months!)</li>" : ""}
         <li><strong>Complimentary Months:</strong> ${data.freeMonths || 0}</li>
       </ul>
+      ${renderPricingBlock(data)}
       <p style="margin-top: 20px; padding: 15px; background: #E8F5E9; border-radius: 8px; border-left: 4px solid #2E7D32;">
         <strong>What's Next?</strong><br/>
         We'll schedule your free Dream Yard Recon to confirm your yard size, discuss any special needs, and finalize your plan. No payment required, no obligation.

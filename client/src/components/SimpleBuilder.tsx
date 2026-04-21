@@ -9,14 +9,15 @@ import { useToast } from "@/hooks/use-toast";
 import { PLANS, EXECUTIVE_PLUS, type PlanId } from "@/data/plans";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
 
-type YardSizeKey = "small" | "medium" | "large" | "xl";
+type YardSizeKey = "small" | "medium" | "large";
 
 const YARD_SIZES: Array<{ key: YardSizeKey; title: string; sub: string; helper?: string; multiplier: number }> = [
-  { key: "small", title: "Small", sub: "Up to 1/3 acre", helper: "Most homes · Not sure? Start here", multiplier: 1 },
-  { key: "medium", title: "Medium", sub: "1/3 – 1/2 acre", multiplier: 1.15 },
-  { key: "large", title: "Large", sub: "1/2 – 1 acre", multiplier: 1.35 },
-  { key: "xl", title: "Extra Large", sub: "1+ acre", multiplier: 1.6 },
+  { key: "small", title: "Small", sub: "Up to 1/3 acre", helper: "Most homes · Not sure? Start here", multiplier: 1.0 },
+  { key: "medium", title: "Medium", sub: "1/3 – 2/3 acre", multiplier: 1.2 },
+  { key: "large", title: "Large", sub: "2/3 – 1 acre", helper: "1+ acre? We'll send a custom quote.", multiplier: 1.44 },
 ];
+
+const FRONT_YARD_DISCOUNT_RATE = 0.3;
 
 type TouchKey =
   | "bush_trimming"
@@ -204,10 +205,19 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
 
   const update = (patch: Partial<BuilderState>) => setState((s) => ({ ...s, ...patch }));
 
-  const currentPrice = useMemo(
+  const basePrice = useMemo(
     () => priceFor(state.plan, state.yardSize, state.executivePlus),
     [state.plan, state.yardSize, state.executivePlus],
   );
+
+  const currentPrice = useMemo(() => {
+    if (state.scope === "front" && basePrice > 0) {
+      return Math.round(basePrice * (1 - FRONT_YARD_DISCOUNT_RATE));
+    }
+    return basePrice;
+  }, [basePrice, state.scope]);
+
+  const frontYardDiscount = state.scope === "front" ? basePrice - currentPrice : 0;
 
   const canAdvance = useMemo(() => {
     if (state.step === 1) return Boolean(state.yardSize);
@@ -282,6 +292,10 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           premiumAddons,
           notes: noteParts.join(" | "),
           totalPrice: String(currentPrice),
+          basePrice: String(basePrice),
+          frontYardDiscount: String(frontYardDiscount),
+          yardScope: state.scope === "front" ? "Front yard only" : "Full property",
+          upgradeOverage: "0",
           term: "monthly",
           segments: ["simple_builder", "home_v2"],
           appliedPromos: ["90 Day Yard Reset"],

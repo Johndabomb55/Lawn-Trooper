@@ -209,6 +209,10 @@ const leadRequestSchema = z.object({
   appliedPromos: z.array(z.string()).optional().default([]),
   source: z.string().optional().nullable(),
   sourceDetail: z.string().optional().nullable(),
+  yardScope: z.string().optional().nullable(),
+  basePrice: z.string().optional().nullable(),
+  frontYardDiscount: z.string().optional().nullable(),
+  upgradeOverage: z.string().optional().nullable(),
   landingPath: z.string().optional().nullable(),
   referrer: z.string().optional().nullable(),
   utmSource: z.string().optional().nullable(),
@@ -290,12 +294,19 @@ export async function registerRoutes(
   app.post("/api/leads", async (req, res) => {
     try {
       const requestData = leadRequestSchema.parse(req.body);
+      const {
+        yardScope,
+        basePrice,
+        frontYardDiscount,
+        upgradeOverage,
+        ...persistable
+      } = requestData;
       const data = insertLeadSchema.parse({
-        ...requestData,
-        basicAddons: requestData.basicAddons ?? [],
-        premiumAddons: requestData.premiumAddons ?? [],
-        segments: requestData.segments ?? [],
-        appliedPromos: requestData.appliedPromos ?? [],
+        ...persistable,
+        basicAddons: persistable.basicAddons ?? [],
+        premiumAddons: persistable.premiumAddons ?? [],
+        segments: persistable.segments ?? [],
+        appliedPromos: persistable.appliedPromos ?? [],
       });
       const storage = getStorage();
       const lead = await storage.createLead(data);
@@ -324,6 +335,10 @@ export async function registerRoutes(
           freeMonths: data.freeMonths ? (parseInt(data.freeMonths, 10) || 0) : null,
           totalPrice: data.totalPrice,
           notes: data.notes,
+          yardScope: yardScope ?? null,
+          basePrice: basePrice ?? null,
+          frontYardDiscount: frontYardDiscount ?? null,
+          upgradeOverage: upgradeOverage ?? null,
         };
 
         const emailResult = await sendLeadEmails(emailData);
