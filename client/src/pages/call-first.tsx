@@ -79,7 +79,7 @@ function BuilderCard() {
           <Button
             variant="secondary"
             className="w-full font-semibold sm:w-auto"
-            onClick={() => trackStart("builder", { target: "quote-wizard" })}
+            onClick={() => trackStart("builder", { target: "homepage-builder" })}
           >
             {b.primaryButton}
           </Button>

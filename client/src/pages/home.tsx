@@ -273,7 +273,7 @@ export default function LandingPage() {
               <div className="rounded-xl border border-white/20 bg-black/35 px-4 py-3 text-center backdrop-blur-sm">
                 <p className="text-xs text-white/85">{CALL_FUNNEL_COPY.builderSecondary}</p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-center">
-                  <Link href="/#builder" onClick={() => trackCallFunnel("hero_builder", { target: "quote-wizard" })}>
+                  <Link href="/#builder" onClick={() => trackCallFunnel("hero_builder", { target: "homepage-builder" })}>
                     <Button
                       type="button"
                       variant="outline"

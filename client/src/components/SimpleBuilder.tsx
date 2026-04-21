@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ChevronLeft, ChevronRight, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles, Scissors, Leaf, Flower2, Flower, Trash2, Wind, Shovel, Droplets, Bug } from "lucide-react";
+import touchMulchImg from "@assets/mulch-brown-refresh-alabama.jpg";
+import touchWeedImg from "@assets/weed-control-fertilizer-upgrade.png";
+import touchShrubImg from "@assets/alabama-shrub-care-commercial-tools.jpg";
+import touchLeafImg from "@assets/pine-straw-upgrade.jpg";
+import touchFlowerImg from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
+import touchTrashImg from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +43,7 @@ const TOUCHES: Array<{
   label: string;
   desc: string;
   icon: TouchIcon;
+  thumb?: string;
   basicAddonId?: string;
   premiumAddonId?: string;
 }> = [
@@ -45,6 +52,7 @@ const TOUCHES: Array<{
     label: "Mulch refresh",
     desc: "Fresh hardwood or pine bark for the beds.",
     icon: Leaf,
+    thumb: touchMulchImg,
     basicAddonId: "mulch_install_4yards",
   },
   {
@@ -52,6 +60,7 @@ const TOUCHES: Array<{
     label: "Weed control",
     desc: "Sharper lines, fewer weeds across the lawn.",
     icon: Bug,
+    thumb: touchWeedImg,
     basicAddonId: "extra_weed_control",
   },
   {
@@ -59,6 +68,7 @@ const TOUCHES: Array<{
     label: "Flower bed flowers",
     desc: "Seasonal color installs in your beds.",
     icon: Flower2,
+    thumb: touchFlowerImg,
     premiumAddonId: "seasonal_color_flowers",
   },
   {
@@ -66,6 +76,7 @@ const TOUCHES: Array<{
     label: "Trash can cleaning",
     desc: "Fresh-smelling bins, no scrubbing on your end.",
     icon: Trash2,
+    thumb: touchTrashImg,
     basicAddonId: "quarterly_trash_bin_cleaning",
   },
   {
@@ -73,6 +84,7 @@ const TOUCHES: Array<{
     label: "Shrub trimming",
     desc: "Shape, cleanup, and clippings hauled.",
     icon: Scissors,
+    thumb: touchShrubImg,
     basicAddonId: "shrub_hedge_trimming",
   },
   {
@@ -80,6 +92,7 @@ const TOUCHES: Array<{
     label: "Leaf cleanup",
     desc: "Single-visit blow, rake & haul.",
     icon: Wind,
+    thumb: touchLeafImg,
     basicAddonId: "one_time_leaf_removal",
   },
   {
@@ -592,21 +605,33 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                       type="button"
                       data-testid={`button-touch-${t.key}`}
                       onClick={() => toggleTouch(t.key)}
-                      className={`relative text-left rounded-xl border p-3 transition flex flex-col items-start gap-2 ${
+                      className={`relative text-left rounded-xl border overflow-hidden transition flex flex-col ${
                         active
                           ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                           : "border-border hover:border-primary/40 bg-card"
                       }`}
                     >
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>
-                        <Icon className="h-5 w-5" />
+                      <div className="relative h-20 w-full bg-muted">
+                        {t.thumb ? (
+                          <img
+                            src={t.thumb}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className={`flex h-full w-full items-center justify-center ${active ? "text-primary" : "text-muted-foreground"}`}>
+                            <Icon className="h-8 w-8" />
+                          </div>
+                        )}
+                        {active && (
+                          <span className="absolute top-1.5 right-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow">
+                            <Check className="h-3 w-3" />
+                          </span>
+                        )}
                       </div>
-                      {active && (
-                        <span className="absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                          <Check className="h-3 w-3" />
-                        </span>
-                      )}
-                      <div>
+                      <div className="p-2.5">
                         <div className="font-semibold text-sm leading-tight">{t.label}</div>
                         <div className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{t.desc}</div>
                       </div>
