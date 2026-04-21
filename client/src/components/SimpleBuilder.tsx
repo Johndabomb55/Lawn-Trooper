@@ -9,14 +9,13 @@ import { useToast } from "@/hooks/use-toast";
 import { PLANS, EXECUTIVE_PLUS, type PlanId } from "@/data/plans";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
 
-type YardSizeKey = "small" | "medium" | "large" | "xl" | "unsure";
+type YardSizeKey = "small" | "medium" | "large" | "xl";
 
-const YARD_SIZES: Array<{ key: YardSizeKey; title: string; sub: string; multiplier: number }> = [
-  { key: "small", title: "Small", sub: "Up to ~1/4 acre", multiplier: 1 },
-  { key: "medium", title: "Medium", sub: "1/4 – 1/2 acre", multiplier: 1.15 },
+const YARD_SIZES: Array<{ key: YardSizeKey; title: string; sub: string; helper?: string; multiplier: number }> = [
+  { key: "small", title: "Small", sub: "Up to 1/3 acre", helper: "Most homes · Not sure? Start here", multiplier: 1 },
+  { key: "medium", title: "Medium", sub: "1/3 – 1/2 acre", multiplier: 1.15 },
   { key: "large", title: "Large", sub: "1/2 – 1 acre", multiplier: 1.35 },
   { key: "xl", title: "Extra Large", sub: "1+ acre", multiplier: 1.6 },
-  { key: "unsure", title: "Not Sure", sub: "We'll size it for you", multiplier: 1 },
 ];
 
 type TouchKey =
@@ -169,8 +168,30 @@ function mapTouchesToAddons(touches: TouchKey[]) {
   return { basicAddons: Array.from(basic), premiumAddons: Array.from(premium) };
 }
 
-export default function SimpleBuilder() {
-  const [state, setState] = useState<BuilderState>(INITIAL);
+interface SimpleBuilderProps {
+  initialPlan?: PlanId | null;
+}
+
+export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps = {}) {
+  const [state, setState] = useState<BuilderState>(() => {
+    // Allow ?plan=basic|premium|executive to preselect from a deep link.
+    let plan: PlanId | null = initialPlan;
+    if (!plan && typeof window !== "undefined") {
+      const param = new URLSearchParams(window.location.search).get("plan");
+      if (param === "basic" || param === "premium" || param === "executive") {
+        plan = param;
+      }
+    }
+    return plan ? { ...INITIAL, plan, step: 2 } : INITIAL;
+  });
+
+  // Respond to parent passing a new initialPlan (e.g. user clicks a plan card).
+  useEffect(() => {
+    if (initialPlan && initialPlan !== state.plan) {
+      setState((s) => ({ ...s, plan: initialPlan, step: s.step < 2 ? 2 : s.step }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPlan]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState<null | {
     plan: PlanId;
@@ -334,7 +355,7 @@ export default function SimpleBuilder() {
             </Button>
           </div>
           <p className="mt-4 text-xs text-muted-foreground max-w-md">
-            Billed monthly. Standard membership is a 12-month commitment with our consultation refund window after month one.
+            Billed monthly. We'll walk through full plan details and the consultation refund window when we reach out.
           </p>
         </div>
       </div>
@@ -394,10 +415,16 @@ export default function SimpleBuilder() {
                         {active && <Check className="h-4 w-4 text-primary" />}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">{y.sub}</div>
+                      {y.helper && (
+                        <div className="text-[11px] text-primary mt-1 font-medium">{y.helper}</div>
+                      )}
                     </button>
                   );
                 })}
               </div>
+              <p className="text-xs text-muted-foreground" data-testid="text-yard-note">
+                Not sure? Choose Small and we'll confirm after photos or your walkthrough.
+              </p>
               <div>
                 <Label htmlFor="builder-address" className="text-sm">Neighborhood or address (optional)</Label>
                 <Input
@@ -476,8 +503,10 @@ export default function SimpleBuilder() {
           {state.step === 3 && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-title">Quick custom touches</h3>
-                <p className="text-sm text-muted-foreground">Pick any extras — skip what you don't need.</p>
+                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-title">
+                  Quick custom touches <span className="text-sm font-normal text-muted-foreground">(optional)</span>
+                </h3>
+                <p className="text-sm text-muted-foreground">Pick any seasonal touches — or skip and we'll suggest them later.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

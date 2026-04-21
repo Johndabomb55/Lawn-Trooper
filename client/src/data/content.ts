@@ -159,6 +159,74 @@ export const FOOTER_CONTENT = {
   serviceArea: "Serving Athens, Huntsville, Madison, Decatur, and all of North Alabama",
 };
 
+// ─── Home V2 — 90-Day Yard Reset (April 2026) ────────────────────────────────
+
+export const TRUST_STRIP = [
+  "25+ Years Serving North Alabama",
+  "Licensed & Insured",
+  "Seasonal Lawn Care, Billed Monthly",
+  "No Year-Long Contract",
+];
+
+export const YARD_RESET_VIDEO = {
+  title: "See the Yard Reset in Action",
+  subtitle: "Watch how Lawn Trooper helps homeowners and HOAs get back in shape fast.",
+  // Wire these constants up later when the real assets are ready.
+  videoUrl: "" as string,         // e.g. "https://stream.mux.com/.../high.mp4" or YouTube embed
+  posterUrl: "" as string,        // optional poster image override
+};
+
+export const HOMEPAGE_PLAN_SUMMARIES = [
+  {
+    id: "basic" as const,
+    name: "Standard Patrol",
+    price: 169,
+    summary: "Bi-weekly mowing + 1 Seasonal Touch per season",
+  },
+  {
+    id: "premium" as const,
+    name: "Premium Patrol",
+    price: 299,
+    summary: "Weekly mowing + 2 Seasonal Touches per season",
+  },
+  {
+    id: "executive" as const,
+    name: "Executive Command",
+    price: 399,
+    summary: "Priority service + 3 Seasonal Touches per season",
+  },
+];
+
+export const YARD_RESET_BOOST_LINE =
+  "All new plans start with a Yard Reset boost in Month 1.";
+
+export const SEASONAL_FRAMING = {
+  oneLiner:
+    "Built around a full 90-day season • Billed monthly • Touches scheduled across your active season.",
+};
+
+export const MEET_MIGUEL = {
+  name: "Miguel",
+  role: "Lead Field Trooper",
+  tenure: "25 years in the field",
+  blurb:
+    "Miguel has been turning North Alabama yards into showpieces for a quarter century. Funny, reliable, and the guy our customers trust with their property — week in, week out.",
+  // Replace later with a real headshot or short video.
+  photoUrl: "" as string,
+  quote: "" as string,
+};
+
+export const MEET_FOUNDER = {
+  name: "John",
+  role: "Founder, Lawn Trooper",
+  blurb:
+    "Lawn Trooper started with one mower, a beat-up trailer, and a promise: treat every yard like it belongs to a friend. Twenty-five years and a few setbacks later, that promise hasn't changed. We're a relationships-first company — your yard, our reputation.",
+  // Replace later with a real founder photo and pull quote.
+  photoUrl: "" as string,
+  quote: "" as string,
+  videoUrl: "" as string,
+};
+
 // Seasonal scheduling disclaimer - display once site-wide (footer or upgrade section)
 export const SEASONAL_DISCLAIMER = "Some upgrade services are seasonal in nature and may be scheduled during appropriate times of the year or during off-season periods when Lawn Trooper's service schedule allows. Timing and availability may vary based on weather, workload, and operational considerations.";
 

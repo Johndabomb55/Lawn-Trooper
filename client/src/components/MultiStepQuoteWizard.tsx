@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -7,8 +7,6 @@ import {
   Check, 
   ChevronLeft, 
   ChevronRight, 
-  ChevronDown,
-  ChevronUp,
   Star, 
   Info,
   MapPin,
@@ -24,6 +22,7 @@ import {
   Leaf
 } from "lucide-react";
 import PlanBadge from "@/components/PlanBadge";
+import ValueMeter from "@/components/ValueMeter";
 import { 
   MILITARY_RANKS, 
   LOCAL_TIPS, 
@@ -33,18 +32,16 @@ import {
 import {
   getApplicablePromotions,
   applyPromotions,
-  calculateTermFreeMonths,
   validatePromoCode,
   TRUST_MESSAGES,
   PLAN_VALUE_HIGHLIGHTS,
   RECOMMENDED_ADDONS,
-  UPGRADE_CREDIT_COPY,
-  COMMITMENT_COPY,
-  ANNIVERSARY_DEADLINE_LINE,
   type UserSelections,
 } from "@/data/promotions";
 import MissionAccomplished from "./MissionAccomplished";
 import TrustBadge from "./TrustBadge";
+import SavingsPanel from "./SavingsPanel";
+import TermSelector from "./TermSelector";
 import SegmentCheckboxes from "./SegmentCheckboxes";
 import { Button } from "@/components/ui/button";
 import { 
@@ -67,31 +64,22 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { appendAttributionNotes, getAttributionContext } from "@/lib/attribution";
 import { 
   PLANS, 
   BASIC_ADDONS, 
   PREMIUM_ADDONS, 
   ADDON_CATALOG,
-  getPlanCredits,
-  calculateUsedCredits,
-  calculateCreditOverage,
-  PREMIUM_CREDIT_COST,
+  getPlanAllowance,
+  getPlanAllowanceLabel,
+  getSwapOptions,
   EXECUTIVE_PLUS,
   calculate2026Price,
+  calculate2025Price,
   YARD_SIZES,
+  calculateOverageCost
 } from "@/data/plans";
 import { PLAN_COMPARISON_ROWS } from "@/data/planComparison";
-import imgMulchInstall from "@assets/mulch-brown-refresh-alabama.jpg";
-import imgShrub from "@assets/alabama-shrub-care-commercial-tools.jpg";
 
 const STEPS = [
   { id: 1, title: "Yard Size", icon: MapPin, rank: "Recruit", rankIcon: Shield },
@@ -100,36 +88,23 @@ const STEPS = [
   { id: 4, title: "Contact", icon: Phone, rank: "General", rankIcon: Award },
 ];
 
-const PLAN_CARD_COPY: Record<string, { valueLine: string; creditsLine: string }> = {
+// Step 2 plan cards: simplified — table shows features; cards show price + pre-selected upgrades only
+const PLAN_CARD_COPY: Record<string, { frequency: string; tagline: string }> = {
   basic: {
-    valueLine: "Reliable essential care for clean curb appeal year-round.",
-    creditsLine: "Includes 3 upgrade credits (Standard-only upgrades).",
+    frequency: "Bi-Weekly",
+    tagline: "Reliable maintenance with Dream Yard Recon\u2122.",
   },
   premium: {
-    valueLine: "Our most popular balance of weekly polish and flexibility.",
-    creditsLine: "Includes 5 upgrade credits (Standard = 1, Premium = 2).",
+    frequency: "Weekly",
+    tagline: "Weekly upkeep with Account Manager access.",
   },
   executive: {
-    valueLine: "Top-tier property care with priority service coverage.",
-    creditsLine: "Includes 9 upgrade credits (Standard = 1, Premium = 2).",
+    frequency: "Year-Round Weekly",
+    tagline: "Top-tier weekly command with Turf Defense\u2122.",
   },
 };
 
-const PREMIUM_HIDDEN_STANDARD_ADDON_IDS = new Set(["shrub_hedge_trimming"]);
-
-const getQuickAddonDescription = (description: string): string => {
-  const firstSentence = description.split(".")[0]?.trim() ?? "";
-  if (!firstSentence) return "Helpful optional upgrade for your property.";
-  return `${firstSentence}.`;
-};
-
-const getPopularityBadgeClass = (popularity: "trending" | "favorite") =>
-  popularity === "favorite"
-    ? "bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200"
-    : "bg-green-100 text-green-700 border border-green-200";
-
-const getPopularityBadgeLabel = (popularity: "trending" | "favorite") =>
-  popularity === "favorite" ? "Spring Favorite" : "Trending";
+const getAddonName = (id: string) => ADDON_CATALOG.find((a) => a.id === id)?.name ?? id;
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -183,6 +158,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
   
+  const [swapCount, setSwapCount] = useState(0);
   const [executivePlus, setExecutivePlus] = useState(false);
   
   const [term, setTerm] = useState<'1-year' | '2-year'>('2-year');
@@ -190,11 +166,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   const [segments, setSegments] = useState<('renter' | 'veteran' | 'senior')[]>([]);
   const [promoCode, setPromoCode] = useState('');
   const [promoCodeStatus, setPromoCodeStatus] = useState<{ valid: boolean; discount: number; hoaName?: string } | null>(null);
-  const [mobileComparisonPlan, setMobileComparisonPlan] = useState<"basic" | "premium" | "executive">("basic");
-  const [showSummaryDockDetails, setShowSummaryDockDetails] = useState(false);
-  const [swapTarget, setSwapTarget] = useState<{ tier: "basic" | "premium"; addonId: string } | null>(null);
-  const basicAddonsRef = useRef<string[]>([]);
-  const premiumAddonsRef = useRef<string[]>([]);
   
   const [submittedQuoteData, setSubmittedQuoteData] = useState<{
     name: string;
@@ -214,25 +185,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   } | null>(null);
   
   const { toast } = useToast();
-  const wizardRootRef = useRef<HTMLDivElement | null>(null);
-
-  const setStepWithStableScroll = (nextStep: number | ((prevStep: number) => number)) => {
-    setCurrentStep((prevStep) => {
-      const resolvedStep = typeof nextStep === "function" ? nextStep(prevStep) : nextStep;
-      return Math.max(1, Math.min(4, resolvedStep));
-    });
-    if (typeof window !== "undefined") {
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          const root = wizardRootRef.current;
-          if (!root) return;
-          const offset = isModal ? 12 : 84;
-          const top = Math.max(0, window.scrollY + root.getBoundingClientRect().top - offset);
-          window.scrollTo({ top, behavior: "auto" });
-        });
-      });
-    }
-  };
 
   // Rotate local tips every 5 seconds
   useEffect(() => {
@@ -304,159 +256,48 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   };
 
   const handleNext = () => {
-    if (currentStep === 3) {
-      const requireAddons = getFeatureFlag('requireAddons', true);
-      const liveUsedCredits = calculateUsedCredits(
-        basicAddonsRef.current.length,
-        premiumAddonsRef.current.length
-      );
-      if (requireAddons && liveUsedCredits < includedCredits) {
-        return;
-      }
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1);
     }
-    setStepWithStableScroll((prevStep) => (prevStep < 4 ? prevStep + 1 : prevStep));
   };
 
   const handleBack = () => {
-    setStepWithStableScroll((prevStep) => (prevStep > 1 ? prevStep - 1 : prevStep));
-  };
-
-  const dedupeAddonIds = (ids: string[]) => Array.from(new Set(ids));
-
-  const setBasicAddonsSync = (updater: (prev: string[]) => string[]) => {
-    setBasicAddons((prev) => {
-      const next = dedupeAddonIds(updater(prev));
-      basicAddonsRef.current = next;
-      return next;
-    });
-  };
-
-  const setPremiumAddonsSync = (updater: (prev: string[]) => string[]) => {
-    setPremiumAddons((prev) => {
-      const next = dedupeAddonIds(updater(prev));
-      premiumAddonsRef.current = next;
-      return next;
-    });
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   const setDefaultAddonsForPlan = (planId: string) => {
     const rec = RECOMMENDED_ADDONS[planId];
     if (rec) {
-      setBasicAddonsSync(() => rec.basic);
-      setPremiumAddonsSync(() => rec.premium);
+      setBasicAddons(rec.basic);
+      setPremiumAddons(rec.premium);
     } else {
-      setBasicAddonsSync(() => []);
-      setPremiumAddonsSync(() => []);
+      setBasicAddons([]);
+      setPremiumAddons([]);
     }
   };
 
   const handleBasicAddonToggle = (addonId: string) => {
-    setBasicAddonsSync(prev => {
-      const next = prev.includes(addonId)
+    setBasicAddons(prev => 
+      prev.includes(addonId) 
         ? prev.filter(id => id !== addonId)
-        : [...prev, addonId];
-      return next;
-    });
+        : [...prev, addonId]
+    );
   };
 
   const handlePremiumAddonToggle = (addonId: string) => {
-    setPremiumAddonsSync(prev => {
-      const next = prev.includes(addonId)
+    setPremiumAddons(prev => 
+      prev.includes(addonId) 
         ? prev.filter(id => id !== addonId)
-        : [...prev, addonId];
-      return next;
-    });
+        : [...prev, addonId]
+    );
   };
-
-  useEffect(() => {
-    basicAddonsRef.current = basicAddons;
-  }, [basicAddons]);
-
-  useEffect(() => {
-    premiumAddonsRef.current = premiumAddons;
-  }, [premiumAddons]);
-
-  useEffect(() => {
-    if (plan === "basic" && premiumAddons.length > 0) {
-      setPremiumAddonsSync(() => []);
-    }
-  }, [plan, premiumAddons.length]);
-
-  useEffect(() => {
-    if (plan !== "premium") return;
-    if (!basicAddons.some((id) => PREMIUM_HIDDEN_STANDARD_ADDON_IDS.has(id))) return;
-    setBasicAddonsSync((prev) => prev.filter((id) => !PREMIUM_HIDDEN_STANDARD_ADDON_IDS.has(id)));
-  }, [plan, basicAddons]);
-
-  useEffect(() => {
-    if (currentStep === 2 && (plan === "basic" || plan === "premium" || plan === "executive")) {
-      setMobileComparisonPlan(plan);
-    }
-  }, [currentStep, plan]);
-
-  useEffect(() => {
-    if (currentStep >= 2 && currentStep <= 4) {
-      setShowSummaryDockDetails(false);
-    }
-  }, [currentStep]);
-
-  const recommendedPlanKey = plan === "executive" && executivePlus ? "executive+" : plan;
-  const recommendedSet = RECOMMENDED_ADDONS[recommendedPlanKey] ?? { basic: [], premium: [] };
-  const visibleBasicAddons =
-    plan === "premium"
-      ? BASIC_ADDONS.filter((addon) => !PREMIUM_HIDDEN_STANDARD_ADDON_IDS.has(addon.id))
-      : BASIC_ADDONS;
-  const popularBasicSlotTotal = recommendedSet.basic.length;
-  const popularPremiumSlotTotal = plan === "basic" ? 0 : recommendedSet.premium.length;
-  const popularDisplayedBasic = basicAddons.slice(0, popularBasicSlotTotal);
-  const popularDisplayedPremium = premiumAddons.slice(0, popularPremiumSlotTotal);
-  const popularDisplayedCount = popularDisplayedBasic.length + popularDisplayedPremium.length;
-
-  const getAddonLabelById = (addonId: string): string => {
-    const basic = BASIC_ADDONS.find((addon) => addon.id === addonId);
-    if (basic) return basic.label;
-    const premium = PREMIUM_ADDONS.find((addon) => addon.id === addonId);
-    if (premium) return premium.label;
-    const generic = ADDON_CATALOG.find((addon) => addon.id === addonId);
-    return generic?.name ?? addonId;
-  };
-
-  const swapCandidates =
-    swapTarget?.tier === "basic"
-      ? visibleBasicAddons.filter((addon) => addon.id !== swapTarget.addonId)
-      : swapTarget?.tier === "premium"
-        ? PREMIUM_ADDONS.filter((addon) => addon.id !== swapTarget.addonId)
-        : [];
-
-  const applySwap = (replacementId: string) => {
-    if (!swapTarget) return;
-    if (swapTarget.tier === "basic") {
-      setBasicAddonsSync((prev) => {
-        if (!prev.includes(swapTarget.addonId)) return prev;
-        return prev.map((id) => (id === swapTarget.addonId ? replacementId : id));
-      });
-    } else {
-      setPremiumAddonsSync((prev) => {
-        if (!prev.includes(swapTarget.addonId)) return prev;
-        return prev.map((id) => (id === swapTarget.addonId ? replacementId : id));
-      });
-    }
-    setSwapTarget(null);
-  };
-
-  useEffect(() => {
-    if (!swapTarget) return;
-    const activeSet = swapTarget.tier === "basic" ? basicAddons : premiumAddons;
-    if (!activeSet.includes(swapTarget.addonId)) {
-      setSwapTarget(null);
-    }
-  }, [swapTarget, basicAddons, premiumAddons]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
       const photos = selectedPhotos.length > 0 ? await filesToBase64(selectedPhotos) : [];
-      const attribution = getAttributionContext();
       
       const submitData = {
         ...values,
@@ -464,20 +305,19 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
         plan,
         basicAddons,
         premiumAddons,
-        notes: appendAttributionNotes(values.notes, attribution),
-        source: attribution.sourceTag,
-        sourceDetail: attribution.sourceDetail,
-        landingPath: attribution.landingPath,
-        referrer: attribution.referrer,
-        utmSource: attribution.utmSource,
-        utmMedium: attribution.utmMedium,
-        utmCampaign: attribution.utmCampaign,
-        utmContent: attribution.utmContent,
-        utmTerm: attribution.utmTerm,
         photos
       };
       
-      const leadResponse = await fetch('/api/leads', {
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submitData),
+      });
+
+      const data = await response.json();
+
+      // Also capture lead data (fire and forget - don't block on this)
+      fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -490,7 +330,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           plan,
           basicAddons,
           premiumAddons,
-          notes: appendAttributionNotes(values.notes, attribution),
+          notes: values.notes || null,
           totalPrice: String(totalPrice),
           term,
           payUpfront: String(payUpfront),
@@ -498,54 +338,36 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
           appliedPromos: promotionResult.applied.map(p => p.title),
           promoCode: promoCodeStatus?.valid ? promoCode : null,
         }),
-      });
+      }).catch(err => console.error('Lead capture error:', err));
 
-      const leadData = await leadResponse.json().catch(() => null);
-      if (!leadResponse.ok || !leadData?.success) {
-        const reason = leadData?.message || "Lead capture failed. Please verify contact details and try again.";
-        throw new Error(reason);
-      }
-
-      const quoteResponse = await fetch('/api/quote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submitData),
-      });
-      const quoteData = await quoteResponse.json().catch(() => null);
-      if (!quoteResponse.ok || !quoteData?.success) {
-        const followUpReason = quoteData?.message || "Lead saved, but quote email delivery had a problem.";
-        toast({
-          title: "Lead captured successfully",
-          description: `${followUpReason} Our team will still follow up from your saved request.`,
-          variant: "default",
+      if (data.success) {
+        // Store the quote data for the confirmation page
+        setSubmittedQuoteData({
+          name: values.name,
+          email: values.email || "",
+          phone: values.phone || "",
+          address: values.address,
+          yardSize,
+          plan,
+          basicAddons,
+          premiumAddons,
+          totalPrice,
+          term,
+          payUpfront,
+          segments,
+          appliedPromos: promotionResult.applied.map(p => p.title),
+          promoCode: promoCodeStatus?.valid ? promoCode : undefined,
         });
+        
+        // Show the Mission Accomplished page
+        setShowMissionAccomplished(true);
+      } else {
+        throw new Error(data.message || "Submission failed");
       }
-
-      // Store the quote data for the confirmation page
-      setSubmittedQuoteData({
-        name: values.name,
-        email: values.email || "",
-        phone: values.phone || "",
-        address: values.address,
-        yardSize,
-        plan,
-        basicAddons,
-        premiumAddons,
-        totalPrice,
-        term,
-        payUpfront,
-        segments,
-        appliedPromos: promotionResult.applied.map(p => p.title),
-        promoCode: promoCodeStatus?.valid ? promoCode : undefined,
-      });
-      
-      // Show the Mission Accomplished page
-      setShowMissionAccomplished(true);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to submit request. Please try again.";
       toast({
         title: "Transmission Error",
-        description: message,
+        description: "Failed to submit request. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -554,42 +376,20 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
   }
 
   const planData = PLANS.find(p => p.id === plan);
-  const includedCredits = getPlanCredits(plan, executivePlus);
-  const usedCredits = calculateUsedCredits(basicAddons.length, premiumAddons.length);
-  const remainingCredits = Math.max(0, includedCredits - usedCredits);
-  const basePlanIncludeItems =
-    plan === "basic"
-      ? [
-          "Mowing cadence: bi-weekly in growing season, plus monthly off-season property checks.",
-          "Flower-bed weed control is included on your route.",
-          "Shrub Care Package included: 1 annual visit with trim, cleanup, clipping removal, and AI shrub-health assessment.",
-          "Turf weed-control applications are not included in this tier; they can be added as an upgrade.",
-        ]
-      : plan === "premium"
-        ? [
-            "Mowing cadence: weekly in growing season, plus bi-weekly off-season service.",
-            "Flower-bed weed control is included on your route.",
-            "Shrub Care Package included: 2 annual visits with professional trimming, cleanup, clipping removal, AI shrub-health assessment, and treatment applications as needed to improve survival.",
-            "No Shrub Left Behind included: we replace maintained plants that decline beyond recovery, at no additional replacement charge.",
-            "Add-on option: Additional Weed Control & Fertilization adds 3 scheduled turf applications.",
-          ]
-        : [
-            "Mowing cadence: weekly in growing season, plus bi-weekly off-season service.",
-            "Flower-bed weed control is included on your route.",
-            "Executive Turf Defense included: up to 7 turf weed-control/fertilization applications per year.",
-            "Executive Shrub Command included: 3 annual shrub-care visits with proactive climate-stress monitoring.",
-            ...(executivePlus ? ["Executive+ active: expanded coverage with +1 Standard and +1 Premium upgrade credit."] : []),
-          ];
-  const canAddStandardUpgrade = remainingCredits >= 1;
-  const canAddPremiumUpgrade = remainingCredits >= PREMIUM_CREDIT_COST;
+  const swapOptions = getSwapOptions(plan, new Date(), executivePlus);
+  const allowance = getPlanAllowance(plan, swapCount, payUpfront, new Date(), executivePlus);
   let planPrice = calculate2026Price(plan, yardSize);
   if (executivePlus && plan === 'executive') {
     const yardMultiplier = YARD_SIZES.find(y => y.id === yardSize)?.multiplier ?? 1.0;
     planPrice += Math.round(EXECUTIVE_PLUS.price * yardMultiplier);
   }
-  const { extraCredits, totalOverage } = calculateCreditOverage(
-    usedCredits,
-    includedCredits
+  const extraBasicCount = Math.max(0, basicAddons.length - allowance.basic);
+  const extraPremiumCount = Math.max(0, premiumAddons.length - allowance.premium);
+  const { totalOverage } = calculateOverageCost(
+    basicAddons.length,
+    premiumAddons.length,
+    allowance.basic,
+    allowance.premium
   );
   const baseMonthlyTotal = planPrice + totalOverage;
 
@@ -609,147 +409,55 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
 
 
   // Check if add-on requirements are met
-  const addonsRequirementMet = usedCredits >= includedCredits;
+  const addonsRequirementMet = basicAddons.length >= allowance.basic && premiumAddons.length >= allowance.premium;
   const canProceedFromStep3 = !getFeatureFlag('requireAddons', true) || addonsRequirementMet;
 
-  const CompactPlanBanner = () => {
-    if (!planData) return null;
-    const yardLabel = YARD_SIZES.find((y) => y.id === yardSize)?.label ?? "Selected";
-    const isExecutivePlan = plan === "executive";
-    const toneClass = isExecutivePlan
-      ? "border-accent/30 bg-accent/10 text-accent"
-      : "border-primary/20 bg-primary/5 text-primary";
-    const premiumUpgradeSummary =
-      plan === "basic" ? "Standard upgrades only" : "Premium upgrades available";
-
-    return (
-      <div className={`rounded-xl border p-3 ${toneClass}`}>
-        <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-          <div className="font-bold uppercase tracking-wide">{planData.name}</div>
-          <div className="text-xs font-semibold">
-            {includedCredits} upgrade credits • {premiumUpgradeSummary}
-          </div>
+  // Summary card component for reuse
+  const SelectionSummaryCard = ({ showAddonsDetail = false }: { showAddonsDetail?: boolean }) => (
+    <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
+        <div>
+          <div className="text-xs text-muted-foreground uppercase font-bold">Yard</div>
+          <div className="font-bold text-primary">{YARD_SIZES.find(y => y.id === yardSize)?.label}</div>
         </div>
-        <div className="mt-1 text-xs text-muted-foreground">Yard size: {yardLabel}</div>
-      </div>
-    );
-  };
-
-  const selectedStandardUpgradeLabels = basicAddons
-    .map((id) => BASIC_ADDONS.find((addon) => addon.id === id)?.label)
-    .filter((label): label is string => Boolean(label));
-  const selectedPremiumUpgradeLabels = premiumAddons
-    .map((id) => PREMIUM_ADDONS.find((addon) => addon.id === id)?.label)
-    .filter((label): label is string => Boolean(label));
-
-  const UnifiedSummaryDock = () => {
-    if (currentStep < 2 || currentStep > 4) return null;
-
-    const longerTerm: "2-year" = "2-year";
-    const shorterTerm: "1-year" = "1-year";
-    const longerPromoResult = getApplicablePromotions({
-      ...userSelections,
-      term: longerTerm,
-    });
-    const shorterPromoResult = getApplicablePromotions({
-      ...userSelections,
-      term: shorterTerm,
-    });
-    const longerTotals = applyPromotions({ monthlyTotal: baseMonthlyTotal, term: longerTerm }, longerPromoResult);
-    const shorterTotals = applyPromotions({ monthlyTotal: baseMonthlyTotal, term: shorterTerm }, shorterPromoResult);
-    const longerSavingsDelta = Math.max(0, shorterTotals.displayedMonthly - longerTotals.displayedMonthly);
-    const shorterPremiumDelta = Math.max(0, shorterTotals.displayedMonthly - totalPrice);
-    const oneYearMonths = calculateTermFreeMonths("1-year", payUpfront);
-    const twoYearMonths = calculateTermFreeMonths("2-year", payUpfront);
-    const currentComplimentaryMonths = calculateTermFreeMonths(term, payUpfront);
-    const extraComplimentaryMonths = Math.max(0, twoYearMonths - oneYearMonths);
-    const commitmentSavings = appliedTotals.displayedMonthly * appliedTotals.freeMonthsAtEnd;
-    const totalSavings = (appliedTotals.monthlyDiscount * appliedTotals.termMonths) + commitmentSavings;
-    const effectiveMonthly = appliedTotals.displayedEffectiveMonthly;
-    const priceImpactLine =
-      term === "1-year"
-        ? longerSavingsDelta > 0
-          ? `Switch to 2-Year and save $${longerSavingsDelta}/mo while unlocking +${extraComplimentaryMonths} complimentary month${extraComplimentaryMonths === 1 ? "" : "s"}.`
-          : `Switch to 2-Year to unlock +${extraComplimentaryMonths} complimentary month${extraComplimentaryMonths === 1 ? "" : "s"}.`
-        : shorterPremiumDelta > 0
-          ? `You are on the best monthly commitment rate. Switching to 1-Year would be +$${shorterPremiumDelta}/mo.`
-          : "You are on the best monthly commitment rate.";
-
-    return (
-      <div className="sticky bottom-2 z-30 rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-md">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-amber-900">Price & Complimentary Months</p>
-          <p className="text-xs font-semibold text-amber-900">
-            ${totalPrice}/mo • +{currentComplimentaryMonths} complimentary month{currentComplimentaryMonths === 1 ? "" : "s"}
-          </p>
+        <div>
+          <div className="text-xs text-muted-foreground uppercase font-bold">Plan</div>
+          <div className="font-bold text-primary">{planData?.name}</div>
         </div>
-        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <div className="rounded-lg border border-amber-300/70 bg-white/80 px-2.5 py-2 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-amber-900">Current Monthly</p>
-            <p className="text-lg font-extrabold text-primary">${appliedTotals.displayedMonthly}</p>
-          </div>
-          <div className="rounded-lg border border-amber-300/70 bg-white/80 px-2.5 py-2 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-amber-900">Effective Monthly</p>
-            <p className="text-lg font-extrabold text-accent">${effectiveMonthly}</p>
-          </div>
-          <div className="rounded-lg border border-amber-300/70 bg-white/80 px-2.5 py-2 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-amber-900">Total Savings</p>
-            <p className="text-lg font-extrabold text-green-700">${totalSavings.toLocaleString()}</p>
-            <p className="text-[10px] text-muted-foreground">
-              Includes {appliedTotals.freeMonthsAtEnd} complimentary month{appliedTotals.freeMonthsAtEnd === 1 ? "" : "s"}
-            </p>
-          </div>
+        <div>
+          <div className="text-xs text-muted-foreground uppercase font-bold">Upgrades</div>
+          <div className="font-bold text-primary">{basicAddons.length}B + {premiumAddons.length}P</div>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowSummaryDockDetails((prev) => !prev)}
-          className="mt-2 inline-flex w-full items-center justify-between rounded-md border border-amber-300 bg-white/80 px-2.5 py-1.5 text-xs font-semibold text-amber-900 md:hidden"
-        >
-          <span>{showSummaryDockDetails ? "Hide details" : "Show details"}</span>
-          {showSummaryDockDetails ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-        </button>
-        <div className={`${showSummaryDockDetails ? "block" : "hidden"} md:block`}>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <div className="inline-flex rounded-md border border-amber-300 bg-white/80 p-0.5">
-              <button
-                type="button"
-                onClick={() => setTerm("1-year")}
-                className={`rounded px-2.5 py-1 text-xs font-bold transition-colors ${
-                  term === "1-year" ? "bg-primary text-white" : "text-amber-900 hover:bg-amber-100"
-                }`}
-              >
-                1-Year
-              </button>
-              <button
-                type="button"
-                onClick={() => setTerm("2-year")}
-                className={`rounded px-2.5 py-1 text-xs font-bold transition-colors ${
-                  term === "2-year" ? "bg-primary text-white" : "text-amber-900 hover:bg-amber-100"
-                }`}
-              >
-                2-Year
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => setPayUpfront((prev) => !prev)}
-              className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-bold transition-colors ${
-                payUpfront
-                  ? "border-primary bg-primary text-white"
-                  : "border-amber-300 bg-white/80 text-amber-900 hover:bg-amber-100"
-              }`}
-            >
-              {payUpfront ? "Pay In Full: ON" : "Pay In Full: OFF"}
-            </button>
-          </div>
-          <p className="mt-2 text-xs font-medium text-amber-900">{priceImpactLine}</p>
-          <p className="mt-1 text-[11px] text-amber-800">
-            {payUpfront ? COMMITMENT_COPY.payInFullBonus : "Turn on pay in full to double complimentary months."}
-          </p>
+        <div>
+          <div className="text-xs text-muted-foreground uppercase font-bold">Total</div>
+          <div className="font-bold text-primary text-lg">${totalPrice}/mo</div>
         </div>
       </div>
-    );
-  };
+      {showAddonsDetail && (basicAddons.length > 0 || premiumAddons.length > 0) && (
+        <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
+          <div className="font-semibold text-primary mb-2">Selected Upgrades:</div>
+          <div className="flex flex-wrap gap-1.5 justify-center">
+            {basicAddons.map(id => {
+              const addon = BASIC_ADDONS.find(a => a.id === id);
+              return addon ? (
+                <span key={id} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                  {addon.label}
+                </span>
+              ) : null;
+            })}
+            {premiumAddons.map(id => {
+              const addon = PREMIUM_ADDONS.find(a => a.id === id);
+              return addon ? (
+                <span key={id} className="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-accent" />{addon.label}
+                </span>
+              ) : null;
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   // Reset function for after submission
   const resetForm = () => {
@@ -757,8 +465,8 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     setCurrentStep(1);
     setYardSize("1/3");
     setPlan("basic");
-    setBasicAddonsSync(() => []);
-    setPremiumAddonsSync(() => []);
+    setBasicAddons([]);
+    setPremiumAddons([]);
     setSelectedPhotos([]);
     setSubmittedQuoteData(null);
     setShowMissionAccomplished(false);
@@ -781,21 +489,42 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
     );
   }
 
+  // Mission Ready indicator
   const getAddOnInstructionText = () => {
     if (plan === "basic") {
-      if (remainingCredits === 0) {
-        return "Standard credits filled. Standard upgrades only on this plan.";
+      if (allowance.premium > 0) {
+        return `Select exactly ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed.`;
       }
-      return `Use ${remainingCredits} more Standard credit${remainingCredits === 1 ? "" : "s"} to unlock Mission Ready.`;
+      return `Select exactly ${allowance.basic} Basic upgrade${allowance.basic === 1 ? "" : "s"} to proceed.`;
     }
-    if (remainingCredits === 0) {
-      return "Credit pool filled. Add more upgrades any time for overage pricing.";
+    if (plan === "premium") {
+      return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
     }
-    return `Use ${remainingCredits} more credit${remainingCredits === 1 ? "" : "s"} to unlock Mission Ready.`;
+    return `Select exactly ${allowance.basic} Basic and ${allowance.premium} Premium upgrade${allowance.premium === 1 ? "" : "s"} to proceed. Conversion available.`;
   };
 
+  const MissionReadyIndicator = () => (
+    <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-bold ${
+      addonsRequirementMet 
+        ? 'bg-green-100 text-green-700 border border-green-300' 
+        : 'bg-amber-50 text-amber-700 border border-amber-200'
+    }`}>
+      {addonsRequirementMet ? (
+        <>
+          <CheckCircle2 className="w-4 h-4" />
+          <span>Mission Ready</span>
+        </>
+      ) : (
+        <>
+          <AlertCircle className="w-4 h-4" />
+          <span>{getAddOnInstructionText()}</span>
+        </>
+      )}
+    </div>
+  );
+
   return (
-    <div ref={wizardRootRef} className={`bg-card rounded-2xl shadow-2xl border-2 border-primary/30 relative ${isModal ? '' : ''}`}>
+    <div className={`bg-card rounded-2xl shadow-2xl border-2 border-primary/30 relative ${isModal ? '' : ''}`}>
       {/* Trust Badge at Top */}
       <div className="bg-green-50 px-4 py-2 border-b border-green-200">
         <TrustBadge variant="compact" message={TRUST_MESSAGES.ctaTop} />
@@ -805,7 +534,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
       <div className="bg-primary text-primary-foreground p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Reserve Your Plan</h3>
+            <h3 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-wider">Get Your Instant Quote</h3>
             <p className="text-xs text-primary-foreground/70 mt-1">
               Rank: <span className="font-bold text-accent">{STEPS[currentStep - 1]?.rank}</span>
             </p>
@@ -824,7 +553,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
             return (
               <React.Fragment key={step.id}>
                 <button
-                  onClick={() => step.id < currentStep && setStepWithStableScroll(step.id)}
+                  onClick={() => step.id < currentStep && setCurrentStep(step.id)}
                   disabled={step.id > currentStep}
                   className={`flex flex-col items-center gap-1 transition-all ${
                     isCompleted ? 'opacity-100 cursor-pointer' : 
@@ -898,73 +627,20 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="space-y-6 pb-24 md:pb-28"
+                  className="space-y-6"
                 >
                   <div className="text-center mb-6">
                     <h4 className="text-2xl font-bold text-primary mb-2">Choose Your Total Maintenance Plan</h4>
-                    <p className="text-muted-foreground">Simple plan tiers with clear upgrade credits and commitment rewards.</p>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Not sure which plan fits best? Your account manager will walk the property with you and confirm the right service level before final onboarding.
-                    </p>
+                    <p className="text-muted-foreground">One-stop exterior maintenance with full lawn coverage.</p>
                   </div>
-                  <CompactPlanBanner />
 
                   {/* Feature comparison matrix */}
-                  <div className="rounded-xl border border-border bg-muted/30 p-3 md:hidden">
-                    <p className="mb-2 text-xs font-semibold text-muted-foreground">Choose a plan tab to compare feature details.</p>
-                    <div className="mb-3 grid grid-cols-3 gap-1 rounded-lg border border-border/70 bg-background p-1">
-                      {[
-                        { id: "basic", label: "Standard" },
-                        { id: "premium", label: "Premium" },
-                        { id: "executive", label: "Executive" },
-                      ].map((option) => (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => setMobileComparisonPlan(option.id as "basic" | "premium" | "executive")}
-                          className={`rounded-md px-2 py-1.5 text-xs font-bold transition-colors ${
-                            mobileComparisonPlan === option.id
-                              ? option.id === "executive"
-                                ? "bg-accent text-white"
-                                : "bg-primary text-white"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="space-y-2">
-                      {PLAN_COMPARISON_ROWS.map((row, i) => {
-                        const selectedValue =
-                          mobileComparisonPlan === "basic"
-                            ? row.basic
-                            : mobileComparisonPlan === "premium"
-                              ? row.premium
-                              : row.executive;
-                        return (
-                          <div key={`${row.feature}-${i}`} className="rounded-lg border border-border/60 bg-background p-2">
-                            <p className="text-xs font-semibold text-primary">{row.feature}</p>
-                            <p className={`mt-1 text-xs font-medium ${
-                              selectedValue === "✓"
-                                ? "text-green-600"
-                                : mobileComparisonPlan === "executive"
-                                  ? "text-accent"
-                                  : "text-foreground"
-                            }`}>
-                              {selectedValue}
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="hidden md:block bg-muted/30 rounded-xl border border-border overflow-x-auto">
+                  <div className="bg-muted/30 rounded-xl border border-border overflow-x-auto">
                     <table className="w-full text-sm min-w-[480px]">
                       <thead>
                         <tr className="border-b border-border">
                           <th className="text-left py-3 px-3 text-muted-foreground font-medium">Feature</th>
-                          <th className="text-center py-3 px-3 font-bold text-primary">Standard</th>
+                          <th className="text-center py-3 px-3 font-bold text-primary">Basic</th>
                           <th className="text-center py-3 px-3 font-bold text-primary">Premium</th>
                           <th className="text-center py-3 px-3 font-bold text-accent">Executive</th>
                         </tr>
@@ -996,14 +672,10 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {PLANS.map((p) => {
                       const price2026 = calculate2026Price(p.id, yardSize);
+                      const price2025 = calculate2025Price(p.id, yardSize);
                       const isExecutive = p.id === 'executive';
                       const isSelected = plan === p.id;
                       const cardCopy = PLAN_CARD_COPY[p.id] || PLAN_CARD_COPY.basic;
-                      const cardCredits = getPlanCredits(p.id, p.id === "executive" && executivePlus);
-                      const cardRuleLabel =
-                        p.id === "basic"
-                          ? "Standard upgrades only"
-                          : `Standard = 1 • Premium = ${PREMIUM_CREDIT_COST}`;
                       
                       return (
                         <button
@@ -1012,7 +684,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                           data-testid={`wizard-plan-${p.id}`}
                           onClick={() => {
                             setPlan(p.id);
-                            setMobileComparisonPlan(p.id as "basic" | "premium" | "executive");
+                            setSwapCount(0);
                             if (p.id !== 'executive') setExecutivePlus(false);
                             setDefaultAddonsForPlan(p.id);
                           }}
@@ -1033,31 +705,40 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             <h5 className={`font-bold ${isExecutive ? 'text-xl' : 'text-lg'}`}>{p.name}</h5>
                             {isExecutive && <Star className="w-5 h-5 fill-accent text-accent" />}
                           </div>
-                          <p className="mt-1 text-xs text-muted-foreground">{cardCopy.valueLine}</p>
-                          <div className="mt-2 w-full rounded-lg border border-primary/35 bg-gradient-to-r from-primary/10 to-primary/[0.05] px-3 py-2">
-                            <div className="flex items-end justify-between gap-2">
-                              <p className="text-[11px] font-bold uppercase tracking-wide text-primary">Upgrade Credits</p>
-                              <p className="text-xl font-extrabold leading-none text-primary">
-                                {cardCredits}
-                                <span className="ml-1 text-xs font-semibold text-primary/80">total</span>
-                              </p>
-                            </div>
-                            <p className="mt-1 text-[11px] font-semibold text-primary/90">{cardRuleLabel}</p>
+                          <div className="mt-1 text-[11px] font-bold uppercase tracking-wide text-primary/90">
+                            {cardCopy.frequency}
                           </div>
-                          <p className="mt-1 text-xs font-semibold text-primary/90">{cardCopy.creditsLine}</p>
-                          <div className="mt-2 w-full">
+                          <p className="text-xs text-muted-foreground mt-1">{cardCopy.tagline}</p>
+                          <div className="mt-2">
+                            <div className="text-xs text-muted-foreground line-through">
+                              2025: ${price2025}/mo
+                            </div>
                             <div className={`font-bold text-primary ${isExecutive ? 'text-3xl' : 'text-2xl'}`}>
                               ${price2026}
                               <span className="text-sm font-normal text-muted-foreground">/mo</span>
                             </div>
-                            <div className="mt-2 w-full rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-center">
-                              <div className="text-[10px] font-bold uppercase tracking-wide text-amber-800">
-                                25-Year Anniversary Client Rewards
-                              </div>
-                              <div className="text-[11px] font-semibold text-primary">
-                                +{calculateTermFreeMonths(term, payUpfront)} complimentary month{calculateTermFreeMonths(term, payUpfront) === 1 ? "" : "s"}
-                              </div>
-                            </div>
+                            <div className="text-xs text-green-600 font-semibold">2026 AI-Savings</div>
+                          </div>
+                          <div className="mt-3 w-full">
+                            <ValueMeter planId={p.id} />
+                          </div>
+                          <div className="mt-3">
+                            <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-1">Pre-selected upgrades</div>
+                            <ul className="space-y-0.5">
+                              {(RECOMMENDED_ADDONS[p.id]?.basic ?? []).map((id) => (
+                                <li key={id} className="text-xs text-foreground/85 flex items-start gap-1.5">
+                                  <Check className="w-3.5 h-3.5 text-green-600 shrink-0 mt-[1px]" />
+                                  <span>{getAddonName(id)}</span>
+                                </li>
+                              ))}
+                              {(RECOMMENDED_ADDONS[p.id]?.premium ?? []).map((id) => (
+                                <li key={id} className="text-xs text-accent/90 flex items-start gap-1.5">
+                                  <Star className="w-3.5 h-3.5 fill-accent shrink-0 mt-[1px]" />
+                                  <span>{getAddonName(id)}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            <p className="text-[10px] text-muted-foreground italic mt-1">Swap in next step.</p>
                           </div>
                           {isSelected && (
                             <div className="absolute top-2 right-2">
@@ -1069,14 +750,6 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     })}
                   </div>
 
-                  <div className="mt-4 rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100 p-3 text-center">
-                    <p className="text-[10px] font-extrabold uppercase tracking-wide text-amber-900">25-Year Anniversary Client Rewards</p>
-                    <p className="mt-1 text-xs font-semibold text-amber-900">Welcome to Lawn Trooper.</p>
-                    <p className="text-xs text-amber-800">{COMMITMENT_COPY.promoIntro}</p>
-                    <p className="text-[11px] font-medium text-amber-900">{COMMITMENT_COPY.loyaltyLine}</p>
-                    <p className="mt-1 text-xs font-bold text-amber-900">{COMMITMENT_COPY.deadlineLine}</p>
-                  </div>
-
                   {/* Executive+ Toggle */}
                   {plan === 'executive' && (
                     <button
@@ -1085,6 +758,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       onClick={() => {
                         const next = !executivePlus;
                         setExecutivePlus(next);
+                        setSwapCount(0);
                         setDefaultAddonsForPlan(next ? "executive+" : "executive");
                       }}
                       className={`w-full mt-4 p-3 rounded-lg border-2 transition-all text-left ${
@@ -1100,7 +774,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             {EXECUTIVE_PLUS.label}
                           </div>
                           <div className="text-xs text-muted-foreground mt-0.5">
-                            {EXECUTIVE_PLUS.description} — +1 Standard, +1 Premium upgrade
+                            {EXECUTIVE_PLUS.description} — +1 Basic, +1 Premium upgrade
                           </div>
                           <div className="text-xs text-accent/80 mt-1">
                             {EXECUTIVE_PLUS.perks.join(' • ')}
@@ -1119,7 +793,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   {planData && plan === 'basic' && (
                     <div className="bg-muted/30 rounded-xl p-4 border border-border mt-4">
                       <div className="text-center">
-                        <p className="hidden sm:block text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           Upgrade to <span className="font-bold text-primary">Premium</span> for about
                           <span className="font-bold text-accent"> +${calculate2026Price('premium', yardSize) - calculate2026Price('basic', yardSize)}/mo</span> more
                         </p>
@@ -1127,6 +801,23 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                     </div>
                   )}
 
+                  {/* Term Selector */}
+                  <TermSelector
+                    term={term}
+                    payUpfront={payUpfront}
+                    onTermChange={setTerm}
+                    onPayUpfrontChange={setPayUpfront}
+                  />
+
+                  {/* Savings Panel */}
+                  <SavingsPanel
+                    baseMonthly={baseMonthlyTotal}
+                    promotionResult={promotionResult}
+                    appliedTotals={appliedTotals}
+                    term={term}
+                    payUpfront={payUpfront}
+                    showUnlockedAnimation={false}
+                  />
                 </motion.div>
               )}
 
@@ -1137,177 +828,86 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="space-y-6 pb-24 md:pb-28"
+                  className="space-y-6"
                 >
                   <div className="text-center mb-4">
                     <h4 className="text-2xl font-bold text-primary mb-2">Pick Your Upgrades</h4>
-                    <p className="text-sm text-muted-foreground">Choose upgrades you want now. You can mix and match any time.</p>
+                    <p className="text-muted-foreground">
+                      Bundling saves you money. {planData?.name} includes {allowance.basic} Basic + {allowance.premium} Premium upgrades.
+                    </p>
                     <p className="text-sm text-accent font-semibold mt-2 bg-accent/10 inline-block px-3 py-1 rounded-full">
                       {getAddOnInstructionText()}
                     </p>
-                    <div className="mt-3 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-left">
-                      <p className="text-[11px] font-extrabold uppercase tracking-wide text-primary">How Credits Work</p>
-                      <p className="mt-1 text-sm font-semibold text-primary">Standard upgrade = 1 credit • Premium upgrade = 2 credits</p>
-                      <p className="mt-1 text-xs text-primary/90">All selected upgrades are swappable before you submit.</p>
-                    </div>
-                  </div>
-                  <CompactPlanBanner />
-                  <div className="rounded-xl border border-primary/35 bg-gradient-to-r from-primary/10 via-primary/[0.06] to-white p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-sm font-extrabold uppercase tracking-wide text-primary">Credit Command</p>
-                      <p className="text-xs font-semibold text-primary/90">
-                        {extraCredits > 0 ? `Overage +${extraCredits}` : "Live usage tracker"}
-                      </p>
-                    </div>
-                    <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                      <div className="rounded-lg border border-primary/25 bg-white/80 px-2.5 py-2 text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-primary/80">Used</p>
-                        <p className="text-xl font-extrabold text-primary">{usedCredits}</p>
-                      </div>
-                      <div className="rounded-lg border border-primary/25 bg-white/80 px-2.5 py-2 text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-primary/80">Included</p>
-                        <p className="text-xl font-extrabold text-primary">{includedCredits}</p>
-                      </div>
-                      <div className="rounded-lg border border-primary/25 bg-white/80 px-2.5 py-2 text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-primary/80">Remaining</p>
-                        <p className={`text-xl font-extrabold ${remainingCredits === 0 ? "text-green-700" : "text-primary"}`}>{remainingCredits}</p>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <div className="h-2.5 overflow-hidden rounded-full bg-primary/15">
-                        <div
-                          className={`h-full rounded-full transition-all ${usedCredits >= includedCredits ? "bg-green-600" : "bg-primary"}`}
-                          style={{ width: `${Math.min(100, Math.round((usedCredits / Math.max(1, includedCredits)) * 100))}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="rounded-xl border border-primary/30 bg-primary/[0.04] p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <h5 className="text-sm font-bold uppercase tracking-wide text-primary">Your Plan Includes</h5>
-                      <p className="text-xs font-semibold text-primary/90">{usedCredits}/{includedCredits} credits used • {remainingCredits} remaining</p>
-                    </div>
-                    <div className="mt-3">
-                      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Base Plan Includes</p>
-                      <ul className="mt-2 space-y-1.5 text-xs sm:text-sm">
-                        {basePlanIncludeItems.map((item, index) => (
-                          <li key={`${plan}-include-${index}`} className="flex items-start gap-2 text-foreground/90 leading-snug">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" aria-hidden />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <p className="mt-3 text-[11px] text-muted-foreground">
-                      Confidence check: everything listed under Base Plan Includes is already covered in your selected tier.
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-primary/20 bg-card p-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-bold text-primary">Seasonal &amp; Popular Picks</p>
-                      <span className="text-xs text-muted-foreground">
-                        {popularDisplayedCount}/{popularBasicSlotTotal + popularPremiumSlotTotal} selected
-                      </span>
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">Most often picked upgrades for your plan. Every pick is swappable.</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {popularDisplayedBasic.map((addonId) => (
-                        <div
-                          key={`recommended-basic-${addonId}`}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-2 py-1"
-                        >
-                          <span className="text-[10px] font-bold uppercase text-primary">Recommended</span>
-                          <span className="text-xs font-semibold text-primary">{getAddonLabelById(addonId)}</span>
-                          <button
-                            type="button"
-                            onClick={() => setSwapTarget({ tier: "basic", addonId })}
-                            className="rounded-full border border-primary/30 px-2.5 py-1 text-xs font-bold text-primary hover:bg-primary/10"
-                          >
-                            Swap
-                          </button>
-                        </div>
-                      ))}
-                      {plan !== "basic" &&
-                        popularDisplayedPremium.map((addonId) => (
-                          <div
-                            key={`recommended-premium-${addonId}`}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2 py-1"
-                          >
-                            <span className="text-[10px] font-bold uppercase text-accent">Recommended</span>
-                            <span className="text-xs font-semibold text-accent">{getAddonLabelById(addonId)}</span>
-                            <button
-                              type="button"
-                              onClick={() => setSwapTarget({ tier: "premium", addonId })}
-                              className="rounded-full border border-accent/40 px-2.5 py-1 text-xs font-bold text-accent hover:bg-accent/20"
-                            >
-                              Swap
-                            </button>
-                          </div>
-                        ))}
-                      {popularDisplayedCount === 0 && (
-                        <p className="text-xs text-muted-foreground">No popular picks selected right now. Check any upgrade below or tap Next when ready.</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
-                    <div className="overflow-hidden rounded-xl border border-border bg-card">
-                      <img src={imgShrub} alt="Healthy shrubs after trimming and cleanup" className="h-36 sm:h-44 w-full object-cover" />
-                      <div className="p-2.5">
-                        <p className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">Trending</p>
-                        <p className="mt-1 text-xs font-semibold text-primary">Shrub Care Package</p>
-                      </div>
-                    </div>
-                    <div className="overflow-hidden rounded-xl border border-border bg-card">
-                      <img src={imgMulchInstall} alt="Fresh mulch installation in flower beds" className="h-36 sm:h-44 w-full object-cover" />
-                      <div className="p-2.5">
-                        <p className="inline-block rounded-full bg-fuchsia-100 px-2 py-0.5 text-[10px] font-bold uppercase text-fuchsia-700 border border-fuchsia-200">Spring Favorite</p>
-                        <p className="mt-1 text-xs font-semibold text-primary">Seasonal Mulch Refresh</p>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* Standard Upgrades */}
+                  {/* Upgrade Conversion (Swap) - all plans */}
+                  {planData?.allowsSwap && swapOptions.length > 1 && (
+                    <div className="bg-primary/5 rounded-lg p-3 border border-primary/20 mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <div className="font-medium text-sm">Upgrade Conversion</div>
+                          <div className="text-xs text-muted-foreground">Convert 2 Basic → 1 Premium</div>
+                        </div>
+                        <div className="text-right text-xs">
+                          <div className="font-bold text-primary">{allowance.basic}B</div>
+                          <div className="font-bold text-accent">{allowance.premium}P</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {swapOptions.map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            data-testid={`wizard-swap-btn-${opt.value}`}
+                            onClick={() => {
+                              setSwapCount(opt.value);
+                              const newAllowance = getPlanAllowance(plan, opt.value, false, new Date(), executivePlus);
+                              if (premiumAddons.length > newAllowance.premium) {
+                                setPremiumAddons(premiumAddons.slice(0, Math.max(0, newAllowance.premium)));
+                              }
+                              if (basicAddons.length > newAllowance.basic) {
+                                setBasicAddons(basicAddons.slice(0, Math.max(0, newAllowance.basic)));
+                              }
+                            }}
+                            className={`flex-1 py-2 px-2 text-xs rounded-lg border-2 transition-all font-medium ${
+                              swapCount === opt.value
+                                ? 'border-primary bg-primary text-white'
+                                : 'border-primary/30 bg-background hover:border-primary/50'
+                            }`}
+                          >
+                            {opt.compactLabel}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Basic Upgrades */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h5 className="font-bold text-primary">Standard Upgrades</h5>
+                      <h5 className="font-bold text-primary">Basic Upgrades</h5>
                       <span className="text-sm text-muted-foreground">
-                        {basicAddons.length} selected ({basicAddons.length} credits)
+                        {basicAddons.length}/{allowance.basic} included
+                        {extraBasicCount > 0 && <span className="text-accent ml-1">(+{extraBasicCount} extra)</span>}
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[320px] md:max-h-none overflow-y-auto md:overflow-visible">
-                      {visibleBasicAddons.map((addon) => {
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[300px] md:max-h-none overflow-y-auto md:overflow-visible">
+                      {BASIC_ADDONS.map((addon) => {
                         const isSelected = basicAddons.includes(addon.id);
-                        const disableNewSelection = !isSelected && !canAddStandardUpgrade;
                         return (
                           <Label
                             key={addon.id}
-                            className={`p-3.5 rounded-lg border text-left transition-all flex items-center gap-2 ${
+                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2 ${
                               isSelected 
                                 ? 'border-primary bg-primary/10' 
-                                : disableNewSelection
-                                  ? 'border-border opacity-60 cursor-not-allowed'
-                                  : 'border-border hover:border-primary/50 cursor-pointer'
+                                : 'border-border hover:border-primary/50'
                             }`}
                           >
                             <Checkbox 
                               checked={isSelected} 
-                              disabled={disableNewSelection}
-                              onCheckedChange={() => {
-                                if (disableNewSelection) return;
-                                handleBasicAddonToggle(addon.id);
-                              }} 
+                              onCheckedChange={() => handleBasicAddonToggle(addon.id)} 
                             />
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-sm font-medium leading-tight">{addon.label}</span>
-                              <span className="mt-0.5 block text-xs text-muted-foreground leading-tight">
-                                {getQuickAddonDescription(addon.description)}
-                              </span>
-                            </span>
-                            {addon.popularity && (
-                              <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
-                                {getPopularityBadgeLabel(addon.popularity)}
-                              </span>
-                            )}
+                            <span className="text-sm font-medium">{addon.label}</span>
                           </Label>
                         );
                       })}
@@ -1315,56 +915,53 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   </div>
 
                   {/* Premium Upgrades */}
-                  {plan !== "basic" && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <h5 className="font-bold text-accent flex items-center gap-1">
                         <Star className="w-4 h-4 fill-accent" /> Premium Upgrades
                       </h5>
                       <span className="text-xs md:text-sm text-muted-foreground">
-                        {premiumAddons.length} selected ({premiumAddons.length * PREMIUM_CREDIT_COST} credits)
+                        {premiumAddons.length}/{allowance.premium} included
+                        {extraPremiumCount > 0 && <span className="text-accent ml-1">(+{extraPremiumCount} extra)</span>}
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[320px] md:max-h-none overflow-y-auto md:overflow-visible">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[300px] md:max-h-none overflow-y-auto md:overflow-visible">
                       {PREMIUM_ADDONS.map((addon) => {
                         const isSelected = premiumAddons.includes(addon.id);
-                        const disableNewSelection = !isSelected && !canAddPremiumUpgrade;
                         return (
                           <Label
                             key={addon.id}
-                            className={`p-3.5 rounded-lg border text-left transition-all flex items-center gap-2 ${
+                            className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2 ${
                               isSelected 
                                 ? 'border-accent bg-accent/10' 
-                                : disableNewSelection
-                                  ? 'border-border opacity-60 cursor-not-allowed'
-                                  : 'border-border hover:border-accent/50 cursor-pointer'
+                                : 'border-border hover:border-accent/50'
                             }`}
                           >
                             <Checkbox 
                               checked={isSelected} 
-                              disabled={disableNewSelection}
-                              onCheckedChange={() => {
-                                if (disableNewSelection) return;
-                                handlePremiumAddonToggle(addon.id);
-                              }} 
+                              onCheckedChange={() => handlePremiumAddonToggle(addon.id)} 
                             />
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-sm font-medium leading-tight">{addon.label}</span>
-                              <span className="mt-0.5 block text-xs text-muted-foreground leading-tight">
-                                {getQuickAddonDescription(addon.description)}
-                              </span>
-                            </span>
-                            {addon.popularity && (
-                              <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getPopularityBadgeClass(addon.popularity)}`}>
-                                {getPopularityBadgeLabel(addon.popularity)}
-                              </span>
-                            )}
+                            <span className="text-sm font-medium">{addon.label}</span>
                           </Label>
                         );
                       })}
                     </div>
                   </div>
-                  )}
+
+                  {/* Price Summary */}
+                  <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 text-center">
+                    <div className="text-sm text-muted-foreground">Your Monthly Total</div>
+                    <div className="text-4xl font-extrabold text-primary">${totalPrice}/mo</div>
+                    <div className="text-xs text-muted-foreground">Includes AI-Savings Discount</div>
+                  </div>
+
+                  {/* Mission Ready Indicator */}
+                  <div className="flex justify-center">
+                    <MissionReadyIndicator />
+                  </div>
+
+                  {/* Selection Summary Card */}
+                  <SelectionSummaryCard showAddonsDetail={true} />
 
                   {/* Local Tips Banner */}
                   {getFeatureFlag('showLocalTipsBanner', true) && (
@@ -1373,7 +970,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="hidden md:block bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200"
+                      className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200"
                     >
                       <div className="flex items-start gap-3">
                         <div className="bg-green-100 rounded-full p-2 shrink-0">
@@ -1400,60 +997,11 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="space-y-6 pb-24 md:pb-28"
+                  className="space-y-6"
                 >
                   <div className="text-center mb-4">
-                    <h4 className="text-2xl font-bold text-primary mb-2">Reserve Your Plan</h4>
-                    <p className="text-muted-foreground">
-                      Submit your contact details to lock your selected plan and pricing snapshot. Your account manager
-                      will follow up within 1 business day to confirm details, schedule your walkthrough, and review
-                      any loyalty or partner-code options. If you have questions, your walkthrough is the perfect time
-                      to ask them. Pick the plan that best fits your needs now, and we will finalize the execution details
-                      together during your in-person Dream Yard Recon.
-                    </p>
-                  </div>
-                  <CompactPlanBanner />
-                  <div className="rounded-xl border border-primary/25 bg-primary/[0.03] p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h5 className="text-sm font-bold uppercase tracking-wide text-primary">Final Plan Review</h5>
-                      <p className="text-xs font-semibold text-muted-foreground">Everything selected before you submit</p>
-                    </div>
-                    <div className="mt-3 grid gap-3 md:grid-cols-2">
-                      <div className="rounded-lg border border-primary/15 bg-white p-3">
-                        <p className="text-xs font-bold uppercase tracking-wide text-primary">
-                          Standard Upgrades ({selectedStandardUpgradeLabels.length})
-                        </p>
-                        {selectedStandardUpgradeLabels.length > 0 ? (
-                          <ul className="mt-2 space-y-1.5 text-sm">
-                            {selectedStandardUpgradeLabels.map((label) => (
-                              <li key={`step4-standard-${label}`} className="flex items-start gap-2 text-foreground/90">
-                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" aria-hidden />
-                                <span>{label}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="mt-2 text-xs text-muted-foreground">No Standard upgrades selected.</p>
-                        )}
-                      </div>
-                      <div className="rounded-lg border border-accent/20 bg-white p-3">
-                        <p className="text-xs font-bold uppercase tracking-wide text-accent">
-                          Premium Upgrades ({selectedPremiumUpgradeLabels.length})
-                        </p>
-                        {selectedPremiumUpgradeLabels.length > 0 ? (
-                          <ul className="mt-2 space-y-1.5 text-sm">
-                            {selectedPremiumUpgradeLabels.map((label) => (
-                              <li key={`step4-premium-${label}`} className="flex items-start gap-2 text-foreground/90">
-                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/80" aria-hidden />
-                                <span>{label}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="mt-2 text-xs text-muted-foreground">No Premium upgrades selected.</p>
-                        )}
-                      </div>
-                    </div>
+                    <h4 className="text-2xl font-bold text-primary mb-2">Your Contact Details</h4>
+                    <p className="text-muted-foreground">An account manager will reach out to schedule a good time for your FREE property walk-through.</p>
                   </div>
 
                   {/* Trust Badge */}
@@ -1469,7 +1017,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
                     <div className="text-sm font-bold text-primary mb-2 flex items-center gap-2">
                       <Award className="w-4 h-4" />
-                      HOA Partner Code (Optional)
+                      HOA Partner Code (optional)
                     </div>
                     <p className="text-xs text-muted-foreground mb-3">
                       Reminder: partnered HOA residents receive <span className="font-bold text-primary">10% off</span>. If your HOA is not partnered yet,{" "}
@@ -1525,6 +1073,47 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                             Invalid promo code
                           </>
                         )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Summary Card */}
+                  <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 mb-6">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Yard</div>
+                        <div className="font-bold text-primary">{YARD_SIZES.find(y => y.id === yardSize)?.label}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Plan</div>
+                        <div className="font-bold text-primary">{planData?.name}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase font-bold">Total</div>
+                        <div className="font-bold text-primary text-xl">${totalPrice}/mo</div>
+                      </div>
+                    </div>
+                    {(basicAddons.length > 0 || premiumAddons.length > 0) && (
+                      <div className="mt-3 pt-3 border-t border-primary/10 text-sm">
+                        <div className="font-semibold text-primary mb-2">Selected Upgrades:</div>
+                        <div className="flex flex-wrap gap-1.5 justify-center">
+                          {basicAddons.map(id => {
+                            const addon = BASIC_ADDONS.find(a => a.id === id);
+                            return addon ? (
+                              <span key={id} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                                {addon.label}
+                              </span>
+                            ) : null;
+                          })}
+                          {premiumAddons.map(id => {
+                            const addon = PREMIUM_ADDONS.find(a => a.id === id);
+                            return addon ? (
+                              <span key={id} className="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-accent" />{addon.label}
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1662,28 +1251,21 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 </motion.div>
               )}
             </AnimatePresence>
-            <UnifiedSummaryDock />
           </div>
 
-          {currentStep === 4 && (
-            <div className="px-4 pb-2 text-center">
-              <p className="text-xs font-semibold text-amber-700">{ANNIVERSARY_DEADLINE_LINE}</p>
-            </div>
-          )}
-
           {/* Navigation Footer */}
-          <div className="border-t border-border p-4 md:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="border-t border-border p-4 md:p-6 flex items-center justify-between gap-4">
             {currentStep > 1 ? (
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleBack}
-                className="flex w-full sm:w-auto items-center justify-center gap-2 min-h-12"
+                className="flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" /> Back
               </Button>
             ) : (
-              <div className="hidden sm:block" />
+              <div />
             )}
 
             {currentStep < 4 ? (
@@ -1691,7 +1273,7 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 type="button"
                 onClick={handleNext}
                 disabled={currentStep === 3 && !canProceedFromStep3}
-                className={`flex w-full sm:w-auto items-center justify-center gap-2 min-h-12 text-base ${
+                className={`flex items-center gap-2 ${
                   currentStep === 3 && !canProceedFromStep3 
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                     : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -1700,50 +1282,18 @@ export default function MultiStepQuoteWizard({ onClose, isModal = false }: Multi
                 Next <ChevronRight className="w-4 h-4" />
               </Button>
             ) : (
-              <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end">
-                <p className="text-xs font-semibold text-emerald-800">Reserves your plan and starts scheduling.</p>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex w-full sm:w-auto items-center justify-center gap-2 px-8 py-6 min-h-12 text-base md:text-lg font-bold uppercase tracking-wider"
-                  style={{ backgroundColor: '#1a3d24', color: 'white' }}
-                >
-                  {isSubmitting ? "Transmitting..." : "Deploy the Troops"}
-                </Button>
-              </div>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-8 py-6 text-lg font-bold uppercase tracking-wider"
+                style={{ backgroundColor: '#1a3d24', color: 'white' }}
+              >
+                {isSubmitting ? "Transmitting..." : "Get Your AI Yard Quote"}
+              </Button>
             )}
           </div>
         </form>
       </Form>
-      <Dialog open={swapTarget !== null} onOpenChange={(open) => !open && setSwapTarget(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Swap Upgrade</DialogTitle>
-            <DialogDescription>
-              Replace <span className="font-semibold text-foreground">{swapTarget ? getAddonLabelById(swapTarget.addonId) : ""}</span> with another{" "}
-              {swapTarget?.tier === "premium" ? "Premium" : "Standard"} upgrade.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[300px] space-y-2 overflow-y-auto pr-1">
-            {swapCandidates.map((candidate) => (
-              <button
-                key={candidate.id}
-                type="button"
-                onClick={() => applySwap(candidate.id)}
-                className="w-full rounded-lg border border-border p-3 text-left transition-colors hover:border-primary/50 hover:bg-primary/5"
-              >
-                <p className="text-sm font-semibold text-primary">{candidate.label}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{getQuickAddonDescription(candidate.description)}</p>
-              </button>
-            ))}
-            {swapCandidates.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No additional swap options are available in this tier right now.
-              </p>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
