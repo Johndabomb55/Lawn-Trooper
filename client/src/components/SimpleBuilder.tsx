@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronLeft, ChevronRight, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles, Scissors, Leaf, Flower2, Flower, Trash2, Wind, Shovel, Droplets, Bug } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles, Scissors, Leaf, Flower2, Flower, Trash2, Wind, Shovel, Droplets, Bug } from "lucide-react";
 import touchMulchImg from "@assets/mulch-brown-refresh-alabama.jpg";
 import touchWeedImg from "@assets/weed-control-fertilizer-upgrade.png";
 import touchShrubImg from "@assets/alabama-shrub-care-commercial-tools.jpg";
@@ -10,7 +10,6 @@ import touchTrashImg from "@assets/stock_images/residential_garbage__c1c3e341.jp
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { PLANS, EXECUTIVE_PLUS, type PlanId } from "@/data/plans";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
@@ -120,21 +119,15 @@ const TOUCHES: Array<{
 
 const PLAN_ORDER: PlanId[] = ["basic", "premium", "executive"];
 const PLAN_BULLETS: Record<PlanId, string[]> = {
-  basic: [
-    "Bi-weekly mowing + 1 Seasonal Touch per season",
-  ],
-  premium: [
-    "Weekly mowing + 2 Seasonal Touches per season",
-  ],
-  executive: [
-    "Priority service + 3 Seasonal Touches per season",
-  ],
+  basic: ["Bi-weekly mowing + 1 Seasonal Touch per season"],
+  premium: ["Weekly mowing + 2 Seasonal Touches per season"],
+  executive: ["Priority service + 3 Seasonal Touches per season"],
 };
 
 type ContactMethod = "text" | "phone" | "either";
 
 interface BuilderState {
-  step: 1 | 2 | 3 | 4;
+  step: 1 | 2 | 3;
   yardSize: YardSizeKey | null;
   address: string;
   plan: PlanId | null;
@@ -172,12 +165,6 @@ function priceFor(plan: PlanId | null, yard: YardSizeKey | null, executivePlus: 
   return base + (plan === "executive" && executivePlus ? EXECUTIVE_PLUS.price : 0);
 }
 
-/**
- * Try to open the GHL chat widget. The widget is loaded by GhlChatWidget.tsx
- * via a third-party script, so we look for its launcher in the DOM and click
- * it. If the widget isn't available (script not loaded, hidden route, etc.),
- * fall back to a tel: call.
- */
 function openChatWithTelFallback() {
   if (typeof document !== "undefined") {
     const candidates = [
@@ -215,7 +202,6 @@ interface SimpleBuilderProps {
 
 export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps = {}) {
   const [state, setState] = useState<BuilderState>(() => {
-    // Allow ?plan=basic|premium|executive to preselect from a deep link.
     let plan: PlanId | null = initialPlan;
     if (!plan && typeof window !== "undefined") {
       const param = new URLSearchParams(window.location.search).get("plan");
@@ -226,19 +212,22 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
     return plan ? { ...INITIAL, plan, step: 2 } : INITIAL;
   });
 
-  // Respond to parent passing a new initialPlan (e.g. user clicks a plan card).
   useEffect(() => {
     if (initialPlan && initialPlan !== state.plan) {
       setState((s) => ({ ...s, plan: initialPlan, step: s.step < 2 ? 2 : s.step }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPlan]);
+
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState<null | {
     plan: PlanId;
     price: number;
     leadId?: string;
   }>(null);
+  const [touchesOpen, setTouchesOpen] = useState(false);
+  const [postTouches, setPostTouches] = useState<TouchKey[]>([]);
+
   const { toast } = useToast();
   const topRef = useRef<HTMLDivElement | null>(null);
   const mountedRef = useRef(false);
@@ -262,8 +251,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
   const canAdvance = useMemo(() => {
     if (state.step === 1) return Boolean(state.yardSize);
     if (state.step === 2) return Boolean(state.plan);
-    if (state.step === 3) return true;
-    if (state.step === 4)
+    if (state.step === 3)
       return (
         state.name.trim().length >= 2 &&
         state.phone.replace(/\D/g, "").length >= 7
@@ -281,7 +269,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
 
   const goNext = () => {
     if (!canAdvance) return;
-    if (state.step < 4) {
+    if (state.step < 3) {
       update({ step: (state.step + 1) as BuilderState["step"] });
     } else {
       submit();
@@ -292,13 +280,10 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
     if (state.step > 1) update({ step: (state.step - 1) as BuilderState["step"] });
   };
 
-  const toggleTouch = (key: TouchKey) => {
-    setState((s) => ({
-      ...s,
-      touches: s.touches.includes(key)
-        ? s.touches.filter((t) => t !== key)
-        : [...s.touches, key],
-    }));
+  const togglePostTouch = (key: TouchKey) => {
+    setPostTouches((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
   };
 
   async function submit() {
@@ -413,7 +398,65 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
               Book / Reserve
             </Button>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground max-w-md">
+
+          {/* Optional seasonal touches — captured post-submit, discussed on the call */}
+          <div className="mt-4 w-full max-w-sm">
+            <button
+              type="button"
+              data-testid="button-touches-toggle"
+              onClick={() => setTouchesOpen((o) => !o)}
+              className="w-full flex items-center justify-between rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm font-medium text-primary"
+            >
+              <span>Anything to add to your yard plan?</span>
+              {touchesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+            {touchesOpen && (
+              <div className="mt-2 grid grid-cols-2 gap-2 text-left">
+                {TOUCHES.map((t) => {
+                  const active = postTouches.includes(t.key);
+                  const Icon = t.icon;
+                  return (
+                    <button
+                      key={t.key}
+                      type="button"
+                      data-testid={`button-post-touch-${t.key}`}
+                      onClick={() => togglePostTouch(t.key)}
+                      className={`relative rounded-xl border overflow-hidden transition flex flex-col ${
+                        active
+                          ? "border-primary bg-primary/5 ring-2 ring-primary/30"
+                          : "border-border hover:border-primary/40 bg-card"
+                      }`}
+                    >
+                      <div className="relative h-16 w-full bg-muted">
+                        {t.thumb ? (
+                          <img src={t.thumb} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className={`flex h-full w-full items-center justify-center ${active ? "text-primary" : "text-muted-foreground"}`}>
+                            <Icon className="h-7 w-7" />
+                          </div>
+                        )}
+                        {active && (
+                          <span className="absolute top-1 right-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground shadow">
+                            <Check className="h-2.5 w-2.5" />
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-2">
+                        <div className="font-semibold text-xs leading-tight">{t.label}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+                {postTouches.length > 0 && (
+                  <p className="col-span-2 text-xs text-muted-foreground text-center pt-1">
+                    We'll go over these when we call. No commitment needed.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          <p className="mt-2 text-xs text-muted-foreground max-w-md">
             Billed monthly. We'll walk through full plan details and the consultation refund window when we reach out.
           </p>
         </div>
@@ -425,10 +468,10 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
     <div ref={topRef} className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-sm" data-testid="simple-builder">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {[1, 2, 3, 4].map((n) => (
+          {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className={`h-2 w-6 rounded-full transition ${
+              className={`h-2 w-8 rounded-full transition ${
                 n <= state.step ? "bg-primary" : "bg-muted"
               }`}
               data-testid={`progress-step-${n}`}
@@ -436,7 +479,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           ))}
         </div>
         <span className="text-xs font-medium text-muted-foreground" data-testid="text-step-label">
-          Step {state.step} of 4
+          Step {state.step} of 3
         </span>
       </div>
 
@@ -448,6 +491,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.2 }}
         >
+          {/* ── Step 1: Yard size + scope ── */}
           {state.step === 1 && (
             <div className="space-y-4">
               <div>
@@ -481,6 +525,35 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                   );
                 })}
               </div>
+
+              {/* Scope toggle */}
+              <div>
+                <div className="text-sm font-medium mb-1.5">Which part of the property?</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["full", "front"] as const).map((opt) => {
+                    const active = state.scope === opt;
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        data-testid={`button-scope-${opt}`}
+                        onClick={() => update({ scope: opt })}
+                        className={`rounded-xl border p-3 text-sm font-medium transition ${
+                          active
+                            ? "border-primary bg-primary/5 ring-2 ring-primary/30"
+                            : "border-border hover:border-primary/40"
+                        }`}
+                      >
+                        <div className="font-semibold">{opt === "full" ? "Full property" : "Front yard only"}</div>
+                        {opt === "front" && (
+                          <div className="text-[11px] text-primary mt-0.5 font-medium">Save ~30%</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <p className="text-xs text-muted-foreground" data-testid="text-yard-note">
                 Not sure? Choose Small and we'll confirm after photos or your walkthrough.
               </p>
@@ -526,6 +599,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             </div>
           )}
 
+          {/* ── Step 2: Plan selection + exec+ inline ── */}
           {state.step === 2 && (
             <div className="space-y-4">
               <div>
@@ -534,7 +608,6 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {PLAN_ORDER.map((id) => {
-                  const planDef = PLANS.find((p) => p.id === id)!;
                   const active = state.plan === id;
                   const popular = id === "premium";
                   const displayName =
@@ -544,14 +617,21 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                         ? "Premium Patrol"
                         : "Executive Command";
                   const price = priceFor(id, state.yardSize, false);
+                  const scopedPrice = id && state.scope === "front"
+                    ? Math.round(price * (1 - FRONT_YARD_DISCOUNT_RATE))
+                    : price;
                   return (
                     <button
                       key={id}
                       type="button"
                       data-testid={`button-plan-${id}`}
                       onClick={() => {
-                        update({ plan: id });
-                        setTimeout(() => update({ step: 3 }), 180);
+                        if (id !== "executive") {
+                          update({ plan: id, executivePlus: false });
+                          setTimeout(() => update({ step: 3 }), 180);
+                        } else {
+                          update({ plan: id });
+                        }
                       }}
                       className={`relative text-left rounded-xl border p-4 transition active:scale-[0.99] ${
                         active
@@ -566,10 +646,10 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                       )}
                       <div className="flex items-baseline justify-between">
                         <span className="font-semibold">{displayName}</span>
-                        {active && <Check className="h-4 w-4 text-primary" />}
+                        {active && id !== "executive" && <Check className="h-4 w-4 text-primary" />}
                       </div>
                       <div className="mt-1 text-2xl font-bold text-primary" data-testid={`text-plan-price-${id}`}>
-                        ${price}
+                        ${scopedPrice}
                         <span className="text-sm font-medium text-muted-foreground">/mo</span>
                       </div>
                       <ul className="mt-3 space-y-1.5">
@@ -580,117 +660,51 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                           </li>
                         ))}
                       </ul>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
-          {state.step === 3 && (
-            <div className="space-y-5">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-title">
-                  Seasonal Touches <span className="text-sm font-normal text-muted-foreground">(optional)</span>
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Select any extras you'd like bundled in. Skip if you just want the core plan.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {TOUCHES.map((t) => {
-                  const active = state.touches.includes(t.key);
-                  const Icon = t.icon;
-                  return (
-                    <button
-                      key={t.key}
-                      type="button"
-                      data-testid={`button-touch-${t.key}`}
-                      onClick={() => toggleTouch(t.key)}
-                      className={`relative text-left rounded-xl border overflow-hidden transition flex flex-col ${
-                        active
-                          ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                          : "border-border hover:border-primary/40 bg-card"
-                      }`}
-                    >
-                      <div className="relative h-20 w-full bg-muted">
-                        {t.thumb ? (
-                          <img
-                            src={t.thumb}
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className={`flex h-full w-full items-center justify-center ${active ? "text-primary" : "text-muted-foreground"}`}>
-                            <Icon className="h-8 w-8" />
+                      {/* Executive+ inline toggle — only shows when executive card is selected */}
+                      {id === "executive" && active && (
+                        <div
+                          className={`mt-3 rounded-lg border p-2.5 transition ${
+                            state.executivePlus
+                              ? "border-primary bg-primary/10"
+                              : "border-border bg-background"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            update({ executivePlus: !state.executivePlus });
+                          }}
+                          data-testid="button-executive-plus"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold">Add Executive+</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-primary">+${EXECUTIVE_PLUS.price}/mo</span>
+                              {state.executivePlus && <Check className="h-3.5 w-3.5 text-primary" />}
+                            </div>
                           </div>
-                        )}
-                        {active && (
-                          <span className="absolute top-1.5 right-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow">
-                            <Check className="h-3 w-3" />
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-2.5">
-                        <div className="font-semibold text-sm leading-tight">{t.label}</div>
-                        <div className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{t.desc}</div>
-                      </div>
+                          <div className="text-[11px] text-muted-foreground mt-0.5">
+                            Strategy sessions, priority response, expanded coverage.
+                          </div>
+                        </div>
+                      )}
                     </button>
                   );
                 })}
               </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                {(["front", "full"] as const).map((opt) => {
-                  const active = state.scope === opt;
-                  return (
-                    <button
-                      key={opt}
-                      type="button"
-                      data-testid={`button-scope-${opt}`}
-                      onClick={() => update({ scope: opt })}
-                      className={`rounded-xl border p-3 text-sm font-medium transition ${
-                        active
-                          ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                          : "border-border hover:border-primary/40"
-                      }`}
-                    >
-                      {opt === "front" ? "Front yard only" : "Full property"}
-                    </button>
-                  );
-                })}
-              </div>
-
+              {/* Manual continue for executive (since it doesn't auto-advance) */}
               {state.plan === "executive" && (
-                <button
-                  type="button"
-                  data-testid="button-executive-plus"
-                  onClick={() => update({ executivePlus: !state.executivePlus })}
-                  className={`w-full rounded-xl border p-3 text-left transition ${
-                    state.executivePlus
-                      ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                      : "border-border hover:border-primary/40"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">Add Executive+</span>
-                    <span className="text-sm font-bold text-primary">+${EXECUTIVE_PLUS.price}/mo</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Quarterly strategy session, rapid-response priority, expanded coverage.
-                  </div>
-                </button>
+                <p className="text-xs text-center text-muted-foreground">
+                  Executive+ is optional. Tap Continue when ready.
+                </p>
               )}
             </div>
           )}
 
-          {state.step === 4 && (
+          {/* ── Step 3: Contact info ── */}
+          {state.step === 3 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step4-title">Last step — who are we sending this to?</h3>
+                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-title">Last step — who are we sending this to?</h3>
                 <p className="text-sm text-muted-foreground">We'll reach out to confirm your plan and schedule the first visit.</p>
               </div>
 
@@ -736,7 +750,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
               </div>
 
               <div>
-                <div className="text-sm mb-1 font-medium">Best way to reach you</div>
+                <div className="text-sm font-medium mb-1.5">Best way to reach you</div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["text", "phone", "either"] as const).map((m) => (
                     <button
@@ -754,18 +768,6 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                     </button>
                   ))}
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="builder-goal" className="text-sm">Anything else? (optional)</Label>
-                <Textarea
-                  id="builder-goal"
-                  data-testid="input-goal"
-                  value={state.goal}
-                  onChange={(e) => update({ goal: e.target.value })}
-                  placeholder="e.g., kill the weeds, sharper edges, ready by Memorial Day"
-                  className="mt-1 min-h-[60px]"
-                />
               </div>
             </div>
           )}
@@ -796,7 +798,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
         >
           {submitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
-          ) : state.step === 4 ? (
+          ) : state.step === 3 ? (
             <>
               <ShieldCheck className="h-4 w-4 mr-2" /> Lock in plan
             </>
