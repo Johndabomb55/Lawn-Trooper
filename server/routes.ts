@@ -399,16 +399,35 @@ export async function registerRoutes(
     }
   });
 
+  const ALLOWED_TOUCH_KEYS = new Set([
+    "mulch_refresh",
+    "weed_control",
+    "flower_bed_flowers",
+    "trash_can_cleaning",
+    "shrub_trimming",
+    "leaf_cleanup",
+    "aeration",
+    "flower_bed_weeding",
+    "seasonal_flower_pop",
+  ]);
+
   app.patch("/api/leads/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const { touches } = req.body as { touches?: string[] };
+      const { touches } = req.body as { touches?: unknown[] };
       if (!id || !Array.isArray(touches) || touches.length === 0) {
         res.status(400).json({ success: false, message: "Lead id and touches required" });
         return;
       }
+      const sanitized = touches.filter(
+        (t): t is string => typeof t === "string" && ALLOWED_TOUCH_KEYS.has(t)
+      );
+      if (sanitized.length === 0) {
+        res.status(400).json({ success: false, message: "No valid touch keys provided" });
+        return;
+      }
       const storage = getStorage();
-      const notesLine = `Seasonal touches interest: ${touches.join(", ")}`;
+      const notesLine = `Seasonal touches interest: ${sanitized.join(", ")}`;
       await storage.appendLeadNotes(id, notesLine);
       res.status(200).json({ success: true });
     } catch (error) {

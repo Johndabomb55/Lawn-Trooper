@@ -300,6 +300,13 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
     }, 600);
   }, [postTouches, submitted?.leadId]);
 
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+      if (touchSaveTimerRef.current) clearTimeout(touchSaveTimerRef.current);
+    };
+  }, []);
+
   async function submit() {
     if (!state.plan || !state.yardSize) return;
     setSubmitting(true);
