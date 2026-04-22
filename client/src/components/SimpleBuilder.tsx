@@ -209,12 +209,12 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
         plan = param;
       }
     }
-    return plan ? { ...INITIAL, plan, step: 2 } : INITIAL;
+    return plan ? { ...INITIAL, plan, step: 1 } : INITIAL;
   });
 
   useEffect(() => {
     if (initialPlan && initialPlan !== state.plan) {
-      setState((s) => ({ ...s, plan: initialPlan, step: s.step < 2 ? 2 : s.step }));
+      setState((s) => ({ ...s, plan: initialPlan }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPlan]);
@@ -382,7 +382,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             You're set, {state.name.split(" ")[0] || "Trooper"}.
           </h3>
           <p className="text-muted-foreground max-w-md">
-            Your best-fit plan is locked in. A real Lawn Trooper will reach out shortly to walk through your 90-day reset.
+            Your plan is locked in. A real Lawn Trooper will reach out within 24 hours to confirm your start date and walk through the 90-Day Reset.
           </p>
           <div className="mt-2 w-full max-w-sm rounded-xl border border-border bg-background p-4 text-left">
             <div className="flex items-baseline justify-between">
@@ -405,19 +405,11 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             >
               <MessageCircle className="h-4 w-4 mr-2" /> Talk to Lawn Trooper AI
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full"
-              data-testid="button-confirmation-book"
-              onClick={() => {
-                const url = (import.meta.env.VITE_GHL_BOOKING_URL as string | undefined) ?? "";
-                if (url) window.open(url, "_blank", "noopener");
-                else window.location.href = getTelHref();
-              }}
-            >
-              Book / Reserve
-            </Button>
+            <a href={getTelHref()} className="w-full" data-testid="button-confirmation-book">
+              <Button variant="outline" size="lg" className="w-full">
+                <Phone className="h-4 w-4 mr-2" /> Call to schedule
+              </Button>
+            </a>
           </div>
 
           {/* Optional seasonal touches — captured post-submit, discussed on the call */}
@@ -478,7 +470,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           </div>
 
           <p className="mt-2 text-xs text-muted-foreground max-w-md">
-            Billed monthly. We'll walk through full plan details and the consultation refund window when we reach out.
+            Billed monthly. No long-term commitment to get started — we'll cover everything on the call.
           </p>
         </div>
       </div>
@@ -519,6 +511,17 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                 <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step1-title">How big is your yard?</h3>
                 <p className="text-sm text-muted-foreground">Tap the closest match — we'll fine-tune the price after.</p>
               </div>
+              {state.plan && (
+                <div className="flex items-center gap-2 rounded-lg bg-primary/5 border border-primary/20 px-3 py-2 text-sm" data-testid="banner-plan-preselected">
+                  <Check className="h-4 w-4 text-primary shrink-0" />
+                  <span>
+                    <span className="font-semibold text-primary">
+                      {state.plan === "basic" ? "Standard Patrol" : state.plan === "premium" ? "Premium Patrol" : "Executive Command"}
+                    </span>
+                    {" "}selected — choose your yard size to confirm pricing.
+                  </span>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 {YARD_SIZES.map((y) => {
                   const active = state.yardSize === y.key;

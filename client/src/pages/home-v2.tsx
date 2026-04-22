@@ -60,7 +60,9 @@ const PLAN_CARDS = [
     price: 169,
     img: imgBasic,
     bullets: [
-      "Bi-weekly mowing + 1 Seasonal Touch per season",
+      "Bi-weekly mowing",
+      "1 Seasonal Touch per season",
+      "Includes 90-Day Yard Reset in Month 1",
     ],
   },
   {
@@ -70,7 +72,9 @@ const PLAN_CARDS = [
     popular: true,
     img: imgPremium,
     bullets: [
-      "Weekly mowing + 2 Seasonal Touches per season",
+      "Weekly mowing",
+      "2 Seasonal Touches per season",
+      "Priority scheduling + edging every visit",
     ],
   },
   {
@@ -79,7 +83,9 @@ const PLAN_CARDS = [
     price: 399,
     img: imgExecutive,
     bullets: [
-      "Priority service + 3 Seasonal Touches per season",
+      "Priority weekly service",
+      "3 Seasonal Touches per season",
+      "Dedicated crew lead + same-week reschedule",
     ],
   },
 ];
@@ -972,7 +978,6 @@ export default function HomeV2() {
               <Link href="/hoa-partnerships" className="hover:text-white transition-colors">HOA</Link>
               <Link href="/privacy-policy" className="hover:text-white transition-colors" data-testid="link-footer-privacy">Privacy Policy</Link>
               <Link href="/terms-of-service" className="hover:text-white transition-colors" data-testid="link-footer-terms">Terms of Service</Link>
-              <Link href="/legacy" className="hover:text-white/60 transition-colors text-xs text-primary-foreground/40">Classic site</Link>
             </div>
           </div>
         </div>
