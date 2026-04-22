@@ -84,7 +84,6 @@ import { trackEvent } from "../lib/analytics";
 import { getExperimentVariant, trackExperimentExposure } from "../lib/experiments";
 
 export default function LandingPage() {
-  useEffect(() => { document.title = "Lawn Trooper | Mission-Ready Yard Care"; }, []);
   const [showHeroCelebration, setShowHeroCelebration] = useState(true);
   const shouldReduceMotion = useReducedMotion();
   const scrollToSection = (id: string) => {
@@ -273,7 +272,7 @@ export default function LandingPage() {
               <div className="rounded-xl border border-white/20 bg-black/35 px-4 py-3 text-center backdrop-blur-sm">
                 <p className="text-xs text-white/85">{CALL_FUNNEL_COPY.builderSecondary}</p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-center">
-                  <Link href="/#builder" onClick={() => trackCallFunnel("hero_builder", { target: "homepage-builder" })}>
+                  <Link href="/quote-wizard" onClick={() => trackCallFunnel("hero_builder", { target: "quote-wizard" })}>
                     <Button
                       type="button"
                       variant="outline"
@@ -1057,7 +1056,7 @@ export default function LandingPage() {
                 Deploying elite lawn care services across North Alabama. Professional, reliable, and always mission-ready.
               </p>
               <div className="flex gap-4">
-                <a href="https://www.facebook.com/profile.php?id=61588087766755" target="_blank" rel="noopener noreferrer" data-testid="link-facebook" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="#social" data-testid="link-facebook" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
                   <Facebook size={20} />
                 </a>
                 <a href="https://www.instagram.com/lawntrooper" target="_blank" rel="noopener noreferrer" data-testid="link-instagram" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
@@ -1072,7 +1071,7 @@ export default function LandingPage() {
               <div className="space-y-4 text-primary-foreground/80">
                 <div className="flex items-center gap-3">
                   <Phone className="w-5 h-5 shrink-0 text-accent" />
-                  <a href={getTelHref()} className="hover:text-white transition-colors">{LT_PHONE_DISPLAY}</a>
+                  <a href="tel:256-795-2949" className="hover:text-white transition-colors">256-795-2949</a>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 shrink-0 text-accent" />
