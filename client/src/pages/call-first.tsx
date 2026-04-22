@@ -84,15 +84,15 @@ function BuilderCard() {
             {b.primaryButton}
           </Button>
         </Link>
-        <Link href="/#quote">
+        <a href="/#builder">
           <Button
             variant="outline"
             className="w-full font-semibold sm:w-auto"
-            onClick={() => trackStart("builder", { target: "home-quote" })}
+            onClick={() => trackStart("builder", { target: "home-builder" })}
           >
             {b.secondaryButton}
           </Button>
-        </Link>
+        </a>
       </div>
     </div>
   );

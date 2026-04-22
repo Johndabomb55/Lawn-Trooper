@@ -53,9 +53,9 @@ export const OFFER_LANES = {
       "Big yard? Only care about the front? Front yard and high-visibility areas only. Same Lawn Trooper standards. Lower investment because we maintain less ground, not because we cut corners.",
   },
   yardReset: {
-    title: "30-Day Yard Reset",
+    title: "90-Day Yard Reset",
     body:
-      "Yard out of control? We’ll get the property back under control, keep it maintained for 30 days, and show you exactly how Lawn Trooper works. If the property needs heavy catch-up, we’ll quote that clearly first.",
+      "Yard out of control? We’ll get the property back under control, keep it maintained, and show you exactly how Lawn Trooper works. If the property needs heavy catch-up, we’ll quote that clearly first.",
   },
 } as const;
 
@@ -135,9 +135,9 @@ export const CALL_FIRST_CURB_SECTION = {
 } as const;
 
 export const CALL_FIRST_RESET_SECTION = {
-  cardLabel: "30-Day Yard Reset",
+  cardLabel: "90-Day Yard Reset",
   body:
-    "Yard out of control? We’ll get the property back under control, keep it maintained for 30 days, and show you exactly how Lawn Trooper works. If the property needs heavy catch-up, we’ll quote that clearly first.",
+    "Yard out of control? We’ll get the property back under control, keep it maintained, and show you exactly how Lawn Trooper works. If the property needs heavy catch-up, we’ll quote that clearly first.",
 } as const;
 
 export const CALL_FIRST_LANDING_COPY = {

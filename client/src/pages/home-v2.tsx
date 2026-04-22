@@ -42,13 +42,13 @@ import imgExecutive from "@assets/stock_images/beautiful_green_lawn_e7c60690.jpg
 
 // Mission report before/after photos
 import missionBefore1 from "@assets/mission-real-1-before.jpg";
-import missionAfter1 from "@assets/mulch-brown-refresh-alabama.jpg";
+import missionAfter1 from "@assets/mission-real-1-after.jpg";
 import missionBefore2 from "@assets/mission-real-2-before.jpg";
-import missionAfter2 from "@assets/generated_images/madison_al_home_with_trimmed_shrubs.png";
+import missionAfter2 from "@assets/mission-real-2-after.jpg";
 import missionBefore3 from "@assets/mission-real-3-before.jpg";
-import missionAfter3 from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
+import missionAfter3 from "@assets/mission-real-3-after.jpg";
 import missionBefore4 from "@assets/mission-1-stone-house-before.jpg";
-import missionAfter4 from "@assets/generated_images/manicured_garden_huntsville.png";
+import missionAfter4 from "@assets/mission-1-stone-house-after.jpg";
 
 const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
 
@@ -823,11 +823,11 @@ export default function HomeV2() {
       {/* ── Promotions ── */}
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div className="rounded-xl border border-amber-300 bg-amber-50 p-5" data-testid="card-promo-anniversary">
-            <div className="text-xs uppercase tracking-wide text-amber-700 font-bold">25-Year Anniversary Bonus</div>
-            <div className="mt-1 font-semibold text-amber-900">Lock in our biggest year yet</div>
-            <div className="text-sm text-amber-900/80 mt-1">
-              Celebrating 25 years of Lawn Trooper in North Alabama — enroll before March 25 for our anniversary client rewards.
+          <div className="rounded-xl border border-green-300 bg-green-50 p-5" data-testid="card-promo-commitment">
+            <div className="text-xs uppercase tracking-wide text-green-700 font-bold">Commitment Rewards</div>
+            <div className="mt-1 font-semibold text-green-900">Save more the longer you plan</div>
+            <div className="text-sm text-green-900/80 mt-1">
+              1-year plan: 1 complimentary service month. 2-year plan: 3 complimentary months. Pay in full and double it.
             </div>
           </div>
           <div className="rounded-xl border border-border bg-card p-5" data-testid="card-promo-commitment">

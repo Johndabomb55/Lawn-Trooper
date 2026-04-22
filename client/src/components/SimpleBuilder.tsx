@@ -262,7 +262,8 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
   const canAdvance = useMemo(() => {
     if (state.step === 1) return Boolean(state.yardSize);
     if (state.step === 2) return Boolean(state.plan);
-    if (state.step === 3)
+    if (state.step === 3) return true;
+    if (state.step === 4)
       return (
         state.name.trim().length >= 2 &&
         state.phone.replace(/\D/g, "").length >= 7
@@ -280,7 +281,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
 
   const goNext = () => {
     if (!canAdvance) return;
-    if (state.step < 3) {
+    if (state.step < 4) {
       update({ step: (state.step + 1) as BuilderState["step"] });
     } else {
       submit();
@@ -424,10 +425,10 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
     <div ref={topRef} className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-sm" data-testid="simple-builder">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {[1, 2, 3].map((n) => (
+          {[1, 2, 3, 4].map((n) => (
             <div
               key={n}
-              className={`h-2 w-8 rounded-full transition ${
+              className={`h-2 w-6 rounded-full transition ${
                 n <= state.step ? "bg-primary" : "bg-muted"
               }`}
               data-testid={`progress-step-${n}`}
@@ -435,7 +436,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           ))}
         </div>
         <span className="text-xs font-medium text-muted-foreground" data-testid="text-step-label">
-          Step {state.step} of 3
+          Step {state.step} of 4
         </span>
       </div>
 
@@ -593,7 +594,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                   Seasonal Touches <span className="text-sm font-normal text-muted-foreground">(optional)</span>
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Select all that apply in your yard. We can bundle these across the season to match your goals.
+                  Select any extras you'd like bundled in. Skip if you just want the core plan.
                 </p>
               </div>
 
@@ -663,18 +664,6 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                 })}
               </div>
 
-              <div>
-                <Label htmlFor="builder-goal" className="text-sm">Your lawn goal (optional)</Label>
-                <Textarea
-                  id="builder-goal"
-                  data-testid="input-goal"
-                  value={state.goal}
-                  onChange={(e) => update({ goal: e.target.value })}
-                  placeholder="e.g., kill the weeds, sharper edges, looks great by Memorial Day"
-                  className="mt-1 min-h-[64px]"
-                />
-              </div>
-
               {state.plan === "executive" && (
                 <button
                   type="button"
@@ -695,10 +684,19 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                   </div>
                 </button>
               )}
+            </div>
+          )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          {state.step === 4 && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step4-title">Last step — who are we sending this to?</h3>
+                <p className="text-sm text-muted-foreground">We'll reach out to confirm your plan and schedule the first visit.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="builder-name" className="text-sm">Your name</Label>
+                  <Label htmlFor="builder-name" className="text-sm">Your name *</Label>
                   <Input
                     id="builder-name"
                     data-testid="input-name"
@@ -706,10 +704,11 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                     onChange={(e) => update({ name: e.target.value })}
                     placeholder="First & last"
                     className="mt-1"
+                    autoComplete="name"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="builder-phone" className="text-sm">Phone</Label>
+                  <Label htmlFor="builder-phone" className="text-sm">Phone *</Label>
                   <Input
                     id="builder-phone"
                     data-testid="input-phone"
@@ -718,6 +717,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                     placeholder="(256) 555-0123"
                     type="tel"
                     className="mt-1"
+                    autoComplete="tel"
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -730,12 +730,13 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                     placeholder="you@example.com"
                     type="email"
                     className="mt-1"
+                    autoComplete="email"
                   />
                 </div>
               </div>
 
               <div>
-                <div className="text-sm mb-1">Preferred contact</div>
+                <div className="text-sm mb-1 font-medium">Best way to reach you</div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["text", "phone", "either"] as const).map((m) => (
                     <button
@@ -749,10 +750,22 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                           : "border-border hover:border-primary/40"
                       }`}
                     >
-                      {m === "text" ? "Text" : m === "phone" ? "Call" : "Either"}
+                      {m === "text" ? "Text me" : m === "phone" ? "Call me" : "Either"}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="builder-goal" className="text-sm">Anything else? (optional)</Label>
+                <Textarea
+                  id="builder-goal"
+                  data-testid="input-goal"
+                  value={state.goal}
+                  onChange={(e) => update({ goal: e.target.value })}
+                  placeholder="e.g., kill the weeds, sharper edges, ready by Memorial Day"
+                  className="mt-1 min-h-[60px]"
+                />
               </div>
             </div>
           )}
@@ -783,7 +796,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
         >
           {submitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
-          ) : state.step === 3 ? (
+          ) : state.step === 4 ? (
             <>
               <ShieldCheck className="h-4 w-4 mr-2" /> Lock in plan
             </>

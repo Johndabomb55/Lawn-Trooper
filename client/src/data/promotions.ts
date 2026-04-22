@@ -154,7 +154,7 @@ export const COMMITMENT_COPY = {
   oneYearLine: "1-Year: 1 complimentary month",
   twoYearLine: "2-Year: 3 complimentary months",
   maxLine: "Get up to 6 complimentary months with a 2-year paid-in-full plan.",
-  deadlineLine: "Lock in 25-Year Anniversary Client Rewards before March 25.",
+  deadlineLine: "",
   loyaltyLine: "Existing clients may qualify for loyalty pricing with a client code.",
 };
 

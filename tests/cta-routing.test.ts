@@ -39,6 +39,7 @@ const EXPECTED_CTAS: Record<string, ExpectedCta[]> = {
   ],
   "client/src/pages/call-first.tsx": [
     { label: "{b.primaryButton}" },
+    { label: "{b.secondaryButton}" },
     { label: "{CALL_NAV_BUILDER_SHORT}" },
   ],
 };
