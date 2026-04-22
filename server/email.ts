@@ -456,6 +456,23 @@ export async function sendLeadEmails(data: LeadEmailData) {
       <h2>Thank you for your quote request!</h2>
       <p>Hi ${data.name},</p>
       <p>We've received your request for lawn care services. Our team will review your information and reach out shortly to schedule your free Dream Yard Recon consultation.</p>
+      ${(() => {
+        const priceRaw = data.monthlyPrice || data.totalPrice;
+        const priceNum = priceRaw ? Number(priceRaw) : NaN;
+        const priceDisplay = priceRaw
+          ? Number.isNaN(priceNum)
+            ? priceRaw
+            : `$${Math.round(priceNum)}/mo`
+          : null;
+        if (!priceDisplay) return "";
+        return `
+      <div style="margin: 16px 0; padding: 18px 20px; background: #E8F5E9; border-radius: 10px; border-left: 5px solid #2E7D32; text-align: center;">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #2E7D32; font-weight: 600;">Your Quoted Monthly Price</div>
+        <div style="font-size: 28px; font-weight: bold; color: #2E7D32; margin-top: 6px;">${priceDisplay}</div>
+        ${data.executivePlus === "true" ? `<div style="margin-top: 8px; font-size: 13px; color: #1B5E20;"><strong>Executive+ add-on included</strong></div>` : ""}
+        <div style="margin-top: 8px; font-size: 12px; color: #555;">This matches the price you saw on screen. Final pricing confirmed at your free consultation.</div>
+      </div>`;
+      })()}
       <h3 style="color: #2E7D32; border-bottom: 2px solid #2E7D32; padding-bottom: 8px;">Your Selected Plan</h3>
       <ul>
         ${data.address ? `<li><strong>Address:</strong> ${data.address}</li>` : ""}

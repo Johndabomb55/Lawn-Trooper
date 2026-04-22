@@ -66,13 +66,12 @@ export default function PromoBanner({
             {!compact && <p>{COMMITMENT_COPY.oneYearLine}</p>}
             {!compact && <p>{COMMITMENT_COPY.twoYearLine}</p>}
             {!compact && <p>{COMMITMENT_COPY.payInFullBonus}</p>}
-            {!compact && <p>{COMMITMENT_COPY.maxLine}</p>}
             <p className="text-xs font-medium text-amber-900">{COMMITMENT_COPY.loyaltyLine}</p>
           </div>
           <div className="mt-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-amber-900">
               <Sparkles className="h-4 w-4 text-amber-600" />
-              {COMMITMENT_COPY.deadlineLine}
+              {COMMITMENT_COPY.maxLine}
             </div>
             {(isSticky || compact) && (
               <a

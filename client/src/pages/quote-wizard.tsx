@@ -1,13 +1,14 @@
 import { useEffect } from "react";
-import MultiStepQuoteWizard from "@/components/MultiStepQuoteWizard";
-import SiteHeader from "@/components/SiteHeader";
+import { useLocation } from "wouter";
 
 export default function QuoteWizardPage() {
-  useEffect(() => { document.title = "Plan Builder | Lawn Trooper"; }, []);
-  return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <MultiStepQuoteWizard />
-    </div>
-  );
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/");
+    setTimeout(() => {
+      const el = document.getElementById("builder");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  }, [setLocation]);
+  return null;
 }

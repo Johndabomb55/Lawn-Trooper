@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
+import type { PlanId } from "@/data/plans";
 import { motion } from "framer-motion";
 import {
   Phone,
@@ -323,6 +324,7 @@ function BeforeAfterSlider({ before, after, caption }: { before: string; after: 
 }
 
 export default function HomeV2() {
+  const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null);
   const [selectedMission, setSelectedMission] = useState<number | null>(null);
 
   const navigateMission = useCallback((dir: 1 | -1) => {
@@ -562,7 +564,10 @@ export default function HomeV2() {
                   <Button
                     className="mt-5 w-full"
                     variant={p.popular ? "default" : "outline"}
-                    onClick={scrollToBuilder}
+                    onClick={() => {
+                      setSelectedPlan(p.id);
+                      scrollToBuilder();
+                    }}
                     data-testid={`button-see-plan-${p.id}`}
                   >
                     See My Plan
@@ -882,7 +887,7 @@ export default function HomeV2() {
             </h2>
             <p className="text-sm text-muted-foreground mt-1">Three quick steps. We'll handle the rest.</p>
           </div>
-          <SimpleBuilder />
+          <SimpleBuilder initialPlan={selectedPlan} />
         </div>
       </section>
 
