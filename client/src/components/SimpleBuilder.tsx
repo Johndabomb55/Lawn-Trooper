@@ -231,6 +231,8 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
   const { toast } = useToast();
   const topRef = useRef<HTMLDivElement | null>(null);
   const mountedRef = useRef(false);
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const update = (patch: Partial<BuilderState>) => setState((s) => ({ ...s, ...patch }));
 
@@ -285,6 +287,18 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   };
+
+  useEffect(() => {
+    if (!submitted?.leadId || postTouches.length === 0) return;
+    if (touchSaveTimerRef.current) clearTimeout(touchSaveTimerRef.current);
+    touchSaveTimerRef.current = setTimeout(() => {
+      fetch(`/api/leads/${submitted.leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ touches: postTouches }),
+      }).catch(() => {});
+    }, 600);
+  }, [postTouches, submitted?.leadId]);
 
   async function submit() {
     if (!state.plan || !state.yardSize) return;
@@ -626,11 +640,14 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                       type="button"
                       data-testid={`button-plan-${id}`}
                       onClick={() => {
-                        if (id !== "executive") {
-                          update({ plan: id, executivePlus: false });
-                          setTimeout(() => update({ step: 3 }), 180);
-                        } else {
+                        if (id === "executive") {
                           update({ plan: id });
+                          if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+                          advanceTimerRef.current = setTimeout(() => update({ step: 3 }), 600);
+                        } else {
+                          update({ plan: id, executivePlus: false });
+                          if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+                          advanceTimerRef.current = setTimeout(() => update({ step: 3 }), 180);
                         }
                       }}
                       className={`relative text-left rounded-xl border p-4 transition active:scale-[0.99] ${
@@ -672,6 +689,8 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                           onClick={(e) => {
                             e.stopPropagation();
                             update({ executivePlus: !state.executivePlus });
+                            if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+                            advanceTimerRef.current = setTimeout(() => update({ step: 3 }), 600);
                           }}
                           data-testid="button-executive-plus"
                         >
@@ -691,10 +710,9 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                   );
                 })}
               </div>
-              {/* Manual continue for executive (since it doesn't auto-advance) */}
               {state.plan === "executive" && (
                 <p className="text-xs text-center text-muted-foreground">
-                  Executive+ is optional. Tap Continue when ready.
+                  Executive+ is optional — you have a moment to decide.
                 </p>
               )}
             </div>

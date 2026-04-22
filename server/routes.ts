@@ -399,6 +399,24 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/leads/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { touches } = req.body as { touches?: string[] };
+      if (!id || !Array.isArray(touches) || touches.length === 0) {
+        res.status(400).json({ success: false, message: "Lead id and touches required" });
+        return;
+      }
+      const storage = getStorage();
+      const notesLine = `Seasonal touches interest: ${touches.join(", ")}`;
+      await storage.appendLeadNotes(id, notesLine);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      logRouteError("leads-patch", error);
+      res.status(500).json({ success: false, message: "Failed to update lead" });
+    }
+  });
+
   app.post("/api/waitlist", async (req, res) => {
     try {
       const data = insertWaitlistSchema.parse(req.body);

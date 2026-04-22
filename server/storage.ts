@@ -7,6 +7,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   createLead(lead: InsertLead): Promise<Lead>;
+  appendLeadNotes(id: string, additionalNotes: string): Promise<void>;
   getWaitlistByEmail(email: string): Promise<Waitlist | undefined>;
   createWaitlistEntry(entry: InsertWaitlist): Promise<Waitlist>;
 }
@@ -56,6 +57,15 @@ export class DatabaseStorage implements IStorage {
       promoCode: insertLead.promoCode ?? null,
     }).returning();
     return lead;
+  }
+
+  async appendLeadNotes(id: string, additionalNotes: string): Promise<void> {
+    const [existing] = await db!.select().from(leads).where(eq(leads.id, id));
+    if (!existing) return;
+    const combined = existing.notes
+      ? `${existing.notes} | ${additionalNotes}`
+      : additionalNotes;
+    await db!.update(leads).set({ notes: combined }).where(eq(leads.id, id));
   }
 
   async getWaitlistByEmail(email: string): Promise<Waitlist | undefined> {
@@ -122,6 +132,12 @@ export class MemStorage implements IStorage {
     this.leadsStore.push(lead);
     console.log("[mem-storage] Lead stored in memory:", lead.id);
     return lead;
+  }
+
+  async appendLeadNotes(id: string, additionalNotes: string): Promise<void> {
+    const lead = this.leadsStore.find((l) => l.id === id);
+    if (!lead) return;
+    lead.notes = lead.notes ? `${lead.notes} | ${additionalNotes}` : additionalNotes;
   }
 
   async getWaitlistByEmail(email: string): Promise<Waitlist | undefined> {
