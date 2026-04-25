@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import type { PlanId } from "@/data/plans";
-import { getPlanFromUrl } from "@/data/urlPlan";
 import { motion } from "framer-motion";
 import {
   Phone,
@@ -331,7 +330,7 @@ function BeforeAfterSlider({ before, after, caption }: { before: string; after: 
 }
 
 export default function HomeV2() {
-  const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(() => getPlanFromUrl());
+  const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null);
   const [selectedMission, setSelectedMission] = useState<number | null>(null);
 
   const navigateMission = useCallback((dir: 1 | -1) => {
@@ -419,20 +418,14 @@ export default function HomeV2() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const scrollToBuilder = () => {
+    const scrollIfBuilderHash = () => {
+      if (window.location.hash !== "#builder") return;
       const el = document.getElementById("builder");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     };
-    const isBuilderHash = () => window.location.hash.split("?")[0] === "#builder";
-    const scrollIfBuilderHash = () => {
-      if (!isBuilderHash()) return;
-      scrollToBuilder();
-    };
-    // Scroll to builder on initial mount if ?plan= param is set or #builder hash is present.
-    const t = window.setTimeout(() => {
-      if (getPlanFromUrl() || isBuilderHash()) scrollToBuilder();
-    }, 80);
-    // Subsequent in-page hash navigations (handles both #builder and #builder?plan=...).
+    // Initial mount: wait for layout to settle.
+    const t = window.setTimeout(scrollIfBuilderHash, 80);
+    // Subsequent in-page hash navigations.
     window.addEventListener("hashchange", scrollIfBuilderHash);
     return () => {
       window.clearTimeout(t);

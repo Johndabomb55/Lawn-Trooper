@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { PLANS, EXECUTIVE_PLUS, type PlanId } from "@/data/plans";
-import { getPlanFromUrl } from "@/data/urlPlan";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
 
 type YardSizeKey = "small" | "medium" | "large";
@@ -203,13 +202,19 @@ interface SimpleBuilderProps {
 
 export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps = {}) {
   const [state, setState] = useState<BuilderState>(() => {
-    const plan = initialPlan ?? getPlanFromUrl();
-    return plan ? { ...INITIAL, plan, step: 2 } : INITIAL;
+    let plan: PlanId | null = initialPlan;
+    if (!plan && typeof window !== "undefined") {
+      const param = new URLSearchParams(window.location.search).get("plan");
+      if (param === "basic" || param === "premium" || param === "executive") {
+        plan = param;
+      }
+    }
+    return plan ? { ...INITIAL, plan, step: 1 } : INITIAL;
   });
 
   useEffect(() => {
     if (initialPlan && initialPlan !== state.plan) {
-      setState((s) => ({ ...s, plan: initialPlan, step: s.step < 2 ? 2 : s.step }));
+      setState((s) => ({ ...s, plan: initialPlan }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPlan]);
