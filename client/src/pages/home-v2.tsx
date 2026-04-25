@@ -117,6 +117,12 @@ interface MissionReport {
 
 const MISSION_REPORTS: MissionReport[] = [
   {
+    before: missionBefore4,
+    after: missionAfter4,
+    caption: "Huntsville curb appeal — bed lines reshaped, hedges tightened, fresh edging installed.",
+    real: true,
+  },
+  {
     before: missionBefore1,
     after: missionAfter1,
     caption: "90-Day Yard Reset — overgrown beds cleared, edged, and refreshed with brown mulch.",
@@ -132,12 +138,6 @@ const MISSION_REPORTS: MissionReport[] = [
     before: missionBefore3,
     after: missionAfter3,
     caption: "Mowing plan upgrade — fresh stripes, crisp edges, and a thicker, deeper green.",
-    real: true,
-  },
-  {
-    before: missionBefore4,
-    after: missionAfter4,
-    caption: "Huntsville curb appeal — bed lines reshaped, hedges tightened, fresh edging installed.",
     real: true,
   },
 ];
