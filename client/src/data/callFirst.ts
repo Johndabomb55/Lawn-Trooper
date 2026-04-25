@@ -20,6 +20,13 @@ export function getSmsHref(prefill?: string): string {
   return `sms:${LT_PHONE_E164}?body=${body}`;
 }
 
+/** Prefer `VITE_COMMERCIAL_VIDEO_EMBED_URL`. Default: Drive preview embed (share: anyone with link can view). */
+export const COMMERCIAL_VIDEO_EMBED_URL_FALLBACK =
+  "https://drive.google.com/file/d/1zlTIilCpGTr-tkSdklKywUefF4QyH8aP/preview";
+
+/** Prefer `VITE_COMMERCIAL_VIDEO_MP4_URL` for a direct MP4 (uses `<video>` instead of iframe). */
+export const COMMERCIAL_VIDEO_MP4_URL_FALLBACK = "";
+
 export const LAWN_TROOPER_AI = {
   name: "Lawn Trooper AI",
   tagline: "Lawn Trooper AI · 24/7",

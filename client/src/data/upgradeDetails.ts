@@ -66,6 +66,12 @@ export const UPGRADE_DETAILS: Record<string, UpgradeDetail> = {
     when: "Typically installed in early spring or late fall to refresh beds and provide seasonal ground cover.",
     why: "Pine straw is a natural, attractive ground cover that retains moisture, insulates roots, and gives beds a clean, uniform look."
   },
+  pine_straw_and_rock_beds: {
+    title: "Pine Straw & Decorative Rock Beds",
+    what: "Pine straw plus decorative landscape rock for beds and tree rings. All materials, delivery, and installation are bundled — you are not charged separately for product on top of labor.",
+    when: "Best after bed edges are defined; often paired with spring or fall refresh visits.",
+    why: "Rock and pine straw together control weeds, improve drainage in problem spots, and give beds a finished, high-contrast look with one clear price."
+  },
   gutter_cleaning: {
     title: "Gutter Cleaning",
     what: "Thorough cleaning of gutters and downspouts to remove leaves, debris, and blockages that prevent proper drainage.",

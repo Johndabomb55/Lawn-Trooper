@@ -1,6 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles, Scissors, Leaf, Flower2, Flower, Trash2, Wind, Shovel, Droplets, Bug, Sprout } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  MessageCircle,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  Scissors,
+  Leaf,
+  Flower2,
+  Flower,
+  Trash2,
+  Wind,
+  Shovel,
+  Droplets,
+  Bug,
+  Sprout,
+  Home,
+  Layers,
+  TreeDeciduous,
+  Package,
+} from "lucide-react";
 import touchMulchImg from "@assets/mulch-brown-refresh-alabama.jpg";
 import touchWeedImg from "@assets/weed-control-fertilizer-upgrade.png";
 import touchShrubImg from "@assets/alabama-shrub-care-commercial-tools.jpg";
@@ -8,6 +34,14 @@ import touchLeafImg from "@assets/pine-straw-upgrade.jpg";
 import touchFlowerImg from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
 import touchTrashImg from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
 import touchAerationImg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
+import touchHouseImg from "@assets/generated_images/huntsville_al_home_landscaping.png";
+import touchGutterImg from "@assets/stonehouse-before.jpg";
+import touchPressureImg from "@assets/stock_images/manicured_lawn_curb__32de1fed.jpg";
+import touchHolidayLightsImg from "@assets/stock_images/christmas_lights_dec_50e6447b.jpg";
+import touchPineStrawStockImg from "@assets/stock_images/brown_pine_straw_mul_b3cac663.jpg";
+import touchPineRockBedsImg from "@assets/stock_images/landscaped_front_yar_5e511d10.jpg";
+import touchTreeWorkImg from "@assets/stock_images/landscaped_front_yar_ab31baff.jpg";
+import touchFallLeavesImg from "@assets/mission-before-2-overgrown.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,21 +64,26 @@ type TouchKey =
   | "mulch_refresh"
   | "weed_control"
   | "turf_treatment_boost"
-  | "flower_bed_flowers"
+  | "house_soft_wash"
+  | "pressure_wash_package"
   | "trash_can_cleaning"
+  | "gutter_cleaning"
+  | "seasonal_lighting_decor"
+  | "pine_straw"
+  | "pine_straw_and_rocks"
+  | "flower_bed_construction"
+  | "mid_size_tree_trimming"
+  | "seasonal_color_flowers"
   | "shrub_trimming"
   | "leaf_cleanup"
-  | "aeration"
-  | "flower_bed_weeding"
-  | "seasonal_flower_pop";
-
-type TouchIcon = typeof Leaf;
+  | "fall_cleanup"
+  | "aeration";
 
 const TOUCHES: Array<{
   key: TouchKey;
   label: string;
   desc: string;
-  icon: TouchIcon;
+  icon: LucideIcon;
   thumb?: string;
   basicAddonId?: string;
   premiumAddonId?: string;
@@ -74,20 +113,83 @@ const TOUCHES: Array<{
     basicAddonId: "growing_season_boost",
   },
   {
-    key: "flower_bed_flowers",
-    label: "Flower bed flowers",
-    desc: "Seasonal color installs in your beds.",
-    icon: Flower2,
-    thumb: touchFlowerImg,
-    premiumAddonId: "seasonal_color_flowers",
+    key: "house_soft_wash",
+    label: "House soft wash",
+    desc: "Low-pressure wash for siding and trim — safer than blasting fragile surfaces.",
+    icon: Home,
+    thumb: touchHouseImg,
+    premiumAddonId: "house_soft_wash",
+  },
+  {
+    key: "pressure_wash_package",
+    label: "Driveway, sidewalk & steps wash",
+    desc: "Concrete and hard surfaces brightened up — driveway, walks, porch, and steps as needed.",
+    icon: Droplets,
+    thumb: touchPressureImg,
+    premiumAddonId: "premium_pressure_wash",
   },
   {
     key: "trash_can_cleaning",
-    label: "Trash can cleaning",
-    desc: "Fresh-smelling bins, no scrubbing on your end.",
+    label: "Trash can valet",
+    desc: "Scheduled bin washing for odor control. One yearly mailbox clean is included with every trash can package.",
     icon: Trash2,
     thumb: touchTrashImg,
     basicAddonId: "quarterly_trash_bin_cleaning",
+  },
+  {
+    key: "gutter_cleaning",
+    label: "Gutter cleaning",
+    desc: "Clear gutters and downspouts so rainwater stays away from your roofline and foundation.",
+    icon: Layers,
+    thumb: touchGutterImg,
+    basicAddonId: "gutter_cleaning",
+  },
+  {
+    key: "seasonal_lighting_decor",
+    label: "Seasonal lighting & décor",
+    desc: "Holiday-ready lighting and tasteful exterior accents — layout tailored to your home.",
+    icon: Sparkles,
+    thumb: touchHolidayLightsImg,
+    basicAddonId: "christmas_lights_basic",
+  },
+  {
+    key: "pine_straw",
+    label: "Pine straw",
+    desc: "Natural pine straw for beds and tree rings — materials, delivery, and professional install included in your bundle price.",
+    icon: Leaf,
+    thumb: touchPineStrawStockImg,
+    basicAddonId: "pine_straw_basic",
+  },
+  {
+    key: "pine_straw_and_rocks",
+    label: "Pine straw & bed rock",
+    desc: "Pine straw plus decorative landscape rock in your beds. All rock, pine straw, delivery, and installation included — no separate material invoices.",
+    icon: Package,
+    thumb: touchPineRockBedsImg,
+    basicAddonId: "pine_straw_and_rock_beds",
+  },
+  {
+    key: "flower_bed_construction",
+    label: "Flower bed refresh & build-out",
+    desc: "Redefine bed lines, prep soil, or expand planting areas — final scope on walkthrough.",
+    icon: Flower2,
+    thumb: touchMulchImg,
+  },
+  {
+    key: "mid_size_tree_trimming",
+    label: "Tree shaping & cleanup",
+    desc: "Targeted work on smaller and mid-size trees to open sight lines and reduce crowding.",
+    icon: TreeDeciduous,
+    thumb: touchTreeWorkImg,
+    basicAddonId: "mid_size_tree_trimming_basic",
+  },
+  {
+    key: "seasonal_color_flowers",
+    label: "Seasonal color",
+    desc: "Timed flower installs to keep beds vibrant through the season.",
+    icon: Flower,
+    thumb: touchFlowerImg,
+    premiumAddonId: "seasonal_color_flowers",
   },
   {
     key: "shrub_trimming",
@@ -106,6 +208,14 @@ const TOUCHES: Array<{
     basicAddonId: "one_time_leaf_removal",
   },
   {
+    key: "fall_cleanup",
+    label: "Fall cleanup",
+    desc: "Heavy fall leaves on the lawn — blown, raked, and hauled away in one visit.",
+    icon: Wind,
+    thumb: touchFallLeavesImg,
+    basicAddonId: "one_time_leaf_removal",
+  },
+  {
     key: "aeration",
     label: "Aeration",
     desc: "Stronger roots, better water absorption.",
@@ -113,40 +223,32 @@ const TOUCHES: Array<{
     thumb: touchAerationImg,
     premiumAddonId: "aeration_dethatching",
   },
-  {
-    key: "flower_bed_weeding",
-    label: "Flower bed weeding",
-    desc: "Beds kept clean visit-to-visit.",
-    icon: Droplets,
-    thumb: touchWeedImg,
-    basicAddonId: "extra_weed_control",
-  },
-  {
-    key: "seasonal_flower_pop",
-    label: "Seasonal flower pop",
-    desc: "Twice-a-year highlight color refresh.",
-    icon: Flower,
-    thumb: touchFlowerImg,
-    premiumAddonId: "seasonal_color_flowers",
-  },
 ];
 
 const PLAN_ORDER: PlanId[] = ["basic", "premium", "executive"];
+
+const PLAN_INHERIT_LABEL: Record<PlanId, string | undefined> = {
+  basic: undefined,
+  premium: "Everything in Standard Patrol, plus:",
+  executive: "Everything in Premium Patrol, plus:",
+};
+
 const PLAN_BULLETS: Record<PlanId, string[]> = {
   basic: [
-    "Bi-weekly mowing, edging and cleanup every visit",
-    "Weed control support throughout your season",
-    "4 Yard Boosts per year (1 per 90-day season)",
+    "Bi-weekly mowing, edging and cleanup every visit — your yard stays mission-ready between cuts",
+    "Weed control support through the season so turf and beds keep improving",
+    "4 Yard Boosts per year (1 per 90-day season) for mulch, cleanup, and seasonal upgrades",
   ],
   premium: [
-    "Weekly mowing, edging and cleanup",
-    "Expanded weed control support",
-    "8 Yard Boosts per year (2 per 90-day season)",
+    "Weekly mowing, edging and cleanup — faster transformation and tighter curb appeal",
+    "Expanded weed control support on a quicker rhythm than Standard",
+    "8 Yard Boosts per year (2 per 90-day season) for bigger seasonal improvements",
   ],
   executive: [
-    "Priority service and premium curb-appeal focus",
-    "Maximum weed control support",
-    "12 Yard Boosts per year (3 per 90-day season)",
+    "Priority scheduling and maximum curb-appeal focus on the areas that matter most",
+    "Maximum weed control support when your property needs the strongest backup",
+    "12 Yard Boosts per year (3 per 90-day season) — the fullest runway for seasonal upgrades",
+    "No Shrub Left Behind replacement coverage on qualifying maintained plantings",
   ],
 };
 
@@ -511,7 +613,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
   }
 
   return (
-    <div ref={topRef} className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-sm" data-testid="simple-builder">
+    <div ref={topRef} className="rounded-2xl border border-border bg-card p-4 sm:p-6 lg:p-8 shadow-sm" data-testid="simple-builder">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {[1, 2, 3].map((n) => (
@@ -541,8 +643,10 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           {state.step === 1 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step1-title">How big is your yard?</h3>
-                <p className="text-sm text-muted-foreground">Tap the closest match — we'll fine-tune the price after.</p>
+                <h3 className="text-xl sm:text-2xl font-bold leading-tight" data-testid="text-step1-title">How big is your yard?</h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mt-1">
+                  Tap the closest match — we'll fine-tune the price after.
+                </p>
               </div>
               {state.plan && (
                 <div className="flex items-center gap-2 rounded-lg bg-primary/5 border border-primary/20 px-3 py-2 text-sm" data-testid="banner-plan-preselected">
@@ -564,7 +668,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                       type="button"
                       onClick={() => update({ yardSize: y.key })}
                       data-testid={`button-yard-${y.key}`}
-                      className={`text-left rounded-xl border p-3 sm:p-4 transition active:scale-[0.98] ${
+                      className={`text-left rounded-xl border p-3.5 sm:p-4 min-h-[3rem] transition active:scale-[0.98] ${
                         active
                           ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                           : "border-border hover:border-primary/40"
@@ -574,7 +678,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                         <span className="font-semibold">{y.title}</span>
                         {active && <Check className="h-4 w-4 text-primary" />}
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">{y.sub}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">{y.sub}</div>
                       {y.helper && (
                         <div className="text-[11px] text-primary mt-1 font-medium">{y.helper}</div>
                       )}
@@ -595,7 +699,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                         type="button"
                         data-testid={`button-scope-${opt}`}
                         onClick={() => update({ scope: opt })}
-                        className={`rounded-xl border p-3 text-sm font-medium transition ${
+                        className={`rounded-xl border p-3.5 text-sm font-medium min-h-[3rem] transition ${
                           active
                             ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                             : "border-border hover:border-primary/40"
@@ -660,13 +764,19 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           {state.step === 2 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step2-title">Pick your patrol level</h3>
-                <p className="text-sm text-muted-foreground">Real monthly pricing. Tap to select.</p>
+                <h3 className="text-xl sm:text-2xl font-bold leading-tight" data-testid="text-step2-title">
+                  Pick your patrol level
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mt-1">
+                  Real monthly pricing. Tap to select.
+                </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {PLAN_ORDER.map((id) => {
                   const active = state.plan === id;
                   const popular = id === "premium";
+                  const bestValue = id === "executive";
+                  const inherit = PLAN_INHERIT_LABEL[id];
                   const displayName =
                     id === "basic"
                       ? "Standard Patrol"
@@ -693,15 +803,25 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                           advanceTimerRef.current = setTimeout(() => update({ step: 3 }), 180);
                         }
                       }}
-                      className={`relative text-left rounded-xl border p-4 transition active:scale-[0.99] ${
+                      className={`relative text-left rounded-xl border px-4 pb-4 pt-8 transition active:scale-[0.99] ${
                         active
                           ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                           : "border-border hover:border-primary/40"
+                      } ${bestValue && !active ? "border-amber-600/40 ring-1 ring-amber-500/25" : ""} ${
+                        bestValue && active ? "border-amber-600/50 ring-2 ring-amber-500/35" : ""
                       }`}
                     >
                       {popular && (
                         <span className="absolute -top-2 right-3 rounded-full bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase">
                           Most Popular
+                        </span>
+                      )}
+                      {bestValue && (
+                        <span
+                          className="absolute -top-2 left-3 rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow-sm border border-amber-600/20"
+                          data-testid="badge-plan-best-value-sw"
+                        >
+                          Best value
                         </span>
                       )}
                       <div className="flex items-baseline justify-between">
@@ -712,9 +832,12 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                         ${scopedPrice}
                         <span className="text-sm font-medium text-muted-foreground">/mo</span>
                       </div>
-                      <ul className="mt-3 space-y-1.5">
+                      {inherit && (
+                        <p className="mt-2 text-xs sm:text-sm font-semibold text-foreground leading-relaxed">{inherit}</p>
+                      )}
+                      <ul className={`space-y-1.5 ${inherit ? "mt-1.5" : "mt-3"}`}>
                         {PLAN_BULLETS[id].map((b, bi) => (
-                          <li key={`${id}-${bi}`} className="flex items-start gap-2 text-sm">
+                          <li key={`${id}-${bi}`} className="flex items-start gap-2 text-sm leading-relaxed">
                             <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                             <span>{b}</span>
                           </li>
@@ -753,7 +876,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                   );
                 })}
               </div>
-              <p className="text-xs text-center text-muted-foreground max-w-xl mx-auto leading-relaxed mt-2">
+              <p className="text-xs sm:text-sm text-center text-muted-foreground max-w-xl mx-auto leading-relaxed mt-2 px-0.5">
                 {PLAN_YARD_BOOST_SHARED_NOTE}
               </p>
               {state.plan === "executive" && (
@@ -768,16 +891,15 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           {state.step === 3 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-yard-boosts-title">
+                <h3 className="text-xl sm:text-2xl font-bold leading-tight" data-testid="text-step3-yard-boosts-title">
                   Choose Your Yard Boosts
                 </h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {
-                    "Select everything you'd like help with. We'll use this to build your best seasonal plan and help you prioritize what fits your budget."
-                  }
+                <p className="text-sm sm:text-base text-muted-foreground mt-2 max-w-prose leading-relaxed">
+                  Select everything you&apos;d like help with. We&apos;ll use this to build your best seasonal plan and help
+                  you prioritize what fits your budget.
                 </p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-left">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 text-left">
                 {TOUCHES.map((t) => {
                   const active = state.touches.includes(t.key);
                   const Icon = t.icon;
@@ -793,7 +915,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                           : "border-border hover:border-primary/40 hover:shadow-md bg-card"
                       }`}
                     >
-                      <div className="relative h-24 md:h-36 lg:h-40 w-full bg-muted">
+                      <div className="relative h-28 sm:h-32 md:h-40 lg:h-44 w-full bg-muted">
                         {t.thumb ? (
                           <img
                             src={t.thumb}
@@ -809,18 +931,18 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                             <Icon className="h-7 w-7" />
                           </div>
                         )}
-                        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/55 to-transparent" />
-                        <div className="absolute bottom-1.5 left-2 right-2 text-[10px] font-semibold text-white drop-shadow">
+                        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
+                        <div className="absolute bottom-2 left-2 right-2 text-xs font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] leading-tight">
                           {t.label}
                         </div>
                         {active && (
-                          <span className="absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow">
-                            <Check className="h-2.5 w-2.5" />
+                          <span className="absolute top-2 right-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md ring-2 ring-white/90">
+                            <Check className="h-3 w-3" />
                           </span>
                         )}
                       </div>
-                      <div className="p-2.5 md:p-3">
-                        <div className="text-[11px] md:text-xs text-muted-foreground leading-snug">{t.desc}</div>
+                      <div className="p-2.5 sm:p-3">
+                        <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{t.desc}</div>
                       </div>
                     </button>
                   );
@@ -828,29 +950,33 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
               </div>
 
               <div className="pt-2 border-t border-border">
-                <h3 className="text-lg sm:text-xl font-bold" data-testid="text-step3-title">
+                <h3 className="text-lg sm:text-xl font-bold leading-tight" data-testid="text-step3-title">
                   Who should we follow up with?
                 </h3>
-                <p className="text-sm text-muted-foreground">
-                  {"We'll reach out to align on scope and next steps — call us anytime if you prefer."}
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mt-1">
+                  We&apos;ll reach out to align on scope and next steps — call us anytime if you prefer.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <Label htmlFor="builder-name" className="text-sm">Your name *</Label>
+                  <Label htmlFor="builder-name" className="text-sm font-medium">
+                    Your name *
+                  </Label>
                   <Input
                     id="builder-name"
                     data-testid="input-name"
                     value={state.name}
                     onChange={(e) => update({ name: e.target.value })}
                     placeholder="First & last"
-                    className="mt-1"
+                    className="mt-1.5 h-11 text-base"
                     autoComplete="name"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="builder-phone" className="text-sm">Phone *</Label>
+                  <Label htmlFor="builder-phone" className="text-sm font-medium">
+                    Phone *
+                  </Label>
                   <Input
                     id="builder-phone"
                     data-testid="input-phone"
@@ -858,12 +984,14 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                     onChange={(e) => update({ phone: e.target.value })}
                     placeholder="(256) 555-0123"
                     type="tel"
-                    className="mt-1"
+                    className="mt-1.5 h-11 text-base"
                     autoComplete="tel"
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="builder-email" className="text-sm">Email (optional)</Label>
+                  <Label htmlFor="builder-email" className="text-sm font-medium">
+                    Email (optional)
+                  </Label>
                   <Input
                     id="builder-email"
                     data-testid="input-email"
@@ -871,22 +999,22 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                     onChange={(e) => update({ email: e.target.value })}
                     placeholder="you@example.com"
                     type="email"
-                    className="mt-1"
+                    className="mt-1.5 h-11 text-base"
                     autoComplete="email"
                   />
                 </div>
               </div>
 
               <div>
-                <div className="text-sm font-medium mb-1.5">Best way to reach you</div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="text-sm font-medium mb-2">Best way to reach you</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {(["text", "phone", "either"] as const).map((m) => (
                     <button
                       key={m}
                       type="button"
                       data-testid={`button-contact-${m}`}
                       onClick={() => update({ contactMethod: m })}
-                      className={`rounded-lg border p-2 text-sm font-medium transition ${
+                      className={`rounded-lg border p-3 min-h-11 text-sm font-medium transition ${
                         state.contactMethod === m
                           ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                           : "border-border hover:border-primary/40"
@@ -907,13 +1035,13 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
         data-testid="builder-footer"
       >
         <div className="flex-1">
-          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Estimated</div>
-          <div className="text-lg font-bold text-primary" data-testid="text-current-price">
+          <div className="text-xs uppercase tracking-wide text-muted-foreground">Estimated</div>
+          <div className="text-lg sm:text-xl font-bold text-primary tabular-nums" data-testid="text-current-price">
             {currentPrice > 0 ? `$${currentPrice}/mo` : "—"}
           </div>
         </div>
         {state.step > 1 && (
-          <Button variant="outline" size="lg" onClick={goBack} data-testid="button-back">
+          <Button variant="outline" size="lg" onClick={goBack} data-testid="button-back" className="min-h-11 min-w-11 shrink-0">
             <ChevronLeft className="h-4 w-4" />
           </Button>
         )}
@@ -922,7 +1050,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           onClick={goNext}
           disabled={!canAdvance || submitting}
           data-testid="button-continue"
-          className="min-w-[140px]"
+          className="min-w-[140px] min-h-11 shrink-0 font-semibold"
         >
           {submitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -938,7 +1066,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
         </Button>
       </div>
 
-      <p className="mt-3 text-center text-xs text-muted-foreground">
+      <p className="mt-3 text-center text-xs sm:text-sm text-muted-foreground leading-relaxed">
         Prefer to talk?{" "}
         <a href={getTelHref()} className="font-semibold text-primary underline-offset-2 hover:underline" data-testid="link-builder-call">
           Call {LT_PHONE_DISPLAY}

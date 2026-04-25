@@ -28,7 +28,11 @@ import {
 import { Link } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
 import SimpleBuilder from "@/components/SimpleBuilder";
-import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
+import {
+  getTelHref,
+  COMMERCIAL_VIDEO_EMBED_URL_FALLBACK,
+  COMMERCIAL_VIDEO_MP4_URL_FALLBACK,
+} from "@/data/callFirst";
 import { TESTIMONIALS, FOOTER_CONTENT, PLAN_YARD_BOOST_SHARED_NOTE, YARD_RESET_BOOST_LINE } from "@/data/content";
 
 // Brand assets
@@ -53,39 +57,57 @@ import missionAfter4 from "@assets/generated_images/manicured_garden_huntsville.
 
 const PAGE_TITLE = "Lawn Trooper | The 90-Day Yard Reset";
 
-const PLAN_CARDS = [
+type PlanCardId = "basic" | "premium" | "executive";
+
+interface PlanCard {
+  id: PlanCardId;
+  name: string;
+  price: number;
+  img: string;
+  bullets: string[];
+  popular?: boolean;
+  /** Shown above additive bullets — higher tiers include everything below. */
+  inheritLabel?: string;
+  bestValue?: boolean;
+}
+
+const PLAN_CARDS: PlanCard[] = [
   {
-    id: "basic" as const,
+    id: "basic",
     name: "Standard Patrol",
     price: 169,
     img: imgBasic,
     bullets: [
-      "Bi-weekly mowing, edging and cleanup every visit",
-      "Weed control support throughout your season",
-      "4 Yard Boosts per year (1 per 90-day season)",
+      "Bi-weekly mowing, edging and cleanup every visit — your yard stays mission-ready between cuts",
+      "Weed control support through the season so turf and beds keep improving",
+      "4 Yard Boosts per year (1 per 90-day season) for mulch, cleanup, and seasonal upgrades",
     ],
   },
   {
-    id: "premium" as const,
+    id: "premium",
     name: "Premium Patrol",
     price: 299,
     popular: true,
     img: imgPremium,
+    inheritLabel: "Everything in Standard Patrol, plus:",
     bullets: [
-      "Weekly mowing, edging and cleanup",
-      "Expanded weed control support",
-      "8 Yard Boosts per year (2 per 90-day season)",
+      "Weekly mowing, edging and cleanup — faster transformation and tighter curb appeal",
+      "Expanded weed control support on a quicker rhythm than Standard",
+      "8 Yard Boosts per year (2 per 90-day season) for bigger seasonal improvements",
     ],
   },
   {
-    id: "executive" as const,
+    id: "executive",
     name: "Executive Command",
     price: 399,
     img: imgExecutive,
+    bestValue: true,
+    inheritLabel: "Everything in Premium Patrol, plus:",
     bullets: [
-      "Priority service and premium curb-appeal focus",
-      "Maximum weed control support",
-      "12 Yard Boosts per year (3 per 90-day season)",
+      "Priority scheduling and maximum curb-appeal focus on the areas that matter most",
+      "Maximum weed control support when your property needs the strongest backup",
+      "12 Yard Boosts per year (3 per 90-day season) — the fullest runway for seasonal upgrades",
+      "No Shrub Left Behind replacement coverage on qualifying maintained plantings",
     ],
   },
 ];
@@ -111,7 +133,6 @@ interface MissionReport {
   before: string;
   after: string;
   caption: string;
-  real: boolean;
   // Future-proofing fields for richer story content as real assets arrive.
   videoSrc?: string;
   story?: string;
@@ -122,25 +143,21 @@ const MISSION_REPORTS: MissionReport[] = [
     before: missionBefore4,
     after: missionAfter4,
     caption: "Huntsville curb appeal — bed lines reshaped, hedges tightened, fresh edging installed.",
-    real: true,
   },
   {
     before: missionBefore1,
     after: missionAfter1,
     caption: "90-Day Yard Reset — overgrown beds cleared, edged, and refreshed with brown mulch.",
-    real: true,
   },
   {
     before: missionBefore2,
     after: missionAfter2,
     caption: "Madison brick two-story — shrubs shaped, beds re-mulched, seasonal color added.",
-    real: true,
   },
   {
     before: missionBefore3,
     after: missionAfter3,
     caption: "Mowing plan upgrade — fresh stripes, crisp edges, and a thicker, deeper green.",
-    real: true,
   },
 ];
 
@@ -150,8 +167,20 @@ const FAQ = [
     a: "Most new patrols start within 7 days. Talk to Lawn Trooper AI 24/7 and we'll lock a date.",
   },
   {
-    q: "What if I don't love it?",
-    a: "After your first month, schedule a consultation. If it's not a fit, you get a full refund.",
+    q: "Do I have to sign a contract?",
+    a: "No. Contracts are optional.",
+  },
+  {
+    q: "Can I sign a contract for better pricing?",
+    a: "Yes. We offer 1 month free with a 1-year agreement and 3 months free with a 2-year agreement.",
+  },
+  {
+    q: "Do I need to pay for the yard check?",
+    a: "No payment is required for the yard check. We assess your yard and send your starting options.",
+  },
+  {
+    q: "What happens during the yard check?",
+    a: "We review your yard condition, goals, and trouble spots, then recommend the best starting plan.",
   },
   {
     q: "Do you handle big yards?",
@@ -159,13 +188,21 @@ const FAQ = [
   },
   {
     q: "Is this only mowing?",
-    a: "No. Every plan includes mowing, edging, trim, and blow. Add bush care, mulch, leaf cleanup, more.",
+    a: "No. Every plan bundles mowing, edging, trim, and blow, then optimizes each tier for the most value possible. Add bush care, mulch, leaf cleanup, and more as needed.",
   },
   {
     q: "Where do you serve?",
     a: "Athens, Huntsville, Madison, Decatur, and the rest of North Alabama.",
   },
 ];
+
+const commercialEmbedSrc =
+  (import.meta.env.VITE_COMMERCIAL_VIDEO_EMBED_URL as string | undefined)?.trim() ||
+  COMMERCIAL_VIDEO_EMBED_URL_FALLBACK;
+const commercialMp4Src =
+  (import.meta.env.VITE_COMMERCIAL_VIDEO_MP4_URL as string | undefined)?.trim() ||
+  COMMERCIAL_VIDEO_MP4_URL_FALLBACK;
+const hasCommercialVideo = Boolean(commercialEmbedSrc || commercialMp4Src);
 
 function scrollToBuilder() {
   const el = document.getElementById("builder");
@@ -480,13 +517,13 @@ export default function HomeV2() {
             </span>
 
             <h1
-              className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white drop-shadow-lg leading-none"
+              className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white drop-shadow-lg leading-[1.08] sm:leading-[1.05]"
               data-testid="text-hero-headline"
             >
               Your yard, locked into<br className="hidden sm:block" /> mission-ready in 90 days.
             </h1>
             <p
-              className="mt-4 text-base sm:text-lg text-white/90 max-w-xl mx-auto"
+              className="mt-4 text-base sm:text-lg text-white/90 max-w-xl mx-auto leading-relaxed"
               data-testid="text-hero-sub"
             >
               Real monthly pricing. Real local crew. Build your plan in 60 seconds — or talk to Lawn Trooper AI right now.
@@ -519,14 +556,74 @@ export default function HomeV2() {
         </div>
       </section>
 
+      {hasCommercialVideo && (
+        <section className="border-b border-border bg-background" aria-labelledby="commercial-heading">
+          <div className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
+            <h2
+              id="commercial-heading"
+              className="text-2xl sm:text-3xl font-bold text-center leading-tight px-2"
+              data-testid="text-commercial-title"
+            >
+              See Lawn Trooper in action
+            </h2>
+            <p className="mt-2 text-center text-base sm:text-sm text-muted-foreground max-w-md sm:max-w-xl mx-auto leading-relaxed">
+              Watch our commercial — then call Lawn Trooper AI or build your plan in 60 seconds.
+            </p>
+            <div className="mt-8 mx-auto max-w-4xl overflow-hidden rounded-2xl border border-border bg-muted shadow-lg">
+              <div className="relative aspect-video w-full bg-black">
+                {commercialMp4Src ? (
+                  <video
+                    className="h-full w-full object-contain"
+                    controls
+                    playsInline
+                    preload="metadata"
+                    src={commercialMp4Src}
+                    data-testid="video-commercial"
+                  />
+                ) : (
+                  <iframe
+                    src={commercialEmbedSrc}
+                    title="Lawn Trooper commercial"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="absolute inset-0 h-full w-full border-0"
+                    data-testid="iframe-commercial"
+                  />
+                )}
+              </div>
+            </div>
+              <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+              <a href={getTelHref()} className="w-full sm:w-auto" data-testid="link-commercial-call">
+                <Button size="lg" className="w-full min-h-11 font-bold uppercase tracking-wide">
+                  <Phone className="h-5 w-5 mr-2" /> Talk to Lawn Trooper AI
+                </Button>
+              </a>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto min-h-11 font-semibold"
+                onClick={scrollToBuilder}
+                data-testid="button-commercial-build"
+              >
+                Build My Plan in 60 Seconds <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── Plan cards ── */}
       <section className="bg-muted/30 border-y border-border">
         <div className="mx-auto max-w-6xl px-4 py-14">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2" data-testid="text-plans-title">
             Three patrol levels. Real monthly prices.
           </h2>
-          <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm">
-            No haggling. No mystery quotes. Pick a level — fine-tune Yard Boosts in the builder below.
+          <p className="text-center text-muted-foreground mb-2 max-w-lg mx-auto text-sm sm:text-base font-medium leading-relaxed">
+            Each tier includes everything in the plan below, with more visits and Yard Boosts.
+          </p>
+          <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+            No haggling. No mystery quotes. Pick a level — then fine-tune Yard Boosts in the plan builder right after.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {PLAN_CARDS.map((p) => (
@@ -535,6 +632,8 @@ export default function HomeV2() {
                 data-testid={`card-plan-${p.id}`}
                 className={`relative rounded-2xl border bg-card overflow-hidden flex flex-col ${
                   p.popular ? "border-primary shadow-xl ring-2 ring-primary/20" : "border-border"
+                } ${p.bestValue ? "ring-2 ring-amber-500/35 border-amber-600/45 shadow-lg md:shadow-xl" : ""} ${
+                  p.popular || p.bestValue ? "pt-9 sm:pt-10" : ""
                 }`}
               >
                 {p.popular && (
@@ -542,8 +641,16 @@ export default function HomeV2() {
                     Most Popular
                   </span>
                 )}
+                {p.bestValue && (
+                  <span
+                    className="absolute top-3 right-3 z-10 rounded-full bg-amber-500 text-white px-3 py-1 text-[11px] font-semibold tracking-wide uppercase shadow border border-amber-600/30"
+                    data-testid="badge-plan-best-value"
+                  >
+                    Best value
+                  </span>
+                )}
                 {/* Lifestyle photo */}
-                <div className="relative h-44 sm:h-48 overflow-hidden">
+                <div className="relative h-48 sm:h-52 overflow-hidden">
                   <img
                     src={p.img}
                     alt={p.name}
@@ -555,23 +662,26 @@ export default function HomeV2() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </div>
                 {/* Card body */}
-                <div className="flex flex-col flex-1 p-5">
+                <div className="flex flex-col flex-1 p-5 sm:p-6">
                   <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">{p.name}</div>
-                  <div className="mt-1 text-3xl font-bold text-primary">
+                  <div className="mt-1 text-3xl sm:text-4xl font-bold text-primary tabular-nums">
                     ${p.price}
                     <span className="text-sm font-medium text-muted-foreground">/mo</span>
                   </div>
-                  <ul className="mt-4 space-y-2 flex-1">
+                  {p.inheritLabel && (
+                    <p className="mt-4 text-sm font-semibold text-foreground leading-relaxed">{p.inheritLabel}</p>
+                  )}
+                  <ul className={`space-y-2.5 flex-1 ${p.inheritLabel ? "mt-2" : "mt-4"}`}>
                     {p.bullets.map((b, bi) => (
-                      <li key={`${p.id}-${bi}`} className="flex items-start gap-2 text-sm">
+                      <li key={`${p.id}-${bi}`} className="flex items-start gap-2.5 text-sm sm:text-[15px] leading-relaxed">
                         <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                         <span>{b}</span>
                       </li>
                     ))}
                   </ul>
                   <Button
-                    className="mt-5 w-full"
-                    variant={p.popular ? "default" : "outline"}
+                    className="mt-5 w-full min-h-11 text-base"
+                    variant={p.popular ? "default" : p.bestValue ? "default" : "outline"}
                     onClick={() => {
                       setSelectedPlan(p.id);
                       scrollToBuilder();
@@ -585,14 +695,32 @@ export default function HomeV2() {
             ))}
           </div>
           <p
-            className="mt-6 text-center text-sm text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+            className="mt-6 text-center text-sm sm:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed px-1"
             data-testid="text-plan-grid-shared"
           >
             {PLAN_YARD_BOOST_SHARED_NOTE}
           </p>
-          <p className="mt-3 text-center text-xs text-muted-foreground max-w-2xl mx-auto">
+          <p className="mt-3 text-center text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-1">
             {YARD_RESET_BOOST_LINE}
           </p>
+        </div>
+      </section>
+
+      {/* ── Builder ── */}
+      <section id="builder" className="bg-muted/30 border-y border-border">
+        <div className="mx-auto max-w-3xl lg:max-w-4xl px-4 sm:px-6 py-14">
+          <div className="text-center mb-6 sm:mb-8">
+            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold tracking-wide uppercase">
+              <Sparkles className="h-3.5 w-3.5" /> 60-second builder
+            </span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold leading-tight" data-testid="text-builder-title">
+              Build your patrol plan
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-2 max-w-md mx-auto leading-relaxed">
+              Three quick steps. We'll handle the rest.
+            </p>
+          </div>
+          <SimpleBuilder initialPlan={selectedPlan} />
         </div>
       </section>
 
@@ -609,8 +737,8 @@ export default function HomeV2() {
               data-testid={`card-value-${v.title.toLowerCase().replace(/\s+/g, "-")}`}
             >
               <v.icon className="h-7 w-7 text-primary" />
-              <div className="mt-3 font-semibold">{v.title}</div>
-              <div className="text-sm text-muted-foreground mt-1">{v.body}</div>
+              <div className="mt-3 font-semibold leading-snug">{v.title}</div>
+              <div className="text-sm text-muted-foreground mt-1 leading-relaxed">{v.body}</div>
             </div>
           ))}
         </div>
@@ -631,8 +759,8 @@ export default function HomeV2() {
             {RESET_STEPS.map((s) => (
               <div key={s.n} className="rounded-xl border border-border bg-card p-6" data-testid={`card-reset-${s.n}`}>
                 <div className="text-primary text-4xl font-extrabold">0{s.n}</div>
-                <div className="mt-2 font-semibold text-base">{s.title}</div>
-                <div className="text-sm text-muted-foreground mt-1">{s.body}</div>
+                <div className="mt-2 font-semibold text-base leading-snug">{s.title}</div>
+                <div className="text-sm text-muted-foreground mt-1 leading-relaxed">{s.body}</div>
               </div>
             ))}
           </div>
@@ -645,10 +773,7 @@ export default function HomeV2() {
           Mission Reports
         </h2>
         <p className="text-center text-muted-foreground mb-10 text-sm max-w-2xl mx-auto">
-          Before &amp; after transformations from the 90-Day Yard Reset playbook.{" "}
-          <span className="text-xs">
-            Pairs marked <span className="font-semibold text-primary">Real Job</span> are actual North Alabama customers. Pairs marked <span className="font-semibold">Sample transformation</span> are representative renders — your results will vary.
-          </span>
+          Before &amp; after transformations from the 90-Day Yard Reset playbook. Results vary by yard condition, season, and service mix.
         </p>
         <div className="grid grid-cols-1 gap-8">
           {MISSION_REPORTS.map((pair, i) => (
@@ -705,22 +830,9 @@ export default function HomeV2() {
                 <p className="text-sm text-muted-foreground" data-testid={`text-mission-caption-${i}`}>
                   {pair.caption}
                 </p>
-                {pair.real ? (
-                  <span
-                    className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary"
-                    data-testid={`badge-mission-real-${i}`}
-                  >
-                    Real Job
-                  </span>
-                ) : (
-                  <span
-                    className="shrink-0 rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
-                    data-testid={`badge-mission-sample-${i}`}
-                    title="Sample transformation — your results will vary"
-                  >
-                    Sample transformation
-                  </span>
-                )}
+                <span className="shrink-0 rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Before / After
+                </span>
               </div>
             </div>
           ))}
@@ -790,18 +902,9 @@ export default function HomeV2() {
                     <p className="text-sm text-muted-foreground" data-testid="text-lightbox-caption">
                       {pair.caption}
                     </p>
-                    {pair.real ? (
-                      <span className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-                        Real Job
-                      </span>
-                    ) : (
-                      <span
-                        className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
-                        title="Sample transformation — your results will vary"
-                      >
-                        Sample transformation
-                      </span>
-                    )}
+                    <span className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Before / After
+                    </span>
                   </div>
                 </div>
               );
@@ -884,22 +987,6 @@ export default function HomeV2() {
             </AccordionItem>
           ))}
         </Accordion>
-      </section>
-
-      {/* ── Builder ── */}
-      <section id="builder" className="bg-muted/30 border-t border-border">
-        <div className="mx-auto max-w-3xl px-4 py-14">
-          <div className="text-center mb-6">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-              <Sparkles className="h-3.5 w-3.5" /> 60-second builder
-            </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold" data-testid="text-builder-title">
-              Build your patrol plan
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">Three quick steps. We'll handle the rest.</p>
-          </div>
-          <SimpleBuilder initialPlan={selectedPlan} />
-        </div>
       </section>
 
       {/* ── Footer ── */}

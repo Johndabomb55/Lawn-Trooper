@@ -302,6 +302,15 @@ export const ADDON_CATALOG: Addon[] = [
     description: "Pine straw installation for smaller garden beds and landscape areas. Includes up to 10 big bales of quality pine straw, delivery, and professional installation."
   },
   {
+    id: "pine_straw_and_rock_beds",
+    name: "Pine Straw & Decorative Rock Beds",
+    tier: "basic",
+    category: "landscaping",
+    price: 20,
+    description:
+      "Pine straw and decorative landscape rock for beds and tree rings. Includes all materials (pine straw and bed rock), delivery, and professional installation in one bundled price — no separate material invoices.",
+  },
+  {
     id: "gutter_cleaning",
     name: "Gutter Cleaning",
     tier: "basic",
