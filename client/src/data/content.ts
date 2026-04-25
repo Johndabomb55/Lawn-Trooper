@@ -59,41 +59,40 @@ export const PLAN_SUMMARIES = {
       name: "Standard Patrol",
       perfectFor: "Homeowners who want reliable maintenance with minimal fuss.",
       highlights: [
-        "Bi-weekly mowing (growing season)",
+        "Bi-weekly mowing, edging and cleanup every visit",
+        "Weed control support throughout your season",
+        "4 Yard Boosts per year (1 per 90-day season)",
         "Monthly property check (off-season)",
-        "Includes 3 Standard-only upgrade credits",
         "Shrub Care Package: 1 annual visit + AI shrub assessment",
-        "Dream Yard Recon\u2122 — AI landscape plan"
-      ]
+        "Dream Yard Recon\u2122 — AI landscape plan",
+      ],
     },
     {
       id: "premium",
       name: "Premium Patrol",
       perfectFor: "Families who want a consistently great-looking yard all year.",
       highlights: [
-        "Weekly mowing (growing season)",
+        "Weekly mowing, edging and cleanup",
+        "Expanded weed control support",
+        "8 Yard Boosts per year (2 per 90-day season)",
         "Bi-weekly off-season service",
-        "Flower bed weed control (included)",
-        "Includes 5 upgrade credits (Standard = 1, Premium = 2)",
-        "Shrub Care Package: 2 annual visits + No Shrub Left Behind replacement coverage",
-        "Priority Support",
-        "Service Photo Updates"
-      ]
+        "Shrub Care Package: 2 annual visits + monitored plant health",
+        "Priority support and service photo updates",
+      ],
     },
     {
       id: "executive",
       name: "Executive Command",
       perfectFor: "Those who want the best lawn on the block without lifting a finger.",
       highlights: [
-        "Weekly mowing (growing season) + bi-weekly off-season service",
-        "Executive Turf Defense\u2122 (up to 7 apps/year)",
+        "Priority service and premium curb-appeal focus",
+        "Maximum weed control support",
+        "12 Yard Boosts per year (3 per 90-day season)",
+        "Executive Turf Defense\u2122 for stronger turf over time",
         "Weed-Free Turf Guarantee",
-        "Includes 9 upgrade credits (Standard = 1, Premium = 2)",
-        "Executive Shrub Command: 3 annual shrub-care visits",
-        "Dedicated Account Manager",
-        "Service Photo Updates"
-      ]
-    }
+        "Executive Shrub Command visits and dedicated account manager",
+      ],
+    },
   ]
 };
 
@@ -162,11 +161,18 @@ export const FOOTER_CONTENT = {
 // ─── Home V2 — 90-Day Yard Reset (April 2026) ────────────────────────────────
 
 export const TRUST_STRIP = [
-  "25+ Years Serving North Alabama",
+  "25 Years Serving North Alabama",
   "Licensed & Insured",
   "Seasonal Lawn Care, Billed Monthly",
   "Pause or adjust between seasons",
 ];
+
+/** Trust story (replaces time-limited promo framing on site). */
+export const TRUST_CELEBRATION_COPY = {
+  headline: "25 Years Serving North Alabama",
+  body:
+    "We're celebrating by helping more homeowners reset their yards and simplifying lawn care for our community.",
+};
 
 export const YARD_RESET_VIDEO = {
   title: "See the Yard Reset in Action",
@@ -181,28 +187,35 @@ export const HOMEPAGE_PLAN_SUMMARIES = [
     id: "basic" as const,
     name: "Standard Patrol",
     price: 169,
-    summary: "Bi-weekly mowing + 1 Seasonal Touch per season",
+    summary:
+      "Bi-weekly mowing, edging and cleanup every visit • Weed control support throughout your season • 4 Yard Boosts per year (1 per 90-day season)",
   },
   {
     id: "premium" as const,
     name: "Premium Patrol",
     price: 299,
-    summary: "Weekly mowing + 2 Seasonal Touches per season",
+    summary:
+      "Weekly mowing, edging and cleanup • Expanded weed control support • 8 Yard Boosts per year (2 per 90-day season)",
   },
   {
     id: "executive" as const,
     name: "Executive Command",
     price: 399,
-    summary: "Priority service + 3 Seasonal Touches per season",
+    summary:
+      "Priority service and premium curb-appeal focus • Maximum weed control support • 12 Yard Boosts per year (3 per 90-day season)",
   },
 ];
 
 export const YARD_RESET_BOOST_LINE =
   "All new plans start with a Yard Reset boost in Month 1.";
 
+/** Shared note under plan grids (homepage + builder Step 2). */
+export const PLAN_YARD_BOOST_SHARED_NOTE =
+  "All plans are built around a 90-day Yard Reset and billed monthly. Yard Boosts are scheduled across your active season based on your yard's needs, weather, and route timing.";
+
 export const SEASONAL_FRAMING = {
   oneLiner:
-    "Built around a full 90-day season • Billed monthly • Touches scheduled across your active season.",
+    "Built around a 90-day Yard Reset • Billed monthly • Yard Boosts scheduled across your active season based on your yard, weather, and route timing.",
 };
 
 export const MEET_MIGUEL = {

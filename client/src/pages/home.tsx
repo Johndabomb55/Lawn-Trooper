@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { 
   GLOBAL_CONSTANTS,
 } from "@/data/plans";
-import { ANNIVERSARY_DEADLINE_LINE } from "@/data/promotions";
+import { TRUST_CELEBRATION_COPY, HOMEPAGE_PLAN_SUMMARIES } from "@/data/content";
 import { WHY_DIFFERENT } from "@/data/content";
 import PromoBanner from "@/components/PromoBanner";
 import HomepageUpgradesGallery from "@/components/HomepageUpgradesGallery";
@@ -158,8 +158,8 @@ export default function LandingPage() {
             className="mb-6 relative w-full max-w-4xl"
           >
             {showHeroCelebration && (() => {
-              const speechTagline = "Celebrating 25 years serving the Tennessee Valley.";
-              const bannerTagline = "25-Year Anniversary Client Rewards - Proudly serving the Tennessee Valley for 25+ years.";
+              const speechTagline = TRUST_CELEBRATION_COPY.headline;
+              const bannerTagline = `${TRUST_CELEBRATION_COPY.headline} — ${TRUST_CELEBRATION_COPY.body}`;
               return (
                 <>
                   {!shouldReduceMotion && (
@@ -295,8 +295,8 @@ export default function LandingPage() {
               <p className="text-xs md:text-sm text-white/75 text-center">
                 Walkthroughs are no-pressure. We confirm scope, membership fit, and scheduling — not a hard sell.
               </p>
-              <p className="text-[11px] md:text-xs text-white/65 text-center">
-                {ANNIVERSARY_DEADLINE_LINE}
+              <p className="text-[11px] md:text-xs text-white/65 text-center max-w-md mx-auto">
+                {TRUST_CELEBRATION_COPY.body}
               </p>
             </div>
           </motion.div>
@@ -456,9 +456,16 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Standard Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $169/mo</p>
-                  <p className="text-xs font-semibold text-primary/80 mt-1">Includes 3 upgrade credits</p>
-                  <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
+                  <ul className="mt-2 text-left text-xs text-muted-foreground space-y-1 px-1">
+                    {HOMEPAGE_PLAN_SUMMARIES[0].summary.split(" • ").map((line, i) => (
+                      <li key={`legacy-std-${i}`} className="flex gap-1.5">
+                        <Check className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" aria-hidden />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-2 inline-block bg-primary/10 border border-primary/25 rounded-full px-3 py-1">
+                    <span className="text-xs font-bold text-primary">{TRUST_CELEBRATION_COPY.headline}</span>
                   </div>
                 </div>
               </div>
@@ -470,9 +477,16 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Premium Patrol</h3>
                   <p className="text-sm text-muted-foreground">Starting at $299/mo</p>
-                  <p className="text-xs font-semibold text-amber-600 mt-1">Includes 5 upgrade credits</p>
-                  <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
+                  <ul className="mt-2 text-left text-xs text-muted-foreground space-y-1 px-1">
+                    {HOMEPAGE_PLAN_SUMMARIES[1].summary.split(" • ").map((line, i) => (
+                      <li key={`legacy-prem-${i}`} className="flex gap-1.5">
+                        <Check className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" aria-hidden />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-2 inline-block bg-primary/10 border border-primary/25 rounded-full px-3 py-1">
+                    <span className="text-xs font-bold text-primary">{TRUST_CELEBRATION_COPY.headline}</span>
                   </div>
                 </div>
               </div>
@@ -484,17 +498,25 @@ export default function LandingPage() {
                 <div className="bg-white p-4 text-center">
                   <h3 className="font-heading font-bold text-lg text-primary">Executive Command</h3>
                   <p className="text-sm text-muted-foreground">Starting at $399/mo</p>
-                  <p className="text-xs font-semibold text-accent mt-1">Includes 9 upgrade credits</p>
-                  <div className="mt-2 inline-block bg-amber-50 border border-amber-300 rounded-full px-3 py-1">
-                    <span className="text-xs font-bold text-amber-800">25-Year Anniversary Client Rewards</span>
+                  <ul className="mt-2 text-left text-xs text-muted-foreground space-y-1 px-1">
+                    {HOMEPAGE_PLAN_SUMMARIES[2].summary.split(" • ").map((line, i) => (
+                      <li key={`legacy-exec-${i}`} className="flex gap-1.5">
+                        <Check className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" aria-hidden />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-2 inline-block bg-primary/10 border border-primary/25 rounded-full px-3 py-1">
+                    <span className="text-xs font-bold text-primary">{TRUST_CELEBRATION_COPY.headline}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="mt-5 mx-auto max-w-2xl rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
-              <p className="text-sm font-bold text-primary">Flexible Upgrade System</p>
-              <p className="text-xs text-muted-foreground">Choose the services your yard needs most.</p>
-              <p className="text-xs font-medium text-primary/90 mt-1">Credit rule: Standard upgrades (1 credit) • Premium upgrades (2 credits).</p>
+              <p className="text-sm font-bold text-primary">Yard Boosts in the builder</p>
+              <p className="text-xs text-muted-foreground">
+                Tell us what you want help with — your team confirms scope and pricing on the call.
+              </p>
             </div>
             <div className="text-center mt-6">
               <Button onClick={() => scrollToSection('quote')} variant="outline" className="border-primary text-primary font-bold uppercase tracking-wider">
@@ -709,7 +731,7 @@ export default function LandingPage() {
                    <Star className="w-4 h-4 fill-accent" />
                    <Star className="w-4 h-4 fill-accent" />
                  </div>
-                 <p className="text-muted-foreground italic mb-4 flex-1">"I love the Anniversary pricing. Getting signed up early for 2026 saved us a ton. The yard looks amazing even in winter."</p>
+                 <p className="text-muted-foreground italic mb-4 flex-1">"We wanted a crew that shows up and makes the yard look cared-for year-round. Lawn Trooper has been steady, professional, and the yard looks great even in winter."</p>
                  <div>
                    <div className="font-bold font-heading text-primary">The Davidson Family</div>
                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Standard Patrol Members</div>
@@ -735,15 +757,15 @@ export default function LandingPage() {
               {[
                 {
                   q: "What does the Standard Patrol plan include?",
-                  a: "Standard Patrol includes bi-weekly mowing during the growing season, monthly off-season property checks, 3 Standard-only upgrade credits, and a Dream Yard Recon\u2122 landscape plan."
+                  a: "Standard Patrol includes bi-weekly mowing with edging and cleanup every visit, weed control support throughout the season, 4 Yard Boosts per year (1 per 90-day season), monthly off-season property checks, and Dream Yard Recon\u2122."
                 },
                 {
                   q: "What's the difference between Standard, Premium, and Executive?",
-                  a: "Standard Patrol includes bi-weekly mowing with monthly off-season checks and 3 upgrade credits. Premium Patrol includes weekly mowing during growing season, bi-weekly off-season service, 5 upgrade credits, two annual Shrub Care Package visits, and No Shrub Left Behind replacement coverage for maintained plants that cannot be saved. Executive Command includes weekly mowing during growing season, bi-weekly off-season service, up to 7 turf applications, 9 upgrade credits, and dedicated account-manager support."
+                  a: "Standard is a steady bi-weekly rhythm with baseline weed support and 4 Yard Boosts per year. Premium adds weekly mowing, expanded weed support, 8 Yard Boosts per year, and more frequent detail work. Executive adds priority service, maximum weed support, 12 Yard Boosts per year, Executive Turf Defense\u2122, storm priority, and a dedicated account manager — final scope is confirmed on your walkthrough."
                 },
                 {
                   q: "What is Executive+ and how does it work?",
-                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds +1 Standard and +1 Premium upgrade, plus quarterly strategy sessions, rapid response priority, advanced turf defense support, and executive-level property care enhancements."
+                  a: "Executive+ is an optional upgrade for Executive Command members (+$99/mo). It adds expanded builder flexibility plus quarterly strategy sessions, rapid response priority, advanced turf support, and executive-level property care enhancements."
                 },
                 {
                   q: "What is Dream Yard Recon\u2122?",
@@ -751,7 +773,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "Can I convert Standard upgrades to Premium upgrades?",
-                  a: "Yes. 2 Standard credits = 1 Premium upgrade, and you can mix services however you like based on your total upgrade credits."
+                  a: "Yes. In the plan builder, two Standard-tier add-on picks can swap for one Premium-tier pick, and you can mix services within what your plan includes."
                 },
                 {
                   q: "Do I have to sign a contract?",
@@ -759,7 +781,7 @@ export default function LandingPage() {
                 },
                 {
                   q: "How does billing work?",
-                  a: "Billing runs monthly through Jobber Payments. You receive customer login details by email to manage your account, and any complimentary months are applied as credits at the end of your agreement term."
+                  a: "Billing runs monthly through Jobber Payments. You receive customer login details by email to manage your account, and any complimentary months are applied to your account at the end of your agreement term."
                 },
                 {
                   q: "How do complimentary months work?",

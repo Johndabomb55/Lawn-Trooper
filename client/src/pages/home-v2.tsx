@@ -29,7 +29,7 @@ import { Link } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
 import SimpleBuilder from "@/components/SimpleBuilder";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
-import { TESTIMONIALS, FOOTER_CONTENT } from "@/data/content";
+import { TESTIMONIALS, FOOTER_CONTENT, PLAN_YARD_BOOST_SHARED_NOTE, YARD_RESET_BOOST_LINE } from "@/data/content";
 
 // Brand assets
 import companyLogo from "@assets/lawn-trooper-logo-badge-2026-transparent.png";
@@ -60,9 +60,9 @@ const PLAN_CARDS = [
     price: 169,
     img: imgBasic,
     bullets: [
-      "Bi-weekly mowing",
-      "1 Seasonal Touch per season",
-      "Includes 90-Day Yard Reset in Month 1",
+      "Bi-weekly mowing, edging and cleanup every visit",
+      "Weed control support throughout your season",
+      "4 Yard Boosts per year (1 per 90-day season)",
     ],
   },
   {
@@ -72,9 +72,9 @@ const PLAN_CARDS = [
     popular: true,
     img: imgPremium,
     bullets: [
-      "Weekly mowing",
-      "2 Seasonal Touches per season",
-      "Priority scheduling + edging every visit",
+      "Weekly mowing, edging and cleanup",
+      "Expanded weed control support",
+      "8 Yard Boosts per year (2 per 90-day season)",
     ],
   },
   {
@@ -83,17 +83,19 @@ const PLAN_CARDS = [
     price: 399,
     img: imgExecutive,
     bullets: [
-      "Priority weekly service",
-      "3 Seasonal Touches per season",
-      "Dedicated crew lead + same-week reschedule",
+      "Priority service and premium curb-appeal focus",
+      "Maximum weed control support",
+      "12 Yard Boosts per year (3 per 90-day season)",
     ],
   },
 ];
 
-const PLAN_GRID_SHARED_LINE = "All new plans start with a Yard Reset boost in Month 1.";
-
 const VALUE_PROPS = [
-  { icon: Award, title: "25+ years local", body: "Built in North Alabama. 100+ beautification awards." },
+  {
+    icon: Award,
+    title: "25 Years Serving North Alabama",
+    body: "We're celebrating by helping more homeowners reset their yards and simplifying lawn care for our community.",
+  },
   { icon: Leaf, title: "Electric crew options", body: "Battery mowers, lower emissions, neighbor-friendly." },
   { icon: ShieldCheck, title: "Loyalty price drop", body: "Your rate goes down the longer you stay." },
   { icon: Zap, title: "Real human account manager", body: "No call center. A real person owns your yard." },
@@ -102,7 +104,7 @@ const VALUE_PROPS = [
 const RESET_STEPS = [
   { n: 1, title: "Day 1 — Dream Yard Recon", body: "Quick property walk + AI / AR plan sent to you." },
   { n: 2, title: "Days 2–30 — The Reset", body: "Catch-up trim, mow, edge, beds, cleanup, turf work." },
-  { n: 3, title: "Days 31–90 — Dial it in", body: "Add seasonal touches, settle into service rhythm, improve curb appeal." },
+  { n: 3, title: "Days 31–90 — Dial it in", body: "Add Yard Boosts, settle into service rhythm, improve curb appeal." },
 ];
 
 interface MissionReport {
@@ -524,7 +526,7 @@ export default function HomeV2() {
             Three patrol levels. Real monthly prices.
           </h2>
           <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm">
-            No haggling. No mystery quotes. Pick a level — fine-tune the touches in the builder below.
+            No haggling. No mystery quotes. Pick a level — fine-tune Yard Boosts in the builder below.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {PLAN_CARDS.map((p) => (
@@ -560,8 +562,8 @@ export default function HomeV2() {
                     <span className="text-sm font-medium text-muted-foreground">/mo</span>
                   </div>
                   <ul className="mt-4 space-y-2 flex-1">
-                    {p.bullets.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-sm">
+                    {p.bullets.map((b, bi) => (
+                      <li key={`${p.id}-${bi}`} className="flex items-start gap-2 text-sm">
                         <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                         <span>{b}</span>
                       </li>
@@ -583,10 +585,13 @@ export default function HomeV2() {
             ))}
           </div>
           <p
-            className="mt-6 text-center text-sm font-medium text-muted-foreground"
+            className="mt-6 text-center text-sm text-muted-foreground max-w-3xl mx-auto leading-relaxed"
             data-testid="text-plan-grid-shared"
           >
-            {PLAN_GRID_SHARED_LINE}
+            {PLAN_YARD_BOOST_SHARED_NOTE}
+          </p>
+          <p className="mt-3 text-center text-xs text-muted-foreground max-w-2xl mx-auto">
+            {YARD_RESET_BOOST_LINE}
           </p>
         </div>
       </section>

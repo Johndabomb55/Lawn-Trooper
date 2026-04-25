@@ -214,7 +214,7 @@ function MobileComparisonCards() {
             </div>
           </div>
           <div className={`mt-2 px-2.5 py-1.5 rounded-lg border text-center ${p.id === 'executive' ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Anniversary Client Rewards</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25 Years Serving North Alabama</div>
             <div className={`text-xs font-bold ${p.id === 'executive' ? 'text-accent' : 'text-primary'}`}>{p.bonus}</div>
           </div>
         </div>
@@ -849,7 +849,7 @@ export default function StreamlinedWizard() {
                             <span className="font-medium">{formatIncludedUpgradeCopy(p.allowance.basic, p.allowance.premium)}</span>
                           </div>
                           <div className={`mt-1.5 px-2.5 py-1.5 rounded-lg border text-center ${isExecutive ? 'bg-accent/10 border-accent/30' : 'bg-amber-50 border-amber-200'}`}>
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25-Year Anniversary Client Rewards</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">25 Years Serving North Alabama</div>
                             <div className={`text-xs font-bold ${isExecutive ? 'text-accent' : 'text-primary'}`}>
                               {COMMITMENT_COPY.twoYearBonus}
                             </div>
@@ -1560,7 +1560,7 @@ export default function StreamlinedWizard() {
                       </div>
                       {freeMonthsBreakdown.anniversaryBonus > 0 && (
                         <div className="flex justify-between">
-                          <span>• Anniversary Sale Bonus:</span>
+                          <span>• Enrollment bonus:</span>
                           <span>+{freeMonthsBreakdown.anniversaryBonus} mo</span>
                         </div>
                       )}

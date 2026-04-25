@@ -4,7 +4,7 @@
  * This file defines all available promotions, their stacking rules, and caps.
  * Marketing team can edit this file to add/modify promotions without touching component code.
  * 
- * COMMITMENT MODEL (March 2026):
+ * COMMITMENT MODEL:
  * 2 subscription options (no month-to-month):
  * - 1-Year Subscription: 12 months, can pay monthly or pay in full
  * - 2-Year Subscription (Best Value): 24 months, can pay monthly or pay in full
@@ -46,29 +46,26 @@ export const PROMO_CAPS = {
   maxFreeMonths: 6,  // Max: 2-Year PIF = 6 complimentary months
 };
 
-export const ANNIVERSARY_CUTOFF_ISO = "2026-03-25T23:59:59";
+/** Past date keeps enrollment-window promos logically inactive without removing call sites. */
+export const ANNIVERSARY_CUTOFF_ISO = "2020-01-01T00:00:00";
 
-// Enrollment bonus metadata - single deadline March 25
+// Legacy enrollment metadata (inactive); display copy lives in `TRUST_CELEBRATION_COPY` (content.ts).
 export const BIRTHDAY_BONUS = {
-  endDate: new Date(ANNIVERSARY_CUTOFF_ISO),  // Enroll by March 25: +1 month
-  tier1EndDate: new Date(ANNIVERSARY_CUTOFF_ISO),  // Legacy alias
-  tier2EndDate: new Date(ANNIVERSARY_CUTOFF_ISO),  // Legacy alias (same as tier1)
-  bonusMonths: 0,  // Bonus months are not used in current offer structure
-  tier1Months: 0,  // Legacy alias
-  tier2Months: 0,  // No second tier
-  marketingName: '25-Year Anniversary Client Rewards',
-  formalName: '25-Year Anniversary Client Rewards',
+  endDate: new Date(ANNIVERSARY_CUTOFF_ISO),
+  tier1EndDate: new Date(ANNIVERSARY_CUTOFF_ISO),
+  tier2EndDate: new Date(ANNIVERSARY_CUTOFF_ISO),
+  bonusMonths: 0,
+  tier1Months: 0,
+  tier2Months: 0,
+  marketingName: "25 Years Serving North Alabama",
+  formalName: "25 Years Serving North Alabama",
 };
 
 // Legacy alias
 export const ANNIVERSARY_BONUS = BIRTHDAY_BONUS;
 
 /**
- * Get enrollment bonus status
- * - Enroll by March 25: +1 bonus month
- * - After March 25: +0 bonus months (Concluded)
- * 
- * NOTE: Bonus months are NOT doubled by pay-in-full
+ * Legacy enrollment bonus status (window closed). Kept for compatibility with older UI paths.
  */
 export function getBirthdayBonus(): { 
   months: number; 
@@ -84,7 +81,7 @@ export function getBirthdayBonus(): {
       months: BIRTHDAY_BONUS.bonusMonths,
       tier: 'tier1',
       isActive: true,
-        tierLabel: 'Enroll by Mar 25: +1 complimentary month',
+      tierLabel: "Enrollment window",
       name: BIRTHDAY_BONUS.marketingName,
     };
   } else {
@@ -92,7 +89,7 @@ export function getBirthdayBonus(): {
       months: 0,
       tier: 'concluded',
       isActive: false,
-      tierLabel: 'Bonus concluded',
+      tierLabel: "",
       name: BIRTHDAY_BONUS.marketingName,
     };
   }
@@ -116,8 +113,8 @@ export const getEarlyBirdBonus = () => {
   return {
     months: bonus.months,
     isActive: bonus.isActive,
-    enrollBy: 'Mar 25',
-    payBy: 'Apr 1',
+    enrollBy: "",
+    payBy: "",
   };
 };
 export const isEarlyBird = isBirthdayBonusActive;
@@ -185,7 +182,7 @@ export interface SavingsSummary {
  * Formula:
  * - 1-Year: +1 complimentary month (PIF doubles to 2)
  * - 2-Year: +3 complimentary months (PIF doubles to 6)
- * - Anniversary sale: +1 complimentary month while active (not doubled)
+ * - Legacy anniversary add-on (currently unused in breakdown)
  */
 export function calculateTermFreeMonths(term: '1-year' | '2-year', payInFull: boolean): number {
   const commitmentBase = term === '1-year' ? 1 : 3;
@@ -203,7 +200,7 @@ export function calculate2YearFreeMonths(payInFull: boolean): number {
  * Useful for displaying in UI
  *
  * 1-year=1, 2-year=3. Pay-in-full doubles commitment months.
- * Anniversary sale months are added on top and are not doubled.
+ * Legacy anniversary months would be added on top (not doubled) if re-enabled.
  */
 export function getFreeMonthsBreakdown(term: '1-year' | '2-year', payInFull: boolean): {
   commitmentBase: number;
@@ -459,7 +456,7 @@ export function getApplicablePromotions(
     if (freeMonthsBreakdown.anniversaryBonus > 0) {
       const anniversaryPromo: Promotion = {
         id: 'anniversary_enrollment_bonus',
-        title: '25-Year Anniversary Client Rewards',
+        title: '25 Years Serving North Alabama',
         shortDescription: `+${freeMonthsBreakdown.anniversaryBonus} complimentary months`,
         type: 'termFreeMonths',
         stackGroup: 'freeMonths',

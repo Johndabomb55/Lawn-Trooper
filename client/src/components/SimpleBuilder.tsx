@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles, Scissors, Leaf, Flower2, Flower, Trash2, Wind, Shovel, Droplets, Bug } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Loader2, MessageCircle, Phone, ShieldCheck, Sparkles, Scissors, Leaf, Flower2, Flower, Trash2, Wind, Shovel, Droplets, Bug, Sprout } from "lucide-react";
 import touchMulchImg from "@assets/mulch-brown-refresh-alabama.jpg";
 import touchWeedImg from "@assets/weed-control-fertilizer-upgrade.png";
 import touchShrubImg from "@assets/alabama-shrub-care-commercial-tools.jpg";
 import touchLeafImg from "@assets/pine-straw-upgrade.jpg";
 import touchFlowerImg from "@assets/stock_images/colorful_seasonal_fl_f56cde03.jpg";
 import touchTrashImg from "@assets/stock_images/residential_garbage__c1c3e341.jpg";
+import touchAerationImg from "@assets/generated_images/manicured_lawn_with_mower_stripes.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { PLANS, EXECUTIVE_PLUS, type PlanId } from "@/data/plans";
 import { getTelHref, LT_PHONE_DISPLAY } from "@/data/callFirst";
+import { PLAN_YARD_BOOST_SHARED_NOTE } from "@/data/content";
 
 type YardSizeKey = "small" | "medium" | "large";
 
@@ -27,6 +29,7 @@ const FRONT_YARD_DISCOUNT_RATE = 0.3;
 type TouchKey =
   | "mulch_refresh"
   | "weed_control"
+  | "turf_treatment_boost"
   | "flower_bed_flowers"
   | "trash_can_cleaning"
   | "shrub_trimming"
@@ -57,10 +60,18 @@ const TOUCHES: Array<{
   {
     key: "weed_control",
     label: "Weed control",
-    desc: "Sharper lines, fewer weeds across the lawn.",
+    desc: "Optional deeper weed treatment beyond what's included with your plan.",
     icon: Bug,
     thumb: touchWeedImg,
     basicAddonId: "extra_weed_control",
+  },
+  {
+    key: "turf_treatment_boost",
+    label: "Turf treatment boost",
+    desc: "Extra green-up and strength for high-traffic or thin turf areas.",
+    icon: Sprout,
+    thumb: touchWeedImg,
+    basicAddonId: "growing_season_boost",
   },
   {
     key: "flower_bed_flowers",
@@ -99,6 +110,7 @@ const TOUCHES: Array<{
     label: "Aeration",
     desc: "Stronger roots, better water absorption.",
     icon: Shovel,
+    thumb: touchAerationImg,
     premiumAddonId: "aeration_dethatching",
   },
   {
@@ -106,6 +118,7 @@ const TOUCHES: Array<{
     label: "Flower bed weeding",
     desc: "Beds kept clean visit-to-visit.",
     icon: Droplets,
+    thumb: touchWeedImg,
     basicAddonId: "extra_weed_control",
   },
   {
@@ -113,15 +126,28 @@ const TOUCHES: Array<{
     label: "Seasonal flower pop",
     desc: "Twice-a-year highlight color refresh.",
     icon: Flower,
+    thumb: touchFlowerImg,
     premiumAddonId: "seasonal_color_flowers",
   },
 ];
 
 const PLAN_ORDER: PlanId[] = ["basic", "premium", "executive"];
 const PLAN_BULLETS: Record<PlanId, string[]> = {
-  basic: ["Bi-weekly mowing + 1 Seasonal Touch per season"],
-  premium: ["Weekly mowing + 2 Seasonal Touches per season"],
-  executive: ["Priority service + 3 Seasonal Touches per season"],
+  basic: [
+    "Bi-weekly mowing, edging and cleanup every visit",
+    "Weed control support throughout your season",
+    "4 Yard Boosts per year (1 per 90-day season)",
+  ],
+  premium: [
+    "Weekly mowing, edging and cleanup",
+    "Expanded weed control support",
+    "8 Yard Boosts per year (2 per 90-day season)",
+  ],
+  executive: [
+    "Priority service and premium curb-appeal focus",
+    "Maximum weed control support",
+    "12 Yard Boosts per year (3 per 90-day season)",
+  ],
 };
 
 type ContactMethod = "text" | "phone" | "either";
@@ -236,6 +262,13 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
 
   const update = (patch: Partial<BuilderState>) => setState((s) => ({ ...s, ...patch }));
 
+  const toggleBuilderTouch = (key: TouchKey) => {
+    setState((s) => ({
+      ...s,
+      touches: s.touches.includes(key) ? s.touches.filter((k) => k !== key) : [...s.touches, key],
+    }));
+  };
+
   const basePrice = useMemo(
     () => priceFor(state.plan, state.yardSize, state.executivePlus),
     [state.plan, state.yardSize, state.executivePlus],
@@ -321,7 +354,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
         state.goal ? `Lawn goal: ${state.goal}` : null,
         `Contact pref: ${state.contactMethod}`,
         state.touches.length
-          ? `Touches: ${state.touches.map((k) => TOUCHES.find((t) => t.key === k)?.label).join(", ")}`
+          ? `Yard Boosts: ${state.touches.map((k) => TOUCHES.find((t) => t.key === k)?.label).join(", ")}`
           : null,
         state.executivePlus ? `Executive+ add-on requested` : null,
       ].filter(Boolean);
@@ -382,7 +415,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             You're set, {state.name.split(" ")[0] || "Trooper"}.
           </h3>
           <p className="text-muted-foreground max-w-md">
-            Your plan is locked in. A real Lawn Trooper will reach out within 24 hours to confirm your start date and walk through the 90-Day Reset.
+            Here's your starting estimate. A real Lawn Trooper will reach out within 24 hours to walk through scope, timing, and the 90-Day Yard Reset — no payment due now.
           </p>
           <div className="mt-2 w-full max-w-sm rounded-xl border border-border bg-background p-4 text-left">
             <div className="flex items-baseline justify-between">
@@ -412,7 +445,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             </a>
           </div>
 
-          {/* Optional seasonal touches — captured post-submit, discussed on the call */}
+          {/* Optional Yard Boosts — captured post-submit, discussed on the call */}
           <div className="mt-4 w-full max-w-sm">
             <button
               type="button"
@@ -470,7 +503,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
           </div>
 
           <p className="mt-2 text-xs text-muted-foreground max-w-md">
-            Billed monthly. No long-term commitment to get started — we'll cover everything on the call.
+            Final fit and add-ons are confirmed on the call — we tailor scope to your yard and budget.
           </p>
         </div>
       </div>
@@ -680,8 +713,8 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                         <span className="text-sm font-medium text-muted-foreground">/mo</span>
                       </div>
                       <ul className="mt-3 space-y-1.5">
-                        {PLAN_BULLETS[id].map((b) => (
-                          <li key={b} className="flex items-start gap-2 text-sm">
+                        {PLAN_BULLETS[id].map((b, bi) => (
+                          <li key={`${id}-${bi}`} className="flex items-start gap-2 text-sm">
                             <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                             <span>{b}</span>
                           </li>
@@ -720,6 +753,9 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
                   );
                 })}
               </div>
+              <p className="text-xs text-center text-muted-foreground max-w-xl mx-auto leading-relaxed mt-2">
+                {PLAN_YARD_BOOST_SHARED_NOTE}
+              </p>
               {state.plan === "executive" && (
                 <p className="text-xs text-center text-muted-foreground">
                   Executive+ is optional — you have a moment to decide.
@@ -728,12 +764,76 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             </div>
           )}
 
-          {/* ── Step 3: Contact info ── */}
+          {/* ── Step 3: Yard Boosts + contact info ── */}
           {state.step === 3 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-title">Last step — who are we sending this to?</h3>
-                <p className="text-sm text-muted-foreground">We'll reach out to confirm your plan and schedule the first visit.</p>
+                <h3 className="text-xl sm:text-2xl font-bold" data-testid="text-step3-yard-boosts-title">
+                  Choose Your Yard Boosts
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {
+                    "Select everything you'd like help with. We'll use this to build your best seasonal plan and help you prioritize what fits your budget."
+                  }
+                </p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-left">
+                {TOUCHES.map((t) => {
+                  const active = state.touches.includes(t.key);
+                  const Icon = t.icon;
+                  return (
+                    <button
+                      key={t.key}
+                      type="button"
+                      data-testid={`button-builder-touch-${t.key}`}
+                      onClick={() => toggleBuilderTouch(t.key)}
+                      className={`group relative rounded-2xl border overflow-hidden transition-all duration-200 flex flex-col text-left shadow-sm ${
+                        active
+                          ? "border-primary bg-primary/5 ring-2 ring-primary/30 shadow-md"
+                          : "border-border hover:border-primary/40 hover:shadow-md bg-card"
+                      }`}
+                    >
+                      <div className="relative h-24 md:h-36 lg:h-40 w-full bg-muted">
+                        {t.thumb ? (
+                          <img
+                            src={t.thumb}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div
+                            className={`flex h-full w-full items-center justify-center ${active ? "text-primary" : "text-muted-foreground"}`}
+                          >
+                            <Icon className="h-7 w-7" />
+                          </div>
+                        )}
+                        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/55 to-transparent" />
+                        <div className="absolute bottom-1.5 left-2 right-2 text-[10px] font-semibold text-white drop-shadow">
+                          {t.label}
+                        </div>
+                        {active && (
+                          <span className="absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow">
+                            <Check className="h-2.5 w-2.5" />
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-2.5 md:p-3">
+                        <div className="text-[11px] md:text-xs text-muted-foreground leading-snug">{t.desc}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="pt-2 border-t border-border">
+                <h3 className="text-lg sm:text-xl font-bold" data-testid="text-step3-title">
+                  Who should we follow up with?
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {"We'll reach out to align on scope and next steps — call us anytime if you prefer."}
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -828,7 +928,7 @@ export default function SimpleBuilder({ initialPlan = null }: SimpleBuilderProps
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : state.step === 3 ? (
             <>
-              <ShieldCheck className="h-4 w-4 mr-2" /> Lock in plan
+              <ShieldCheck className="h-4 w-4 mr-2" /> Show My Starting Estimate
             </>
           ) : (
             <>

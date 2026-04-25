@@ -8,7 +8,7 @@ import { ANNIVERSARY_CUTOFF_ISO, BIRTHDAY_BONUS } from "./promotions";
 
 export const PROMO_CONFIG = {
   executiveBonusEnabled: true,
-  cutoffDate: ANNIVERSARY_CUTOFF_ISO, // Sale ends March 25th at 11:59 PM (end of day)
+  cutoffDate: ANNIVERSARY_CUTOFF_ISO, // Legacy promo cutoff (inactive)
   saleLabel: BIRTHDAY_BONUS.marketingName
 };
 
